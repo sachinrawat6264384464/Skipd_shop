@@ -1,0 +1,34 @@
+# Root Repository .gitignore
+
+# Dependencies & Build Output
+node_modules/
+.next/
+__pycache__/
+*.py[cod]
+
+# Virtual Environments
+venv/
+.venv/
+
+# Environment Variables & Secrets
+.env
+.env.local
+*.env
+
+# Databases & Logs
+*.db
+*.sqlite
+*.sqlite3
+*.log
+
+# Archives & Templates
+agentic-rag-template.zip
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# IDE & System
+.vscode/
+.idea/
+.DS_Store
