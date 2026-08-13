@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Footer from "components/layout/footer";
-import { fetchUserOrders, fetchProducts, UserOrder, Product } from "lib/api";
+import { fetchUserOrders, fetchProducts, UserOrder, Product, requestReturn } from "lib/api";
 
 export default function OrdersDashboardPage() {
   const [activeTab, setActiveTab] = useState<"orders" | "buy-again" | "unshipped" | "cancelled">("orders");
@@ -27,8 +27,16 @@ export default function OrdersDashboardPage() {
     loadData();
   }, []);
 
-  const handleReturnRequest = (orderId: string) => {
-    alert(`Return request initiated for Order ${orderId}. Shiprocket doorstep pickup will arrive within 24 hours!`);
+  const handleReturnRequest = async (orderId: string) => {
+    try {
+      const reason = window.prompt("Please provide a reason for the return (e.g. Defective, Size Issue):");
+      if (!reason) return;
+      await requestReturn(orderId, reason);
+      alert(`Return request submitted successfully for Order ${orderId}.`);
+      window.location.reload();
+    } catch (e: any) {
+      alert("Failed to submit return request: " + e.message);
+    }
   };
 
   const filteredOrders = orderList.filter(ord => {
@@ -180,7 +188,7 @@ export default function OrdersDashboardPage() {
                         📍 Track Package
                       </Link>
                       <button
-                        onClick={() => handleReturnRequest(ord.order_number)}
+                        onClick={() => handleReturnRequest(ord.id)}
                         className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-xl text-center transition cursor-pointer"
                       >
                         🔄 Return or Replace Items

@@ -15,6 +15,8 @@ class OrderStatus(str, enum.Enum):
     SHIPPED = "SHIPPED"
     DELIVERED = "DELIVERED"
     CANCELLED = "CANCELLED"
+    RETURN_REQUESTED = "RETURN_REQUESTED"
+    RETURNED = "RETURNED"
 
 class User(Base):
     __tablename__ = "users"
@@ -271,4 +273,48 @@ class InventoryLog(Base):
     reason = Column(String(150), default="STOCK_UPDATE")
     created_at = Column(DateTime, default=datetime.utcnow)
 
+class Wallet(Base):
+    __tablename__ = "wallets"
 
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
+    balance = Column(Float, default=0.0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    user = relationship("User")
+    transactions = relationship("WalletTransaction", back_populates="wallet", cascade="all, delete-orphan")
+
+class WalletTransaction(Base):
+    __tablename__ = "wallet_transactions"
+
+    id = Column(Integer, primary_key=True, index=True)
+    wallet_id = Column(Integer, ForeignKey("wallets.id"), nullable=False)
+    amount = Column(Float, nullable=False)
+    transaction_type = Column(String(50), nullable=False)
+    reference_id = Column(String(100), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    wallet = relationship("Wallet", back_populates="transactions")
+
+class ReturnStatus(str, enum.Enum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    COMPLETED = "COMPLETED"
+
+class ReturnRequest(Base):
+    __tablename__ = "return_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    reason = Column(Text, nullable=False)
+    status = Column(SQLEnum(ReturnStatus), default=ReturnStatus.PENDING)
+    refund_amount = Column(Float, nullable=False)
+    admin_notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    order = relationship("Order")
+    user = relationship("User")

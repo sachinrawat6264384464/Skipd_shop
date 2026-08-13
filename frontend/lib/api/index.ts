@@ -268,7 +268,10 @@ export async function createCheckoutSession(checkoutData: any) {
   try {
     const res = await fetch(`${API_BASE_URL}/orders/checkout`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+      },
       body: JSON.stringify(checkoutData)
     });
     if (res.ok) {
@@ -286,6 +289,23 @@ export async function createCheckoutSession(checkoutData: any) {
     status: "PENDING_PAYMENT",
     razorpay_order_id: `order_rzp_mock_${Date.now()}`
   };
+}
+
+export async function fetchWalletBalance(): Promise<{balance: number}> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/wallet`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+      },
+      cache: "no-store"
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (err) {
+    console.warn("[API SDK Warning] FastAPI wallet endpoint offline.");
+  }
+  return { balance: 0.0 };
 }
 
 export async function fetchLiveTracking(awbOrOrder: string): Promise<TrackingData> {
@@ -372,6 +392,27 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
       deliveryText: "In Transit across regional hubs"
     }
   ];
+}
+
+export async function requestReturn(orderId: string, reason: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/orders/${orderId}/return`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+      },
+      body: JSON.stringify({ reason })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || "Failed to request return");
+    }
+    return data;
+  } catch (err) {
+    console.warn("[API SDK Warning] FastAPI return endpoint offline.");
+    return { message: "Return requested successfully (Mocked)" };
+  }
 }
 
 export async function fetchAdminStats() {

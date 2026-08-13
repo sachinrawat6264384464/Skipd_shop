@@ -6,8 +6,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 from app.core.database import get_db
-from app.models.models import Order, OrderItem, Product, ProductVariant, OrderStatus, User
-from app.schemas.schemas import CheckoutInput, OrderResponse
+from app.models.models import Order, OrderItem, Product, ProductVariant, OrderStatus, User, Wallet, WalletTransaction, ReturnRequest, ReturnStatus
+from app.schemas.schemas import CheckoutInput, OrderResponse, ReturnRequestInput
 from app.services.razorpay_svc import razorpay_svc
 from app.api.deps import get_current_user
 
@@ -44,11 +44,34 @@ async def create_checkout(
             unit_price=unit_price
         ))
 
-    # Create Razorpay Order
-    rzp_order = razorpay_svc.create_order(
-        amount_in_rupees=total_amount,
-        order_receipt_id=order_number
-    )
+    wallet_used = 0.0
+    if data.use_wallet and current_user:
+        wallet_res = await db.execute(select(Wallet).where(Wallet.user_id == current_user.id))
+        wallet = wallet_res.scalars().first()
+        if wallet and wallet.balance > 0:
+            wallet_used = min(wallet.balance, total_amount)
+            wallet.balance -= wallet_used
+            total_amount -= wallet_used
+            
+            w_txn = WalletTransaction(
+                wallet_id=wallet.id,
+                amount=-wallet_used,
+                transaction_type="ORDER_PAYMENT",
+                reference_id=order_number
+            )
+            db.add(w_txn)
+
+    # Create Razorpay Order only if remaining amount > 0
+    if total_amount > 0:
+        rzp_order = razorpay_svc.create_order(
+            amount_in_rupees=total_amount,
+            order_receipt_id=order_number
+        )
+        rzp_order_id = rzp_order["id"]
+        status = OrderStatus.PENDING_PAYMENT
+    else:
+        rzp_order_id = None
+        status = OrderStatus.PAID
 
     new_order = Order(
         order_number=order_number,
@@ -59,8 +82,8 @@ async def create_checkout(
         shipping_address=data.shipping_address.dict(),
         total_amount=total_amount,
         currency="INR",
-        status=OrderStatus.PENDING_PAYMENT,
-        razorpay_order_id=rzp_order["id"],
+        status=status,
+        razorpay_order_id=rzp_order_id,
         items=order_items
     )
 
@@ -98,3 +121,34 @@ async def get_order_by_id(
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order
+
+@router.post("/{order_id}/return")
+async def request_return(
+    order_id: int,
+    data: ReturnRequestInput,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    query = select(Order).where(Order.id == order_id, Order.user_id == current_user.id)
+    result = await db.execute(query)
+    order = result.scalars().first()
+    
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    if order.status not in [OrderStatus.DELIVERED]:
+        raise HTTPException(status_code=400, detail="Only delivered orders can be returned")
+    
+    return_req = ReturnRequest(
+        order_id=order.id,
+        user_id=current_user.id,
+        reason=data.reason,
+        status=ReturnStatus.PENDING,
+        refund_amount=order.total_amount
+    )
+    order.status = OrderStatus.RETURN_REQUESTED
+    
+    db.add(return_req)
+    await db.commit()
+    
+    return {"message": "Return requested successfully"}

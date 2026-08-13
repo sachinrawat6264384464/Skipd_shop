@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "components/auth/auth-provider";
 import { openRazorpayModal } from "lib/razorpay";
-import { createCheckoutSession } from "lib/api";
+import { createCheckoutSession, fetchWalletBalance } from "lib/api";
 import { trackBeginCheckout, trackPurchase } from "lib/analytics";
 
 export default function CheckoutPage() {
@@ -20,6 +20,7 @@ export default function CheckoutPage() {
     zip: "400001"
   });
 
+  const [walletBalance, setWalletBalance] = useState(0.0);
   const [redeemWallet, setRedeemWallet] = useState(true);
   const [loading, setLoading] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
@@ -31,6 +32,12 @@ export default function CheckoutPage() {
   // Enforce auth on mount and prefill form details
   useEffect(() => {
     requireAuth();
+
+    const fetchWallet = async () => {
+      const w = await fetchWalletBalance();
+      setWalletBalance(w.balance);
+    };
+    fetchWallet();
 
     const updateForm = () => {
       const stored = localStorage.getItem("skipd_user");
@@ -55,7 +62,7 @@ export default function CheckoutPage() {
   }, []);
 
   const basePrice = 1299.0;
-  const walletDiscount = redeemWallet ? 100.0 : 0.0;
+  const walletDiscount = redeemWallet ? Math.min(walletBalance, basePrice) : 0.0;
   const finalTotal = Math.max(0, basePrice - walletDiscount);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,6 +81,7 @@ export default function CheckoutPage() {
       customer_name: `${formData.firstName} ${formData.lastName}`,
       customer_email: formData.email,
       customer_phone: formData.phone,
+      use_wallet: redeemWallet,
       shipping_address: {
         first_name: formData.firstName,
         last_name: formData.lastName,
@@ -284,20 +292,22 @@ export default function CheckoutPage() {
               </div>
               
               {/* Wallet Discount Option */}
-              <div className="py-2 border-t border-b border-gray-100 my-2">
-                <label className="flex items-center justify-between cursor-pointer text-xs">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      checked={redeemWallet}
-                      onChange={(e) => setRedeemWallet(e.target.checked)}
-                      className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
-                    />
-                    <span className="text-emerald-700 font-bold">🪙 Redeem SKIPD Wallet Coins</span>
-                  </div>
-                  <span className="text-emerald-700 font-bold">-₹100.00</span>
-                </label>
-              </div>
+              {walletBalance > 0 && (
+                <div className="py-2 border-t border-b border-gray-100 my-2">
+                  <label className="flex items-center justify-between cursor-pointer text-xs">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={redeemWallet}
+                        onChange={(e) => setRedeemWallet(e.target.checked)}
+                        className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
+                      />
+                      <span className="text-emerald-700 font-bold">🪙 Redeem SKIPD Wallet (Balance: ₹{walletBalance.toLocaleString("en-IN")})</span>
+                    </div>
+                    {redeemWallet && <span className="text-emerald-700 font-bold">-₹{walletDiscount.toLocaleString("en-IN")}</span>}
+                  </label>
+                </div>
+              )}
 
               <div className="flex justify-between font-medium">
                 <span>Estimated Taxes</span>

@@ -87,6 +87,7 @@ class CheckoutInput(BaseModel):
     customer_email: EmailStr
     customer_name: str
     customer_phone: str
+    use_wallet: bool = False
 
 class OrderItemSchema(BaseModel):
     product_id: int
@@ -130,3 +131,37 @@ class TrackingResponse(BaseModel):
     current_status: str
     estimated_delivery: str
     timeline: List[TrackingTimelineItem]
+
+# Wallet Schemas
+class WalletTransactionResponse(BaseModel):
+    id: int
+    amount: float
+    transaction_type: str
+    reference_id: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class WalletResponse(BaseModel):
+    balance: float
+    transactions: List[WalletTransactionResponse] = []
+
+    class Config:
+        from_attributes = True
+
+# Return Request Schemas
+class ReturnRequestInput(BaseModel):
+    reason: str
+
+class ReturnRequestResponse(BaseModel):
+    id: int
+    order_id: int
+    reason: str
+    status: str
+    refund_amount: float
+    admin_notes: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
