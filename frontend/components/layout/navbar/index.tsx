@@ -5,21 +5,24 @@ import Search, { SearchSkeleton } from "./search";
 import { UserAccountDropdown } from "./user-dropdown";
 import { DeliveryLocationPicker } from "./delivery-location";
 
+import { WishlistNavButton } from "./wishlist-nav-button";
+import { LanguagePicker } from "components/language/language-picker";
+
 export async function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 lg:px-8 py-3 flex items-center justify-between shadow-2xs">
-      <div className="flex items-center gap-4 w-full max-w-7xl mx-auto justify-between">
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 lg:px-6 py-2.5 flex items-center justify-between shadow-2xs">
+      <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto gap-4">
         
-        {/* Brand Logo & Top Links */}
-        <div className="flex items-center gap-5">
-          <Link href="/" className="flex items-center gap-2 text-gray-900 font-black text-2xl tracking-tight">
+        {/* Left Section: Brand Logo, Top Links & Delivery Location (Tight Gap) */}
+        <div className="flex items-center gap-4 lg:gap-6 shrink-0">
+          <Link href="/" className="flex items-center gap-2 text-gray-900 font-black text-2xl tracking-tight shrink-0">
             <span className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-base shadow-sm">
               S
             </span>
             <span>SKIPD</span>
           </Link>
 
-          <ul className="hidden xl:flex items-center gap-5 text-xs font-semibold text-gray-700">
+          <ul className="hidden lg:flex items-center gap-4 xl:gap-5 text-xs font-semibold text-gray-700 whitespace-nowrap">
             <li className="relative group cursor-pointer">
               <Link href="/search" className="hover:text-black transition flex items-center gap-1 font-bold text-gray-900">
                 Categories <span className="text-[10px] text-gray-400">▼</span>
@@ -70,30 +73,16 @@ export async function Navbar() {
               </Link>
             </li>
           </ul>
+
+          {/* 📍 Delivery Location Picker */}
+          <DeliveryLocationPicker />
         </div>
 
-        {/* 📍 Delivery Location Picker */}
-        <DeliveryLocationPicker />
-
-        {/* Center Search Input */}
-        <div className="flex-1 max-w-md mx-4 hidden sm:block">
-          <Suspense fallback={<SearchSkeleton />}>
-            <Search />
-          </Suspense>
-        </div>
-
-        {/* Action Buttons: Sign In, Wishlist, Cart */}
-        <div className="flex items-center gap-3">
+        {/* Right Section: Action Buttons (Language Picker, Sign In, Wishlist, Cart) */}
+        <div className="flex items-center gap-3 shrink-0">
+          <LanguagePicker />
           <UserAccountDropdown />
-
-          <Link
-            href="/account?tab=wishlist"
-            className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-200 hover:bg-gray-200 text-gray-800 flex items-center justify-center transition text-base relative"
-            title="Wishlist"
-          >
-            🖤
-          </Link>
-
+          <WishlistNavButton />
           <CartModal />
         </div>
 

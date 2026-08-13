@@ -1,6 +1,15 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export function CategoryNav() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const categoryBubbles = [
     { name: "Mobiles", slug: "mobiles", icon: "📱", bg: "bg-blue-50 border-blue-200 text-blue-700" },
     { name: "Laptops", slug: "laptops", icon: "💻", bg: "bg-gray-100 border-gray-300 text-gray-800" },
@@ -14,8 +23,14 @@ export function CategoryNav() {
     { name: "More", slug: "more", icon: "•••", bg: "bg-gray-100 border-gray-200 text-gray-600" },
   ];
 
+  if (!mounted) {
+    return (
+      <div className="bg-white border-b border-gray-200 py-4 px-4 overflow-x-auto no-scrollbar min-h-[98px]" />
+    );
+  }
+
   return (
-    <div className="bg-white border-b border-gray-200 py-4 px-4 overflow-x-auto no-scrollbar" suppressHydrationWarning>
+    <div className="bg-white border-b border-gray-200 py-4 px-4 overflow-x-auto no-scrollbar">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8 min-w-max">
         {categoryBubbles.map((cat, idx) => (
           <Link

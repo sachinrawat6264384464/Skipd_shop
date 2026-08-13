@@ -30,3 +30,32 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* 🌐 Hide Google Translate Top Banner Bar & Fix Body Layout */
+.goog-te-banner-frame,
+.goog-te-banner,
+.skiptranslate > iframe,
+#goog-gt-tt,
+.goog-te-balloon-frame,
+.goog-te-spinner-pos {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0px !important;
+  opacity: 0 !important;
+}
+
+body {
+  top: 0px !important;
+  position: static !important;
+  min-height: 100vh !important;
+}
+
+.goog-text-highlight {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+font {
+  background-color: transparent !important;
+  box-shadow: none !important;
+}

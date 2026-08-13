@@ -4,10 +4,14 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
+import { LoginModal } from "components/auth/login-modal";
+
 function AccountContent() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "profile";
   const [activeTab, setActiveTab] = useState<string>(initialTab);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const tabParam = searchParams.get("tab");
@@ -30,23 +34,56 @@ function AccountContent() {
   const [isEditingPhone, setIsEditingPhone] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("skipd_token");
     const stored = localStorage.getItem("skipd_user");
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setUser(parsed);
-        const nameParts = (parsed.user_name || "Sachin Rawat").split(" ");
-        setFirstName(nameParts[0] || "Sachin");
-        setLastName(nameParts.slice(1).join(" ") || "Rawat");
-      } catch (e) {}
+    if (token || stored) {
+      setIsLoggedIn(true);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          setUser(parsed);
+          const nameParts = (parsed.user_name || "Sachin Rawat").split(" ");
+          setFirstName(nameParts[0] || "Sachin");
+          setLastName(nameParts.slice(1).join(" ") || "Rawat");
+        } catch (e) {}
+      }
+    } else {
+      setIsLoggedIn(false);
     }
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("skipd_token");
     localStorage.removeItem("skipd_user");
-    window.location.href = "/auth/login";
+    window.location.href = "/";
   };
+
+  if (isLoggedIn === false) {
+    return (
+      <div className="min-h-[70vh] bg-[#FAFAFA] flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-white border border-gray-200 rounded-3xl p-8 max-w-md w-full shadow-lg space-y-5">
+          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-xs">
+            🔒
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-gray-900">Sign In Required</h2>
+            <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+              Please sign in to your account to access your profile, order tracking, address book, and wishlist.
+            </p>
+          </div>
+
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3 px-6 rounded-xl transition shadow-sm cursor-pointer"
+          >
+            🔑 Sign In / Register Now
+          </button>
+
+          <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </div>
+      </div>
+    );
+  }
 
   const orders = [
     {

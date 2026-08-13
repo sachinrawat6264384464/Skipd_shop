@@ -6,6 +6,8 @@ import Image from "next/image";
 import Footer from "components/layout/footer";
 import { fetchUserOrders, fetchProducts, UserOrder, Product, requestReturn } from "lib/api";
 
+import { LoginModal } from "components/auth/login-modal";
+
 export default function OrdersDashboardPage() {
   const [activeTab, setActiveTab] = useState<"orders" | "buy-again" | "unshipped" | "cancelled">("orders");
   const [searchQuery, setSearchQuery] = useState("");
@@ -13,18 +15,28 @@ export default function OrdersDashboardPage() {
   const [orderList, setOrderList] = useState<UserOrder[]>([]);
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    async function loadData() {
-      const [orders, products] = await Promise.all([
-        fetchUserOrders(),
-        fetchProducts({ featured: true })
-      ]);
-      setOrderList(orders);
-      setRecommendations(products.slice(0, 3));
+    const token = localStorage.getItem("skipd_token");
+    const user = localStorage.getItem("skipd_user");
+    if (token || user) {
+      setIsLoggedIn(true);
+      async function loadData() {
+        const [orders, products] = await Promise.all([
+          fetchUserOrders(),
+          fetchProducts({ featured: true })
+        ]);
+        setOrderList(orders);
+        setRecommendations(products.slice(0, 3));
+        setLoading(false);
+      }
+      loadData();
+    } else {
+      setIsLoggedIn(false);
       setLoading(false);
     }
-    loadData();
   }, []);
 
   const handleReturnRequest = async (orderId: string) => {
@@ -49,6 +61,36 @@ export default function OrdersDashboardPage() {
       true;
     return matchesSearch && matchesTab;
   });
+
+  if (isLoggedIn === false) {
+    return (
+      <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
+        <div className="min-h-[75vh] flex flex-col items-center justify-center p-6 text-center">
+          <div className="bg-white border border-gray-200 rounded-3xl p-8 max-w-md w-full shadow-lg space-y-5">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-xs">
+              🔒
+            </div>
+            <div>
+              <h2 className="text-xl font-black text-gray-900">Sign In Required</h2>
+              <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                Please sign in to your account to access your order history, track live shipments, address book, and wishlist.
+              </p>
+            </div>
+
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3 px-6 rounded-xl transition shadow-sm cursor-pointer"
+            >
+              🔑 Sign In / Register Now
+            </button>
+
+            <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">

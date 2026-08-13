@@ -7,10 +7,25 @@ import Link from "next/link";
 import { Fragment, useState } from "react";
 import OpenCart from "./open-cart";
 
+import { LoginModal } from "components/auth/login-modal";
+
 export default function CartModal() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
+
+  const handleCheckoutClick = (e: React.MouseEvent) => {
+    const token = localStorage.getItem("skipd_token");
+    const user = localStorage.getItem("skipd_user");
+    if (!token && !user) {
+      e.preventDefault();
+      closeCart();
+      setIsLoginModalOpen(true);
+    } else {
+      closeCart();
+    }
+  };
 
   const cartItems = [
     {
@@ -110,7 +125,7 @@ export default function CartModal() {
 
                   <Link
                     href="/checkout"
-                    onClick={closeCart}
+                    onClick={handleCheckoutClick}
                     className="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 text-center text-xs rounded-xl transition shadow-md shadow-emerald-600/20"
                   >
                     Proceed to Checkout &rarr;
@@ -122,6 +137,8 @@ export default function CartModal() {
           </Transition.Child>
         </Dialog>
       </Transition>
+
+      <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </>
   );
 }
