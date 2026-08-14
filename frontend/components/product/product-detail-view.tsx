@@ -178,7 +178,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       </div>
 
       {/* 📍 Breadcrumb Bar */}
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-[1536px] mx-auto px-4 lg:px-8">
         <div className="text-[11px] text-gray-500 font-medium flex items-center gap-1.5 flex-wrap">
           <Link href="/search" className="hover:underline">{product.category?.name || "Electronics"}</Link>
           <span>&rsaquo;</span>
@@ -189,7 +189,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       </div>
 
       {/* 🛍️ Main Product Hero Details (Matching Screenshot 1) */}
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="max-w-[1536px] mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* LEFT 5-COL: Image Gallery & Main Photo */}
@@ -455,7 +455,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       </div>
 
       {/* 🧩 "Frequently Bought Together" Section */}
-      <div className="max-w-7xl mx-auto px-4 pt-6">
+      <div className="max-w-[1536px] mx-auto px-4 lg:px-8 pt-6">
         <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-6">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="text-base font-black text-gray-900 uppercase tracking-wider flex items-center gap-2">
@@ -506,7 +506,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       </div>
 
       {/* 📦 Sponsored Products Section */}
-      <div className="max-w-7xl mx-auto px-4 pt-6">
+      <div className="max-w-[1536px] mx-auto px-4 lg:px-8 pt-6">
         <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="text-base font-black text-gray-900">Sponsored Products Related to This Item</h3>
@@ -546,7 +546,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       </div>
 
       {/* 📱 Customers Also Viewed Section */}
-      <div className="max-w-7xl mx-auto px-4 pt-4">
+      <div className="max-w-[1536px] mx-auto px-4 lg:px-8 pt-4">
         <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="text-base font-black text-gray-900">Customers Who Viewed This Item Also Viewed (Page 1 of 3)</h3>
