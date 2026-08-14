@@ -4,6 +4,7 @@ import { useWishlist } from "components/wishlist/wishlist-context";
 import { useCart } from "components/cart/cart-context";
 import Link from "next/link";
 import Footer from "components/layout/footer";
+import { getUserCartKey } from "lib/utils";
 
 export default function WishlistPage() {
   const { wishlist, removeFromWishlist } = useWishlist();
@@ -43,9 +44,10 @@ export default function WishlistPage() {
     // Remove from wishlist
     removeFromWishlist(item.id);
 
-    // Also update guest/user cart storage
+    // Also update user-scoped cart storage
     try {
-      const stored = localStorage.getItem("skipd_user_cart") || sessionStorage.getItem("skipd_guest_cart");
+      const cartKey = getUserCartKey();
+      const stored = localStorage.getItem(cartKey);
       let items = stored ? JSON.parse(stored) : [];
       const existing = items.find((i: any) => i.id === item.id);
       if (existing) {
@@ -60,8 +62,7 @@ export default function WishlistPage() {
           image: item.image
         });
       }
-      localStorage.setItem("skipd_user_cart", JSON.stringify(items));
-      sessionStorage.setItem("skipd_guest_cart", JSON.stringify(items));
+      localStorage.setItem(cartKey, JSON.stringify(items));
     } catch (e) {}
 
     alert(`🎉 "${item.title}" has been moved to your Shopping Cart!`);

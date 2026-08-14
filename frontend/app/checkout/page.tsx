@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "components/auth/auth-provider";
 import Link from "next/link";
-import { getUserCartKey } from "lib/utils";
+import { getUserCartKey, getUserOrdersKey } from "lib/utils";
 
 interface Address {
   id: string;
@@ -260,13 +260,14 @@ export default function CheckoutPage() {
           }
         };
 
-        // Save to localStorage orders history
-        const existingOrders = JSON.parse(localStorage.getItem("skipd_orders") || "[]");
-        localStorage.setItem("skipd_orders", JSON.stringify([newOrder, ...existingOrders]));
+        // Save to localStorage orders history (User-Scoped)
+        const ordersKey = getUserOrdersKey();
+        const cartKey = getUserCartKey();
+        const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
+        localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
-        // Clear Cart
-        localStorage.removeItem("skipd_user_cart");
-        sessionStorage.removeItem("skipd_guest_cart");
+        // Clear User Cart
+        localStorage.setItem(cartKey, JSON.stringify([]));
 
         // Set completed order data & show success modal
         setCompletedOrderData(newOrder);
@@ -337,13 +338,14 @@ export default function CheckoutPage() {
         }
       };
 
-      // Save to localStorage orders history
-      const existingOrders = JSON.parse(localStorage.getItem("skipd_orders") || "[]");
-      localStorage.setItem("skipd_orders", JSON.stringify([newOrder, ...existingOrders]));
+      // Save to localStorage orders history (User-Scoped)
+      const ordersKey = getUserOrdersKey();
+      const cartKey = getUserCartKey();
+      const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
+      localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
-      // Clear Cart
-      localStorage.removeItem("skipd_user_cart");
-      sessionStorage.removeItem("skipd_guest_cart");
+      // Clear User Cart
+      localStorage.setItem(cartKey, JSON.stringify([]));
 
       // Set completed order data & show success modal
       setCompletedOrderData(newOrder);

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { getUserWishlistKey } from "lib/utils";
 
 export interface WishlistItem {
   id: number;
@@ -26,18 +27,22 @@ const WishlistContext = createContext<WishlistContextType | undefined>(undefined
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
 
-  useEffect(() => {
-    // Load stored wishlist from localStorage on mount
-    const saved = localStorage.getItem("skipd_wishlist");
-    if (saved) {
+  const loadWishlist = () => {
+    const key = getUserWishlistKey();
+    const token = localStorage.getItem("skipd_token");
+    const user = localStorage.getItem("skipd_user");
+    const loggedIn = !!(token || user);
+
+    const saved = localStorage.getItem(key);
+    if (saved !== null) {
       try {
         setWishlist(JSON.parse(saved));
         return;
       } catch (e) {}
     }
 
-    // Default Seed Items
-    const defaultSeed: WishlistItem[] = [
+    // New logged-in user starts with 0 items, guest gets demo seed items
+    const initial = loggedIn ? [] : [
       {
         id: 1,
         handle: "active-anc-headphones",
@@ -47,25 +52,27 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
         category: "Tech Essentials",
         rating: 4.3
-      },
-      {
-        id: 3,
-        handle: "matte-black-chrono-watch",
-        title: "Matte Black Genuine Leather Chrono Watch",
-        price: 3499,
-        compare_at_price: 5499,
-        image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-        category: "Lifestyle Accessories",
-        rating: 4.6
       }
     ];
-    setWishlist(defaultSeed);
-    localStorage.setItem("skipd_wishlist", JSON.stringify(defaultSeed));
+    setWishlist(initial);
+    localStorage.setItem(key, JSON.stringify(initial));
+  };
+
+  useEffect(() => {
+    loadWishlist();
+
+    window.addEventListener("skipd_auth_changed", loadWishlist);
+    window.addEventListener("storage", loadWishlist);
+    return () => {
+      window.removeEventListener("skipd_auth_changed", loadWishlist);
+      window.removeEventListener("storage", loadWishlist);
+    };
   }, []);
 
   const saveWishlist = (items: WishlistItem[]) => {
     setWishlist(items);
-    localStorage.setItem("skipd_wishlist", JSON.stringify(items));
+    const key = getUserWishlistKey();
+    localStorage.setItem(key, JSON.stringify(items));
   };
 
   const addToWishlist = (item: WishlistItem) => {

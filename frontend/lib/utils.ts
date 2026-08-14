@@ -50,6 +50,7 @@ export const validateEnvironmentVariables = () => {
   }
 };
 
+// 🔒 1. User Cart Storage Key (Scoped per User Account)
 export function getUserCartKey(): string {
   if (typeof window === "undefined") return "skipd_cart_guest";
   try {
@@ -63,4 +64,52 @@ export function getUserCartKey(): string {
     }
   } catch (e) {}
   return "skipd_cart_guest";
+}
+
+// 🔒 2. User Wishlist Storage Key (Scoped per User Account)
+export function getUserWishlistKey(): string {
+  if (typeof window === "undefined") return "skipd_wishlist_guest";
+  try {
+    const userStr = localStorage.getItem("skipd_user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const identifier = user.email || user.phone || user.user_name;
+      if (identifier) {
+        return `skipd_wishlist_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+      }
+    }
+  } catch (e) {}
+  return "skipd_wishlist_guest";
+}
+
+// 🔒 3. User Orders Storage Key (Scoped per User Account)
+export function getUserOrdersKey(): string {
+  if (typeof window === "undefined") return "skipd_orders_guest";
+  try {
+    const userStr = localStorage.getItem("skipd_user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const identifier = user.email || user.phone || user.user_name;
+      if (identifier) {
+        return `skipd_orders_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+      }
+    }
+  } catch (e) {}
+  return "skipd_orders_guest";
+}
+
+// 🔒 4. User Addresses Storage Key (Scoped per User Account)
+export function getUserAddressesKey(): string {
+  if (typeof window === "undefined") return "skipd_addresses_guest";
+  try {
+    const userStr = localStorage.getItem("skipd_user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const identifier = user.email || user.phone || user.user_name;
+      if (identifier) {
+        return `skipd_addresses_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+      }
+    }
+  } catch (e) {}
+  return "skipd_addresses_guest";
 }

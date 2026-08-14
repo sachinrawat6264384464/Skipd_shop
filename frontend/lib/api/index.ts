@@ -1,3 +1,5 @@
+import { getUserOrdersKey } from "../utils";
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080/api/v1";
 
 export interface Product {
@@ -638,62 +640,40 @@ export async function fetchLiveTracking(awbOrOrder: string): Promise<TrackingDat
 
 export async function fetchUserOrders(): Promise<UserOrder[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/orders`);
+    const res = await fetch(`${API_BASE_URL}/orders/my-orders`, {
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+      },
+      cache: "no-store"
+    });
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         return data.map((o: any) => ({
           id: String(o.id),
-          order_number: o.order_number,
-          date: o.created_at ? new Date(o.created_at).toLocaleDateString("en-IN") : "12 Aug 2026",
-          total: o.total_amount || 1299,
-          title: o.items?.[0]?.product_name || "Minimalist Oversized Graphic Tee",
-          image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500",
+          order_number: o.order_number || `SKIPD-${o.id}`,
+          date: o.created_at ? new Date(o.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "Today",
+          total: o.total_amount || 0,
+          title: o.items?.[0]?.product_name || "Purchased Product",
+          image: o.items?.[0]?.product_image || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500",
           status: o.status || "SHIPPED",
-          awb: `SR-AWB-${o.order_number}`,
-          deliveryText: "Arriving tomorrow by 9 PM"
+          awb: `SR-AWB-${o.order_number || o.id}`,
+          deliveryText: o.status === "DELIVERED" ? "Delivered" : "In Transit across regional hubs"
         }));
       }
     }
   } catch (e) {
-    console.warn("[API SDK Warning] FastAPI orders endpoint offline, returning demo orders list.");
+    console.warn("[API SDK Warning] FastAPI orders endpoint offline, reading user-scoped orders history.");
   }
 
-  return [
-    {
-      id: "1",
-      order_number: "SKIPD-984201",
-      date: "12 Aug 2026",
-      total: 1299.0,
-      title: "Minimalist Oversized Graphic Tee (Size M)",
-      image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500",
-      status: "SHIPPED",
-      awb: "SR-AWB-984201",
-      deliveryText: "Arriving tomorrow by 9 PM"
-    },
-    {
-      id: "2",
-      order_number: "SKIPD-842915",
-      date: "05 Aug 2026",
-      total: 4999.0,
-      title: "Active ANC Wireless Headphones",
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500",
-      status: "DELIVERED",
-      awb: "SR-AWB-842915",
-      deliveryText: "Delivered on 07 Aug 2026"
-    },
-    {
-      id: "3",
-      order_number: "SKIPD-761294",
-      date: "01 Aug 2026",
-      total: 3499.0,
-      title: "Matte Black Chrono Leather Watch",
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
-      status: "IN TRANSIT",
-      awb: "SR-AWB-761294",
-      deliveryText: "In Transit across regional hubs"
-    }
-  ];
+  // Load User-Scoped Orders History
+  const ordersKey = getUserOrdersKey();
+  try {
+    const saved = localStorage.getItem(ordersKey);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+
+  return [];
 }
 
 export async function requestReturn(orderId: string, reason: string) {
