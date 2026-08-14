@@ -86,6 +86,7 @@ export default function CartItemsPage() {
     } else {
       sessionStorage.setItem("skipd_guest_cart", JSON.stringify(newItems));
     }
+    window.dispatchEvent(new Event("skipd_cart_updated"));
   };
 
   const updateQty = (id: number, delta: number) => {
@@ -101,10 +102,11 @@ export default function CartItemsPage() {
   const clearAll = () => {
     setItems([]);
     if (isLoggedIn) {
-      localStorage.removeItem("skipd_user_cart");
+      localStorage.setItem("skipd_user_cart", JSON.stringify([]));
     } else {
-      sessionStorage.removeItem("skipd_guest_cart");
+      sessionStorage.setItem("skipd_guest_cart", JSON.stringify([]));
     }
+    window.dispatchEvent(new Event("skipd_cart_updated"));
   };
 
   const selectedItems = items.filter(i => i.selected);

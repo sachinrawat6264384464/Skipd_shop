@@ -1,6 +1,6 @@
 import enum
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, Enum as SQLEnum, JSON
+from sqlalchemy import Column, Integer, String, Float, Boolean, DateTime, ForeignKey, Text, Enum as SQLEnum, JSON, Index
 from sqlalchemy.orm import relationship
 from app.core.database import Base
 
@@ -46,6 +46,11 @@ class Category(Base):
 class Product(Base):
     __tablename__ = "products"
 
+    __table_args__ = (
+        Index("idx_products_category_created", "category_id", "created_at"),
+        Index("idx_products_price_created", "price", "created_at"),
+    )
+
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False)
     handle = Column(String(255), unique=True, index=True, nullable=False)
@@ -64,6 +69,10 @@ class Product(Base):
 class ProductVariant(Base):
     __tablename__ = "product_variants"
 
+    __table_args__ = (
+        Index("idx_variants_product_stock", "product_id", "stock_quantity"),
+    )
+
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     title = Column(String(100), nullable=False) # e.g. "Size M / Black"
@@ -75,6 +84,11 @@ class ProductVariant(Base):
 
 class Order(Base):
     __tablename__ = "orders"
+
+    __table_args__ = (
+        Index("idx_orders_user_status_created", "user_id", "status", "created_at"),
+        Index("idx_orders_status_created", "status", "created_at"),
+    )
 
     id = Column(Integer, primary_key=True, index=True)
     order_number = Column(String(50), unique=True, index=True, nullable=False)
@@ -318,3 +332,22 @@ class ReturnRequest(Base):
 
     order = relationship("Order")
     user = relationship("User")
+
+
+# ─────────────────────────────────────────────
+# ✉️ EMAIL NOTIFICATION EVENT LOGS
+# ─────────────────────────────────────────────
+class EmailNotificationStatus(str, enum.Enum):
+    PENDING = "PENDING"
+    SENT = "SENT"
+    FAILED = "FAILED"
+
+class EmailLog(Base):
+    __tablename__ = "email_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    to_email = Column(String(255), nullable=False, index=True)
+    subject = Column(String(255), nullable=False)
+    status = Column(SQLEnum(EmailNotificationStatus), default=EmailNotificationStatus.PENDING)
+    error_message = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)

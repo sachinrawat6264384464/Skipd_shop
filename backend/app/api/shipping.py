@@ -61,3 +61,22 @@ async def check_pincode_serviceability(pincode: str):
         "prepaid_available": True,
         "express_shipping": is_metro
     }
+
+
+# ─────────────────────────────────────────────
+# 🚚 DIJKSTRA'S SHORTEST PATH LOGISTICS ROUTING
+# ─────────────────────────────────────────────
+from app.services.logistics_routing import logistics_router
+
+@router.post("/estimate-delivery")
+async def estimate_delivery_dijkstra(payload: dict):
+    """
+    🚚 Dijkstra's Shortest Path Delivery Estimate:
+    Calculates optimal fulfillment warehouse, shortest hub route, and ETA using Dijkstra's Priority Queue Algorithm.
+    """
+    pincode = str(payload.get("pincode", "201301")).strip()
+    if len(pincode) != 6 or not pincode.isdigit():
+        raise HTTPException(status_code=400, detail="Invalid 6-digit Indian Pincode")
+
+    route_details = logistics_router.find_shortest_delivery_route(pincode)
+    return route_details

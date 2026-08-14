@@ -1,15 +1,21 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 from app.core.database import get_db
 from app.models.models import Order, PaymentTransaction, OrderStatus
 from app.schemas.schemas import PaymentVerifyInput
 from app.services.razorpay_svc import razorpay_svc
+from app.services.email_service import send_order_confirmation_email
 
 router = APIRouter(prefix="/payments", tags=["Payments"])
 
 @router.post("/verify")
-async def verify_payment(data: PaymentVerifyInput, db: AsyncSession = Depends(get_db)):
+async def verify_payment(
+    data: PaymentVerifyInput,
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db)
+):
     is_valid = razorpay_svc.verify_payment_signature(
         razorpay_order_id=data.razorpay_order_id,
         razorpay_payment_id=data.razorpay_payment_id,
@@ -19,7 +25,7 @@ async def verify_payment(data: PaymentVerifyInput, db: AsyncSession = Depends(ge
     if not is_valid:
         raise HTTPException(status_code=400, detail="Invalid Razorpay payment signature")
 
-    result = await db.execute(select(Order).where(Order.id == data.order_id))
+    result = await db.execute(select(Order).options(selectinload(Order.items)).where(Order.id == data.order_id))
     order = result.scalars().first()
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
@@ -37,7 +43,24 @@ async def verify_payment(data: PaymentVerifyInput, db: AsyncSession = Depends(ge
     db.add(transaction)
     await db.commit()
 
-    return {"status": "success", "message": "Payment verified successfully", "order_id": order.id}
+    # ✉️ Trigger Async Payment Success Rich HTML Order Confirmation Email
+    items_list = [
+        {"title": item.product_name, "quantity": item.quantity, "unit_price": item.unit_price}
+        for item in order.items
+    ] if order.items else [{"title": "SKIPD Order Items", "quantity": 1, "unit_price": order.total_amount}]
+
+    background_tasks.add_task(
+        send_order_confirmation_email,
+        to_email=order.customer_email,
+        order_number=order.order_number,
+        total_amount=order.total_amount,
+        customer_name=order.customer_name,
+        order_items=items_list,
+        shipping_address=order.shipping_address,
+        payment_method="Razorpay Online (Paid)"
+    )
+
+    return {"status": "success", "message": "Payment verified and order confirmation email dispatched!", "order_id": order.id}
 
 @router.post("/webhook")
 async def razorpay_webhook(request: Request, db: AsyncSession = Depends(get_db)):

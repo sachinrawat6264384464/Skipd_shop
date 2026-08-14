@@ -2,9 +2,8 @@
 
 import clsx from "clsx";
 import { Dialog, Transition } from "@headlessui/react";
-import { ShoppingCartIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import OpenCart from "./open-cart";
 
 import { LoginModal } from "components/auth/login-modal";
@@ -12,8 +11,46 @@ import { LoginModal } from "components/auth/login-modal";
 export default function CartModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<any[]>([]);
+
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
+
+  const loadCart = () => {
+    try {
+      const token = localStorage.getItem("skipd_token");
+      const user = localStorage.getItem("skipd_user");
+      const loggedIn = !!(token || user);
+
+      if (loggedIn) {
+        const saved = localStorage.getItem("skipd_user_cart");
+        if (saved !== null) {
+          setCartItems(JSON.parse(saved));
+          return;
+        }
+      } else {
+        const guest = sessionStorage.getItem("skipd_guest_cart");
+        if (guest !== null) {
+          setCartItems(JSON.parse(guest));
+          return;
+        }
+      }
+    } catch (e) {}
+    setCartItems([]);
+  };
+
+  useEffect(() => {
+    loadCart();
+
+    const handleCartSync = () => loadCart();
+    window.addEventListener("storage", handleCartSync);
+    window.addEventListener("skipd_cart_updated", handleCartSync);
+
+    return () => {
+      window.removeEventListener("storage", handleCartSync);
+      window.removeEventListener("skipd_cart_updated", handleCartSync);
+    };
+  }, []);
 
   const handleCheckoutClick = (e: React.MouseEvent) => {
     const token = localStorage.getItem("skipd_token");
@@ -27,31 +64,26 @@ export default function CartModal() {
     }
   };
 
-  const cartItems = [
-    {
-      id: 1,
-      title: "OnePlus Nord 4 5G (Obsidian Midnight)",
-      price: 29999,
-      originalPrice: 32999,
-      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
-      quantity: 1
-    },
-    {
-      id: 2,
-      title: "boAt Rockerz 450 Pro Bluetooth Headphones",
-      price: 1799,
-      originalPrice: 2999,
-      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
-      quantity: 1
+  const removeItem = (id: number) => {
+    const updated = cartItems.filter((item) => item.id !== id);
+    setCartItems(updated);
+    const token = localStorage.getItem("skipd_token");
+    const user = localStorage.getItem("skipd_user");
+    if (token || user) {
+      localStorage.setItem("skipd_user_cart", JSON.stringify(updated));
+    } else {
+      sessionStorage.setItem("skipd_guest_cart", JSON.stringify(updated));
     }
-  ];
+    window.dispatchEvent(new Event("skipd_cart_updated"));
+  };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const totalQuantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);
+  const subtotal = cartItems.reduce((acc, item) => acc + ((item.price || 0) * (item.quantity || 1)), 0);
 
   return (
     <>
       <button aria-label="Open cart" onClick={openCart} className="relative cursor-pointer">
-        <OpenCart quantity={cartItems.length} />
+        <OpenCart quantity={totalQuantity} />
       </button>
       <Transition show={isOpen}>
         <Dialog onClose={closeCart} className="relative z-50">
@@ -81,63 +113,88 @@ export default function CartModal() {
               <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                 <div>
                   <h3 className="text-lg font-black text-gray-900">Cart Items</h3>
-                  <p className="text-xs text-emerald-700 font-bold">{cartItems.length} Items in your cart</p>
+                  <p className="text-xs text-emerald-700 font-bold">{totalQuantity} Items in your cart</p>
                 </div>
                 <button aria-label="Close cart" onClick={closeCart} className="text-gray-500 hover:text-gray-900 font-black text-xl cursor-pointer">
                   ✕
                 </button>
               </div>
 
-              {/* Items List */}
-              <div className="flex h-full flex-col justify-between overflow-hidden pt-4">
-                <ul className="grow overflow-auto space-y-4 pr-1">
-                  {cartItems.map((item) => (
-                    <li key={item.id} className="flex gap-4 p-3 bg-gray-50 border border-gray-200 rounded-2xl">
-                      <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-white shrink-0 border border-gray-200">
-                        <img src={item.image} alt={item.title} className="h-full w-full object-contain p-1" />
-                      </div>
-                      <div className="flex-1 min-w-0 text-xs space-y-1">
-                        <h4 className="font-bold text-gray-900 truncate">{item.title}</h4>
-                        <div className="flex items-center gap-2">
-                          <span className="font-black text-gray-900">₹{item.price.toLocaleString("en-IN")}</span>
-                          <span className="text-[10px] text-gray-400 line-through">₹{item.originalPrice.toLocaleString("en-IN")}</span>
-                        </div>
-                        <p className="text-[10px] text-emerald-600 font-bold">Qty: {item.quantity}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-
-                {/* Footer Subtotal & Buttons */}
-                <div className="pt-4 border-t border-gray-200 space-y-3">
-                  <div className="flex justify-between items-baseline text-xs">
-                    <span className="font-bold text-gray-700">Subtotal</span>
-                    <span className="text-xl font-black text-gray-900">₹{subtotal.toLocaleString("en-IN")}.00</span>
+              {/* Items List or Empty State */}
+              {cartItems.length === 0 ? (
+                <div className="flex h-full flex-col items-center justify-center p-6 text-center space-y-4">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl">
+                    🛒
                   </div>
-
+                  <div>
+                    <h4 className="font-extrabold text-base text-gray-900">Your cart is currently empty</h4>
+                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                      Explore our best-selling electronics, fashion, and accessories to add items to your cart!
+                    </p>
+                  </div>
                   <Link
-                    href="/cart"
+                    href="/search"
                     onClick={closeCart}
-                    className="block w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold py-3 text-center text-xs rounded-xl transition"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-2.5 px-6 rounded-xl transition shadow-xs"
                   >
-                    View Full Cart Page &rarr;
-                  </Link>
-
-                  <Link
-                    href="/checkout"
-                    onClick={handleCheckoutClick}
-                    className="block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 text-center text-xs rounded-xl transition shadow-md shadow-emerald-600/20"
-                  >
-                    Proceed to Checkout &rarr;
+                    Explore Store &rarr;
                   </Link>
                 </div>
-              </div>
+              ) : (
+                <div className="flex h-full flex-col justify-between overflow-hidden pt-4">
+                  <ul className="grow overflow-auto space-y-4 pr-1">
+                    {cartItems.map((item) => (
+                      <li key={item.id} className="flex gap-4 p-3 bg-gray-50 border border-gray-200 rounded-2xl relative group">
+                        <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-white shrink-0 border border-gray-200">
+                          <img src={item.image} alt={item.title} className="h-full w-full object-contain p-1" />
+                        </div>
+                        <div className="flex-1 min-w-0 text-xs space-y-1">
+                          <h4 className="font-bold text-gray-900 truncate">{item.title}</h4>
+                          <div className="flex items-center justify-between">
+                            <span className="font-black text-sm text-gray-900">₹{(item.price || 0).toLocaleString("en-IN")}</span>
+                            <span className="text-[10px] text-gray-500 font-bold">Qty: {item.quantity || 1}</span>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="text-gray-400 hover:text-red-600 font-black text-sm p-1 cursor-pointer transition"
+                          title="Remove item"
+                        >
+                          ✕
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
 
+                  <div className="border-t border-gray-100 pt-4 space-y-3">
+                    <div className="flex justify-between items-center text-sm font-extrabold text-gray-900">
+                      <span>Subtotal</span>
+                      <span>₹{subtotal.toLocaleString("en-IN")}</span>
+                    </div>
+                    <p className="text-[10px] text-gray-400">Taxes and shipping calculated at checkout.</p>
+                    <div className="grid grid-cols-2 gap-3 pt-1">
+                      <Link
+                        href="/cart"
+                        onClick={closeCart}
+                        className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold text-xs py-3 text-center rounded-xl transition"
+                      >
+                        View Full Cart
+                      </Link>
+                      <Link
+                        href="/checkout"
+                        onClick={handleCheckoutClick}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3 text-center rounded-xl transition shadow-xs"
+                      >
+                        Proceed to Checkout
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              )}
             </Dialog.Panel>
           </Transition.Child>
         </Dialog>
       </Transition>
-
       <LoginModal isOpen={isLoginModalOpen} onClose={() => setIsLoginModalOpen(false)} />
     </>
   );

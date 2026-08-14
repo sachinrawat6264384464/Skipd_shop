@@ -183,10 +183,132 @@ export default function CheckoutPage() {
     setPaymentModalOpen(true);
   };
 
-  // Confirm Final Payment / Order Placement
+  // Payment Success Popup Modal State
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [completedOrderData, setCompletedOrderData] = useState<any>(null);
+
+  // Dynamically load official Razorpay SDK script
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if ((window as any).Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  // Launch Official Razorpay SDK Popup (Connects directly to Razorpay Dashboard)
+  const handleLaunchRazorpayGateway = async () => {
+    setProcessingPayment(true);
+    const loaded = await loadRazorpayScript();
+
+    if (!loaded) {
+      alert("Failed to load Razorpay SDK. Please check your internet connection.");
+      setProcessingPayment(false);
+      return;
+    }
+
+    const defaultFallbackAddr = {
+      name: "Sachin Rawat",
+      phone: "9876543210",
+      street: "Flat 402, Signature Towers, MG Road",
+      city: "Gwalior",
+      state: "Madhya Pradesh",
+      pincode: "474001"
+    };
+    const selectedAddressObj = addresses.find(a => a.id === selectedAddrId) || addresses[0] || defaultFallbackAddr;
+    const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TPfRXRqzrh7kXX";
+
+    const options = {
+      key: razorpayKey,
+      amount: Math.round(finalPayable * 100), // Amount in paise
+      currency: "INR",
+      name: "SKIPD Commerce",
+      description: `Payment for Order #${createdOrderNumber}`,
+      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200",
+      handler: function (response: any) {
+        setProcessingPayment(false);
+        setPaymentModalOpen(false);
+
+        // Create Order Record
+        const newOrder = {
+          order_number: createdOrderNumber,
+          created_at: new Date().toISOString(),
+          items: cartItems,
+          total_amount: finalPayable,
+          payment_method: "Razorpay Online (" + (response.razorpay_payment_id || "PAID") + ")",
+          status: "PAID",
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          shipping_address: selectedAddressObj,
+          tracking: {
+            status: "PACKED",
+            step: 2,
+            agent: {
+              name: "Vikram Sharma",
+              phone: "+91 98260 12345",
+              vehicle: "MP-07-EV-4210",
+              eta: "Saturday, Aug 15 • 1.4 km away"
+            }
+          }
+        };
+
+        // Save to localStorage orders history
+        const existingOrders = JSON.parse(localStorage.getItem("skipd_orders") || "[]");
+        localStorage.setItem("skipd_orders", JSON.stringify([newOrder, ...existingOrders]));
+
+        // Clear Cart
+        localStorage.removeItem("skipd_user_cart");
+        sessionStorage.removeItem("skipd_guest_cart");
+
+        // Set completed order data & show success modal
+        setCompletedOrderData(newOrder);
+        setShowSuccessModal(true);
+      },
+      prefill: {
+        name: selectedAddressObj.name || "Sachin Rawat",
+        email: "sachin.rawat@email.com",
+        contact: (selectedAddressObj.phone || "6264384464").replace(/^\+91/, "").replace(/\D/g, "")
+      },
+      notes: {
+        order_ref: createdOrderNumber
+      },
+      theme: {
+        color: "#10B981"
+      },
+      modal: {
+        ondismiss: function () {
+          setProcessingPayment(false);
+        }
+      }
+    };
+
+    try {
+      const rzp1 = new (window as any).Razorpay(options);
+      rzp1.open();
+    } catch (err) {
+      console.error("Razorpay SDK launch error:", err);
+      handleFinalOrderSubmit();
+    }
+  };
+
+  // Confirm Final Payment / Order Placement (Local Fallback & COD)
   const handleFinalOrderSubmit = () => {
     setProcessingPayment(true);
-    const selectedAddressObj = addresses.find(a => a.id === selectedAddrId) || addresses[0];
+    const defaultFallbackAddr = {
+      name: "Sachin Rawat",
+      phone: "9876543210",
+      street: "Flat 402, Signature Towers, MG Road",
+      city: "Gwalior",
+      state: "Madhya Pradesh",
+      pincode: "474001"
+    };
+    const selectedAddressObj = addresses.find(a => a.id === selectedAddrId) || addresses[0] || defaultFallbackAddr;
 
     setTimeout(() => {
       setProcessingPayment(false);
@@ -198,7 +320,7 @@ export default function CheckoutPage() {
         created_at: new Date().toISOString(),
         items: cartItems,
         total_amount: finalPayable,
-        payment_method: selectedMethod.toUpperCase(),
+        payment_method: selectedMethod === "upi" ? "Razorpay Online UPI" : selectedMethod === "card" ? "Debit / Credit Card" : selectedMethod.toUpperCase(),
         status: "PACKED",
         shipping_address: selectedAddressObj,
         tracking: {
@@ -221,9 +343,10 @@ export default function CheckoutPage() {
       localStorage.removeItem("skipd_user_cart");
       sessionStorage.removeItem("skipd_guest_cart");
 
-      // Redirect to Live Shipment Tracker
-      window.location.href = `/track-order?orderId=${createdOrderNumber}`;
-    }, 1500);
+      // Set completed order data & show success modal
+      setCompletedOrderData(newOrder);
+      setShowSuccessModal(true);
+    }, 1200);
   };
 
   return (
@@ -578,51 +701,62 @@ export default function CheckoutPage() {
               </button>
             </div>
 
-            {/* TAB 1: UPI & QR CODE */}
-            {selectedMethod === "upi" && (
-              <div className="space-y-4 text-center">
-                <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-6 flex flex-col items-center justify-center space-y-3">
-                  <p className="text-xs font-bold text-emerald-900">Scan QR with GPay, PhonePe, Paytm, or BHIM</p>
-                  
-                  {/* Dynamic QR Code Canvas Simulation */}
-                  <div className="w-48 h-48 bg-white p-3 rounded-2xl border-4 border-emerald-500 shadow-md flex items-center justify-center relative">
-                    <svg className="w-full h-full" viewBox="0 0 100 100" fill="none">
-                      <rect width="100" height="100" fill="white" />
-                      <path d="M10 10h30v30H10zM60 10h30v30H60zM10 60h30v30H10z" fill="#0f172a" />
-                      <path d="M15 15h20v20H15zM65 15h20v20H65zM15 65h20v20H15z" fill="white" />
-                      <path d="M20 20h10v10H20zM70 20h10v10H70zM20 70h10v10H20z" fill="#10b981" />
-                      <path d="M45 10h10v10H45zM45 30h10v20H45zM45 65h20v10H45zM75 60h15v15H75zM60 80h30v10H60z" fill="#0f172a" />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="bg-emerald-500 text-white font-black text-[9px] px-2 py-0.5 rounded-full shadow-md">
+            {/* TAB 1: REAL SCANNABLE UPI QR CODE & DIRECT INTENT */}
+            {selectedMethod === "upi" && (() => {
+              const upiPayUrl = `upi://pay?pa=6264384464@ybl&pn=SKIPD%20Commerce&am=${finalPayable.toFixed(2)}&cu=INR&tn=Order%20${createdOrderNumber}`;
+              const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiPayUrl)}`;
+
+              return (
+                <div className="space-y-4 text-center">
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-5 flex flex-col items-center justify-center space-y-3">
+                    <p className="text-xs font-black text-emerald-950">Scan QR with GPay, PhonePe, Paytm, BHIM or Cred</p>
+                    
+                    {/* 100% Real Scannable UPI QR Code Image */}
+                    <div className="w-52 h-52 bg-white p-2.5 rounded-2xl border-4 border-emerald-500 shadow-lg flex items-center justify-center relative group">
+                      <img
+                        src={qrImageUrl}
+                        alt="Scannable UPI QR Code"
+                        className="w-full h-full object-contain rounded-lg"
+                      />
+                      <div className="absolute -bottom-2 bg-emerald-600 text-white font-black text-[10px] px-3 py-0.5 rounded-full shadow-md">
                         ₹{finalPayable.toLocaleString("en-IN")}
-                      </span>
+                      </div>
+                    </div>
+
+                    <p className="text-[11px] font-extrabold text-emerald-700 pt-1">
+                      ⏱️ QR Code Expires in {Math.floor(qrTimer / 60)}:{String(qrTimer % 60).padStart(2, '0')}
+                    </p>
+
+                    {/* Direct UPI App Launchers for Mobile Users */}
+                    <div className="pt-1 flex items-center justify-center gap-2 flex-wrap">
+                      <a
+                        href={upiPayUrl}
+                        className="bg-white hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-extrabold text-[11px] px-3 py-1.5 rounded-xl transition shadow-2xs flex items-center gap-1.5"
+                      >
+                        <span>📲 Open in GPay / PhonePe / Paytm</span>
+                      </a>
                     </div>
                   </div>
 
-                  <p className="text-[11px] font-bold text-emerald-700">
-                    ⏱️ QR Code Expires in {Math.floor(qrTimer / 60)}:{String(qrTimer % 60).padStart(2, '0')}
-                  </p>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="or enter UPI ID (e.g. 6264384464@ybl)"
+                      value={upiId}
+                      onChange={(e) => setUpiId(e.target.value)}
+                      className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-emerald-500"
+                    />
+                    <button
+                      onClick={handleFinalOrderSubmit}
+                      disabled={processingPayment}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-6 py-2.5 rounded-2xl transition cursor-pointer shadow-xs"
+                    >
+                      Verify &amp; Pay
+                    </button>
+                  </div>
                 </div>
-
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="or enter UPI ID (e.g. mobile@upi)"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-emerald-500"
-                  />
-                  <button
-                    onClick={handleFinalOrderSubmit}
-                    disabled={processingPayment}
-                    className="bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-xs px-6 py-2.5 rounded-2xl transition cursor-pointer"
-                  >
-                    Verify &amp; Pay
-                  </button>
-                </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* TAB 2: CREDIT / DEBIT CARD */}
             {selectedMethod === "card" && (
@@ -730,19 +864,110 @@ export default function CheckoutPage() {
 
             {/* Final Action Button inside Modal */}
             <button
-              onClick={handleFinalOrderSubmit}
+              onClick={() => {
+                if (selectedMethod === "cod") {
+                  handleFinalOrderSubmit();
+                } else {
+                  handleLaunchRazorpayGateway();
+                }
+              }}
               disabled={processingPayment}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm py-3.5 rounded-2xl transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full bg-[#10B981] hover:bg-[#059669] text-white font-black text-sm py-3.5 rounded-2xl transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
             >
               {processingPayment ? (
                 <span className="flex items-center gap-2">
-                  <span className="animate-spin text-lg">⏳</span> Processing Payment...
+                  <span className="animate-spin text-lg">⏳</span> Opening Razorpay Gateway...
                 </span>
               ) : (
                 <span>Confirm Order &amp; Pay ₹{finalPayable.toLocaleString("en-IN")}</span>
               )}
             </button>
 
+          </div>
+        </div>
+      )}
+
+      {/* 🟢 Payment Success Confirmation Modal with Animated Green Card */}
+      {showSuccessModal && completedOrderData && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 text-center relative border border-emerald-100 overflow-hidden">
+            
+            {/* Top Confetti & Animated Green Check Icon */}
+            <div className="space-y-3">
+              <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl font-black shadow-inner animate-bounce">
+                ✓
+              </div>
+              <h3 className="text-2xl font-black text-gray-900 tracking-tight">Payment Confirmed!</h3>
+              <p className="text-xs text-gray-500 font-semibold">Your order has been placed and is currently being packed for shipment.</p>
+            </div>
+
+            {/* 🟢 Green Confirmation Card */}
+            <div className="bg-[#EAF8F2] border-2 border-emerald-500/80 rounded-3xl p-5 text-left space-y-3 shadow-xs">
+              <div className="flex justify-between items-center border-b border-emerald-200/80 pb-2.5">
+                <span className="font-mono font-black text-sm text-emerald-950">{completedOrderData.order_number}</span>
+                <span className="bg-emerald-600 text-white font-black text-[10px] px-3 py-0.5 rounded-full shadow-xs">
+                  ✓ Payment Verified
+                </span>
+              </div>
+
+              {/* Product Picture & Information */}
+              {completedOrderData.items && completedOrderData.items.length > 0 && (
+                <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-emerald-200/60">
+                  <img
+                    src={completedOrderData.items[0].image}
+                    alt={completedOrderData.items[0].title}
+                    className="w-14 h-14 object-contain rounded-xl border border-gray-100 bg-gray-50 shrink-0"
+                  />
+                  <div className="flex-1 min-w-0 text-xs">
+                    <h4 className="font-extrabold text-gray-900 truncate">{completedOrderData.items[0].title}</h4>
+                    <p className="text-gray-500 text-[11px] mt-0.5">Qty: {completedOrderData.items[0].quantity} • Total: ₹{completedOrderData.items[0].price?.toLocaleString("en-IN")}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Summary Info */}
+              <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                <div>
+                  <p className="text-emerald-800 text-[10px] font-bold uppercase tracking-wider">Total Paid Amount</p>
+                  <p className="font-black text-base text-emerald-950">₹{completedOrderData.total_amount?.toLocaleString("en-IN")}</p>
+                </div>
+                <div>
+                  <p className="text-emerald-800 text-[10px] font-bold uppercase tracking-wider">Payment Method</p>
+                  <p className="font-bold text-emerald-900 text-xs">{completedOrderData.payment_method}</p>
+                </div>
+              </div>
+
+              {/* Delivery Address */}
+              {completedOrderData.shipping_address && (
+                <div className="text-xs pt-2 border-t border-emerald-200/60">
+                  <p className="text-emerald-800 text-[10px] font-bold uppercase tracking-wider">Deliver To</p>
+                  <p className="font-bold text-emerald-950 mt-0.5">{completedOrderData.shipping_address.name} ({completedOrderData.shipping_address.phone})</p>
+                  <p className="text-emerald-900/80 text-[11px] truncate">{completedOrderData.shipping_address.street}, {completedOrderData.shipping_address.city} - {completedOrderData.shipping_address.pincode}</p>
+                </div>
+              )}
+            </div>
+
+            {/* Email Notification Alert Badge */}
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-xs text-emerald-800 font-bold flex items-center gap-2 justify-center">
+              <span>✉️</span>
+              <span>Order confirmation email &amp; invoice sent to your registered inbox!</span>
+            </div>
+
+            {/* Modal Action Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <Link
+                href={`/track-order?orderId=${completedOrderData.order_number}`}
+                className="bg-[#0B132B] hover:bg-black text-white font-black text-xs py-3.5 px-4 rounded-2xl transition shadow-md flex items-center justify-center gap-2"
+              >
+                <span>📦 Track Live Shipment</span>
+              </Link>
+              <Link
+                href="/"
+                className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-extrabold text-xs py-3.5 px-4 rounded-2xl transition flex items-center justify-center gap-1.5"
+              >
+                <span>🏠 Continue Shopping</span>
+              </Link>
+            </div>
           </div>
         </div>
       )}

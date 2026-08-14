@@ -84,93 +84,93 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
           {/* 1. Mobiles & Accessories */}
           <div className="relative group py-1 cursor-pointer">
-            <Link href="/search/tech" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
+            <Link href="/category/smartphones" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
               Mobiles &amp; Accessories <span className="text-[10px] text-gray-400">▾</span>
             </Link>
             <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
               <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Mobiles</p>
-              <Link href="/search?search=phone" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smartphones &amp; Basic Mobiles</Link>
-              <Link href="/search?search=case" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Mobile Cases &amp; Covers</Link>
-              <Link href="/search?search=charger" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Fast Chargers &amp; Cables</Link>
-              <Link href="/search?search=power" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Power Banks &amp; Wireless Pads</Link>
+              <Link href="/category/smartphones" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smartphones &amp; Basic Mobiles</Link>
+              <Link href="/category/mobile-cases" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Mobile Cases &amp; Covers</Link>
+              <Link href="/category/chargers" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Fast Chargers &amp; Cables</Link>
+              <Link href="/category/power-banks" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Power Banks &amp; Wireless Pads</Link>
             </div>
           </div>
 
           {/* 2. Laptops & Accessories */}
           <div className="relative group py-1 cursor-pointer">
-            <Link href="/search/tech" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
+            <Link href="/category/gaming-laptops" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
               Laptops &amp; Accessories <span className="text-[10px] text-gray-400">▾</span>
             </Link>
             <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
               <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Laptops</p>
-              <Link href="/search?search=laptop" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Gaming &amp; Performance Laptops</Link>
-              <Link href="/search?search=macbook" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Thin &amp; Light Ultrabooks</Link>
-              <Link href="/search?search=bag" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Laptop Sleeves &amp; Backpacks</Link>
-              <Link href="/search?search=mouse" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Wireless Mice &amp; Keyboards</Link>
+              <Link href="/category/gaming-laptops" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Gaming &amp; Performance Laptops</Link>
+              <Link href="/category/ultrabooks" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Thin &amp; Light Ultrabooks</Link>
+              <Link href="/category/backpacks" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Laptop Sleeves &amp; Backpacks</Link>
+              <Link href="/category/wireless-mice" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Wireless Mice &amp; Keyboards</Link>
             </div>
           </div>
 
           {/* 3. TV & Home Entertainment */}
           <div className="relative group py-1 cursor-pointer">
-            <Link href="/search/tech" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
+            <Link href="/category/4k-smart-tvs" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
               TV &amp; Home Entertainment <span className="text-[10px] text-gray-400">▾</span>
             </Link>
             <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
               <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Home Cinema</p>
-              <Link href="/search?search=tv" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">4K Ultra HD Smart TVs</Link>
-              <Link href="/search?search=speaker" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Home Theatre Soundbars</Link>
-              <Link href="/search?search=streaming" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Streaming Sticks &amp; Boxes</Link>
+              <Link href="/category/4k-smart-tvs" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">4K Ultra HD Smart TVs</Link>
+              <Link href="/category/soundbars" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Home Theatre Soundbars</Link>
+              <Link href="/category/streaming-boxes" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Streaming Sticks &amp; Boxes</Link>
             </div>
           </div>
 
           {/* 4. Audio */}
           <div className="relative group py-1 cursor-pointer">
-            <Link href="/search/tech" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
+            <Link href="/category/anc-headphones" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
               Audio <span className="text-[10px] text-gray-400">▾</span>
             </Link>
             <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
               <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Audio Gear</p>
-              <Link href="/search?search=headphones" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Active ANC Headphones</Link>
-              <Link href="/search?search=earbuds" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">True Wireless Earbuds (TWS)</Link>
-              <Link href="/search?search=speaker" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Portable Bluetooth Speakers</Link>
+              <Link href="/category/anc-headphones" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Active ANC Headphones</Link>
+              <Link href="/category/tws-earbuds" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">True Wireless Earbuds (TWS)</Link>
+              <Link href="/category/bluetooth-speakers" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Portable Bluetooth Speakers</Link>
             </div>
           </div>
 
           {/* 5. Camera */}
           <div className="relative group py-1 cursor-pointer">
-            <Link href="/search/tech" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
+            <Link href="/category/drones" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
               Camera <span className="text-[10px] text-gray-400">▾</span>
             </Link>
             <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
               <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Photography</p>
-              <Link href="/search?search=drone" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">RC 4K Camera Pro Drones</Link>
-              <Link href="/search?search=camera" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">DSLR &amp; Mirrorless Cameras</Link>
-              <Link href="/search?search=gimbal" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Action Cameras &amp; Gimbals</Link>
+              <Link href="/category/drones" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">RC 4K Camera Pro Drones</Link>
+              <Link href="/category/dslr-cameras" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">DSLR &amp; Mirrorless Cameras</Link>
+              <Link href="/category/action-gimbals" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Action Cameras &amp; Gimbals</Link>
             </div>
           </div>
 
           {/* 6. Computer Accessories */}
           <div className="relative group py-1 cursor-pointer">
-            <Link href="/search/tech" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
+            <Link href="/category/ssds-drives" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
               Computer Accessories <span className="text-[10px] text-gray-400">▾</span>
             </Link>
             <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
               <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Peripherals</p>
-              <Link href="/search?search=ssd" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">External SSDs &amp; Hard Drives</Link>
-              <Link href="/search?search=hub" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">USB Type-C Hubs &amp; Adapters</Link>
-              <Link href="/search?search=webcam" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Full HD Webcams &amp; Mics</Link>
+              <Link href="/category/ssds-drives" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">External SSDs &amp; Hard Drives</Link>
+              <Link href="/category/usb-hubs" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">USB Type-C Hubs &amp; Adapters</Link>
+              <Link href="/category/webcams-mics" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Full HD Webcams &amp; Mics</Link>
             </div>
           </div>
 
           {/* 7. Smart Technology */}
           <div className="relative group py-1 cursor-pointer">
-            <Link href="/search/lifestyle" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
+            <Link href="/category/smartwatches" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
               Smart Technology <span className="text-[10px] text-gray-400">▾</span>
             </Link>
             <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
               <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Wearables &amp; Smart</p>
-              <Link href="/search?search=watch" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smartwatches &amp; Fitness Bands</Link>
-              <Link href="/search?search=light" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smart Home Lighting &amp; Plugs</Link>
+              <Link href="/category/smartwatches" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smartwatches &amp; Fitness Bands</Link>
+              <Link href="/category/smart-lighting" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smart Home Lighting &amp; Plugs</Link>
             </div>
           </div>
 
@@ -192,28 +192,125 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       <div className="max-w-[1536px] mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* LEFT 5-COL: Image Gallery & Main Photo */}
-          <div className="lg:col-span-5 flex gap-4">
-            
-            {/* Thumbnail Strip */}
-            <div className="flex flex-col gap-3 shrink-0">
-              {imagesList.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedImage(img)}
-                  className={`w-12 h-12 rounded-xl border-2 overflow-hidden bg-gray-50 transition cursor-pointer ${
-                    selectedImage === img ? "border-amber-500 ring-2 ring-amber-300" : "border-gray-200 hover:border-gray-400"
-                  }`}
-                >
-                  <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
-                </button>
-              ))}
+          {/* LEFT 5-COL: Image Gallery & Main Photo + Ratings Breakdown */}
+          <div className="lg:col-span-5 space-y-6">
+            <div className="flex gap-4">
+              {/* Thumbnail Strip */}
+              <div className="flex flex-col gap-3 shrink-0">
+                {imagesList.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`w-12 h-12 rounded-xl border-2 overflow-hidden bg-gray-50 transition cursor-pointer ${
+                      selectedImage === img ? "border-amber-500 ring-2 ring-amber-300" : "border-gray-200 hover:border-gray-400"
+                    }`}
+                  >
+                    <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+
+              {/* Main Preview Image with Amazon-Style Interactive Magnifier */}
+              <div className="flex-1">
+                <ProductZoomMagnifier imageSrc={selectedImage} altText={product.title} />
+              </div>
             </div>
 
-            {/* Main Preview Image with Amazon-Style Interactive Magnifier */}
-            <div className="flex-1">
-              <ProductZoomMagnifier imageSrc={selectedImage} altText={product.title} />
+            {/* 🌟 Customer Ratings & Review Breakdown Card under Image Gallery */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-4 text-xs">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 className="font-black text-gray-900 text-sm">Customer Reviews &amp; Ratings</h3>
+                <span className="text-amber-500 font-bold text-xs">4.3 ★★★★☆</span>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="w-12 font-bold text-gray-600">5 Star</span>
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "68%" }} />
+                  </div>
+                  <span className="w-8 text-right text-gray-500 font-semibold">68%</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="w-12 font-bold text-gray-600">4 Star</span>
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "18%" }} />
+                  </div>
+                  <span className="w-8 text-right text-gray-500 font-semibold">18%</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="w-12 font-bold text-gray-600">3 Star</span>
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "8%" }} />
+                  </div>
+                  <span className="w-8 text-right text-gray-500 font-semibold">8%</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="w-12 font-bold text-gray-600">2 Star</span>
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "4%" }} />
+                  </div>
+                  <span className="w-8 text-right text-gray-500 font-semibold">4%</span>
+                </div>
+
+                <div className="flex items-center gap-2 text-[11px]">
+                  <span className="w-12 font-bold text-gray-600">1 Star</span>
+                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "2%" }} />
+                  </div>
+                  <span className="w-8 text-right text-gray-500 font-semibold">2%</span>
+                </div>
+              </div>
+
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-between text-[11px]">
+                <span className="text-emerald-900 font-bold">🛡️ 100% Genuine Product &amp; Express Delivery</span>
+                <span className="text-emerald-700 font-extrabold">Verified</span>
+              </div>
             </div>
+
+            {/* 💬 Verified Customer Reviews Snippets Card under Ratings Breakdown */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-4 text-xs">
+              <h4 className="font-black text-gray-900 text-sm border-b border-gray-100 pb-2 flex items-center justify-between">
+                <span>Top Verified Customer Reviews</span>
+                <span className="text-[10px] text-emerald-700 font-bold">View All 1,732 &rsaquo;</span>
+              </h4>
+              
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">★★★★★</div>
+                    <span className="text-[10px] text-gray-400 font-medium">Aug 10, 2026</span>
+                  </div>
+                  <p className="font-bold text-gray-900">"Outstanding ANC &amp; sound clarity!"</p>
+                  <p className="text-gray-600 text-[11px] leading-snug">The bass response is punchy and active noise cancellation easily blocks out office noise. Battery lasts 4+ days!</p>
+                  <p className="text-[10px] text-emerald-700 font-bold pt-0.5">✓ Verified Purchase • Rohan M.</p>
+                </div>
+
+                <div className="space-y-1 border-t border-gray-100 pt-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">★★★★★</div>
+                    <span className="text-[10px] text-gray-400 font-medium">Aug 08, 2026</span>
+                  </div>
+                  <p className="font-bold text-gray-900">"Super comfortable memory foam earcups"</p>
+                  <p className="text-gray-600 text-[11px] leading-snug">Ear cushions are ultra-soft and lightweight. Perfect for long work &amp; gaming sessions without ear fatigue.</p>
+                  <p className="text-[10px] text-emerald-700 font-bold pt-0.5">✓ Verified Purchase • Neha P.</p>
+                </div>
+
+                <div className="space-y-1 border-t border-gray-100 pt-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">★★★★★</div>
+                    <span className="text-[10px] text-gray-400 font-medium">Aug 05, 2026</span>
+                  </div>
+                  <p className="font-bold text-gray-900">"Sleek design &amp; instant Bluetooth 5.4 pairing"</p>
+                  <p className="text-gray-600 text-[11px] leading-snug">Connects immediately with both phone and laptop. Audio quality and mic clarity are top notch.</p>
+                  <p className="text-[10px] text-emerald-700 font-bold pt-0.5">✓ Verified Purchase • Amit K.</p>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           {/* MIDDLE 4-COL: Title, Rating, Offers */}
@@ -380,73 +477,181 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
           </div>
 
-          {/* RIGHT 3-COL: Buy Box Card (Matching Screenshot 1) */}
-          <div className="lg:col-span-3 bg-white border border-gray-300 rounded-3xl p-5 shadow-md space-y-4">
+          {/* RIGHT 3-COL: Buy Box Card + Extended Protection & Seller Info */}
+          <div className="lg:col-span-3 space-y-4">
             
-            {/* Prime Badge */}
-            <div className="bg-sky-50 border border-sky-200 rounded-2xl p-3 text-xs space-y-1">
-              <div className="flex items-center gap-1 font-black text-sky-700 text-sm">
-                <span>prime</span>
+            {/* 1. Buy Box Main Card */}
+            <div className="bg-white border border-gray-300 rounded-3xl p-5 shadow-md space-y-4">
+              
+              {/* Prime Badge */}
+              <div className="bg-sky-50 border border-sky-200 rounded-2xl p-3 text-xs space-y-1">
+                <div className="flex items-center gap-1 font-black text-sky-700 text-sm">
+                  <span>prime</span>
+                </div>
+                <p className="text-[11px] text-gray-600 leading-tight">Enjoy unlimited free same-day/1-day delivery &amp; extra offers.</p>
+                <button className="text-[10px] font-bold text-sky-700 hover:underline cursor-pointer">Join Prime &rsaquo;&rsaquo;</button>
               </div>
-              <p className="text-[11px] text-gray-600 leading-tight">Enjoy unlimited free same-day/1-day delivery &amp; extra offers.</p>
-              <button className="text-[10px] font-bold text-sky-700 hover:underline cursor-pointer">Join Prime &rsaquo;&rsaquo;</button>
+
+              {/* Exchange Radio Selectors */}
+              <div className="space-y-2 border-t border-b border-gray-100 py-3 text-xs">
+                <label className="flex items-start gap-2.5 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="exchange"
+                    checked={exchangeOption === "with"}
+                    onChange={() => setExchangeOption("with")}
+                    className="mt-0.5 accent-amber-500"
+                  />
+                  <div>
+                    <span className="font-bold text-gray-900 block">With exchange</span>
+                    <span className="text-red-600 font-bold text-[11px]">Up to ₹28,000.00 off</span>
+                  </div>
+                </label>
+
+                <label className="flex items-start gap-2.5 cursor-pointer pt-2">
+                  <input
+                    type="radio"
+                    name="exchange"
+                    checked={exchangeOption === "without"}
+                    onChange={() => setExchangeOption("without")}
+                    className="mt-0.5 accent-amber-500"
+                  />
+                  <div>
+                    <span className="font-bold text-gray-900 block">Without exchange</span>
+                    <span className="text-gray-900 font-black">₹{product.price.toLocaleString("en-IN")}.00</span>
+                    <span className="text-gray-400 line-through text-[10px] ml-1">₹{(product.compare_at_price || product.price * 1.2).toLocaleString("en-IN")}</span>
+                  </div>
+                </label>
+              </div>
+
+              {/* Delivery Info */}
+              <div className="space-y-1 text-xs text-gray-700">
+                <p className="font-bold text-emerald-700">FREE delivery Saturday, Aug 15.</p>
+                <p className="text-[11px] text-gray-500">📍 Deliver to Sachin - Gwalior 474001</p>
+                <p className="text-emerald-600 font-extrabold text-sm pt-1">In Stock</p>
+                <p className="text-[10px] text-gray-500">Ships from and sold by SKIPD Official Retail.</p>
+              </div>
+
+              {/* 🛒 Add to Cart (Yellow) & ⚡ Buy Now (Orange) */}
+              <div className="space-y-2 pt-2">
+                <BuyNowButton
+                  mode="cart"
+                  className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  🛒 Add to Cart
+                </BuyNowButton>
+
+                <BuyNowButton
+                  productHandle={product.handle}
+                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-xs py-3 rounded-2xl transition shadow-md shadow-orange-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  ⚡ Buy Now
+                </BuyNowButton>
+              </div>
+
             </div>
 
-            {/* Exchange Radio Selectors */}
-            <div className="space-y-2 border-t border-b border-gray-100 py-3 text-xs">
-              <label className="flex items-start gap-2.5 cursor-pointer">
-                <input
-                  type="radio"
-                  name="exchange"
-                  checked={exchangeOption === "with"}
-                  onChange={() => setExchangeOption("with")}
-                  className="mt-0.5 accent-amber-500"
-                />
-                <div>
-                  <span className="font-bold text-gray-900 block">With exchange</span>
-                  <span className="text-red-600 font-bold text-[11px]">Up to ₹28,000.00 off</span>
+            {/* 2. 🛡️ SKIPD Protection Plan Card */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-extrabold text-gray-900">🛡️ SKIPD Protect Plan</span>
+                <span className="text-emerald-700 font-black">₹199</span>
+              </div>
+              <p className="text-gray-500 text-[11px] leading-tight">Add 1-Year Extended Warranty covering accidental damage &amp; battery replacement.</p>
+              <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-extrabold py-2 rounded-xl text-[11px] transition cursor-pointer">
+                + Add Warranty Coverage
+              </button>
+            </div>
+
+            {/* 3. 🏪 Seller & Express Shipping Info */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-gray-900 text-white font-black text-xs flex items-center justify-center">
+                  S
                 </div>
-              </label>
-
-              <label className="flex items-start gap-2.5 cursor-pointer pt-2">
-                <input
-                  type="radio"
-                  name="exchange"
-                  checked={exchangeOption === "without"}
-                  onChange={() => setExchangeOption("without")}
-                  className="mt-0.5 accent-amber-500"
-                />
                 <div>
-                  <span className="font-bold text-gray-900 block">Without exchange</span>
-                  <span className="text-gray-900 font-black">₹{product.price.toLocaleString("en-IN")}.00</span>
-                  <span className="text-gray-400 line-through text-[10px] ml-1">₹{(product.compare_at_price || product.price * 1.2).toLocaleString("en-IN")}</span>
+                  <p className="font-bold text-gray-900">SKIPD Official Retail Hub</p>
+                  <p className="text-[10px] text-emerald-600 font-bold">4.9 ★ 98% Positive Feedback</p>
                 </div>
-              </label>
+              </div>
+
+              <div className="border-t border-gray-100 pt-2 space-y-1.5 text-[11px] text-gray-600">
+                <div className="flex justify-between">
+                  <span>Payment</span>
+                  <span className="font-bold text-gray-900">Secure Transaction</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Ships from</span>
+                  <span className="font-bold text-gray-900">SKIPD Express Logistics</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Returns</span>
+                  <span className="font-bold text-gray-900">10-Day Replacement</span>
+                </div>
+              </div>
             </div>
 
-            {/* Delivery Info */}
-            <div className="space-y-1 text-xs text-gray-700">
-              <p className="font-bold text-emerald-700">FREE delivery Saturday, Aug 15.</p>
-              <p className="text-[11px] text-gray-500">📍 Deliver to Sachin - Gwalior 474001</p>
-              <p className="text-emerald-600 font-extrabold text-sm pt-1">In Stock</p>
-              <p className="text-[10px] text-gray-500">Ships from and sold by SKIPD Official Retail.</p>
+            {/* 4. 🎧 Recommended Accessories Card */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
+              <h4 className="font-black text-gray-900 text-xs uppercase tracking-wider">⚡ Frequently Add-on Items</h4>
+              
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                  <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=200" alt="EVA Case" className="w-9 h-9 object-contain rounded-lg bg-white p-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-900 truncate">EVA Hard Storage Case</p>
+                    <p className="font-black text-emerald-700 text-xs">₹400.00</p>
+                  </div>
+                  <button className="bg-gray-900 text-white font-bold text-[10px] px-2.5 py-1 rounded-xl hover:bg-black transition cursor-pointer">
+                    + Add
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                  <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200" alt="Fast Charger" className="w-9 h-9 object-contain rounded-lg bg-white p-0.5" />
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-gray-900 truncate">65W Fast Wall Adapter</p>
+                    <p className="font-black text-emerald-700 text-xs">₹599.00</p>
+                  </div>
+                  <button className="bg-gray-900 text-white font-bold text-[10px] px-2.5 py-1 rounded-xl hover:bg-black transition cursor-pointer">
+                    + Add
+                  </button>
+                </div>
+              </div>
             </div>
 
-            {/* 🛒 Add to Cart (Yellow) & ⚡ Buy Now (Orange) with Auth Guard */}
-            <div className="space-y-2 pt-2">
-              <BuyNowButton
-                mode="cart"
-                className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                🛒 Add to Cart
-              </BuyNowButton>
+            {/* 5. 💬 24x7 Customer Support Helpline Card */}
+            <div className="bg-emerald-50/80 border border-emerald-200 rounded-3xl p-5 shadow-2xs space-y-2 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-black text-emerald-900 text-xs">💬 Need Order Assistance?</span>
+                <span className="bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">24x7</span>
+              </div>
+              <p className="text-[11px] text-emerald-800 leading-tight">Call our sales expert or live chat for corporate orders &amp; custom deals.</p>
+              <div className="flex gap-2 pt-1">
+                <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-[10px] transition text-center cursor-pointer">
+                  📞 Call Agent
+                </button>
+                <button className="flex-1 bg-white border border-emerald-300 text-emerald-900 font-bold py-2 rounded-xl text-[10px] transition text-center hover:bg-emerald-100 cursor-pointer">
+                  💬 Live Chat
+                </button>
+              </div>
+            </div>
 
-              <BuyNowButton
-                productHandle={product.handle}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-xs py-3 rounded-2xl transition shadow-md shadow-orange-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                ⚡ Buy Now
-              </BuyNowButton>
+            {/* 6. 🔒 100% Encrypted & Bank-Grade Security Card */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-4 shadow-2xs space-y-2 text-xs">
+              <div className="flex justify-between items-center text-[11px] font-bold text-gray-800">
+                <span>🔒 256-Bit Bank Encryption</span>
+                <span className="text-emerald-700 font-extrabold text-[10px]">Verified SSL</span>
+              </div>
+              <div className="flex items-center justify-around text-gray-500 text-[10px] font-bold border-t border-gray-100 pt-2">
+                <span>UPI / QR</span>
+                <span>•</span>
+                <span>Cards</span>
+                <span>•</span>
+                <span>NetBanking</span>
+                <span>•</span>
+                <span>COD</span>
+              </div>
             </div>
 
           </div>
@@ -515,15 +720,19 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
             {[
-              { title: "boAt Rockerz 421, 60H Battery", price: 1099, mrp: 2490, off: "-56%", rating: "2,400", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
-              { title: "boAt Rockerz 480, RGB LED", price: 1599, mrp: 3790, off: "-58%", rating: "4,695", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400" },
-              { title: "boAt Rockerz 650 Pro, Dolby Audio", price: 2499, mrp: 8990, off: "-72%", rating: "4,423", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400" },
-              { title: "Noise Airwave Max 3 Bluetooth", price: 1999, mrp: 5499, off: "-64%", rating: "4,204", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" },
-              { title: "boAt Rockerz 512 ANC, 80H Playback", price: 2599, mrp: 7990, off: "-67%", rating: "31,438", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" },
-              { title: "GOBOULT Mustang Torque 60H", price: 1799, mrp: 5999, off: "-70%", rating: "14,517", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400" },
-              { title: "pTron Studio Classic 75H", price: 799, mrp: 2899, off: "-72%", rating: "207", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400" }
+              { handle: "active-anc-headphones", title: "boAt Rockerz 421, 60H Battery", price: 1099, mrp: 2490, off: "-56%", rating: "2,400", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
+              { handle: "active-anc-headphones", title: "boAt Rockerz 480, RGB LED", price: 1599, mrp: 3790, off: "-58%", rating: "4,695", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400" },
+              { handle: "matte-black-chrono-watch", title: "boAt Rockerz 650 Pro, Dolby Audio", price: 2499, mrp: 8990, off: "-72%", rating: "4,423", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400" },
+              { handle: "minimalist-graphic-tee", title: "Noise Airwave Max 3 Bluetooth", price: 1999, mrp: 5499, off: "-64%", rating: "4,204", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" },
+              { handle: "active-anc-headphones", title: "boAt Rockerz 512 ANC, 80H Playback", price: 2599, mrp: 7990, off: "-67%", rating: "31,438", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" },
+              { handle: "oneplus-nord-6", title: "GOBOULT Mustang Torque 60H", price: 1799, mrp: 5999, off: "-70%", rating: "14,517", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400" },
+              { handle: "apple-watch-series-9", title: "pTron Studio Classic 75H", price: 799, mrp: 2899, off: "-72%", rating: "207", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400" }
             ].map((sp, sIdx) => (
-              <div key={sIdx} className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md transition group">
+              <Link
+                key={sIdx}
+                href={`/product/${sp.handle}`}
+                className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group cursor-pointer"
+              >
                 <div className="space-y-2">
                   <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
                     <img src={sp.image} alt={sp.title} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
@@ -539,7 +748,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                   <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{sp.mrp.toLocaleString("en-IN")}.00</p>
                   <p className="text-[9px] text-emerald-700 font-medium pt-0.5">{sp.del}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -555,15 +764,19 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
             {[
-              { name: "boAt Rockerz 480 RGB", price: 1499, mrp: 3790, off: "-60%", star: "4.1", reviews: "4,695", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400" },
-              { name: "boAt Rockerz Prime 415", price: 1799, mrp: 3999, off: "-55%", star: "4.1", reviews: "299", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400" },
-              { name: "boAt Rockerz 512 ANC", price: 2599, mrp: 7990, off: "-67%", star: "4.2", reviews: "31,438", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" },
-              { name: "boAt Rockerz Plus 550", price: 1799, mrp: 4990, off: "-64%", star: "4.0", reviews: "39", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
-              { name: "boAt Rockerz 650 Pro", price: 2499, mrp: 8990, off: "-72%", star: "4.2", reviews: "4,423", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" },
-              { name: "boAt Rockerz 421 60H", price: 1099, mrp: 2490, off: "-56%", star: "4.0", reviews: "2,400", image: "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400" },
-              { name: "boAt Rockerz 411 40H", price: 1199, mrp: 2999, off: "-60%", star: "4.2", reviews: "28,965", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400" }
+              { handle: "active-anc-headphones", name: "boAt Rockerz 480 RGB", price: 1499, mrp: 3790, off: "-60%", star: "4.1", reviews: "4,695", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400" },
+              { handle: "minimalist-graphic-tee", name: "boAt Rockerz Prime 415", price: 1799, mrp: 3999, off: "-55%", star: "4.1", reviews: "299", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400" },
+              { handle: "active-anc-headphones", name: "boAt Rockerz 512 ANC", price: 2599, mrp: 7990, off: "-67%", star: "4.2", reviews: "31,438", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" },
+              { handle: "active-anc-headphones", name: "boAt Rockerz Plus 550", price: 1799, mrp: 4990, off: "-64%", star: "4.0", reviews: "39", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
+              { handle: "matte-black-chrono-watch", name: "boAt Rockerz 650 Pro", price: 2499, mrp: 8990, off: "-72%", star: "4.2", reviews: "4,423", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" },
+              { handle: "oneplus-nord-6", name: "boAt Rockerz 421 60H", price: 1099, mrp: 2490, off: "-56%", star: "4.0", reviews: "2,400", image: "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400" },
+              { handle: "apple-watch-series-9", name: "boAt Rockerz 411 40H", price: 1199, mrp: 2999, off: "-60%", star: "4.2", reviews: "28,965", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400" }
             ].map((viewed, vIdx) => (
-              <div key={vIdx} className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md transition group">
+              <Link
+                key={vIdx}
+                href={`/product/${viewed.handle}`}
+                className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group cursor-pointer"
+              >
                 <div className="space-y-2">
                   <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
                     <img src={viewed.image} alt={viewed.name} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
@@ -579,7 +792,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                   <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{viewed.mrp.toLocaleString("en-IN")}.00</p>
                   <p className="text-[9px] text-emerald-700 font-medium pt-0.5">FREE Delivery by Amazon</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

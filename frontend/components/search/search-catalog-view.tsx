@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import { BuyNowButton } from "components/auth/buy-now-button";
 
 interface Product {
@@ -18,12 +18,25 @@ interface Product {
   category?: { name: string; slug: string };
 }
 
-export function SearchCatalogView({ products }: { products: Product[] }) {
+export function SearchCatalogView({
+  products,
+  collectionTitle
+}: {
+  products: Product[];
+  collectionTitle?: string;
+}) {
+  const searchParams = useSearchParams();
+  const maxPriceParam = searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : 100000;
+  const expressParam = searchParams.get("express") === "true";
+  const discountParam = searchParams.get("discount") ? Number(searchParams.get("discount")) : 0;
+
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(12);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("bestselling");
   const [wishlist, setWishlist] = useState<number[]>([]);
+
+  const displayTitle = collectionTitle || "All Categories & Catalog";
 
   const toggleWishlist = (id: number) => {
     setWishlist((prev) =>
@@ -31,12 +44,29 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
     );
   };
 
-  // Sort logic
-  const sortedProducts = [...products].sort((a, b) => {
-    if (sortBy === "price-low") return a.price - b.price;
-    if (sortBy === "price-high") return b.price - a.price;
-    return a.id - b.id;
-  });
+  // 🔍 Filter & Sort logic driven by URL params
+  const sortedProducts = useMemo(() => {
+    return products
+      .filter((product) => {
+        // Price filter
+        if (product.price > maxPriceParam) return false;
+        // Express delivery filter
+        if (expressParam && !product.featured && !product.tags?.includes("bestseller")) return false;
+        // Discount filter
+        if (discountParam > 0) {
+          const off = product.compare_at_price
+            ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
+            : 0;
+          if (off < discountParam) return false;
+        }
+        return true;
+      })
+      .sort((a, b) => {
+        if (sortBy === "price-low") return a.price - b.price;
+        if (sortBy === "price-high") return b.price - a.price;
+        return a.id - b.id;
+      });
+  }, [products, maxPriceParam, expressParam, discountParam, sortBy]);
 
   // Dynamic Pagination Math
   const totalItems = sortedProducts.length;
@@ -64,28 +94,27 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       
-      {/* 📍 Header Controls Bar (Matching Screenshots 100%) */}
+      {/* 📍 Breadcrumb & Top Header Title Controls */}
       <div className="space-y-3">
-        {/* Breadcrumb */}
         <div className="text-xs text-gray-500 font-medium flex items-center gap-1.5">
           <Link href="/" className="hover:underline">Home</Link>
           <span>&rsaquo;</span>
-          <span className="text-gray-900 font-bold">All Categories</span>
+          <Link href="/category/all" className="hover:underline">Categories</Link>
+          <span>&rsaquo;</span>
+          <span className="text-gray-900 font-bold">{displayTitle}</span>
         </div>
 
-        {/* Header Title & Controls Box */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-4 rounded-3xl shadow-2xs">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-4 md:p-6 rounded-3xl shadow-2xs">
           <div>
-            <h1 className="text-2xl font-black text-gray-900">All Categories</h1>
+            <h1 className="text-2xl md:text-3xl font-black text-gray-900 capitalize">{displayTitle}</h1>
             <p className="text-xs text-gray-500 font-medium mt-0.5">
-              Showing {totalItems > 0 ? startIndex + 1 : 0}–{endIndex} of {totalItems > 0 ? totalItems : 2356} products
+              Showing {totalItems > 0 ? startIndex + 1 : 0}–{endIndex} of {totalItems} products in stock
             </p>
           </div>
 
           <div className="flex items-center gap-3 self-end sm:self-center text-xs">
-            {/* Sort Dropdown */}
             <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-2xl px-3 py-2 font-semibold">
               <span className="text-gray-500 text-[11px]">Sort by:</span>
               <select
@@ -99,7 +128,6 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
               </select>
             </div>
 
-            {/* Grid vs List View Toggles */}
             <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-2xl border border-gray-200">
               <button
                 onClick={() => setViewMode("grid")}
@@ -124,20 +152,23 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
         </div>
       </div>
 
-      {/* 📦 Product Cards Grid vs List View */}
+      {/* 👉 PRODUCT CARDS GRID vs LIST VIEW (DYNAMIC FILTERING WORKING LIVE) */}
       {paginatedProducts.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center text-gray-500 shadow-xs">
           <div className="text-5xl mb-4">🔍</div>
-          <p className="text-lg font-bold text-gray-900">No products found</p>
-          <p className="text-xs mt-1 text-gray-500">Try searching for apparel, headphones, or watch.</p>
-          <Link href="/search" className="inline-block mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-xs">
-            Browse All Products &rarr;
+          <p className="text-lg font-bold text-gray-900">No products match your active filters</p>
+          <p className="text-xs mt-1 text-gray-500">Try adjusting your price slider or clearing filters.</p>
+          <Link
+            href="/category/all"
+            className="inline-block mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+          >
+            Clear Filters &amp; Show All Products &rarr;
           </Link>
         </div>
       ) : viewMode === "grid" ? (
         
-        /* ☷ GRID VIEW (4 Columns) */
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        /* ☷ GRID VIEW (Optimal 3-4 Columns Layout) */
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {paginatedProducts.map((product, idx) => {
             const discountPercent = product.compare_at_price
               ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
@@ -222,7 +253,7 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
         </div>
       ) : (
         
-        /* ☰ LIST VIEW (Horizontal Rows with Zero Empty Space) */
+        /* ☰ LIST VIEW */
         <div className="space-y-4">
           {paginatedProducts.map((product, idx) => {
             const discountPercent = product.compare_at_price
@@ -235,7 +266,6 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
                 key={`${product.handle || product.id}-${idx}`}
                 className="group bg-white border border-gray-200/80 rounded-3xl overflow-hidden p-4 shadow-2xs hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row items-center gap-6 relative"
               >
-                {/* Left Side: Product Image & Badges Container */}
                 <div className="relative w-full md:w-52 h-52 shrink-0 bg-gray-50 rounded-2xl overflow-hidden p-3 border border-gray-100">
                   <Link href={`/product/${product.handle}`} className="block w-full h-full relative">
                     <img
@@ -245,19 +275,12 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
                     />
                   </Link>
 
-                  {/* Overlaid Badges */}
                   <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
                     <span className="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase shadow-xs">
                       -{discountPercent}% OFF
                     </span>
-                    {idx % 2 === 1 && (
-                      <span className="bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase shadow-xs">
-                        Bestseller
-                      </span>
-                    )}
                   </div>
 
-                  {/* Wishlist Heart */}
                   <button
                     onClick={() => toggleWishlist(product.id)}
                     className={`absolute top-3 right-3 w-8 h-8 rounded-full border transition flex items-center justify-center text-xs shadow-xs cursor-pointer z-10 ${
@@ -269,7 +292,6 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
                   </button>
                 </div>
 
-                {/* Right Side: Product Details & Dual Action Buttons */}
                 <div className="flex-1 space-y-3 w-full flex flex-col justify-between">
                   <div className="space-y-1.5">
                     <h3 className="font-extrabold text-base text-gray-900 group-hover:text-emerald-700 transition leading-snug">
@@ -314,10 +336,8 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
         </div>
       )}
 
-      {/* 🔢 DYNAMIC PAGINATION BAR (Matching Screenshots 100%) */}
+      {/* 🔢 DYNAMIC PAGINATION BAR */}
       <div className="mt-8 bg-white border border-gray-200/80 p-4 rounded-3xl shadow-2xs flex flex-col sm:flex-row justify-between items-center gap-4 text-xs font-semibold text-gray-700">
-        
-        {/* Page Navigation Buttons */}
         <div className="flex items-center gap-1.5">
           <button
             onClick={() => handlePageChange(validCurrentPage - 1)}
@@ -338,7 +358,7 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
                 {showEllipsis && <span className="px-1 text-gray-400 font-bold">...</span>}
                 <button
                   onClick={() => handlePageChange(num)}
-                  className={`w-8 h-8 rounded-xl font-bold flex items-center justify-center transition cursor-pointer ${
+                  className={`web-page-btn w-8 h-8 rounded-xl font-bold flex items-center justify-center transition cursor-pointer ${
                     isCurrent
                       ? "bg-emerald-600 text-white shadow-xs"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -360,7 +380,6 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
           </button>
         </div>
 
-        {/* Dynamic Items Per Page Selector */}
         <div className="flex items-center gap-2">
           <span className="text-gray-500 font-medium">Show</span>
           <select
@@ -378,7 +397,6 @@ export function SearchCatalogView({ products }: { products: Product[] }) {
           </select>
           <span className="text-gray-500 font-medium">per page</span>
         </div>
-
       </div>
 
     </div>

@@ -196,8 +196,11 @@ app.add_middleware(
 )
 
 # Mount Router
+from app.api.search import router as search_router
+
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(products_router, prefix=settings.API_V1_STR)
+app.include_router(search_router, prefix=settings.API_V1_STR)
 app.include_router(orders_router, prefix=settings.API_V1_STR)
 app.include_router(payments_router, prefix=settings.API_V1_STR)
 app.include_router(shipping_router, prefix=settings.API_V1_STR)
@@ -207,6 +210,8 @@ app.include_router(rewards_router, prefix=settings.API_V1_STR)
 app.include_router(sales_router, prefix=settings.API_V1_STR)
 app.include_router(homepage_router, prefix=settings.API_V1_STR)
 app.include_router(wallet_router, prefix=settings.API_V1_STR)
+app.include_router(coupons_router, prefix=settings.API_V1_STR)
+app.include_router(categories_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():

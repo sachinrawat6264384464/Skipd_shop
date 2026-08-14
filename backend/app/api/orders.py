@@ -1,21 +1,23 @@
 import random
 from typing import List, Optional
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
 from app.core.database import get_db
 from app.models.models import Order, OrderItem, Product, ProductVariant, OrderStatus, User, Wallet, WalletTransaction, ReturnRequest, ReturnStatus
 from app.schemas.schemas import CheckoutInput, OrderResponse, ReturnRequestInput
 from app.services.razorpay_svc import razorpay_svc
 from app.api.deps import get_current_user
+from app.services.email_service import send_order_confirmation_email
 
 router = APIRouter(prefix="/orders", tags=["Orders & Checkout"])
 
 @router.post("/checkout", response_model=OrderResponse)
 async def create_checkout(
     data: CheckoutInput,
+    background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user)
 ):
@@ -25,6 +27,7 @@ async def create_checkout(
     order_number = f"SKIPD-{random.randint(100000, 999999)}"
     total_amount = 0.0
     order_items = []
+    items_summary = []
 
     for item in data.items:
         prod_res = await db.execute(select(Product).where(Product.id == item.product_id))
@@ -32,6 +35,23 @@ async def create_checkout(
         if not product:
             continue
         
+        # 🔒 ATOMIC INVENTORY CONCURRENCY RESERVATION (Prevent Overselling)
+        if item.variant_id:
+            stock_stmt = (
+                update(ProductVariant)
+                .where(
+                    ProductVariant.id == item.variant_id,
+                    ProductVariant.stock_quantity >= item.quantity
+                )
+                .values(stock_quantity=ProductVariant.stock_quantity - item.quantity)
+            )
+            stock_res = await db.execute(stock_stmt)
+            if stock_res.rowcount == 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Item '{product.title}' is out of stock or insufficient quantity available!"
+                )
+
         unit_price = product.price
         item_total = unit_price * item.quantity
         total_amount += item_total
@@ -43,6 +63,13 @@ async def create_checkout(
             quantity=item.quantity,
             unit_price=unit_price
         ))
+
+        items_summary.append({
+            "title": product.title,
+            "quantity": item.quantity,
+            "unit_price": unit_price,
+            "total_price": item_total
+        })
 
     wallet_used = 0.0
     if data.use_wallet and current_user:
@@ -91,16 +118,30 @@ async def create_checkout(
     await db.commit()
     await db.refresh(new_order)
 
+    # ✉️ Trigger Async Order Confirmation HTML Email
+    background_tasks.add_task(
+        send_order_confirmation_email,
+        to_email=new_order.customer_email,
+        order_number=new_order.order_number,
+        total_amount=new_order.total_amount,
+        customer_name=new_order.customer_name,
+        order_items=items_summary,
+        shipping_address=new_order.shipping_address,
+        payment_method="UPI / Razorpay / COD"
+    )
+
     return new_order
 
 @router.get("", response_model=List[OrderResponse])
 async def list_user_orders(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(20, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
     current_user: Optional[User] = Depends(get_current_user)
 ):
     if not current_user:
         return []
-    query = select(Order).options(selectinload(Order.items)).where(Order.user_id == current_user.id).order_by(Order.created_at.desc())
+    query = select(Order).options(selectinload(Order.items)).where(Order.user_id == current_user.id).order_by(Order.created_at.desc()).offset(skip).limit(limit)
     result = await db.execute(query)
     orders = result.scalars().all()
     return orders

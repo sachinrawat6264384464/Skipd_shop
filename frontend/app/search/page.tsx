@@ -10,8 +10,16 @@ export default async function SearchPage(props: {
   searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const searchParams = await props.searchParams;
-  const searchValue = (searchParams?.q as string) || "";
+  const searchValue =
+    (searchParams?.q as string) ||
+    (searchParams?.search as string) ||
+    (searchParams?.category as string) ||
+    "";
   const products = await fetchProducts({ search: searchValue });
 
-  return <SearchCatalogView products={products} />;
+  const title = searchValue
+    ? `${searchValue.toUpperCase()} Collection`
+    : "All Categories & Catalog";
+
+  return <SearchCatalogView products={products} collectionTitle={title} />;
 }

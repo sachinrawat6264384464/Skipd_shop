@@ -10,7 +10,7 @@ export const metadata = {
   description: "Explore premium electronics, fashion, footwear, and accessories with instant Razorpay checkout and Shiprocket live tracking.",
 };
 
-// 🏠 Category Deal Blocks (Amazon-style 4-column grid)
+// 🏠 Category Deal Blocks (Amazon-style 4-column grid with dynamic % OFF calculations)
 const CATEGORY_DEALS = [
   {
     title: "Pick up where you left off",
@@ -26,10 +26,10 @@ const CATEGORY_DEALS = [
     title: "Keep shopping for it",
     href: "/search/tech",
     items: [
-      { img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300", label: "OnePlus Nord 6 | 8GB+...", price: "₹44,499", mrp: null },
-      { img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300", label: "iQOO Z11x 5G | Prismat...", price: "₹24,999", mrp: null },
-      { img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300", label: "Samsung Galaxy M17 5...", price: "₹18,999", mrp: null },
-      { img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300", label: "Samsung Galaxy M36 5...", price: "₹19,999", mrp: null },
+      { img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300", label: "OnePlus Nord 6 | 8GB+...", price: "₹44,499", mrp: "₹52,999" },
+      { img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300", label: "iQOO Z11x 5G | Prismat...", price: "₹24,999", mrp: "₹29,999" },
+      { img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300", label: "Samsung Galaxy M17 5...", price: "₹18,999", mrp: "₹22,999" },
+      { img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300", label: "Samsung Galaxy M36 5...", price: "₹19,999", mrp: "₹24,999" },
     ]
   },
   {
@@ -54,46 +54,46 @@ const CATEGORY_DEALS = [
   }
 ];
 
-// 🔖 Category Promo Grid (Amazon-style 4-col)
+// 🔖 Category Promo Grid (Amazon-style 4-col with direct catalog links)
 const PROMO_BOXES = [
   {
     title: "Under ₹499 | Pocket-friendly fashion",
     href: "/search?max=499",
     items: [
-      { img: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300", label: "Clothes" },
-      { img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300", label: "Backpacks" },
-      { img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300", label: "Shoes" },
-      { img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300", label: "Watches" },
+      { img: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300", label: "Clothes", href: "/category/fashion" },
+      { img: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=300", label: "Backpacks", href: "/category/fashion" },
+      { img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300", label: "Shoes", href: "/category/footwear" },
+      { img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300", label: "Watches", href: "/category/watches" },
     ]
   },
   {
     title: "Kitchen Products",
-    href: "/search/lifestyle",
+    href: "/category/lifestyle",
     items: [
-      { img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300", label: "Microwave Ovens" },
-      { img: "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300", label: "Air Fryers" },
-      { img: "https://images.unsplash.com/photo-1585515656971-c69b5c7e3b8d?w=300", label: "Pressure Cookers" },
-      { img: "https://images.unsplash.com/photo-1547592180-85f173990554?w=300", label: "Cookware Sets" },
+      { img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300", label: "Microwave Ovens", href: "/product/microwave-oven-28l" },
+      { img: "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=300", label: "Air Fryers", href: "/product/air-fryer-5l" },
+      { img: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=300", label: "Pressure Cookers", href: "/product/pressure-cooker-5l" },
+      { img: "https://images.unsplash.com/photo-1547592180-85f173990554?w=300", label: "Cookware Sets", href: "/product/granite-cookware-set" },
     ]
   },
   {
     title: "Up to 50% off | Furniture",
-    href: "/search",
+    href: "/category/home",
     items: [
-      { img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300", label: "Sofas & Sectionals" },
-      { img: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=300", label: "Study Chairs" },
-      { img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=300", label: "Wardrobes" },
-      { img: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=300", label: "Beds & Mattresses" },
+      { img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300", label: "Sofas & Sectionals", href: "/product/modern-3seater-sofa" },
+      { img: "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=300", label: "Study Chairs", href: "/product/study-chair-ergonomic" },
+      { img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=300", label: "Wardrobes", href: "/product/3-door-wardrobe" },
+      { img: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=300", label: "Beds & Mattresses", href: "/product/queen-wood-bed" },
     ]
   },
   {
     title: "Bestsellers in Sports, Fitness & Outdoors",
-    href: "/search",
+    href: "/category/sports",
     items: [
-      { img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300", label: "Dumbbells & Weights" },
-      { img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300", label: "Pull-up Bars" },
-      { img: "https://images.unsplash.com/photo-1593476550610-87baa860004a?w=300", label: "Yoga Mats" },
-      { img: "https://images.unsplash.com/photo-1544117519-31a4b719223d?w=300", label: "Protein Shakers" },
+      { img: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300", label: "Dumbbells & Weights", href: "/product/hex-dumbbells-10kg" },
+      { img: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=300", label: "Pull-up Bars", href: "/product/pull-up-bar" },
+      { img: "https://images.unsplash.com/photo-1593476550610-87baa860004a?w=300", label: "Yoga Mats", href: "/product/extra-thick-yoga-mat" },
+      { img: "https://images.unsplash.com/photo-1544117519-31a4b719223d?w=300", label: "Protein Shakers", href: "/product/whey-protein-1kg" },
     ]
   }
 ];
@@ -103,7 +103,7 @@ export default async function HomePage() {
   const bestSellers = allProducts.length > 0 ? allProducts.slice(0, 4) : [];
   
   let techProducts = allProducts.filter(p => 
-    p.category?.slug === "tech" || p.category?.slug === "mobiles" || p.tags?.some(t => ["tech", "mobiles", "audio", "electronics"].includes(t))
+    p.category?.slug === "mobiles" || p.category?.slug === "electronics" || p.tags?.some(t => ["mobiles", "tech", "laptop", "audio"].includes(t))
   );
   if (techProducts.length < 4) techProducts = allProducts;
 
@@ -111,6 +111,16 @@ export default async function HomePage() {
     p.category?.slug === "apparel" || p.category?.slug === "fashion" || p.category?.slug === "footwear" || p.tags?.some(t => ["apparel", "fashion", "footwear"].includes(t))
   );
   if (apparelProducts.length < 4) apparelProducts = allProducts;
+
+  let storageProducts = allProducts.filter(p => 
+    p.category?.slug === "home" || p.tags?.some(t => ["home", "furniture", "storage"].includes(t))
+  );
+  if (storageProducts.length < 4) storageProducts = allProducts;
+
+  let artisanProducts = allProducts.filter(p => 
+    p.category?.slug === "artisan" || p.tags?.some(t => ["artisan", "organic"].includes(t))
+  );
+  if (artisanProducts.length < 4) artisanProducts = allProducts;
 
   return (
     <div className="bg-[#FAFAFA] text-gray-900 min-h-screen" suppressHydrationWarning>
@@ -133,50 +143,40 @@ export default async function HomePage() {
             </h1>
 
             <p className="text-gray-600 text-xs md:text-sm font-medium leading-relaxed">
-              Up to 50% OFF on fashion, electronics &amp; more.<br />
-              Limited time offer. Shop now!
+              Discover up to <strong className="text-emerald-700 font-black">60% OFF</strong> on top-rated electronics, fashion, and lifestyle essentials. Guaranteed fast delivery across India.
             </p>
 
             <div className="flex items-center gap-3 pt-2">
-              <Link href="/search" className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3.5 rounded-2xl transition shadow-md shadow-emerald-600/20">
-                Shop Now &rarr;
+              <Link href="/search" className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-6 py-3.5 rounded-xl transition shadow-md shadow-emerald-600/20 cursor-pointer">
+                SHOP NOW
               </Link>
-              <Link href="/search?sort=price-asc" className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-bold text-xs px-5 py-3.5 rounded-2xl transition shadow-2xs">
-                Explore Deals
+              <Link href="/deals" className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 font-bold text-xs px-5 py-3.5 rounded-xl transition shadow-2xs cursor-pointer">
+                EXPLORE DEALS
               </Link>
-            </div>
-
-            <div className="flex items-center gap-1.5 pt-4">
-              <span className="w-6 h-2 rounded-full bg-emerald-600"></span>
-              <span className="w-2 h-2 rounded-full bg-gray-300"></span>
-              <span className="w-2 h-2 rounded-full bg-gray-300"></span>
-              <span className="w-2 h-2 rounded-full bg-gray-300"></span>
             </div>
           </div>
 
-          <div className="relative z-10 w-full md:w-1/2 flex justify-center items-center">
-            <div className="w-72 h-72 md:w-96 md:h-96 rounded-full bg-emerald-200/60 absolute blur-xl pointer-events-none" />
-            <img
-              src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"
-              alt="Summer Sale Banner"
-              className="relative w-64 md:w-80 h-auto object-contain drop-shadow-xl rounded-2xl"
+          {/* Right Image */}
+          <div className="relative w-full md:w-96 h-64 md:h-72 rounded-2xl overflow-hidden shadow-lg border border-emerald-100 shrink-0">
+            <img 
+              src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600" 
+              alt="Summer Sale Deals" 
+              className="w-full h-full object-cover"
             />
-            <div className="absolute top-2 right-4 md:right-8 bg-white border border-emerald-200 rounded-full w-20 h-20 shadow-lg flex flex-col items-center justify-center text-center p-2">
-              <span className="text-[9px] font-bold uppercase text-gray-500">UP TO</span>
-              <span className="text-base font-black text-emerald-600 leading-none">50%</span>
-              <span className="text-[9px] font-bold text-gray-700">OFF</span>
+            <div className="absolute top-3 right-3 bg-red-600 text-white font-black text-xs px-3 py-1.5 rounded-full shadow-md">
+              60% OFF
             </div>
           </div>
 
         </div>
       </section>
 
-      {/* 🛡️ Value Proposition Trust Bar */}
-      <section className="max-w-7xl mx-auto px-4 py-4">
-        <div className="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-2xs grid grid-cols-2 md:grid-cols-4 gap-4 text-center divide-x divide-gray-100">
+      {/* 🚚 Trust & Delivery Features Strip */}
+      <section className="max-w-7xl mx-auto px-4 py-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-white border border-gray-200 rounded-2xl p-4 shadow-xs text-center">
           {[
-            { icon: "🚚", title: "Free Delivery", sub: "On orders above ₹499" },
-            { icon: "🔄", title: "7 Days Return", sub: "Easy returns & refunds" },
+            { icon: "🚚", title: "Free Shipping", sub: "On orders above ₹499" },
+            { icon: "⚡", title: "Instant Dispatch", sub: "Dispatched within 24 hours" },
             { icon: "🛡️", title: "Secure Payment", sub: "100% secure payment" },
             { icon: "🏆", title: "Best Quality", sub: "Premium products only" },
           ].map((item) => (
@@ -200,22 +200,38 @@ export default async function HomePage() {
                 <h3 className="text-sm font-black text-gray-900 leading-snug">{block.title}</h3>
               </div>
               <div className="grid grid-cols-2 gap-2">
-                {block.items.map((item, i) => (
-                  <Link
-                    key={i}
-                    href={(item as any).href || block.href || "/search"}
-                    className="group space-y-1 block cursor-pointer"
-                  >
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
-                      <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-                    </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-emerald-700 transition line-clamp-2 leading-tight">{item.label}</p>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-xs font-black text-gray-900">{item.price}</span>
-                      {item.mrp && <span className="text-[9px] text-gray-400 line-through">MRP: {item.mrp}</span>}
-                    </div>
-                  </Link>
-                ))}
+                {block.items.map((item, i) => {
+                  const numPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, ""));
+                  const numMrp = item.mrp ? parseFloat(String(item.mrp).replace(/[^0-9.]/g, "")) : 0;
+                  const offPercent = numMrp > numPrice && numPrice > 0 ? Math.round(((numMrp - numPrice) / numMrp) * 100) : 0;
+
+                  return (
+                    <Link
+                      key={i}
+                      href={(item as any).href || block.href || "/search"}
+                      className="group space-y-1 block cursor-pointer"
+                    >
+                      <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
+                        <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                        {offPercent > 0 && (
+                          <div className="absolute top-1 left-1 bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded shadow-2xs">
+                            {offPercent}% OFF
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[10px] text-gray-700 font-bold group-hover:text-emerald-700 transition line-clamp-2 leading-tight">{item.label}</p>
+                      <div className="flex flex-wrap items-baseline gap-1">
+                        <span className="text-xs font-black text-gray-900">{item.price}</span>
+                        {item.mrp && <span className="text-[9px] text-gray-400 line-through">MRP: {item.mrp}</span>}
+                        {offPercent > 0 && (
+                          <span className="text-[9px] font-black text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded border border-emerald-200">
+                            {offPercent}% off
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
               </div>
               <Link href={block.href} className="text-xs font-bold text-amber-700 hover:underline block pt-1">
                 See more
@@ -230,21 +246,20 @@ export default async function HomePage() {
         <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs">
           <div className="flex justify-between items-center px-5 pt-4 pb-3">
             <h3 className="text-sm font-black text-gray-900">Minimum 40% off | Handmade products by artisans</h3>
-            <Link href="/search" className="text-xs font-bold text-amber-700 hover:underline">See all offers</Link>
+            <Link href="/category/artisan" className="text-xs font-bold text-amber-700 hover:underline">See all offers</Link>
           </div>
           <div className="flex gap-2 px-5 pb-4 overflow-x-auto scrollbar-hide">
-            {[
-              "https://images.unsplash.com/photo-1590439471364-192aa70c0b53?w=300",
-              "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=300",
-              "https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=300",
-              "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300",
-              "https://images.unsplash.com/photo-1610701596061-2ecf227e85b2?w=300",
-              "https://images.unsplash.com/photo-1600298882525-e0c9e318bcb7?w=300",
-            ].map((src, i) => (
-              <Link key={i} href="/search" className="shrink-0 w-40 h-28 relative rounded-xl overflow-hidden hover:opacity-90 transition border border-gray-100">
-                <img src={src} alt={`Artisan ${i + 1}`} className="w-full h-full object-cover" />
-              </Link>
-            ))}
+            {artisanProducts.slice(0, 6).map((product, i) => {
+              const offPercent = product.compare_at_price ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100) : 40;
+              return (
+                <Link key={product.handle || i} href={`/product/${product.handle}`} className="shrink-0 w-40 h-28 relative rounded-xl overflow-hidden hover:opacity-90 transition border border-gray-100 bg-gray-50 group">
+                  <img src={product.images?.[0]} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                  <div className="absolute bottom-1 right-1 bg-emerald-700 text-white font-black text-[9px] px-1.5 py-0.5 rounded shadow-2xs">
+                    {offPercent}% OFF
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -257,11 +272,11 @@ export default async function HomePage() {
               <h3 className="text-sm font-black text-gray-900 leading-snug">{box.title}</h3>
               <div className="grid grid-cols-2 gap-2">
                 {box.items.map((item, i) => (
-                  <Link key={i} href={box.href} className="group space-y-1">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-200 transition">
+                  <Link key={i} href={(item as any).href || box.href} className="group space-y-1 block cursor-pointer">
+                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-300 transition">
                       <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                     </div>
-                    <p className="text-[10px] text-gray-600 font-medium line-clamp-1">{item.label}</p>
+                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-emerald-700 transition line-clamp-1">{item.label}</p>
                   </Link>
                 ))}
               </div>
@@ -278,24 +293,25 @@ export default async function HomePage() {
         <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-xs">
           <div className="flex justify-between items-center px-5 pt-4 pb-3">
             <h3 className="text-sm font-black text-gray-900">Up to 50% off | Home &amp; Kitchen Storage</h3>
-            <Link href="/search" className="text-xs font-bold text-amber-700 hover:underline">See more</Link>
+            <Link href="/category/home" className="text-xs font-bold text-amber-700 hover:underline">See more</Link>
           </div>
           <div className="flex gap-3 px-5 pb-4 overflow-x-auto scrollbar-hide">
-            {[
-              { src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300", label: "Storage Boxes" },
-              { src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=300", label: "Organizer Shelves" },
-              { src: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=300", label: "Cabinet Racks" },
-              { src: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=300", label: "TV Units" },
-              { src: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=300", label: "Bed Storage" },
-              { src: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=300", label: "Wardrobe Systems" },
-            ].map((item, i) => (
-              <Link key={i} href="/search" className="shrink-0 group text-center space-y-1.5">
-                <div className="w-36 h-28 relative rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-200 transition">
-                  <img src={item.src} alt={item.label} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-                </div>
-                <p className="text-[10px] text-gray-600 font-medium w-36 truncate">{item.label}</p>
-              </Link>
-            ))}
+            {storageProducts.slice(0, 6).map((product, i) => {
+              const offPercent = product.compare_at_price ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100) : 0;
+              return (
+                <Link key={product.handle || i} href={`/product/${product.handle}`} className="shrink-0 group text-center space-y-1.5">
+                  <div className="w-36 h-28 relative rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-300 transition bg-gray-50">
+                    <img src={product.images?.[0]} alt={product.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                    {offPercent > 0 && (
+                      <div className="absolute bottom-1 right-1 bg-emerald-700 text-white font-black text-[9px] px-1.5 py-0.5 rounded shadow-2xs">
+                        {offPercent}% OFF
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-gray-700 font-bold w-36 truncate group-hover:text-emerald-700 transition">{product.title}</p>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

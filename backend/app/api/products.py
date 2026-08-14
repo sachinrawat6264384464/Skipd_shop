@@ -15,6 +15,8 @@ async def list_products(
     category: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     featured: Optional[bool] = Query(None),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=100),
     db: AsyncSession = Depends(get_db)
 ):
     query = select(Product).options(selectinload(Product.category), selectinload(Product.variants))
@@ -28,7 +30,7 @@ async def list_products(
     if search:
         query = query.where(Product.title.ilike(f"%{search}%"))
 
-    query = query.order_by(Product.id.desc())
+    query = query.order_by(Product.created_at.desc()).offset(skip).limit(limit)
     result = await db.execute(query)
     products = result.scalars().all()
     return products

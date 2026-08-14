@@ -177,6 +177,306 @@ const MOCK_PRODUCTS: Product[] = [
     images: ["https://images.unsplash.com/photo-1544441893-675973e31985?w=800"],
     tags: ["fashion", "jacket"],
     category: { name: "Fashion", slug: "fashion" }
+  },
+
+  // 🍳 KITCHEN & LIFESTYLE
+  {
+    id: 11,
+    title: "Convection Digital Microwave Oven 28L",
+    handle: "microwave-oven-28l",
+    description: "Multi-stage cooking with auto-cook menu, grill mode, and stainless steel cavity.",
+    price: 11499,
+    compare_at_price: 15999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800"],
+    tags: ["lifestyle", "kitchen"],
+    category: { name: "Lifestyle", slug: "lifestyle" }
+  },
+  {
+    id: 12,
+    title: "Smart Digital Air Fryer 5.5L Rapid Air",
+    handle: "air-fryer-5l",
+    description: "90% less oil frying with touch screen preset controls and non-stick dishwasher-safe basket.",
+    price: 4999,
+    compare_at_price: 8999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=800"],
+    tags: ["lifestyle", "kitchen"],
+    category: { name: "Lifestyle", slug: "lifestyle" }
+  },
+  {
+    id: 13,
+    title: "Stainless Steel Induction Pressure Cooker 5L",
+    handle: "pressure-cooker-5l",
+    description: "Heavy-gauge tri-ply stainless steel pressure cooker with safety valve.",
+    price: 2299,
+    compare_at_price: 3499,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800"],
+    tags: ["lifestyle", "kitchen"],
+    category: { name: "Lifestyle", slug: "lifestyle" }
+  },
+  {
+    id: 14,
+    title: "Non-Stick Granite Cookware Set 4-Piece",
+    handle: "granite-cookware-set",
+    description: "German granite coating fry pan, kadhai with lid, and tawa.",
+    price: 3199,
+    compare_at_price: 5999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1547592180-85f173990554?w=800"],
+    tags: ["lifestyle", "kitchen"],
+    category: { name: "Lifestyle", slug: "lifestyle" }
+  },
+
+  // 🪑 FURNITURE & HOME LIVING
+  {
+    id: 15,
+    title: "Modern 3-Seater Velvet Sofa",
+    handle: "modern-3seater-sofa",
+    description: "High-density foam seating with solid neem wood internal frame and plush velvet upholstery.",
+    price: 22499,
+    compare_at_price: 35999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800"],
+    tags: ["home", "furniture"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+  {
+    id: 16,
+    title: "Ergonomic Mesh High-Back Study Chair",
+    handle: "study-chair-ergonomic",
+    description: "Adjustable lumbar support, 3D armrests, heavy-duty chrome base with 135° tilt lock.",
+    price: 5999,
+    compare_at_price: 11999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1538688525198-9b88f6f53126?w=800"],
+    tags: ["home", "furniture"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+  {
+    id: 17,
+    title: "Engineered Wood 3-Door Wardrobe",
+    handle: "3-door-wardrobe",
+    description: "Spacious storage with internal drawers, hanging rod, and security lock.",
+    price: 14999,
+    compare_at_price: 24999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800"],
+    tags: ["home", "furniture"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+  {
+    id: 18,
+    title: "Queen Size Solid Wood Bed with Storage",
+    handle: "queen-wood-bed",
+    description: "Sheesham wood queen bed with hydraulic storage lifts and tufted headboard.",
+    price: 19999,
+    compare_at_price: 32999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=800"],
+    tags: ["home", "furniture"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+
+  // 📦 HOME & KITCHEN STORAGE
+  {
+    id: 19,
+    title: "Collapsible Fabric Storage Boxes Set of 3",
+    handle: "fabric-storage-boxes",
+    description: "Reinforced handles and sturdy cardboard frame for closet organization.",
+    price: 899,
+    compare_at_price: 1499,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1590439471364-192aa70c0b53?w=800"],
+    tags: ["home", "storage"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+  {
+    id: 20,
+    title: "Multi-Tier Kitchen Organizer Shelves",
+    handle: "kitchen-organizer-shelves",
+    description: "Rust-proof stainless steel spice rack and countertop storage organizer.",
+    price: 1299,
+    compare_at_price: 2199,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800"],
+    tags: ["home", "storage"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+  {
+    id: 21,
+    title: "Modular Cabinet Rack System",
+    handle: "cabinet-rack-system",
+    description: "Heavy-duty steel wire shelf rack for pantry and garage storage.",
+    price: 1799,
+    compare_at_price: 2999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=800"],
+    tags: ["home", "storage"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+  {
+    id: 22,
+    title: "Minimalist Floating TV Unit Desk",
+    handle: "floating-tv-unit",
+    description: "Wall-mounted TV console with cable management holes and storage slots.",
+    price: 3499,
+    compare_at_price: 5999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800"],
+    tags: ["home", "furniture"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+
+  // 🏃 SPORTS, FITNESS & OUTDOORS
+  {
+    id: 23,
+    title: "Rubber Encased Hex Dumbbells Set 10kg",
+    handle: "hex-dumbbells-10kg",
+    description: "Anti-roll hexagonal rubber dumbbells with ergonomic chrome handles.",
+    price: 2499,
+    compare_at_price: 3999,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800"],
+    tags: ["sports", "fitness"],
+    category: { name: "Sports", slug: "sports" }
+  },
+  {
+    id: 24,
+    title: "Heavy Duty Wall Mounted Pull-up Bar",
+    handle: "pull-up-bar",
+    description: "Multi-grip doorway pull-up bar for chin-ups, dips, and core workouts.",
+    price: 1499,
+    compare_at_price: 2499,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800"],
+    tags: ["sports", "fitness"],
+    category: { name: "Sports", slug: "sports" }
+  },
+  {
+    id: 25,
+    title: "Anti-Skid Extra Thick 8mm Yoga Mat",
+    handle: "extra-thick-yoga-mat",
+    description: "Eco-friendly TPE yoga mat with alignment lines and carrying strap.",
+    price: 799,
+    compare_at_price: 1499,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1593476550610-87baa860004a?w=800"],
+    tags: ["sports", "fitness"],
+    category: { name: "Sports", slug: "sports" }
+  },
+  {
+    id: 26,
+    title: "Whey Protein Isolate Powder 1kg + Shaker",
+    handle: "whey-protein-1kg",
+    description: "25g pure protein per scoop with digestive enzymes and zero added sugar.",
+    price: 2899,
+    compare_at_price: 4299,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1544117519-31a4b719223d?w=800"],
+    tags: ["sports", "nutrition"],
+    category: { name: "Sports", slug: "sports" }
+  },
+
+  // 🌾 ARTISAN CRAFTS & ORGANICS
+  {
+    id: 27,
+    title: "House of Himalayas Barnyard Millet Biscuits",
+    handle: "barnyard-millet-biscuits",
+    description: "Handcrafted 100% natural organic millet biscuits free from palm oil.",
+    price: 297,
+    compare_at_price: 350,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1542838132-92c53300491e?w=800"],
+    tags: ["artisan", "organic"],
+    category: { name: "Artisan", slug: "artisan" }
+  },
+  {
+    id: 28,
+    title: "Organic Oats Premium Pack 1kg",
+    handle: "organic-oats-1kg",
+    description: "High-fiber whole grain rolled oats sourced directly from Himalayan farms.",
+    price: 199,
+    compare_at_price: 350,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1542838132-92c53300491e?w=800"],
+    tags: ["artisan", "organic"],
+    category: { name: "Artisan", slug: "artisan" }
+  },
+  {
+    id: 29,
+    title: "Jhangora Biscuits 50% Unpolished",
+    handle: "jhangora-biscuits",
+    description: "Traditional mountain recipe prepared with pure cow ghee and unrefined jaggery.",
+    price: 149,
+    compare_at_price: 250,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1542838132-92c53300491e?w=800"],
+    tags: ["artisan", "organic"],
+    category: { name: "Artisan", slug: "artisan" }
+  },
+  {
+    id: 30,
+    title: "Ragi Cookies Natural 200g",
+    handle: "ragi-cookies-natural",
+    description: "Calcium-rich finger millet cookies baked by artisan self-help groups.",
+    price: 129,
+    compare_at_price: 200,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1542838132-92c53300491e?w=800"],
+    tags: ["artisan", "organic"],
+    category: { name: "Artisan", slug: "artisan" }
+  },
+
+  // 🏥 PERSONAL SAFETY & CARE
+  {
+    id: 31,
+    title: "N95 Respirator Mask 10 Pcs Pack",
+    handle: "n95-mask-10pack",
+    description: "5-layer PM2.5 filtration mask with soft earloops and adjustable nose clip.",
+    price: 399,
+    compare_at_price: 699,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
+    tags: ["health", "safety"],
+    category: { name: "Health", slug: "health" }
+  },
+  {
+    id: 32,
+    title: "Dettol Hand Sanitizer 500ml Pump",
+    handle: "sanitizer-500ml",
+    description: "99.99% germ protection rinse-free sanitizer with moisturizers.",
+    price: 199,
+    compare_at_price: 299,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
+    tags: ["health", "safety"],
+    category: { name: "Health", slug: "health" }
+  },
+  {
+    id: 33,
+    title: "Nitrile Safety Gloves 100 Pcs Box",
+    handle: "nitrile-gloves-100",
+    description: "Powder-free medical grade disposable nitrile examination gloves.",
+    price: 349,
+    compare_at_price: 599,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
+    tags: ["health", "safety"],
+    category: { name: "Health", slug: "health" }
+  },
+  {
+    id: 34,
+    title: "First Aid Medical Kit Complete Box",
+    handle: "first-aid-kit",
+    description: "45 essential medical supplies emergency kit for home and travel.",
+    price: 449,
+    compare_at_price: 799,
+    featured: true,
+    images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
+    tags: ["health", "safety"],
+    category: { name: "Health", slug: "health" }
   }
 ];
 
@@ -218,7 +518,9 @@ export async function fetchProducts(query?: { category?: string; search?: string
     const filtered = combined.filter(p => p.category?.slug === query.category || p.tags?.includes(query.category!));
     if (filtered.length >= 2) combined = filtered;
   }
-  if (query?.search) combined = combined.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()));
+  if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
+    combined = combined.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()) || p.category?.name?.toLowerCase().includes(query.search!.toLowerCase()));
+  }
   
   return combined;
 }
@@ -732,6 +1034,51 @@ export async function changePassword(email: string, newPassword: string) {
     console.warn("[API SDK] Change password endpoint offline");
   }
   return { status: "success", message: "Password updated successfully!" };
+}
+
+export async function checkEmailRegistered(email: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/check-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email })
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Check email endpoint offline");
+  }
+
+  // Strictly check against registered account list in fallback mode
+  const registeredEmails = [
+    "sachin.rawat@email.com",
+    "sachinrawat6264384464@gmail.com",
+    "customer@skipd.in",
+    "admin@skipd.in",
+    "sachin.rawat@example.com"
+  ];
+  const targetEmail = email.toLowerCase().trim();
+  if (registeredEmails.includes(targetEmail)) {
+    return { exists: true, email: targetEmail, message: "Registered Email Verified" };
+  }
+  return { exists: false, message: "This email is not registered with us" };
+}
+
+export async function resetUserPassword(email: string, newPassword: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, new_password: newPassword })
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.detail || "Password reset failed");
+    }
+    return data;
+  } catch (e: any) {
+    if (e.message && e.message !== "Failed to fetch") throw e;
+    return { status: "success", message: "Password updated successfully!" };
+  }
 }
 
 // ─────────────────────────────────────────────

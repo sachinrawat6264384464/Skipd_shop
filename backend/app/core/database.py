@@ -16,7 +16,11 @@ if not db_url or "skipd_commerce" not in db_url:
 engine = create_async_engine(
     db_url,
     echo=settings.ENVIRONMENT == "development",
-    future=True
+    future=True,
+    pool_size=20,
+    max_overflow=30,
+    pool_recycle=1800,
+    pool_pre_ping=True
 )
 
 AsyncSessionLocal = async_sessionmaker(

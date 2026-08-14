@@ -17,14 +17,30 @@ export default async function CategoryPage(props: {
   const params = await props.params;
   const collectionSlug = params.collection;
   let products = await fetchProducts({ category: collectionSlug });
+  
   if (products.length < 2) {
     const allProds = await fetchProducts();
-    const matched = allProds.filter(p =>
-      p.category?.slug === collectionSlug ||
-      p.tags?.some(t => t.toLowerCase() === collectionSlug.toLowerCase())
+    const matched = allProds.filter(
+      (p) =>
+        p.category?.slug === collectionSlug ||
+        p.category?.name?.toLowerCase().includes(collectionSlug.toLowerCase()) ||
+        p.tags?.some((t) => t.toLowerCase() === collectionSlug.toLowerCase())
     );
     products = matched.length > 0 ? matched : allProds;
   }
 
-  return <SearchCatalogView products={products} />;
+  // Format dynamic collection title nicely (e.g. "mobiles" -> "Mobiles & Accessories")
+  const titleMap: Record<string, string> = {
+    mobiles: "Mobiles & Accessories",
+    laptops: "Laptops & Accessories",
+    "home-cinema": "TV & Home Entertainment",
+    audio: "Audio & Sound Gear",
+    camera: "Camera & Photography",
+    accessories: "Computer Accessories",
+    "smart-tech": "Smart Technology & Wearables"
+  };
+
+  const collectionTitle = titleMap[collectionSlug.toLowerCase()] || `${collectionSlug.replace(/-/g, " ")} Collection`;
+
+  return <SearchCatalogView products={products} collectionTitle={collectionTitle} />;
 }

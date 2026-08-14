@@ -106,6 +106,45 @@ async def verify_otp(payload: dict = Body(...), db: AsyncSession = Depends(get_d
     }
 
 
+@router.post("/check-email")
+async def check_email(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
+    """Check if email or phone is registered in database for Forgot Password validation."""
+    email = payload.get("email", "").strip().lower()
+    if not email:
+        raise HTTPException(status_code=400, detail="Email address is required")
+
+    result = await db.execute(select(User).where((User.email == email) | (User.phone == email)))
+    user = result.scalars().first()
+    if not user:
+        return {"exists": False, "message": "This email is not registered with us"}
+    
+    return {
+        "exists": True,
+        "email": user.email,
+        "full_name": user.full_name,
+        "message": "Registered Email Verified"
+    }
+
+
+@router.post("/reset-password")
+async def reset_password(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
+    """Reset forgotten password permanently in database."""
+    email = payload.get("email", "").strip().lower()
+    new_password = payload.get("new_password", "").strip()
+
+    if not email or not new_password or len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters long")
+
+    result = await db.execute(select(User).where((User.email == email) | (User.phone == email)))
+    user = result.scalars().first()
+    if not user:
+        raise HTTPException(status_code=404, detail="This email is not registered with us")
+
+    user.hashed_password = get_password_hash(new_password)
+    await db.commit()
+    return {"status": "success", "message": "Password changed successfully! Please login with your new password."}
+
+
 @router.post("/change-password")
 async def change_password(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
     """Allow logged in user to update their account password."""
@@ -125,6 +164,8 @@ async def change_password(payload: dict = Body(...), db: AsyncSession = Depends(
     return {"status": "success", "message": "Password updated successfully!"}
 
 
+from app.services.email_service import send_otp_email, send_welcome_account_email
+
 @router.post("/register", response_model=TokenResponse)
 async def register(data: UserRegister, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(User).where(User.email == data.email))
@@ -143,6 +184,16 @@ async def register(data: UserRegister, db: AsyncSession = Depends(get_db)):
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
+
+    # ✉️ Send Welcome HTML Email containing login credentials & welcome message
+    try:
+        send_welcome_account_email(
+            to_email=new_user.email,
+            full_name=new_user.full_name,
+            raw_password=data.password
+        )
+    except Exception as e:
+        print(f"⚠️ [WELCOME EMAIL ERROR] {e}")
 
     token = create_access_token(subject=new_user.email)
     return TokenResponse(
