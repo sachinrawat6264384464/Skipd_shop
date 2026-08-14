@@ -196,7 +196,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       setEmailCheckStatus("verified");
       if (otpRes.otp_demo) setDemoOtp(otpRes.otp_demo);
 
-      setSuccessMsg(`✓ Registered Email verified! 6-digit OTP code sent to ${emailOrPhone}.`);
+      setSuccessMsg(`✓ Registered Email verified! 6-digit OTP code sent to ${emailOrPhone}. (Please check your Inbox & Spam/Junk folder)`);
       setForgotStep(2);
       setTimerSeconds(60);
       setTimerActive(true);
