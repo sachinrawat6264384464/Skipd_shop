@@ -26,6 +26,7 @@ export const metadata = {
 
 import { AuthProvider } from "components/auth/auth-provider";
 import { LanguageProvider } from "components/language/language-context";
+import { WishlistProvider } from "components/wishlist/wishlist-context";
 
 export default async function RootLayout({
   children,
@@ -40,15 +41,17 @@ export default async function RootLayout({
       <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white">
         <LanguageProvider>
           <AuthProvider>
-            <CartProvider cartPromise={cart}>
-              <Navbar />
-              <main>
-                {children}
-                <Toaster closeButton />
-                <WelcomeToast />
-                <WhatsAppFloatingWidget />
-              </main>
-            </CartProvider>
+            <WishlistProvider>
+              <CartProvider cartPromise={cart}>
+                <Navbar />
+                <main>
+                  {children}
+                  <Toaster closeButton />
+                  <WelcomeToast />
+                  <WhatsAppFloatingWidget />
+                </main>
+              </CartProvider>
+            </WishlistProvider>
           </AuthProvider>
         </LanguageProvider>
       </body>

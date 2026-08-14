@@ -7,6 +7,7 @@ import { DeliveryLocationPicker } from "./delivery-location";
 
 import { WishlistNavButton } from "./wishlist-nav-button";
 import { LanguagePicker } from "components/language/language-picker";
+import { InstantSearchModal } from "components/search/search-modal";
 
 export async function Navbar() {
   return (
@@ -78,8 +79,9 @@ export async function Navbar() {
           <DeliveryLocationPicker />
         </div>
 
-        {/* Right Section: Action Buttons (Language Picker, Sign In, Wishlist, Cart) */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Right Section: Action Buttons (Instant Search, Language Picker, Sign In, Wishlist, Cart) */}
+        <div className="flex items-center gap-2.5 shrink-0">
+          <InstantSearchModal />
           <LanguagePicker />
           <UserAccountDropdown />
           <WishlistNavButton />
