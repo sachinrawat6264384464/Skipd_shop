@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { requestOTP, verifyOTP, changePassword, checkEmailRegistered, resetUserPassword } from "lib/api";
+import { auth, googleProvider } from "lib/firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
 interface LoginModalProps {
   isOpen: boolean;
@@ -125,7 +127,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
     setLoading(true);
 
     if (isRegisterView) {
-      // 🚀 CREATE ACCOUNT MODE
+      // 🚀 CREATE ACCOUNT MODE (Firebase Auth Registration)
       if (!password || password.length < 6) {
         setError("Please create a strong password (minimum 6 characters)");
         setLoading(false);
@@ -133,42 +135,89 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       }
 
       try {
+        const userCred = await createUserWithEmailAndPassword(auth, emailOrPhone.trim(), password);
+        const fbUser = userCred.user;
+        const idToken = await fbUser.getIdToken();
+
         const userObj = {
-          user_name: fullName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "Sachin Rawat"),
-          email: emailOrPhone.includes("@") ? emailOrPhone : "customer@skipd.in",
-          phone: !emailOrPhone.includes("@") ? emailOrPhone : "9876543210"
+          uid: fbUser.uid,
+          user_name: fullName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "User"),
+          email: fbUser.email || emailOrPhone,
+          phone: !emailOrPhone.includes("@") ? emailOrPhone : ""
         };
-        localStorage.setItem("skipd_token", "jwt_token_demo_skipd_2026");
+
+        localStorage.setItem("skipd_token", idToken);
         localStorage.setItem("skipd_user", JSON.stringify(userObj));
         window.dispatchEvent(new Event("skipd_auth_changed"));
 
         setLoading(false);
-        setSuccessMsg("Account created successfully! Welcome email sent.");
+        setSuccessMsg("🔥 Account created & saved in Firebase Auth! Welcome to SKIPD.");
         setTimeout(() => finishLogin(), 1000);
       } catch (err: any) {
         setLoading(false);
-        setError(err.message || "Failed to create account");
+        let msg = err.message || "Failed to create account in Firebase";
+        if (err.code === "auth/email-already-in-use") {
+          msg = "Email address is already registered. Please log in instead.";
+        }
+        setError(msg);
       }
     } else {
-      // 🔐 LOGIN TO ACCOUNT MODE
+      // 🔐 LOGIN TO ACCOUNT MODE (Firebase Auth Login)
       try {
-        const res = await requestOTP(emailOrPhone);
-        setLoading(false);
+        const userCred = await signInWithEmailAndPassword(auth, emailOrPhone.trim(), password);
+        const fbUser = userCred.user;
+        const idToken = await fbUser.getIdToken();
 
-        if (res.status === "success" || res.otp_demo) {
-          if (res.otp_demo) setDemoOtp(res.otp_demo);
-          setSuccessMsg(res.message || "Login credentials verified!");
-          setStep(2);
-          setTimerSeconds(60);
-          setTimerActive(true);
-          setOtpExpired(false);
-        } else {
-          setError("Failed to verify login. Please try again.");
-        }
+        const userObj = {
+          uid: fbUser.uid,
+          user_name: fbUser.displayName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "User"),
+          email: fbUser.email || emailOrPhone
+        };
+
+        localStorage.setItem("skipd_token", idToken);
+        localStorage.setItem("skipd_user", JSON.stringify(userObj));
+        window.dispatchEvent(new Event("skipd_auth_changed"));
+
+        setLoading(false);
+        setSuccessMsg("🔥 Authenticated via Firebase Auth! Welcome back.");
+        setTimeout(() => finishLogin(), 800);
       } catch (err: any) {
         setLoading(false);
-        setError(err.message || "Failed to log in");
+        let msg = err.message || "Failed to log in via Firebase";
+        if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
+          msg = "Invalid email or password. Please check your credentials.";
+        }
+        setError(msg);
       }
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      setError("");
+      setSuccessMsg("");
+      setLoading(true);
+      const result = await signInWithPopup(auth, googleProvider);
+      const fbUser = result.user;
+      const idToken = await fbUser.getIdToken();
+
+      const userObj = {
+        uid: fbUser.uid,
+        user_name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
+        email: fbUser.email || "",
+        photoURL: fbUser.photoURL || ""
+      };
+
+      localStorage.setItem("skipd_token", idToken);
+      localStorage.setItem("skipd_user", JSON.stringify(userObj));
+      window.dispatchEvent(new Event("skipd_auth_changed"));
+
+      setLoading(false);
+      setSuccessMsg(`🔥 Signed in as ${userObj.user_name} via Firebase Google Auth!`);
+      setTimeout(() => finishLogin(), 800);
+    } catch (err: any) {
+      setLoading(false);
+      setError(err.message || "Firebase Google Sign-In failed.");
     }
   };
 
@@ -662,10 +711,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                   <div className="flex-grow border-t border-gray-200"></div>
                 </div>
 
-                <a
-                  href={`https://accounts.google.com/o/oauth2/v2/auth?client_id=108923489123-demo.apps.googleusercontent.com&redirect_uri=${encodeURIComponent(
-                    typeof window !== "undefined" ? `${window.location.origin}/auth/login` : "http://localhost:3000/auth/login"
-                  )}&response_type=token%20id_token&scope=openid%20profile%20email&prompt=select_account`}
+                <button
+                  type="button"
+                  onClick={handleGoogleSignIn}
                   className="w-full bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-bold text-xs py-3 px-4 rounded-xl transition flex items-center justify-center gap-2.5 shadow-2xs cursor-pointer"
                 >
                   <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -675,7 +723,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                   </svg>
                   <span>{isRegisterView ? "Sign up with Google" : "Sign in with Google"}</span>
-                </a>
+                </button>
               </div>
 
               <div className="pt-2 text-center">
