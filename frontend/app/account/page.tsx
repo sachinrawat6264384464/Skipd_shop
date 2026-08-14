@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
 import { LoginModal } from "components/auth/login-modal";
+import { useWishlist } from "components/wishlist/wishlist-context";
 
 function AccountContent() {
   const searchParams = useSearchParams();
@@ -198,10 +199,7 @@ function AccountContent() {
     { code: "FREEDOM50", discount: "50% OFF", minOrder: "Min order ₹999", expiry: "Valid till 25 Aug 2026" }
   ];
 
-  const wishlist = [
-    { id: 1, title: "Minimalist Oversized Graphic Tee", price: 1299, image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500", handle: "minimalist-graphic-tee" },
-    { id: 2, title: "Matte Black Chrono Leather Watch", price: 3499, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500", handle: "matte-black-chrono-watch" }
-  ];
+  const { wishlist } = useWishlist();
 
   const notifications = [
     { id: 1, title: "Shipment Dispatched", text: "Your order SKIPD-984201 is on its way via BlueDart Courier.", time: "2 hours ago" },
