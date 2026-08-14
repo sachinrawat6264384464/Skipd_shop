@@ -497,11 +497,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                       className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-center text-lg font-black tracking-widest text-gray-900 focus:border-blue-600 focus:outline-none transition"
                     />
                     
-                    {demoOtp && (
-                      <p className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 p-2 rounded-lg mt-2 font-bold text-center">
-                        🔑 Real Demo OTP Code: <span className="text-sm underline">{demoOtp}</span>
-                      </p>
-                    )}
+
                   </div>
 
                   <button
@@ -711,11 +707,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                   className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-center text-lg font-black tracking-widest text-gray-900 focus:border-blue-600 focus:outline-none transition"
                 />
                 
-                {demoOtp && (
-                  <p className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 p-2 rounded-lg mt-2 font-bold text-center">
-                    🔑 Real Demo OTP Code: <span className="text-sm underline">{demoOtp}</span>
-                  </p>
-                )}
+
               </div>
 
               <button
