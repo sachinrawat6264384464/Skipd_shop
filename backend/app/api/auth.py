@@ -17,10 +17,10 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 OTP_CACHE: Dict[str, dict] = {}
 
 
-from app.services.email_service import send_otp_email
+from fastapi import APIRouter, Depends, HTTPException, status, Body, BackgroundTasks
 
 @router.post("/request-otp")
-async def request_otp(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
+async def request_otp(background_tasks: BackgroundTasks, payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
     """Generate 6-digit OTP valid for 60 seconds (stored in-memory only)."""
     email_or_phone = payload.get("email_or_phone", "").strip().lower()
     if not email_or_phone:
@@ -38,15 +38,14 @@ async def request_otp(payload: dict = Body(...), db: AsyncSession = Depends(get_
 
     print(f"🔥 [OTP GENERATED] Email/Phone: {email_or_phone} | OTP: {otp_code} | Expires in: 60s")
 
-    # Send HTML OTP Email Flow
+    # Send HTML OTP Email Asynchronously via BackgroundTasks
     if "@" in email_or_phone:
-        send_otp_email(email_or_phone, otp_code)
+        background_tasks.add_task(send_otp_email, email_or_phone, otp_code)
 
     return {
         "status": "success",
         "message": f"6-digit OTP sent to {email_or_phone}",
-        "expires_in_seconds": 60,
-        "otp_demo": otp_code  # Exposed for instant UI testing/auto-fill
+        "expires_in_seconds": 60
     }
 
 
