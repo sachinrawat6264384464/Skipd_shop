@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 
 import { LoginModal } from "components/auth/login-modal";
 import { useWishlist } from "components/wishlist/wishlist-context";
+import { getUserAddressesKey } from "lib/utils";
 
 function AccountContent() {
   const searchParams = useSearchParams();
@@ -76,56 +77,51 @@ function AccountContent() {
     }
   ];
 
-  // 📍 Addresses State (Exact Match to User Screenshot)
-  const [addresses, setAddresses] = useState([
-    {
-      id: 1,
-      name: "Sachin Rawat",
-      phone: "+91 6264384464",
-      type: "HOME",
-      address: "Outer Ring Road, Prashanthnagarhalli Village, Bengaluru, Karnataka - 560103",
-      pincode: "560103",
-      landmark: "Near Metro Station",
-      isDefault: true
-    },
-    {
-      id: 2,
-      name: "Sachin Rawat",
-      phone: "+91 9876543210",
-      type: "WORK",
-      address: "Prestige Tech Park, Outer Ring Road, Marathahalli, Bengaluru, Karnataka - 560037",
-      pincode: "560037",
-      landmark: "Prestige Tech Park",
-      isDefault: false
-    },
-    {
-      id: 3,
-      name: "Sachin Rawat",
-      phone: "+91 9123456780",
-      type: "OTHER",
-      address: "12th Main, 5th Cross, HSR Layout, Bengaluru, Karnataka - 560102",
-      pincode: "560102",
-      landmark: "Near HSR BDA Complex",
-      isDefault: false
+  // 📍 Addresses State (User-Scoped & Persistent across refreshes)
+  const [addresses, setAddresses] = useState<any[]>([]);
+
+  const loadUserAddresses = () => {
+    const key = getUserAddressesKey();
+    const saved = localStorage.getItem(key);
+    if (saved !== null) {
+      try {
+        setAddresses(JSON.parse(saved));
+        return;
+      } catch (e) {}
     }
-  ]);
+    setAddresses([]);
+  };
+
+  useEffect(() => {
+    loadUserAddresses();
+    window.addEventListener("skipd_auth_changed", loadUserAddresses);
+    return () => {
+      window.removeEventListener("skipd_auth_changed", loadUserAddresses);
+    };
+  }, []);
+
+  const saveAddresses = (newAddrs: any[]) => {
+    setAddresses(newAddrs);
+    const key = getUserAddressesKey();
+    localStorage.setItem(key, JSON.stringify(newAddrs));
+  };
 
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any | null>(null);
 
   // Modal Form Inputs
-  const [formName, setFormName] = useState("Sachin Rawat");
-  const [formPhone, setFormPhone] = useState("+91 6264384464");
-  const [formPincode, setFormPincode] = useState("560103");
-  const [formAddress, setFormAddress] = useState("Outer Ring Road, Prashanthnagarhalli Village, Bengaluru, Karnataka");
-  const [formLandmark, setFormLandmark] = useState("Near Metro Station");
+  const [formName, setFormName] = useState("");
+  const [formPhone, setFormPhone] = useState("");
+  const [formPincode, setFormPincode] = useState("");
+  const [formAddress, setFormAddress] = useState("");
+  const [formLandmark, setFormLandmark] = useState("");
   const [formType, setFormType] = useState("HOME");
   const [formIsDefault, setFormIsDefault] = useState(false);
 
   const handleOpenAddModal = () => {
     setEditingAddress(null);
-    setFormName("Sachin Rawat");
-    setFormPhone("+91 6264384464");
+    setFormName(user.user_name || "");
+    setFormPhone(user.phone || "");
     setFormPincode("");
     setFormAddress("");
     setFormLandmark("");
@@ -148,36 +144,36 @@ function AccountContent() {
 
   const handleDeleteAddress = (id: number) => {
     if (confirm("Are you sure you want to delete this address?")) {
-      setAddresses(addresses.filter((a) => a.id !== id));
+      const updated = addresses.filter((a) => a.id !== id);
+      saveAddresses(updated);
     }
   };
 
   const handleSaveAddress = (e: React.FormEvent) => {
     e.preventDefault();
+    let updatedList: any[] = [];
     if (editingAddress) {
-      setAddresses(
-        addresses.map((a) =>
-          a.id === editingAddress.id
-            ? {
-                ...a,
-                name: formName,
-                phone: formPhone,
-                pincode: formPincode,
-                address: formAddress,
-                landmark: formLandmark,
-                type: formType,
-                isDefault: formIsDefault
-              }
-            : formIsDefault
-            ? { ...a, isDefault: false }
-            : a
-        )
+      updatedList = addresses.map((a) =>
+        a.id === editingAddress.id
+          ? {
+              ...a,
+              name: formName,
+              phone: formPhone,
+              pincode: formPincode,
+              address: formAddress,
+              landmark: formLandmark,
+              type: formType,
+              isDefault: formIsDefault
+            }
+          : formIsDefault
+          ? { ...a, isDefault: false }
+          : a
       );
     } else {
       const newObj = {
         id: Date.now(),
-        name: formName,
-        phone: formPhone,
+        name: formName || user.user_name || "Customer",
+        phone: formPhone || user.phone || "+91 9876543210",
         pincode: formPincode || "560103",
         address: formAddress,
         landmark: formLandmark || "Near Central Location",
@@ -185,11 +181,12 @@ function AccountContent() {
         isDefault: formIsDefault || addresses.length === 0
       };
       if (formIsDefault) {
-        setAddresses(addresses.map((a) => ({ ...a, isDefault: false })).concat(newObj));
+        updatedList = addresses.map((a) => ({ ...a, isDefault: false })).concat(newObj);
       } else {
-        setAddresses([...addresses, newObj]);
+        updatedList = [...addresses, newObj];
       }
     }
+    saveAddresses(updatedList);
     setIsAddAddressModalOpen(false);
     setEditingAddress(null);
   };
