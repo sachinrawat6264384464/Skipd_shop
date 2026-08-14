@@ -10,9 +10,36 @@ export default function WishlistPage() {
   const { addCartItem } = useCart();
 
   const handleMoveToCart = (item: any) => {
-    // Add item to cart
-    addCartItem(item.id.toString(), 1);
-    
+    // Construct variant & product for addCartItem
+    const variant = {
+      id: item.id.toString(),
+      title: item.title,
+      selectedOptions: [],
+      price: { amount: item.price.toString(), currencyCode: "INR" },
+      availableForSale: true
+    };
+    const product = {
+      id: item.id.toString(),
+      handle: item.handle,
+      title: item.title,
+      description: "",
+      descriptionHtml: "",
+      options: [],
+      priceRange: {
+        maxVariantPrice: { amount: item.price.toString(), currencyCode: "INR" },
+        minVariantPrice: { amount: item.price.toString(), currencyCode: "INR" }
+      },
+      featuredImage: { url: item.image, altText: item.title, width: 400, height: 400 },
+      images: [{ url: item.image, altText: item.title, width: 400, height: 400 }],
+      tags: [],
+      updatedAt: new Date().toISOString(),
+      variants: [variant]
+    };
+
+    try {
+      addCartItem(variant as any, product as any);
+    } catch (e) {}
+
     // Remove from wishlist
     removeFromWishlist(item.id);
 
