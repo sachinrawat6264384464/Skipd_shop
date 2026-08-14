@@ -527,7 +527,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               {/* Delivery Info */}
               <div className="space-y-1 text-xs text-gray-700">
                 <p className="font-bold text-emerald-700">FREE delivery Saturday, Aug 15.</p>
-                <p className="text-[11px] text-gray-500">📍 Deliver to Sachin - Gwalior 474001</p>
+                <p className="text-[11px] text-gray-500">📍 Deliver to Gwalior 474001</p>
                 <p className="text-emerald-600 font-extrabold text-sm pt-1">In Stock</p>
                 <p className="text-[10px] text-gray-500">Ships from and sold by SKIPD Official Retail.</p>
               </div>

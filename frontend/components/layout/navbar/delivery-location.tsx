@@ -2,41 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-
-interface UserAddress {
-  id: number;
-  name: string;
-  address: string;
-  pincode: string;
-  city: string;
-  isDefault: boolean;
-}
-
-const DEFAULT_ADDRESSES: UserAddress[] = [
-  {
-    id: 1,
-    name: "Sachin Rawat",
-    address: "Pachori building New sivaji nagar amkho, GWALIOR MADHYA PRADESH 474001",
-    pincode: "474001",
-    city: "Gwalior",
-    isDefault: true
-  },
-  {
-    id: 2,
-    name: "Sachin Rawat",
-    address: "D Guda gudi ka naka royal kartar enclave, GWALIOR MADHYA PRADESH 474001",
-    pincode: "474001",
-    city: "Gwalior",
-    isDefault: false
-  }
-];
+import { getUserAddressesKey } from "lib/utils";
 
 export function DeliveryLocationPicker() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userName, setUserName] = useState("Sachin");
-  const [userAddresses, setUserAddresses] = useState<UserAddress[]>(DEFAULT_ADDRESSES);
-  const [selectedId, setSelectedId] = useState<number>(DEFAULT_ADDRESSES[0]?.id || 1);
+  const [userName, setUserName] = useState("");
+  const [userAddresses, setUserAddresses] = useState<any[]>([]);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
   const [pincodeInput, setPincodeInput] = useState("");
   const [pincodeError, setPincodeError] = useState("");
   const [deliveryInfo, setDeliveryInfo] = useState<string | null>(null);
@@ -44,19 +17,34 @@ export function DeliveryLocationPicker() {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("skipd_user");
     if (storedUser) {
       try {
         const u = JSON.parse(storedUser);
         setIsLoggedIn(true);
-        if (u.user_name || u.name || u.full_name) {
-          const first = (u.user_name || u.name || u.full_name).split(" ")[0];
-          setUserName(first);
-        }
+        const name = u.user_name || u.name || u.email?.split("@")[0] || "User";
+        setUserName(name.split(" ")[0]);
       } catch {
         setIsLoggedIn(true);
       }
+    } else {
+      setIsLoggedIn(false);
     }
+
+    try {
+      const key = getUserAddressesKey();
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setUserAddresses(parsed);
+        if (parsed.length > 0) {
+          setSelectedId(parsed[0].id);
+          if (parsed[0].pincode) setCurrentPincode(parsed[0].pincode);
+        }
+      } else {
+        setUserAddresses([]);
+      }
+    } catch {}
   }, [isOpen]);
 
   useEffect(() => {
