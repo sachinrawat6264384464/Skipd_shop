@@ -126,6 +126,12 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
     if (isRegisterView) {
       // 🚀 CREATE ACCOUNT MODE
+      if (!password || password.length < 6) {
+        setError("Please create a strong password (minimum 6 characters)");
+        setLoading(false);
+        return;
+      }
+
       try {
         const userObj = {
           user_name: fullName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "Sachin Rawat"),
@@ -606,10 +612,13 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 />
               </div>
 
-              {!isRegisterView && (
-                <div>
-                  <div className="flex justify-between items-center mb-1">
-                    <label className="text-gray-700 font-bold">Password</label>
+              {/* Password Field (Both Login & Create Account) */}
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <label className="text-gray-700 font-bold">
+                    {isRegisterView ? "Set Password" : "Password"}
+                  </label>
+                  {!isRegisterView && (
                     <button
                       type="button"
                       onClick={() => {
@@ -621,16 +630,17 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                     >
                       Forgot password?
                     </button>
-                  </div>
-                  <input
-                    type="password"
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 focus:border-blue-600 focus:outline-none transition font-medium"
-                  />
+                  )}
                 </div>
-              )}
+                <input
+                  type="password"
+                  required
+                  placeholder={isRegisterView ? "Create a strong password (min 6 chars)" : "Enter your password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-900 focus:border-blue-600 focus:outline-none transition font-medium"
+                />
+              </div>
 
               <button
                 type="submit"
@@ -640,7 +650,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 {loading
                   ? "Processing..."
                   : isRegisterView
-                  ? "CONTINUE TO REGISTER"
+                  ? "CREATE ACCOUNT"
                   : "LOGIN TO ACCOUNT"}
               </button>
 
