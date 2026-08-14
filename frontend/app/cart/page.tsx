@@ -39,53 +39,50 @@ const INITIAL_CART_ITEMS = [
   }
 ];
 
+import { getUserCartKey } from "lib/utils";
+
 export default function CartItemsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
+  const loadUserCart = () => {
     const token = localStorage.getItem("skipd_token");
     const user = localStorage.getItem("skipd_user");
     const loggedIn = !!(token || user);
     setIsLoggedIn(loggedIn);
 
-    if (loggedIn) {
-      // 🟢 Logged-In User: Load Persistent Cart from localStorage (remains saved across restarts)
-      const savedCart = localStorage.getItem("skipd_user_cart");
-      if (savedCart) {
-        try {
-          setItems(JSON.parse(savedCart));
-        } catch (e) {
-          setItems(INITIAL_CART_ITEMS);
-        }
-      } else {
-        setItems(INITIAL_CART_ITEMS);
-        localStorage.setItem("skipd_user_cart", JSON.stringify(INITIAL_CART_ITEMS));
+    const cartKey = getUserCartKey();
+    const savedCart = localStorage.getItem(cartKey);
+
+    if (savedCart !== null) {
+      try {
+        setItems(JSON.parse(savedCart));
+      } catch (e) {
+        setItems([]);
       }
     } else {
-      // 🟡 Guest / Unauthenticated User: Load Transient Cart from sessionStorage
-      // (Purged automatically when tab is closed or URL is reopened in new window)
-      const guestCart = sessionStorage.getItem("skipd_guest_cart");
-      if (guestCart) {
-        try {
-          setItems(JSON.parse(guestCart));
-        } catch (e) {
-          setItems(INITIAL_CART_ITEMS);
-        }
-      } else {
-        setItems(INITIAL_CART_ITEMS);
-        sessionStorage.setItem("skipd_guest_cart", JSON.stringify(INITIAL_CART_ITEMS));
-      }
+      // New logged-in user starts with a clean empty cart (0 items from other users!)
+      const initial = loggedIn ? [] : INITIAL_CART_ITEMS;
+      setItems(initial);
+      localStorage.setItem(cartKey, JSON.stringify(initial));
     }
+  };
+
+  useEffect(() => {
+    loadUserCart();
+
+    window.addEventListener("skipd_auth_changed", loadUserCart);
+    window.addEventListener("skipd_cart_updated", loadUserCart);
+    return () => {
+      window.removeEventListener("skipd_auth_changed", loadUserCart);
+      window.removeEventListener("skipd_cart_updated", loadUserCart);
+    };
   }, []);
 
   const saveCartState = (newItems: any[]) => {
     setItems(newItems);
-    if (isLoggedIn) {
-      localStorage.setItem("skipd_user_cart", JSON.stringify(newItems));
-    } else {
-      sessionStorage.setItem("skipd_guest_cart", JSON.stringify(newItems));
-    }
+    const cartKey = getUserCartKey();
+    localStorage.setItem(cartKey, JSON.stringify(newItems));
     window.dispatchEvent(new Event("skipd_cart_updated"));
   };
 
@@ -100,13 +97,7 @@ export default function CartItemsPage() {
   };
 
   const clearAll = () => {
-    setItems([]);
-    if (isLoggedIn) {
-      localStorage.setItem("skipd_user_cart", JSON.stringify([]));
-    } else {
-      sessionStorage.setItem("skipd_guest_cart", JSON.stringify([]));
-    }
-    window.dispatchEvent(new Event("skipd_cart_updated"));
+    saveCartState([]);
   };
 
   const selectedItems = items.filter(i => i.selected);

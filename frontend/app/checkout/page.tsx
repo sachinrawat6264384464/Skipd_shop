@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "components/auth/auth-provider";
 import Link from "next/link";
+import { getUserCartKey } from "lib/utils";
 
 interface Address {
   id: string;
@@ -93,7 +94,8 @@ export default function CheckoutPage() {
 
     // Load Cart Items from Local / Session Storage
     const loadCart = () => {
-      const stored = localStorage.getItem("skipd_user_cart") || sessionStorage.getItem("skipd_guest_cart");
+      const cartKey = getUserCartKey();
+      const stored = localStorage.getItem(cartKey);
       if (stored) {
         try {
           const items = JSON.parse(stored);

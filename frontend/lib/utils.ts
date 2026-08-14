@@ -49,3 +49,18 @@ export const validateEnvironmentVariables = () => {
     );
   }
 };
+
+export function getUserCartKey(): string {
+  if (typeof window === "undefined") return "skipd_cart_guest";
+  try {
+    const userStr = localStorage.getItem("skipd_user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const identifier = user.email || user.phone || user.user_name;
+      if (identifier) {
+        return `skipd_cart_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+      }
+    }
+  } catch (e) {}
+  return "skipd_cart_guest";
+}
