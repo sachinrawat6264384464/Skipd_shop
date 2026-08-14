@@ -7,6 +7,8 @@ from app.core.database import get_db
 from app.core.security import decode_access_token
 from app.models.models import User, UserRole
 
+from app.core.firebase import verify_firebase_id_token
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
 async def get_current_user(
@@ -15,12 +17,44 @@ async def get_current_user(
 ) -> Optional[User]:
     if not token:
         return None
-    email = decode_access_token(token)
+
+    email: Optional[str] = None
+    full_name: str = "User"
+
+    # 1. Try verifying Firebase JWT Token
+    firebase_payload = verify_firebase_id_token(token)
+    if firebase_payload:
+        email = firebase_payload.get("email")
+        full_name = firebase_payload.get("name") or (email.split("@")[0] if email else "User")
+    else:
+        # 2. Fallback to standard FastAPI JWT Token
+        email = decode_access_token(token)
+
     if not email:
         return None
     
+    # 3. Query & Map user in PostgreSQL database
     result = await db.execute(select(User).where(User.email == email))
     user = result.scalars().first()
+
+    # 4. Auto-provision new Firebase user into PostgreSQL if not exists
+    if not user:
+        try:
+            user = User(
+                full_name=full_name,
+                email=email,
+                hashed_password="firebase_auth_user",
+                role=UserRole.CUSTOMER
+            )
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
+        except Exception as e:
+            print(f"⚠️ [USER SYNC WARN] Could not auto-create user in PostgreSQL: {e}")
+            await db.rollback()
+            result = await db.execute(select(User).where(User.email == email))
+            user = result.scalars().first()
+
     return user
 
 async def get_current_admin(
