@@ -3,6 +3,9 @@
 import { useState } from "react";
 
 export default function AdminPaymentsPage() {
+  const [activeTab, setActiveTab] = useState("Transactions");
+  const tabs = ["Transactions", "Payment Methods", "Refunds", "Failed Payments", "Coupons Usage", "Revenue Reports"];
+
   const [payments] = useState([
     { id: "PAY-99201", orderId: "#SKIPD-25879", customer: "Amit Sharma", amount: 2999, method: "Razorpay UPI", status: "SUCCESS", rzpPaymentId: "pay_N842910481", date: "May 25, 2025 14:32" },
     { id: "PAY-99202", orderId: "#SKIPD-25878", customer: "Priya Verma", amount: 1799, method: "VISA Credit Card", status: "SUCCESS", rzpPaymentId: "pay_N842910482", date: "May 25, 2025 12:15" },
@@ -15,63 +18,44 @@ export default function AdminPaymentsPage() {
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div>
-          <h1 className="text-2xl font-black text-gray-900">💳 Payments &amp; Financial Settlements</h1>
-          <p className="text-xs text-gray-500 font-medium mt-0.5">Real-time Razorpay transaction log, payout settlements, refunds &amp; payment gateway reconciliation</p>
+          <h1 className="text-2xl font-black text-gray-900">💰 Payments, Finance &amp; Gateways</h1>
+          <p className="text-xs text-gray-500 font-medium mt-0.5">Track Razorpay transactions, payment gateway methods, refunds, failed payments &amp; coupon revenue impact</p>
         </div>
 
-        <div className="flex gap-2">
-          <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer">
-            ⚡ Download Payout Settlement PDF
-          </button>
-        </div>
+        <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer">
+          ⚡ Export Settlement Statement
+        </button>
       </div>
 
-      {/* Payment Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs">
-          <p className="text-xs text-gray-500 font-medium">Total Paid Volume</p>
-          <h3 className="text-xl font-black text-gray-900 mt-1">₹27,45,890</h3>
-          <p className="text-[10px] text-emerald-600 font-bold mt-1">100% Razorpay Verified</p>
-        </div>
-
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs">
-          <p className="text-xs text-gray-500 font-medium">UPI / GPay Share</p>
-          <h3 className="text-xl font-black text-emerald-600 mt-1">68.4%</h3>
-          <p className="text-[10px] text-gray-400 font-medium mt-1">Instant Settlement T+1</p>
-        </div>
-
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs">
-          <p className="text-xs text-gray-500 font-medium">Credit / Debit Cards</p>
-          <h3 className="text-xl font-black text-blue-600 mt-1">24.1%</h3>
-          <p className="text-[10px] text-gray-400 font-medium mt-1">VISA &amp; Mastercard 3D-Secure</p>
-        </div>
-
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs">
-          <p className="text-xs text-gray-500 font-medium">Total Refunded</p>
-          <h3 className="text-xl font-black text-purple-600 mt-1">₹14,998</h3>
-          <p className="text-[10px] text-gray-400 font-medium mt-1">2 Refund Requests Processed</p>
-        </div>
+      {/* Sub-Tabs Navigation */}
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar bg-white border border-gray-200/80 p-2 rounded-2xl shadow-2xs">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap ${
+              activeTab === tab ? "bg-emerald-600 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
 
       {/* Transaction Log Table */}
       <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
-        <div className="p-5 border-b border-gray-100 flex justify-between items-center">
-          <h3 className="font-black text-base text-gray-900">Razorpay Transaction Log</h3>
-          <span className="text-xs text-gray-500">Live Gateway Sync</span>
-        </div>
-
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-gray-700">
             <thead className="bg-gray-50 text-gray-400 font-bold uppercase text-[10px]">
               <tr>
-                <th className="px-5 py-3">Txn ID</th>
-                <th className="px-5 py-3">Order ID</th>
-                <th className="px-5 py-3">Customer</th>
-                <th className="px-5 py-3">Payment Method</th>
-                <th className="px-5 py-3">Razorpay ID</th>
-                <th className="px-5 py-3">Amount (₹)</th>
-                <th className="px-5 py-3">Status</th>
-                <th className="px-5 py-3 text-right">Date &amp; Time</th>
+                <th className="px-5 py-3.5">Txn ID</th>
+                <th className="px-5 py-3.5">Order ID</th>
+                <th className="px-5 py-3.5">Customer</th>
+                <th className="px-5 py-3.5">Payment Method</th>
+                <th className="px-5 py-3.5">Razorpay ID</th>
+                <th className="px-5 py-3.5">Amount (₹)</th>
+                <th className="px-5 py-3.5">Status</th>
+                <th className="px-5 py-3.5 text-right">Date &amp; Time</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 font-medium">

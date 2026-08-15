@@ -176,48 +176,48 @@ export default function AdminSalesPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-gray-100 flex flex-col justify-between p-6">
-      <div className="max-w-7xl mx-auto w-full space-y-6">
+    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
 
         {/* Top Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#111827] border border-gray-800 p-6 rounded-3xl">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
           <div>
             <div className="flex items-center gap-2">
-              <Link href="/admin" className="text-xs text-emerald-400 hover:underline">&larr; Back to Dashboard</Link>
-              <span className="text-gray-600">/</span>
-              <span className="text-xs text-gray-400">Sale Events Manager</span>
+              <Link href="/admin" className="text-xs text-emerald-700 hover:underline">&larr; Back to Dashboard</Link>
+              <span className="text-gray-400">/</span>
+              <span className="text-xs text-gray-500 font-bold">Marketing &amp; Sales</span>
             </div>
-            <h1 className="text-2xl font-black text-white mt-1">🔥 Sale Events &amp; Offers Management</h1>
-            <p className="text-xs text-gray-400 mt-0.5">Control live sales, curate Featured Offers on /deals, bulk-add products &amp; toggle live status</p>
+            <h1 className="text-2xl font-black text-gray-900 mt-1">🎯 Marketing &amp; Promotional Campaigns</h1>
+            <p className="text-xs text-gray-500 font-medium mt-0.5">Control live flash sales, featured freedom offers, promo codes, push notifications &amp; email marketing</p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => setShowCreateModal(true)}
-              className="bg-orange-600 hover:bg-orange-500 text-white font-black text-xs px-5 py-3 rounded-2xl transition shadow-lg shadow-orange-600/20 cursor-pointer"
+              className="bg-orange-600 hover:bg-orange-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer"
             >
-              + Create Sale Event
+              + Create Flash Sale
             </button>
           </div>
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex gap-2 bg-[#111827] border border-gray-800 rounded-2xl p-1.5 w-fit">
-          <button
-            onClick={() => setActiveTab("sales")}
-            className={`px-5 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
-              activeTab === "sales"
-                ? "bg-orange-600 text-white shadow-lg shadow-orange-600/20"
-                : "text-gray-400 hover:text-white"
-            }`}
-          >
-            🔥 Sale Events
-          </button>
-          <button
-            onClick={() => setActiveTab("featured")}
-            className={`px-5 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
-              activeTab === "featured"
-                ? "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20"
-                : "text-gray-400 hover:text-white"
+        {/* Marketing Sub-Tabs Navigation (Exact Spec) */}
+        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar bg-white border border-gray-200/80 p-2 rounded-2xl shadow-2xs">
+          {["Flash Sales", "Featured Freedom Offers", "Coupons", "Discounts", "Banners", "Campaigns", "Notifications", "Email Campaigns"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => {
+                if (tab === "Featured Freedom Offers") setActiveTab("featured");
+                else setActiveTab("sales");
+              }}
+              className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap ${
+                (activeTab === "featured" && tab === "Featured Freedom Offers") || (activeTab === "sales" && tab === "Flash Sales")
+                  ? "bg-emerald-600 text-white shadow-xs"
+                  : "text-gray-600 hover:bg-gray-100"
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
             }`}
           >
             ⭐ Featured Offers ({featuredOffers.length})

@@ -10,48 +10,41 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const isActive = (path: string) => pathname === path;
 
-  // Exact Sidebar Structure Matching Screenshot 1 & 2
+  // Complete Enterprise Admin Menu matching exact tree spec
   const navGroups = [
     {
-      group: "MAIN",
+      group: "OVERVIEW",
       links: [
         { title: "Dashboard", href: "/admin", icon: "🏠" },
-        { title: "Analytics", href: "/admin/analytics", icon: "📈" },
-        { title: "Orders", href: "/admin/orders", icon: "🛍️", badge: "28", badgeColor: "bg-indigo-600 text-white" },
+        { title: "Analytics", href: "/admin/analytics", icon: "📊" },
+      ]
+    },
+    {
+      group: "COMMERCE & CATALOG",
+      links: [
+        { title: "Orders", href: "/admin/orders", icon: "🛒", badge: "28", badgeColor: "bg-indigo-600 text-white" },
+        { title: "Products & Catalog", href: "/admin/products", icon: "📦" },
+        { title: "Inventory & Stock", href: "/admin/inventory", icon: "🏭" },
         { title: "Customers", href: "/admin/customers", icon: "👥" },
-        { title: "Products", href: "/admin/products", icon: "📦" },
-        { title: "Categories", href: "/admin/categories", icon: "📁" },
-        { title: "Brands", href: "/admin/brands", icon: "🏷️" },
-        { title: "Inventory", href: "/admin/inventory", icon: "🏬" },
-        { title: "Payments", href: "/admin/payments", icon: "💳" },
-        { title: "Reports", href: "/admin/reports", icon: "📊" },
+        { title: "Payments & Finance", href: "/admin/payments", icon: "💰" },
+        { title: "Delivery & Logistics", href: "/admin/delivery", icon: "🚚" },
       ]
     },
     {
-      group: "MARKETING",
+      group: "GROWTH & CONTENT",
       links: [
-        { title: "Coupons", href: "/admin/coupons", icon: "🎟️" },
-        { title: "Banners", href: "/admin/homepage", icon: "🖼️" },
-        { title: "Flash Sales", href: "/admin/sales", icon: "⚡", badge: "Live", badgeColor: "bg-orange-500 text-white" },
-        { title: "Reviews", href: "/admin/reviews", icon: "⭐" },
+        { title: "Marketing & Sales", href: "/admin/sales", icon: "🎯", badge: "Live", badgeColor: "bg-orange-500 text-white" },
+        { title: "Customer Engagement", href: "/admin/engagement", icon: "❤️" },
+        { title: "Content & CMS", href: "/admin/homepage", icon: "📝" },
+        { title: "Support & Tickets", href: "/admin/tickets", icon: "🎧" },
       ]
     },
     {
-      group: "CONTENT",
-      links: [
-        { title: "Pages", href: "/admin/pages", icon: "📄" },
-        { title: "Blog Posts", href: "/admin/blog", icon: "📝" },
-        { title: "Media Library", href: "/admin/media", icon: "🌄" },
-      ]
-    },
-    {
-      group: "SETTINGS",
+      group: "ADMINISTRATION",
       links: [
         { title: "Users & Roles", href: "/admin/users", icon: "👤" },
-        { title: "Permissions", href: "/admin/permissions", icon: "🔐" },
-        { title: "Settings", href: "/admin/settings", icon: "⚙️" },
-        { title: "Support Tickets", href: "/admin/tickets", icon: "🎫" },
-        { title: "System Logs", href: "/admin/logs", icon: "📜" },
+        { title: "Store Settings", href: "/admin/settings", icon: "⚙️" },
+        { title: "System & Logs", href: "/admin/logs", icon: "🔐" },
       ]
     }
   ];
@@ -59,32 +52,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="bg-[#F8FAFC] min-h-screen flex text-gray-900 font-sans">
       
-      {/* 🖤 Dark Left Sidebar (Exact Match with Reference Screenshots) */}
+      {/* 🖤 Dark Left Sidebar */}
       <aside className={`w-64 bg-[#0B1329] text-gray-300 flex flex-col justify-between p-4 shrink-0 border-r border-slate-800/80 fixed lg:sticky top-0 h-screen z-50 transition-transform duration-300 ${
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       }`}>
         <div className="space-y-5 overflow-y-auto pr-1">
           
-          {/* Brand Logo & Collapse */}
+          {/* Brand Logo */}
           <div className="flex items-center justify-between px-2 pt-1">
             <Link href="/admin" className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-2xl bg-emerald-500 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
                 S
               </div>
               <div>
-                <span className="font-black text-white text-xl tracking-tight block leading-none">SKIPD</span>
+                <span className="font-black text-white text-xl tracking-tight block leading-none">SKIPD ADMIN</span>
                 <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Enterprise OS v3.0</span>
               </div>
             </Link>
             <button
               onClick={() => setMobileOpen(false)}
-              className="text-gray-400 hover:text-white text-xs bg-slate-800 p-1.5 rounded-lg cursor-pointer"
+              className="lg:hidden text-gray-400 hover:text-white text-xs bg-slate-800 p-1.5 rounded-lg cursor-pointer"
             >
-              ‹
+              ✕
             </button>
           </div>
 
-          {/* User Profile Badge */}
+          {/* User Profile */}
           <div className="flex items-center gap-3 p-3 bg-[#131E3A] rounded-2xl border border-slate-700/60 shadow-inner">
             <div className="relative">
               <img
@@ -114,7 +107,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                       key={link.href}
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
-                      className={`w-full flex items-center justify-between px-3.5 py-2 rounded-xl transition duration-150 ${
+                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition duration-150 ${
                         active
                           ? "bg-emerald-600/90 text-white font-bold shadow-lg shadow-emerald-600/20"
                           : "hover:bg-slate-800/80 text-slate-400 hover:text-white"
@@ -146,7 +139,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             <div className="flex items-center gap-2">
               <span>🛍️</span>
-              <span>View Store</span>
+              <span>View Storefront</span>
             </div>
             <span className="text-emerald-400 font-black">↗</span>
           </Link>
@@ -156,7 +149,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* 🤍 Main Content */}
       <main className="flex-1 flex flex-col min-w-0 overflow-y-auto bg-[#F8FAFC]">
         
-        {/* Top Light Header Bar */}
+        {/* Top Header */}
         <header className="bg-white border-b border-gray-200 px-6 py-3.5 flex items-center justify-between sticky top-0 z-40 shadow-2xs">
           <div className="flex items-center gap-4 flex-1">
             <button
@@ -169,7 +162,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="relative w-full max-w-md hidden sm:block">
               <input
                 type="text"
-                placeholder="Search anything... Ctrl + /"
+                placeholder="Search orders, products, customers, transactions... (Ctrl + /)"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:outline-none"
               />
             </div>
