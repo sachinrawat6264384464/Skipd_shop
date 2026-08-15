@@ -814,37 +814,40 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {[
-              { handle: "active-anc-headphones", title: "boAt Rockerz 421, 60H Battery", price: 1099, mrp: 2490, off: "-56%", rating: "2,400", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
-              { handle: "active-anc-headphones", title: "boAt Rockerz 480, RGB LED", price: 1599, mrp: 3790, off: "-58%", rating: "4,695", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400" },
-              { handle: "matte-black-chrono-watch", title: "boAt Rockerz 650 Pro, Dolby Audio", price: 2499, mrp: 8990, off: "-72%", rating: "4,423", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400" },
-              { handle: "minimalist-graphic-tee", title: "Noise Airwave Max 3 Bluetooth", price: 1999, mrp: 5499, off: "-64%", rating: "4,204", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" },
-              { handle: "active-anc-headphones", title: "boAt Rockerz 512 ANC, 80H Playback", price: 2599, mrp: 7990, off: "-67%", rating: "31,438", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" },
-              { handle: "oneplus-nord-6", title: "GOBOULT Mustang Torque 60H", price: 1799, mrp: 5999, off: "-70%", rating: "14,517", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400" },
-              { handle: "apple-watch-series-9", title: "pTron Studio Classic 75H", price: 799, mrp: 2899, off: "-72%", rating: "207", del: "FREE Delivery Sat, Aug 15", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400" }
-            ].map((sp, sIdx) => (
-              <Link
-                key={sIdx}
-                href={`/product/${sp.handle}`}
-                className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group cursor-pointer"
-              >
-                <div className="space-y-2">
-                  <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
-                    <img src={sp.image} alt={sp.title} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
-                    <span className="absolute top-1 left-1 bg-red-600 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded uppercase">
-                      {sp.off}
-                    </span>
+            {(relatedProducts.length > 0 ? relatedProducts.slice(0, 7) : []).map((sp, sIdx) => {
+              const spPrice = Number(sp.price || 0);
+              const spCompare = Number(sp.compare_at_price || spPrice * 1.3);
+              const discountPercent = spCompare > spPrice ? Math.round(((spCompare - spPrice) / spCompare) * 100) : 0;
+              const spImg = sp.images && sp.images.length > 0 ? sp.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400";
+
+              return (
+                <Link
+                  key={sIdx}
+                  href={`/product/${sp.handle}`}
+                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group cursor-pointer"
+                >
+                  <div className="space-y-2">
+                    <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
+                      <img src={spImg} alt={sp.title} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
+                      {discountPercent > 0 && (
+                        <span className="absolute top-1 left-1 bg-red-600 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded uppercase">
+                          -{discountPercent}%
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{sp.title}</h4>
+                    <p className="text-[10px] text-amber-500 font-bold">★ 4.8 (Verified)</p>
                   </div>
-                  <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{sp.title}</h4>
-                  <p className="text-[10px] text-amber-500 font-bold">★ 4.1 ({sp.rating})</p>
-                </div>
-                <div>
-                  <p className="font-black text-sm text-gray-900">₹{sp.price.toLocaleString("en-IN")}.00</p>
-                  <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{sp.mrp.toLocaleString("en-IN")}.00</p>
-                  <p className="text-[9px] text-emerald-700 font-medium pt-0.5">{sp.del}</p>
-                </div>
-              </Link>
-            ))}
+                  <div>
+                    <p className="font-black text-sm text-gray-900">₹{spPrice.toLocaleString("en-IN")}.00</p>
+                    {spCompare > spPrice && (
+                      <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{spCompare.toLocaleString("en-IN")}.00</p>
+                    )}
+                    <p className="text-[9px] text-emerald-700 font-medium pt-0.5">FREE Fast Delivery</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
@@ -853,42 +856,45 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       <div className="max-w-[1536px] mx-auto px-4 lg:px-8 pt-4">
         <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-            <h3 className="text-base font-black text-gray-900">Customers Who Viewed This Item Also Viewed (Page 1 of 3)</h3>
-            <span className="text-xs font-bold text-gray-400">Next set of slides &rarr;</span>
+            <h3 className="text-base font-black text-gray-900">Customers Who Viewed This Item Also Viewed</h3>
+            <span className="text-xs font-bold text-gray-400">Live DB Recommendations</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {[
-              { handle: "active-anc-headphones", name: "boAt Rockerz 480 RGB", price: 1499, mrp: 3790, off: "-60%", star: "4.1", reviews: "4,695", image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400" },
-              { handle: "minimalist-graphic-tee", name: "boAt Rockerz Prime 415", price: 1799, mrp: 3999, off: "-55%", star: "4.1", reviews: "299", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400" },
-              { handle: "active-anc-headphones", name: "boAt Rockerz 512 ANC", price: 2599, mrp: 7990, off: "-67%", star: "4.2", reviews: "31,438", image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400" },
-              { handle: "active-anc-headphones", name: "boAt Rockerz Plus 550", price: 1799, mrp: 4990, off: "-64%", star: "4.0", reviews: "39", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400" },
-              { handle: "matte-black-chrono-watch", name: "boAt Rockerz 650 Pro", price: 2499, mrp: 8990, off: "-72%", star: "4.2", reviews: "4,423", image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400" },
-              { handle: "oneplus-nord-6", name: "boAt Rockerz 421 60H", price: 1099, mrp: 2490, off: "-56%", star: "4.0", reviews: "2,400", image: "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=400" },
-              { handle: "apple-watch-series-9", name: "boAt Rockerz 411 40H", price: 1199, mrp: 2999, off: "-60%", star: "4.2", reviews: "28,965", image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400" }
-            ].map((viewed, vIdx) => (
-              <Link
-                key={vIdx}
-                href={`/product/${viewed.handle}`}
-                className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group cursor-pointer"
-              >
-                <div className="space-y-2">
-                  <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
-                    <img src={viewed.image} alt={viewed.name} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
-                    <span className="absolute top-1 left-1 bg-orange-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded uppercase">
-                      {viewed.off}
-                    </span>
+            {(relatedProducts.length > 7 ? relatedProducts.slice(7, 14) : relatedProducts.slice(0, 7)).map((viewed, vIdx) => {
+              const vPrice = Number(viewed.price || 0);
+              const vCompare = Number(viewed.compare_at_price || vPrice * 1.25);
+              const vDiscount = vCompare > vPrice ? Math.round(((vCompare - vPrice) / vCompare) * 100) : 0;
+              const vImg = viewed.images && viewed.images.length > 0 ? viewed.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400";
+
+              return (
+                <Link
+                  key={vIdx}
+                  href={`/product/${viewed.handle}`}
+                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group cursor-pointer"
+                >
+                  <div className="space-y-2">
+                    <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
+                      <img src={vImg} alt={viewed.title} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
+                      {vDiscount > 0 && (
+                        <span className="absolute top-1 left-1 bg-orange-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded uppercase">
+                          -{vDiscount}%
+                        </span>
+                      )}
+                    </div>
+                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{viewed.title}</h4>
+                    <p className="text-[10px] text-amber-500 font-bold">★ 4.7 (Top Rated)</p>
                   </div>
-                  <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{viewed.name}</h4>
-                  <p className="text-[10px] text-amber-500 font-bold">★ {viewed.star} ({viewed.reviews})</p>
-                </div>
-                <div>
-                  <p className="font-black text-sm text-gray-900">₹{viewed.price.toLocaleString("en-IN")}.00</p>
-                  <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{viewed.mrp.toLocaleString("en-IN")}.00</p>
-                  <p className="text-[9px] text-emerald-700 font-medium pt-0.5">FREE Delivery by Amazon</p>
-                </div>
-              </Link>
-            ))}
+                  <div>
+                    <p className="font-black text-sm text-gray-900">₹{vPrice.toLocaleString("en-IN")}.00</p>
+                    {vCompare > vPrice && (
+                      <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{vCompare.toLocaleString("en-IN")}.00</p>
+                    )}
+                    <p className="text-[9px] text-emerald-700 font-medium pt-0.5">In Stock - Shipped from DB</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>

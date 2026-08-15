@@ -607,6 +607,7 @@ const MOCK_PRODUCTS: Product[] = [
 
 export async function fetchProducts(query?: { category?: string; search?: string; featured?: boolean }): Promise<Product[]> {
   let backendProducts: Product[] = [];
+  let isBackendOk = false;
   try {
     const params = new URLSearchParams();
     if (query?.category) params.append("category", query.category);
@@ -619,7 +620,10 @@ export async function fetchProducts(query?: { category?: string; search?: string
 
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) backendProducts = data;
+      if (Array.isArray(data)) {
+        backendProducts = data;
+        isBackendOk = true;
+      }
     }
   } catch (err: any) {
     if (err && (err.$$typeof || err.message?.includes("postpone") || err.digest?.includes("NEXT_PRERENDER"))) {
@@ -628,20 +632,16 @@ export async function fetchProducts(query?: { category?: string; search?: string
     console.warn("[API SDK Warning] FastAPI backend offline, using fallback catalog.", err);
   }
 
-  // Smart map to guarantee 8+ rich catalog products in every section
-  const map = new Map<any, Product>();
-  backendProducts.forEach(p => map.set(p.handle || p.id, p));
-  MOCK_PRODUCTS.forEach(p => {
-    if (!map.has(p.handle) && !map.has(p.id)) {
-      map.set(p.handle, p);
-    }
-  });
+  // Pure 100% live database products when backend API is connected
+  if (isBackendOk && backendProducts.length > 0) {
+    return backendProducts;
+  }
 
-  let combined = Array.from(map.values()).map((p, idx) => ({ ...p, id: p.id ? Number(p.id) : idx + 100 }));
+  // Safe fallback catalog only if backend server is unreachable
+  let combined = MOCK_PRODUCTS.slice();
   if (query?.featured) combined = combined.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
-    const filtered = combined.filter(p => p.category?.slug === query.category || p.tags?.includes(query.category!));
-    if (filtered.length >= 2) combined = filtered;
+    combined = combined.filter(p => p.category?.slug === query.category || p.tags?.includes(query.category!));
   }
   if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
     combined = combined.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()) || p.category?.name?.toLowerCase().includes(query.search!.toLowerCase()));
@@ -664,7 +664,6 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
 
   // Backend product not found — search MOCK_PRODUCTS by exact handle or id
   const found = MOCK_PRODUCTS.find(p => p.handle === handle || String(p.id) === handle);
-  // Return found mock OR null (let page show notFound() — never show wrong product)
   return found ?? null;
 }
 
