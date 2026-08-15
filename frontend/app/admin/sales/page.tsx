@@ -216,12 +216,6 @@ export default function AdminSalesPage() {
             >
               {tab}
             </button>
-          ))}
-        </div>
-            }`}
-          >
-            ⭐ Featured Offers ({featuredOffers.length})
-          </button>
         </div>
 
         {/* ===== TAB: SALE EVENTS ===== */}
