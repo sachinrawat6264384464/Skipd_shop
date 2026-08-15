@@ -1945,6 +1945,160 @@ function AccountContent() {
             </form>
           </div>
         </div>
+      {/* 🏡 ADD / EDIT ADDRESS MODAL */}
+      {isAddAddressModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl relative border border-gray-100 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+              <div>
+                <h3 className="text-xl font-black text-gray-900">
+                  {editingAddress ? "Edit Delivery Address" : "Add New Delivery Address"}
+                </h3>
+                <p className="text-xs text-gray-500 font-medium mt-0.5">
+                  Enter delivery location details for fast checkout
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setIsAddAddressModalOpen(false);
+                  setEditingAddress(null);
+                }}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveAddress} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">
+                    Full Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formName}
+                    onChange={(e) => setFormName(e.target.value)}
+                    placeholder="e.g. Sachin Rawat"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">
+                    Mobile Number *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={formPhone}
+                    onChange={(e) => setFormPhone(e.target.value)}
+                    placeholder="10-digit mobile number"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">
+                    Pincode *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formPincode}
+                    onChange={(e) => setFormPincode(e.target.value)}
+                    placeholder="e.g. 560103"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">
+                    Landmark / Area
+                  </label>
+                  <input
+                    type="text"
+                    value={formLandmark}
+                    onChange={(e) => setFormLandmark(e.target.value)}
+                    placeholder="e.g. Near Metro Station"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">
+                  Flat, House No., Building, Street Address *
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  value={formAddress}
+                  onChange={(e) => setFormAddress(e.target.value)}
+                  placeholder="Complete street address details..."
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 uppercase mb-2">
+                  Address Type
+                </label>
+                <div className="flex items-center gap-3">
+                  {["HOME", "WORK", "OTHER"].map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() => setFormType(type)}
+                      className={`px-4 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer border ${
+                        formType === type
+                          ? "bg-[#059669] text-white border-[#059669] shadow-xs"
+                          : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200"
+                      }`}
+                    >
+                      {type === "HOME" ? "🏠 Home" : type === "WORK" ? "🏢 Work" : "📍 Other"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="defaultAddressCheck"
+                  checked={formIsDefault}
+                  onChange={(e) => setFormIsDefault(e.target.checked)}
+                  className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                />
+                <label htmlFor="defaultAddressCheck" className="text-xs font-bold text-gray-700 cursor-pointer">
+                  Make this my default delivery address
+                </label>
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAddAddressModalOpen(false);
+                    setEditingAddress(null);
+                  }}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 text-xs font-black py-3 rounded-xl transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white text-xs font-black py-3 rounded-xl transition shadow-md cursor-pointer"
+                >
+                  {editingAddress ? "Update Address" : "Save Address"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* Floating Support Chat Widget */}
