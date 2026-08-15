@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { getUserOrdersKey } from "lib/utils";
 
 export default function UserReturnsPage() {
   const [mounted, setMounted] = useState(false);
@@ -9,16 +10,14 @@ export default function UserReturnsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
 
-  // Return Form State
+  // Return Form Inputs State
   const [reason, setReason] = useState("Damaged Item Received");
   const [description, setDescription] = useState("");
   const [contactPhone, setContactPhone] = useState("+91 98765 43210");
   const [photoUploaded, setPhotoUploaded] = useState(false);
 
-  // Orders State
+  // Dynamic Purchased Orders State
   const [orders, setOrders] = useState<any[]>([]);
-
-  // Ticking Timers state for live countdowns
   const [timers, setTimers] = useState<{ [key: string]: { label: string | null; isExpired: boolean } }>({});
 
   // Helper to format live 24h timer (18h : 58m : 20s)
@@ -38,61 +37,70 @@ export default function UserReturnsPage() {
     };
   };
 
-  useEffect(() => {
-    setMounted(true);
-
-    const savedOrders = localStorage.getItem("skipd_user_return_orders");
-    if (savedOrders) {
+  // Load real user placed orders from localStorage (scoped key)
+  const loadUserOrders = () => {
+    const key = getUserOrdersKey();
+    const storedStr = localStorage.getItem(key) || localStorage.getItem("skipd_user_return_orders");
+    if (storedStr) {
       try {
-        setOrders(JSON.parse(savedOrders));
-        return;
+        const raw = JSON.parse(storedStr);
+        if (Array.isArray(raw) && raw.length > 0) {
+          // Normalize orders array into item-level return cards
+          const normalized: any[] = [];
+          raw.forEach((ord: any) => {
+            const orderTimestamp = ord.orderTimestamp || (ord.createdAt ? new Date(ord.createdAt).getTime() : Date.now());
+            const orderId = ord.id || ord.orderNumber || `#SKIPD-${Math.floor(10000 + Math.random() * 90000)}`;
+
+            if (ord.items && Array.isArray(ord.items) && ord.items.length > 0) {
+              ord.items.forEach((item: any, idx: number) => {
+                normalized.push({
+                  id: `${orderId}${ord.items.length > 1 ? `-${idx + 1}` : ''}`,
+                  parentOrderId: orderId,
+                  productName: item.title || item.productName || "Ordered Product",
+                  specs: item.variant || item.specs || "Standard Variant",
+                  price: item.price || ord.totalPrice || ord.amount || 999,
+                  deliveredDate: ord.deliveredDate || `Delivered on ${new Date(orderTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`,
+                  image: item.featuredImage?.url || item.image || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
+                  orderTimestamp: orderTimestamp,
+                  status: ord.status || "DELIVERED",
+                  returnStatus: item.returnStatus || ord.returnStatus || (Date.now() - orderTimestamp > 24 * 3600 * 1000 ? "EXPIRED" : "ELIGIBLE"),
+                  queryId: item.queryId || ord.queryId,
+                  expiredText: Date.now() - orderTimestamp > 24 * 3600 * 1000 ? "Expired 24h Return Policy Window" : null
+                });
+              });
+            } else {
+              normalized.push({
+                id: orderId,
+                parentOrderId: orderId,
+                productName: ord.productName || "Ordered Product",
+                specs: ord.specs || "Standard Variant",
+                price: ord.price || ord.totalPrice || ord.amount || 999,
+                deliveredDate: ord.deliveredDate || `Delivered on ${new Date(orderTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`,
+                image: ord.image || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
+                orderTimestamp: orderTimestamp,
+                status: ord.status || "DELIVERED",
+                returnStatus: ord.returnStatus || (Date.now() - orderTimestamp > 24 * 3600 * 1000 ? "EXPIRED" : "ELIGIBLE"),
+                queryId: ord.queryId,
+                expiredText: Date.now() - orderTimestamp > 24 * 3600 * 1000 ? "Expired 24h Return Policy Window" : null
+              });
+            }
+          });
+          setOrders(normalized);
+          return;
+        }
       } catch (e) {}
     }
+    setOrders([]);
+  };
 
-    const now = Date.now();
-    const initialOrders = [
-      {
-        id: "#SKIPD-28579",
-        productName: "OnePlus Nord 4 5G",
-        specs: "Obsidian Midnight, 8GB RAM, 256GB Storage",
-        price: 24499,
-        deliveredDate: "Delivered on May 17, 2025",
-        image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
-        orderTimestamp: now - 3600 * 1000 * 5, // 5 hours ago (19h left)
-        status: "DELIVERED",
-        returnStatus: "ELIGIBLE", // ELIGIBLE, REQUESTED, COMPLETED, EXPIRED
-        expiredText: null
-      },
-      {
-        id: "#SKIPD-28578",
-        productName: "Saree Premium Silk",
-        specs: "Pure Mulberry Kanjivaram Silk, Gold Zari",
-        price: 598,
-        deliveredDate: "Delivered on May 17, 2025",
-        image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300",
-        orderTimestamp: now - 3600 * 1000 * 20, // 20 hours ago (4h left)
-        status: "DELIVERED",
-        returnStatus: "ELIGIBLE",
-        expiredText: null
-      },
-      {
-        id: "#SKIPD-28577",
-        productName: "20000mAh Power Bank",
-        specs: "22.5W Fast Charging, Dual USB Output",
-        price: 999,
-        deliveredDate: "Delivered on May 17, 2025",
-        image: "https://images.unsplash.com/photo-1609592424109-dd9892f1b177?w=300",
-        orderTimestamp: now - 3600 * 1000 * 30, // 30 hours ago (Expired)
-        status: "DELIVERED",
-        returnStatus: "EXPIRED",
-        expiredText: "Expired on May 18, 2025 • 10:30 AM"
-      }
-    ];
-    setOrders(initialOrders);
-    localStorage.setItem("skipd_user_return_orders", JSON.stringify(initialOrders));
+  useEffect(() => {
+    setMounted(true);
+    loadUserOrders();
+    window.addEventListener("skipd_auth_changed", loadUserOrders);
+    return () => window.removeEventListener("skipd_auth_changed", loadUserOrders);
   }, []);
 
-  // ⏰ Live ticking interval every second
+  // ⏰ Live ticking timer interval every second
   useEffect(() => {
     if (!mounted || orders.length === 0) return;
 
@@ -109,20 +117,56 @@ export default function UserReturnsPage() {
     return () => clearInterval(interval);
   }, [mounted, orders]);
 
-  // Save changes to localStorage
-  const saveOrders = (updated: any[]) => {
-    setOrders(updated);
-    localStorage.setItem("skipd_user_return_orders", JSON.stringify(updated));
+  // Function to create a live test order dynamically
+  const handleCreateTestOrder = () => {
+    const key = getUserOrdersKey();
+    const existing = JSON.parse(localStorage.getItem(key) || "[]");
+    
+    const sampleProducts = [
+      { productName: "OnePlus Nord 4 5G", specs: "Obsidian Midnight, 8GB RAM, 256GB Storage", price: 24499, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300" },
+      { productName: "Saree Premium Silk", specs: "Pure Mulberry Kanjivaram Silk, Gold Zari", price: 598, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300" },
+      { productName: "Sony WH-1000XM5 ANC Headphones", specs: "Silver, 30h Battery, Noise Cancelling", price: 29990, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300" },
+      { productName: "Apple Watch Series 9 GPS", specs: "45mm Starlight Aluminum Case", price: 41900, image: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=300" }
+    ];
+
+    const randomProd = sampleProducts[Math.floor(Math.random() * sampleProducts.length)];
+    const newOrderId = `#SKIPD-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    const newOrderObj = {
+      id: newOrderId,
+      orderNumber: newOrderId,
+      orderTimestamp: Date.now(),
+      createdAt: new Date().toISOString(),
+      status: "PAID",
+      totalPrice: randomProd.price,
+      items: [
+        {
+          title: randomProd.productName,
+          variant: randomProd.specs,
+          price: randomProd.price,
+          featuredImage: { url: randomProd.image }
+        }
+      ]
+    };
+
+    const updatedOrders = [newOrderObj, ...existing];
+    localStorage.setItem(key, JSON.stringify(updatedOrders));
+    loadUserOrders();
+    alert(`🎉 Success! New order ${newOrderId} placed! 24-Hour Return Window timer is now active.`);
   };
 
-  // Submit return form
+  // Save changes to localStorage when return is requested
   const handleSubmitReturn = (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedProduct) return;
 
     const queryId = `Q-${Math.floor(10000 + Math.random() * 90000)}`;
     const updated = orders.map(o => o.id === selectedProduct.id ? { ...o, returnStatus: "REQUESTED", queryId } : o);
-    saveOrders(updated);
+    
+    // Save updated state to localStorage
+    const key = getUserOrdersKey();
+    localStorage.setItem("skipd_user_return_orders", JSON.stringify(updated));
+    setOrders(updated);
 
     alert(`✓ Return query #${queryId} submitted successfully! Our support team will review within 12 hours.`);
     setSelectedProduct(null);
@@ -135,7 +179,7 @@ export default function UserReturnsPage() {
   const requestedCount = orders.filter(o => o.returnStatus === "REQUESTED").length;
   const completedCount = orders.filter(o => o.returnStatus === "COMPLETED").length;
 
-  // Filtered orders list based on active sub-tab and search query
+  // Filtered orders list
   const filteredOrders = orders.filter(o => {
     if (activeSubTab.startsWith("Return Eligible")) {
       if (o.returnStatus !== "ELIGIBLE" || timers[o.id]?.isExpired) return false;
@@ -207,7 +251,7 @@ export default function UserReturnsPage() {
         </div>
       </header>
 
-      {/* Main Grid Layout: Left Sidebar + Center Orders Panel + Right Return Policy Info Card */}
+      {/* Main Grid Layout */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {/* 🖤 1. Left Account Sidebar */}
@@ -372,22 +416,32 @@ export default function UserReturnsPage() {
             
             {/* Left 8 Cols: Purchases & Eligibility */}
             <div className="lg:col-span-8 space-y-4">
-              <h3 className="font-black text-base text-gray-900">Your Recent Purchases &amp; Eligibility</h3>
+              <div className="flex justify-between items-center">
+                <h3 className="font-black text-base text-gray-900">Your Recent Purchases &amp; Eligibility</h3>
+                <button
+                  onClick={handleCreateTestOrder}
+                  className="bg-emerald-50 hover:bg-emerald-100 text-[#059669] border border-emerald-200 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5"
+                  title="Simulate placing a new order to test live 24h return window"
+                >
+                  <span>+</span>
+                  <span>Simulate Order</span>
+                </button>
+              </div>
 
               {/* Sub-Filter Tabs Bar */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 bg-white border border-gray-200/80 p-2 rounded-2xl shadow-2xs">
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs font-bold w-full sm:w-auto">
                   {[
-                    { label: "All Orders", count: orders.length },
+                    { label: `All Orders (${orders.length})`, tabKey: "All Orders" },
                     { label: `Return Eligible (${eligibleCount})`, tabKey: "Return Eligible" },
                     { label: `Return Requested (${requestedCount})`, tabKey: "Return Requested" },
                     { label: `Return Completed (${completedCount})`, tabKey: "Return Completed" }
                   ].map((item) => {
-                    const isSelected = activeSubTab === item.label || activeSubTab === item.tabKey;
+                    const isSelected = activeSubTab === item.tabKey || activeSubTab === item.label;
                     return (
                       <button
                         key={item.label}
-                        onClick={() => setActiveSubTab(item.tabKey || item.label)}
+                        onClick={() => setActiveSubTab(item.tabKey)}
                         className={`px-3 py-1.5 rounded-xl transition cursor-pointer whitespace-nowrap text-xs ${
                           isSelected ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/80 font-black" : "text-gray-600 hover:bg-gray-50"
                         }`}
@@ -426,13 +480,38 @@ export default function UserReturnsPage() {
 
               {/* Cards List matching exact screenshot design */}
               <div className="space-y-4">
-                {filteredOrders.length === 0 ? (
+                {orders.length === 0 ? (
+                  <div className="bg-white border border-gray-200/80 p-10 rounded-2xl text-center space-y-4 text-gray-500 text-xs">
+                    <div className="w-16 h-16 rounded-full bg-emerald-50 text-[#059669] flex items-center justify-center mx-auto border border-emerald-100">
+                      <svg className="w-8 h-8 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-extrabold text-gray-900 text-sm">No Purchased Orders Found</p>
+                      <p className="text-gray-500 max-w-sm mx-auto mt-1">
+                        When you place an order on SKIPD Commerce, your purchased items will automatically appear here with a 24-hour return window!
+                      </p>
+                    </div>
+                    <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
+                      <Link
+                        href="/"
+                        className="bg-[#059669] hover:bg-[#047857] text-white font-black px-5 py-2.5 rounded-xl transition shadow-2xs inline-block"
+                      >
+                        Browse Products &amp; Shop Now
+                      </Link>
+                      <button
+                        onClick={handleCreateTestOrder}
+                        className="bg-emerald-50 hover:bg-emerald-100 text-[#059669] border border-emerald-200 font-bold px-4 py-2.5 rounded-xl transition cursor-pointer"
+                      >
+                        + Simulate Test Order
+                      </button>
+                    </div>
+                  </div>
+                ) : filteredOrders.length === 0 ? (
                   <div className="bg-white border border-gray-200/80 p-8 rounded-2xl text-center space-y-2 text-gray-500 text-xs">
-                    <svg className="w-10 h-10 text-gray-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
-                    <p className="font-bold text-gray-800">No matching orders found</p>
-                    <p>Try changing your filter tabs or search query.</p>
+                    <p className="font-bold text-gray-800">No orders match filter "{activeSubTab}"</p>
+                    <p>Try switching filter tabs or clearing your search.</p>
                   </div>
                 ) : (
                   filteredOrders.map((item) => {
@@ -487,12 +566,12 @@ export default function UserReturnsPage() {
                                 <p className="text-xs font-bold text-red-600 flex items-center justify-center sm:justify-end gap-1">
                                   <span>🚫</span> Return Window Expired
                                 </p>
-                                <p className="text-[9px] text-gray-400 font-medium">{item.expiredText || "Expired on May 18, 2025 • 10:30 AM"}</p>
+                                <p className="text-[9px] text-gray-400 font-medium">{item.expiredText || "Expired 24h Policy Window"}</p>
                               </div>
                             )}
                           </div>
 
-                          {/* Action Buttons (Compact, Sleek, Perfect Size) */}
+                          {/* Action Buttons */}
                           <div className="space-y-1.5 text-center w-full sm:w-auto shrink-0">
                             {isCompleted ? (
                               <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-4 py-2 rounded-xl block border border-emerald-200">
@@ -536,14 +615,14 @@ export default function UserReturnsPage() {
 
             </div>
 
-            {/* Right 4 Cols: Return Policy Information Card (Matching Clean SVG Icons) */}
+            {/* Right 4 Cols: Return Policy Information Card */}
             <div className="lg:col-span-4 space-y-4">
               <div className="bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs space-y-5">
                 <h3 className="font-black text-base text-gray-900 border-b border-gray-100 pb-3">Return Policy</h3>
 
                 <div className="space-y-4 text-xs">
                   
-                  {/* Point 1: 24h Window */}
+                  {/* Point 1 */}
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center shrink-0">
                       <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -556,7 +635,7 @@ export default function UserReturnsPage() {
                     </div>
                   </div>
 
-                  {/* Point 2: Product Condition */}
+                  {/* Point 2 */}
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center shrink-0">
                       <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -569,7 +648,7 @@ export default function UserReturnsPage() {
                     </div>
                   </div>
 
-                  {/* Point 3: Photo Required */}
+                  {/* Point 3 */}
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center shrink-0">
                       <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -583,7 +662,7 @@ export default function UserReturnsPage() {
                     </div>
                   </div>
 
-                  {/* Point 4: Refund Process */}
+                  {/* Point 4 */}
                   <div className="flex items-start gap-3">
                     <div className="w-8 h-8 rounded-xl bg-gray-100 text-gray-600 flex items-center justify-center shrink-0">
                       <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -609,7 +688,7 @@ export default function UserReturnsPage() {
 
           </div>
 
-          {/* 📍 Bottom How Returns Work Timeline (Exact SVG Outline Icons + Connecting Arrows matching User Screenshot 1) */}
+          {/* 📍 Bottom How Returns Work Timeline */}
           <div className="bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs space-y-6">
             <h3 className="font-black text-base text-gray-900">How Returns Work?</h3>
 
@@ -628,7 +707,6 @@ export default function UserReturnsPage() {
                 </div>
               </div>
 
-              {/* Connecting Arrow 1 */}
               <svg className="w-5 h-5 text-gray-300 hidden md:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
@@ -647,7 +725,6 @@ export default function UserReturnsPage() {
                 </div>
               </div>
 
-              {/* Connecting Arrow 2 */}
               <svg className="w-5 h-5 text-gray-300 hidden md:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
@@ -665,7 +742,6 @@ export default function UserReturnsPage() {
                 </div>
               </div>
 
-              {/* Connecting Arrow 3 */}
               <svg className="w-5 h-5 text-gray-300 hidden md:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
@@ -683,7 +759,6 @@ export default function UserReturnsPage() {
                 </div>
               </div>
 
-              {/* Connecting Arrow 4 */}
               <svg className="w-5 h-5 text-gray-300 hidden md:block shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
