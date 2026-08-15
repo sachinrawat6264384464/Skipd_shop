@@ -216,6 +216,7 @@ export default function AdminSalesPage() {
             >
               {tab}
             </button>
+          ))}
         </div>
 
         {/* ===== TAB: SALE EVENTS ===== */}
