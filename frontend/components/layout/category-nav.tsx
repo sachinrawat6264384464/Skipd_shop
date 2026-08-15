@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 const categoryBubbles = [
@@ -16,20 +17,25 @@ const categoryBubbles = [
 ];
 
 export function CategoryNav() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <nav className="bg-white border-b border-gray-200 py-4 px-4 overflow-x-auto no-scrollbar" suppressHydrationWarning>
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8 min-w-max" suppressHydrationWarning>
+    <nav className="bg-white border-b border-gray-200 py-4 px-4 overflow-x-auto no-scrollbar">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8 min-w-max">
         {categoryBubbles.map((cat) => (
           <Link
             key={cat.slug}
             href={`/category/${cat.slug}`}
             className="group flex flex-col items-center gap-2 cursor-pointer transition transform hover:-translate-y-0.5"
-            suppressHydrationWarning
           >
-            <div className={`w-14 h-14 rounded-full border ${cat.bg} flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition`} suppressHydrationWarning>
+            <div className={`w-14 h-14 rounded-full border ${cat.bg} flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition`}>
               {cat.icon}
             </div>
-            <span className="text-xs font-bold text-gray-700 group-hover:text-emerald-700 transition" suppressHydrationWarning>
+            <span className="text-xs font-bold text-gray-700 group-hover:text-emerald-700 transition">
               {cat.name}
             </span>
           </Link>
