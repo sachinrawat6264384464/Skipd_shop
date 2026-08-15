@@ -4,35 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function UserReturnsPage() {
-  const [returnOrders, setReturnOrders] = useState([
-    {
-      id: "ORD-984210",
-      productName: "OnePlus Nord 6 (8GB + 256GB)",
-      price: 44499,
-      image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
-      orderTimestamp: Date.now() - 3600 * 1000 * 5, // 5 hours ago
-      paymentStatus: "PAID",
-      status: "ELIGIBLE_FOR_RETURN"
-    },
-    {
-      id: "ORD-984209",
-      productName: "Saree Premium Silk",
-      price: 598,
-      image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300",
-      orderTimestamp: Date.now() - 3600 * 1000 * 20, // 20 hours ago
-      paymentStatus: "PAID",
-      status: "ELIGIBLE_FOR_RETURN"
-    },
-    {
-      id: "ORD-984205",
-      productName: "20000mAh Power Bank",
-      price: 999,
-      image: "https://images.unsplash.com/photo-1609592424109-dd9892f1b177?w=300",
-      orderTimestamp: Date.now() - 3600 * 1000 * 30, // 30 hours ago (Expired)
-      paymentStatus: "PAID",
-      status: "WINDOW_EXPIRED"
-    }
-  ]);
+  const [mounted, setMounted] = useState(false);
+  const [returnOrders, setReturnOrders] = useState<any[]>([]);
+  const [timers, setTimers] = useState<{ [key: string]: string | null }>({});
 
   const [selectedProduct, setSelectedProduct] = useState<any | null>(null);
   const [reason, setReason] = useState("Damaged Item Received");
@@ -40,6 +14,42 @@ export default function UserReturnsPage() {
   const [contactPhone, setContactPhone] = useState("+91 98765 43210");
   const [photoUploaded, setPhotoUploaded] = useState(false);
   const [submittedQueryId, setSubmittedQueryId] = useState<string | null>(null);
+
+  // Initialize return orders safely after mount to avoid Date.now() SSR mismatch
+  useEffect(() => {
+    setMounted(true);
+    const now = Date.now();
+    const initialOrders = [
+      {
+        id: "ORD-984210",
+        productName: "OnePlus Nord 6 (8GB + 256GB)",
+        price: 44499,
+        image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
+        orderTimestamp: now - 3600 * 1000 * 5, // 5 hours ago
+        paymentStatus: "PAID",
+        status: "ELIGIBLE_FOR_RETURN"
+      },
+      {
+        id: "ORD-984209",
+        productName: "Saree Premium Silk",
+        price: 598,
+        image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300",
+        orderTimestamp: now - 3600 * 1000 * 20, // 20 hours ago
+        paymentStatus: "PAID",
+        status: "ELIGIBLE_FOR_RETURN"
+      },
+      {
+        id: "ORD-984205",
+        productName: "20000mAh Power Bank",
+        price: 999,
+        image: "https://images.unsplash.com/photo-1609592424109-dd9892f1b177?w=300",
+        orderTimestamp: now - 3600 * 1000 * 30, // 30 hours ago (Expired)
+        paymentStatus: "PAID",
+        status: "WINDOW_EXPIRED"
+      }
+    ];
+    setReturnOrders(initialOrders);
+  }, []);
 
   // Time Remaining Counter Helper
   const getRemainingTime = (orderTimestamp: number) => {
@@ -54,19 +64,22 @@ export default function UserReturnsPage() {
     return `${hours}h ${minutes}m ${seconds}s`;
   };
 
-  const [timers, setTimers] = useState<{ [key: string]: string | null }>({});
-
   useEffect(() => {
-    const interval = setInterval(() => {
+    if (!mounted || returnOrders.length === 0) return;
+
+    const updateAllTimers = () => {
       const newTimers: { [key: string]: string | null } = {};
       returnOrders.forEach(o => {
         newTimers[o.id] = getRemainingTime(o.orderTimestamp);
       });
       setTimers(newTimers);
-    }, 1000);
+    };
+
+    updateAllTimers();
+    const interval = setInterval(updateAllTimers, 1000);
 
     return () => clearInterval(interval);
-  }, [returnOrders]);
+  }, [mounted, returnOrders]);
 
   const handleSubmitReturn = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,12 +88,19 @@ export default function UserReturnsPage() {
     const queryId = `Q-${Math.floor(10000 + Math.random() * 90000)}`;
     setSubmittedQueryId(queryId);
 
-    // Update order state to return requested
-    setReturnOrders(returnOrders.map(o => o.id === selectedProduct.id ? { ...o, status: "RETURN_REQUESTED" } : o));
+    setReturnOrders(prev => prev.map(o => o.id === selectedProduct.id ? { ...o, status: "RETURN_REQUESTED" } : o));
 
     alert(`✓ Return request submitted successfully! Query ID: #${queryId}. Our team will review within 12 hours.`);
     setSelectedProduct(null);
   };
+
+  if (!mounted) {
+    return (
+      <div className="bg-[#FAFAFA] min-h-screen py-10 px-4 flex items-center justify-center font-sans text-gray-400">
+        Loading 24h return window status...
+      </div>
+    );
+  }
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen py-10 px-4 font-sans text-gray-900">
@@ -109,8 +129,8 @@ export default function UserReturnsPage() {
           <h3 className="font-black text-lg text-gray-900">Your Recent Purchases &amp; Eligibility</h3>
 
           {returnOrders.map((item) => {
-            const timeRemaining = timers[item.id] || getRemainingTime(item.orderTimestamp);
-            const isEligible = timeRemaining !== null && item.status === "ELIGIBLE_FOR_RETURN";
+            const timeRemaining = timers[item.id];
+            const isEligible = timeRemaining !== null && timeRemaining !== undefined && item.status === "ELIGIBLE_FOR_RETURN";
             const isRequested = item.status === "RETURN_REQUESTED";
 
             return (
