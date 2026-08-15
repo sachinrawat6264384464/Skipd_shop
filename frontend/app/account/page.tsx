@@ -76,7 +76,7 @@ function AccountContent() {
     try {
       const data = await fetchUserOrders();
       setUserOrders(data);
-      if (data.length > 0) {
+      if (data.length > 0 && data[0]?.order_number) {
         setSelectedTrackOrderId(data[0].order_number);
       }
     } catch (e) {
