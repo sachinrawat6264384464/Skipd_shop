@@ -229,7 +229,7 @@ function AccountContent() {
             <div>
               <button
                 onClick={() => setActiveTab("orders")}
-                className={`w-full flex items-center justify-between font-black text-xs py-3 px-3.5 rounded-xl transition cursor-pointer ${
+                className={`w-full flex items-center justify-between font-black text-xs py-2.5 px-3.5 rounded-xl transition cursor-pointer ${
                   activeTab === "orders" ? "bg-gray-900 text-white shadow-xs" : "text-gray-800 hover:bg-gray-50"
                 }`}
               >
@@ -241,6 +241,17 @@ function AccountContent() {
                 </div>
                 <span className="text-sm font-black">&rsaquo;</span>
               </button>
+
+              <Link
+                href="/account/returns"
+                className="w-full flex items-center justify-between font-bold text-xs py-2.5 px-3.5 rounded-xl transition cursor-pointer bg-emerald-50 text-emerald-800 border border-emerald-200/80 hover:bg-emerald-100"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-sm">↺</span>
+                  <span className="tracking-wide font-black">24h Return Products</span>
+                </div>
+                <span className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full">24h Policy</span>
+              </Link>
             </div>
 
             {/* ACCOUNT SETTINGS */}
