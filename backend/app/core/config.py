@@ -11,8 +11,17 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     PORT: int = 8000
     
-    # Database (PostgreSQL Port 5433)
+    # Database (PostgreSQL Port 5433 / Neon Cloud / Supabase)
     DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5433/skipd_commerce_db"
+
+    @validator("DATABASE_URL", pre=True)
+    def assemble_database_url(cls, v: str) -> str:
+        if isinstance(v, str):
+            if v.startswith("postgresql://"):
+                v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+            elif v.startswith("postgres://"):
+                v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+        return v
     
     # CORS
     CORS_ORIGINS: Union[str, List[str]] = [
