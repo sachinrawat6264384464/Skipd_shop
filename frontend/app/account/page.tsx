@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { LoginModal } from "components/auth/login-modal";
 import { useWishlist } from "components/wishlist/wishlist-context";
 import { getUserAddressesKey, getUserOrdersKey } from "lib/utils";
+import { fetchUserOrders, UserOrder } from "lib/api";
 
 interface TimelineStep {
   status: string;
@@ -66,24 +67,32 @@ function AccountContent() {
     window.location.href = "/";
   };
 
-  const orders = [
-    {
-      id: "SKIPD-984201",
-      date: "12 Aug 2026",
-      items: "Minimalist Oversized Graphic Tee (Size M)",
-      total: 1299.0,
-      status: "SHIPPED",
-      awb: "SR-AWB-984201"
-    },
-    {
-      id: "SKIPD-842915",
-      date: "05 Aug 2026",
-      items: "Active ANC Wireless Headphones",
-      total: 4999.0,
-      status: "DELIVERED",
-      awb: "SR-AWB-842915"
+  // 📦 User Orders State (Scoped strictly to Logged In User)
+  const [userOrders, setUserOrders] = useState<UserOrder[]>([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
+
+  const loadAccountUserOrders = async () => {
+    setLoadingOrders(true);
+    try {
+      const data = await fetchUserOrders();
+      setUserOrders(data);
+      if (data.length > 0) {
+        setSelectedTrackOrderId(data[0].order_number);
+      }
+    } catch (e) {
+      setUserOrders([]);
+    } finally {
+      setLoadingOrders(false);
     }
-  ];
+  };
+
+  useEffect(() => {
+    loadAccountUserOrders();
+    window.addEventListener("skipd_auth_changed", loadAccountUserOrders);
+    return () => {
+      window.removeEventListener("skipd_auth_changed", loadAccountUserOrders);
+    };
+  }, []);
 
   // 📍 Addresses State
   const [addresses, setAddresses] = useState<any[]>([]);
@@ -202,60 +211,36 @@ function AccountContent() {
   // -------------------------------------------------------------
   // 🚀 LIVE SHIPMENT TRACKER TAB STATE & LOGIC
   // -------------------------------------------------------------
-  const [selectedTrackOrderId, setSelectedTrackOrderId] = useState<string>("SKIPD-984201");
+  const [selectedTrackOrderId, setSelectedTrackOrderId] = useState<string>("");
   const [trackingInput, setTrackingInput] = useState<string>("");
   const [trackingSearchError, setTrackingSearchError] = useState("");
 
-  const trackableOrders = [
-    {
-      order_number: "SKIPD-984201",
-      created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-      total_amount: 1799,
-      payment_method: "Razorpay Online",
-      status: "IN_TRANSIT",
-      items: [
-        {
-          title: "boAt Rockerz Plus 550 ANC Headphones",
-          price: 1799,
-          quantity: 1,
-          image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-        }
-      ],
-      shipping_address: {
-        name: user?.user_name || "Customer",
-        street: "Flat 402, Signature Towers, MG Road",
-        city: "Gwalior",
-        state: "Madhya Pradesh",
-        pincode: "474001"
+  const trackableOrders = userOrders.map((o) => ({
+    order_number: o.order_number,
+    created_at: o.date,
+    total_amount: o.total,
+    payment_method: "Razorpay / Prepaid Online",
+    status: o.status === "DELIVERED" ? "DELIVERED" : "IN_TRANSIT",
+    items: [
+      {
+        title: o.title,
+        price: o.total,
+        quantity: 1,
+        image: o.image
       }
-    },
-    {
-      order_number: "SKIPD-842109",
-      created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-      total_amount: 3499,
-      payment_method: "UPI Online",
-      status: "DELIVERED",
-      items: [
-        {
-          title: "Matte Black Chrono Watch",
-          price: 3499,
-          quantity: 1,
-          image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"
-        }
-      ],
-      shipping_address: {
-        name: user?.user_name || "Customer",
-        street: "Building 5, Tech Park, Electronic City",
-        city: "Bengaluru",
-        state: "Karnataka",
-        pincode: "560100"
-      }
+    ],
+    shipping_address: {
+      name: user?.user_name || "Customer",
+      street: "Registered Shipping Address",
+      city: "Destination City",
+      state: "India",
+      pincode: "474001"
     }
-  ];
+  }));
 
   const currentTrackOrder = trackableOrders.find(
     o => o.order_number.toLowerCase() === selectedTrackOrderId.toLowerCase()
-  ) || trackableOrders[0];
+  ) || (trackableOrders.length > 0 ? trackableOrders[0] : null);
 
   const getTimelineForStatus = (status: string): TimelineStep[] => {
     const isDelivered = status === "DELIVERED";
@@ -1042,7 +1027,24 @@ function AccountContent() {
                 </button>
               </div>
 
-              {/* 2-Column Split Layout */}
+              {loadingOrders ? (
+                <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center text-xs text-gray-500 font-bold animate-pulse">
+                  Loading your live shipment updates...
+                </div>
+              ) : trackableOrders.length === 0 ? (
+                <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center space-y-4 shadow-2xs">
+                  <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-2xs">
+                    🚚
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xl font-black text-gray-900">No Active Orders or Shipments</h3>
+                    <p className="text-xs text-gray-500 max-w-md mx-auto font-medium">
+                      Account: <span className="font-bold text-gray-900">{user?.email || user?.user_name || "Signed In User"}</span>. You haven't placed any orders yet. Place an order to track live delivery!
+                    </p>
+                  </div>
+                </div>
+              ) : (
+              /* 2-Column Split Layout */
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
                 {/* Left 4-Col: Recent Orders Selector Cards */}
@@ -1226,6 +1228,7 @@ function AccountContent() {
                 </div>
 
               </div>
+              )}
 
             </div>
           )}
@@ -1656,104 +1659,127 @@ function AccountContent() {
               </div>
 
               {/* Address Cards List */}
-              <div className="space-y-5">
-                {addresses.map((addr) => {
-                  const isDefault = addr.isDefault;
-                  let iconBg = "bg-[#EAF8F2] text-[#059669]";
-                  let badgeBg = "bg-gray-100 text-gray-600 border-gray-200";
-                  let iconSvg = (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                  );
-
-                  if (addr.type === "WORK") {
-                    iconBg = "bg-blue-100/70 text-blue-600";
-                    badgeBg = "bg-blue-50 text-blue-600 border-blue-100";
-                    iconSvg = (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4M9 7h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1" />
-                      </svg>
-                    );
-                  } else if (addr.type === "OTHER") {
-                    iconBg = "bg-orange-100/70 text-orange-600";
-                    badgeBg = "bg-orange-50 text-orange-600 border-orange-100";
-                    iconSvg = (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                    );
-                  }
-
-                  return (
-                    <div
-                      key={addr.id}
-                      className={`bg-white rounded-3xl p-6 relative transition-all duration-200 shadow-2xs ${
-                        isDefault 
-                          ? "border-2 border-[#10B981] shadow-xs" 
-                          : "border border-gray-200 hover:border-gray-300"
-                      }`}
+              {addresses.length === 0 ? (
+                <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center space-y-4 shadow-2xs">
+                  <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-2xs">
+                    📍
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-xl font-black text-gray-900">No Delivery Addresses Saved</h3>
+                    <p className="text-xs text-gray-500 max-w-md mx-auto font-medium">
+                      Account: <span className="font-bold text-gray-900">{user?.email || user?.user_name || "Signed In User"}</span>. Add your home or work address for 1-click fast delivery.
+                    </p>
+                  </div>
+                  <div className="pt-2">
+                    <button
+                      onClick={handleOpenAddModal}
+                      className="bg-[#0B132B] hover:bg-black text-white font-black text-xs px-6 py-3 rounded-xl transition shadow-md inline-flex items-center gap-2 cursor-pointer"
                     >
-                      {isDefault && (
-                        <div className="mb-4">
-                          <span className="border border-[#10B981] text-[#059669] bg-[#EAF8F2] font-extrabold text-[11px] px-3.5 py-1 rounded-md inline-block">
-                            Default Address
-                          </span>
-                        </div>
-                      )}
+                      <span className="text-base leading-none">+</span>
+                      <span>Add New Delivery Address</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-5">
+                  {addresses.map((addr) => {
+                    const isDefault = addr.isDefault;
+                    let iconBg = "bg-[#EAF8F2] text-[#059669]";
+                    let badgeBg = "bg-gray-100 text-gray-600 border-gray-200";
+                    let iconSvg = (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                      </svg>
+                    );
 
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex items-start gap-4">
-                          <div className={`w-12 h-12 rounded-full ${iconBg} flex items-center justify-center shrink-0 border border-emerald-200/40 shadow-2xs`}>
-                            {iconSvg}
+                    if (addr.type === "WORK") {
+                      iconBg = "bg-blue-100/70 text-blue-600";
+                      badgeBg = "bg-blue-50 text-blue-600 border-blue-100";
+                      iconSvg = (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V11m0 0h4M9 7h1m-1 4h1m-1 4h1m4-8h1m-1 4h1m-1 4h1" />
+                        </svg>
+                      );
+                    } else if (addr.type === "OTHER") {
+                      iconBg = "bg-orange-100/70 text-orange-600";
+                      badgeBg = "bg-orange-50 text-orange-600 border-orange-100";
+                      iconSvg = (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={addr.id}
+                        className={`bg-white rounded-3xl p-6 relative transition-all duration-200 shadow-2xs ${
+                          isDefault 
+                            ? "border-2 border-[#10B981] shadow-xs" 
+                            : "border border-gray-200 hover:border-gray-300"
+                        }`}
+                      >
+                        {isDefault && (
+                          <div className="mb-4">
+                            <span className="border border-[#10B981] text-[#059669] bg-[#EAF8F2] font-extrabold text-[11px] px-3.5 py-1 rounded-md inline-block">
+                              Default Address
+                            </span>
                           </div>
+                        )}
 
-                          <div className="space-y-1.5">
-                            <div className="flex items-center gap-2.5 flex-wrap">
-                              <h3 className="font-black text-base text-gray-900">{addr.name}</h3>
-                              <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider border ${badgeBg}`}>
-                                {addr.type}
-                              </span>
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-4">
+                            <div className={`w-12 h-12 rounded-full ${iconBg} flex items-center justify-center shrink-0 border border-emerald-200/40 shadow-2xs`}>
+                              {iconSvg}
                             </div>
 
-                            <p className="text-xs text-gray-500 font-bold">{addr.phone}</p>
-                            <p className="text-xs text-gray-700 font-medium leading-relaxed max-w-xl">
-                              {addr.address}
-                            </p>
+                            <div className="space-y-1.5">
+                              <div className="flex items-center gap-2.5 flex-wrap">
+                                <h3 className="font-black text-base text-gray-900">{addr.name}</h3>
+                                <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded tracking-wider border ${badgeBg}`}>
+                                  {addr.type}
+                                </span>
+                              </div>
 
-                            <div className="flex items-center gap-2 flex-wrap pt-2">
-                              <span className="bg-gray-100/90 text-gray-600 border border-gray-200/80 font-bold text-[11px] px-3 py-1 rounded-full">
-                                Pincode: {addr.pincode}
-                              </span>
-                              <span className="bg-gray-100/90 text-gray-600 border border-gray-200/80 font-bold text-[11px] px-3 py-1 rounded-full">
-                                Landmark: {addr.landmark}
-                              </span>
+                              <p className="text-xs text-gray-500 font-bold">{addr.phone}</p>
+                              <p className="text-xs text-gray-700 font-medium leading-relaxed max-w-xl">
+                                {addr.address}
+                              </p>
+
+                              <div className="flex items-center gap-2 flex-wrap pt-2">
+                                <span className="bg-gray-100/90 text-gray-600 border border-gray-200/80 font-bold text-[11px] px-3 py-1 rounded-full">
+                                  Pincode: {addr.pincode}
+                                </span>
+                                <span className="bg-gray-100/90 text-gray-600 border border-gray-200/80 font-bold text-[11px] px-3 py-1 rounded-full">
+                                  Landmark: {addr.landmark}
+                                </span>
+                              </div>
                             </div>
                           </div>
-                        </div>
 
-                        <div className="flex items-center gap-2 shrink-0">
-                          <button
-                            onClick={() => handleEditAddress(addr)}
-                            className="p-2 text-gray-600 hover:text-[#059669] bg-gray-100 hover:bg-[#EAF8F2] rounded-xl transition cursor-pointer"
-                            title="Edit Address"
-                          >
-                            ✏️
-                          </button>
-                          <button
-                            onClick={() => handleDeleteAddress(addr.id)}
-                            className="p-2 text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-xl transition cursor-pointer"
-                            title="Delete Address"
-                          >
-                            🗑️
-                          </button>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              onClick={() => handleEditAddress(addr)}
+                              className="p-2 text-gray-600 hover:text-[#059669] bg-gray-100 hover:bg-[#EAF8F2] rounded-xl transition cursor-pointer"
+                              title="Edit Address"
+                            >
+                              ✏️
+                            </button>
+                            <button
+                              onClick={() => handleDeleteAddress(addr.id)}
+                              className="p-2 text-gray-600 hover:text-red-600 bg-gray-100 hover:bg-red-50 rounded-xl transition cursor-pointer"
+                              title="Delete Address"
+                            >
+                              🗑️
+                            </button>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
 
