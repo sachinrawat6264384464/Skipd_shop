@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { getUserAddressesKey } from "lib/utils";
 
 export function DeliveryLocationPicker() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
   const [userAddresses, setUserAddresses] = useState<any[]>([]);
@@ -15,6 +17,9 @@ export function DeliveryLocationPicker() {
   const [deliveryInfo, setDeliveryInfo] = useState<string | null>(null);
   const [currentPincode, setCurrentPincode] = useState("474001");
   const modalRef = useRef<HTMLDivElement>(null);
+
+  // SSR-safe: only use portal after mount
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("skipd_user");
@@ -101,9 +106,9 @@ export function DeliveryLocationPicker() {
         <span className="text-gray-400 text-[10px]">▼</span>
       </button>
 
-      {/* Modal Overlay */}
-      {isOpen && (
-        <div className="fixed inset-0 z-[9999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+      {/* Modal Overlay — rendered via Portal to escape navbar stacking context */}
+      {isOpen && mounted && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-black/60 flex items-center justify-center p-4">
           <div
             ref={modalRef}
             className="bg-white rounded-3xl w-full max-w-sm shadow-2xl border border-gray-200 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-200"
@@ -210,6 +215,8 @@ export function DeliveryLocationPicker() {
             </div>
           </div>
         </div>
+        ,
+        document.body
       )}
     </div>
   );
