@@ -199,12 +199,24 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       setLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
       const fbUser = result.user;
+      const userEmail = fbUser.email || "";
+
+      if (!isRegisterView) {
+        // 🔒 Strictly check if account is registered in Database for Login
+        const check = await checkEmailRegistered(userEmail);
+        if (check && check.exists === false) {
+          setLoading(false);
+          setError(`⚠️ No account found for "${userEmail}". Please click "Create an account" below to register first.`);
+          return;
+        }
+      }
+
       const idToken = await fbUser.getIdToken();
 
       const userObj = {
         uid: fbUser.uid,
-        user_name: fbUser.displayName || fbUser.email?.split("@")[0] || "User",
-        email: fbUser.email || "",
+        user_name: fbUser.displayName || userEmail.split("@")[0] || "User",
+        email: userEmail,
         photoURL: fbUser.photoURL || ""
       };
 
@@ -213,11 +225,11 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       window.dispatchEvent(new Event("skipd_auth_changed"));
 
       setLoading(false);
-      setSuccessMsg(`🔥 Signed in as ${userObj.user_name} via Firebase Google Auth!`);
+      setSuccessMsg(`🔥 Signed in as ${userObj.user_name} via Google Auth!`);
       setTimeout(() => finishLogin(), 800);
     } catch (err: any) {
       setLoading(false);
-      setError(err.message || "Firebase Google Sign-In failed.");
+      setError(err.message || "Google Sign-In failed.");
     }
   };
 

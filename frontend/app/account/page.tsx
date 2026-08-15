@@ -1855,31 +1855,53 @@ function AccountContent() {
             <div className="space-y-4">
               <h2 className="text-2xl font-black text-gray-900 tracking-tight">Your Order History</h2>
               <div className="space-y-4">
-                {orders.map((ord) => (
-                  <div key={ord.id} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div className="space-y-1">
-                      <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
-                        {ord.id} • {ord.date}
-                      </span>
-                      <h4 className="font-black text-gray-900 text-sm">{ord.items}</h4>
-                      <p className="text-xs text-gray-500 font-bold">Total: ₹{ord.total.toLocaleString("en-IN")}</p>
+                {userOrders.length === 0 ? (
+                  <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center space-y-4 shadow-2xs">
+                    <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-2xs">
+                      📦
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">
-                        {ord.status}
-                      </span>
-                      <button
-                        onClick={() => {
-                          setActiveTab("track-order");
-                          setSelectedTrackOrderId(ord.id);
-                        }}
-                        className="bg-gray-900 hover:bg-black text-white text-xs font-black px-4 py-2 rounded-xl transition cursor-pointer"
+                    <div className="space-y-1">
+                      <h3 className="text-xl font-black text-gray-900">No Orders Found</h3>
+                      <p className="text-xs text-gray-500 max-w-md mx-auto font-medium">
+                        Account: <span className="font-bold text-gray-900">{user?.email || user?.user_name || "Signed In User"}</span>. You haven't placed any orders yet.
+                      </p>
+                    </div>
+                    <div className="pt-2">
+                      <Link
+                        href="/deals"
+                        className="bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-xs px-6 py-3 rounded-xl transition shadow-md inline-flex items-center gap-2 cursor-pointer"
                       >
-                        Track Order &rsaquo;
-                      </button>
+                        <span>🛍️ Start Shopping Now &rarr;</span>
+                      </Link>
                     </div>
                   </div>
-                ))}
+                ) : (
+                  userOrders.map((ord) => (
+                    <div key={ord.id} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div className="space-y-1">
+                        <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
+                          {ord.order_number} • {ord.date}
+                        </span>
+                        <h4 className="font-black text-gray-900 text-sm">{ord.title}</h4>
+                        <p className="text-xs text-gray-500 font-bold">Total: ₹{ord.total.toLocaleString("en-IN")}</p>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">
+                          {ord.status}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setActiveTab("shipment");
+                            setSelectedTrackOrderId(ord.order_number);
+                          }}
+                          className="bg-gray-900 hover:bg-black text-white text-xs font-black px-4 py-2 rounded-xl transition cursor-pointer"
+                        >
+                          Track Order &rsaquo;
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
