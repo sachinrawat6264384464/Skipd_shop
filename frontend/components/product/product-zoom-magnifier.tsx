@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { createPortal } from "react-dom";
 
 interface ProductZoomMagnifierProps {
   imageSrc: string;
@@ -10,6 +11,7 @@ interface ProductZoomMagnifierProps {
 export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifierProps) {
   const [isHovering, setIsHovering] = useState(false);
   const [lensPosition, setLensPosition] = useState({ x: 50, y: 50, pxX: 0, pxY: 0 });
+  const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -45,15 +47,24 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
     });
   };
 
+  const handleContainerClick = () => {
+    // On mobile & touch screens (< lg), tap opens full screen lightbox
+    if (window.innerWidth < 1024) {
+      setIsFullscreenOpen(true);
+    }
+  };
+
   return (
-    <div className="relative flex flex-col items-center">
+    <div className="relative flex flex-col items-center w-full">
+      
       {/* 🖼️ Main Image Container */}
       <div
         ref={containerRef}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
         onMouseMove={handleMouseMove}
-        className="relative w-full aspect-square bg-white rounded-3xl border border-gray-200 overflow-hidden p-4 shadow-xs cursor-crosshair group"
+        onClick={handleContainerClick}
+        className="relative w-full aspect-square bg-white rounded-3xl border border-gray-200 overflow-hidden p-4 shadow-xs lg:cursor-crosshair cursor-pointer group"
       >
         <img
           src={imageSrc}
@@ -61,10 +72,10 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
           className="w-full h-full object-contain pointer-events-none select-none"
         />
 
-        {/* 🟦 Semi-Transparent Blue Lens Box (Amazon-Style Grid Box) */}
+        {/* 🟦 Semi-Transparent Blue Lens Box (Visible ONLY on Desktop >= lg) */}
         {isHovering && (
           <div
-            className="absolute border-2 border-sky-400 bg-sky-400/25 shadow-md pointer-events-none transition-transform duration-75 ease-out rounded-lg"
+            className="hidden lg:block absolute border-2 border-sky-400 bg-sky-400/25 shadow-md pointer-events-none transition-transform duration-75 ease-out rounded-lg"
             style={{
               width: "120px",
               height: "120px",
@@ -77,11 +88,17 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
         )}
       </div>
 
-      <p className="text-[11px] font-bold text-gray-500 mt-2 flex items-center gap-1">
+      {/* 💡 Desktop Helper Caption */}
+      <p className="hidden lg:flex text-[11px] font-bold text-gray-500 mt-2 items-center gap-1">
         <span>🔍</span> पूरा व्यू देखने के लिए माउस ऊपर लाएं (Hover for Full HD Zoom)
       </p>
 
-      {/* 🔬 Zoom Preview Popup Window (Appears Floating Right) */}
+      {/* 📱 Mobile Helper Caption */}
+      <p className="flex lg:hidden text-xs font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full mt-2.5 items-center gap-1.5 shadow-2xs">
+        <span>🔍</span> Tap image for HD Fullscreen View
+      </p>
+
+      {/* 🔬 DESKTOP Zoom Preview Popup Window (Appears Floating Right on lg: screens) */}
       {isHovering && (
         <div
           className="hidden lg:block absolute left-[105%] top-0 w-[480px] h-[480px] bg-white border border-gray-300 rounded-3xl shadow-2xl overflow-hidden z-50 animate-in fade-in zoom-in-95 duration-150"
@@ -97,6 +114,43 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
           </div>
         </div>
       )}
+
+      {/* 📱 MOBILE HD FULLSCREEN LIGHTBOX MODAL */}
+      {isFullscreenOpen && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[999999] bg-black/95 backdrop-blur-md flex flex-col items-center justify-between p-4 font-sans animate-in fade-in duration-200">
+          
+          {/* Header Bar */}
+          <div className="w-full flex items-center justify-between text-white pt-2">
+            <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
+              HD Image Preview
+            </span>
+            <button
+              onClick={() => setIsFullscreenOpen(false)}
+              className="bg-white/20 hover:bg-white/30 text-white font-black text-xs px-4 py-2 rounded-full backdrop-blur-md border border-white/20 transition cursor-pointer"
+            >
+              ✕ Close
+            </button>
+          </div>
+
+          {/* Centered High-Res Image */}
+          <div className="relative w-full max-w-lg aspect-square my-auto flex items-center justify-center">
+            <img
+              src={imageSrc}
+              alt={altText}
+              className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
+            />
+          </div>
+
+          {/* Footer Info */}
+          <div className="pb-4 text-center">
+            <p className="text-xs text-gray-300 font-bold">{altText}</p>
+            <p className="text-[10px] text-gray-500 font-medium mt-0.5">Pinch screen to zoom in</p>
+          </div>
+
+        </div>,
+        document.body
+      )}
+
     </div>
   );
 }

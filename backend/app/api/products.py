@@ -6,6 +6,7 @@ from sqlalchemy.orm import selectinload
 from app.core.database import get_db
 from app.models.models import Product, Category, ProductVariant
 from app.schemas.schemas import ProductSchema, CategorySchema
+from app.core.redis_cache import get_cached_json, set_cached_json, invalidate_cache_pattern
 import datetime
 
 router = APIRouter(prefix="/products", tags=["Product Catalog"])
@@ -19,6 +20,14 @@ async def list_products(
     limit: int = Query(50, ge=1, le=100),
     db: AsyncSession = Depends(get_db)
 ):
+    # 1. REDIS CACHE FIRST CHECK
+    cache_key = f"products:list:{category}:{search}:{featured}:{skip}:{limit}"
+    cached_data = await get_cached_json(cache_key)
+    if cached_data is not None:
+        print(f"[REDIS CACHE HIT] {cache_key}")
+        return cached_data
+
+    # 2. PostgreSQL DB Query on Cache Miss
     query = select(Product).options(selectinload(Product.category), selectinload(Product.variants))
     
     if featured is not None:
@@ -33,16 +42,44 @@ async def list_products(
     query = query.order_by(Product.created_at.desc()).offset(skip).limit(limit)
     result = await db.execute(query)
     products = result.scalars().all()
+
+    # 3. Store in Redis Cache with 300s TTL
+    try:
+        serialized = [ProductSchema.model_validate(p).model_dump(mode="json") for p in products]
+        await set_cached_json(cache_key, serialized, expire_seconds=300)
+    except Exception as err:
+        print(f"[CACHE SERDE ERROR] {err}")
+
     return products
 
 @router.get("/categories", response_model=List[CategorySchema])
 async def list_categories(db: AsyncSession = Depends(get_db)):
+    cache_key = "products:categories:list"
+    cached_data = await get_cached_json(cache_key)
+    if cached_data is not None:
+        print(f"[REDIS CACHE HIT] {cache_key}")
+        return cached_data
+
     result = await db.execute(select(Category))
     categories = result.scalars().all()
+
+    try:
+        serialized = [CategorySchema.model_validate(c).model_dump(mode="json") for c in categories]
+        await set_cached_json(cache_key, serialized, expire_seconds=600)
+    except Exception as err:
+        print(f"[CACHE SERDE ERROR] {err}")
+
     return categories
 
 @router.get("/{handle}", response_model=ProductSchema)
 async def get_product(handle: str, db: AsyncSession = Depends(get_db)):
+    # 1. REDIS CACHE FIRST CHECK
+    cache_key = f"products:detail:{handle}"
+    cached_data = await get_cached_json(cache_key)
+    if cached_data is not None:
+        print(f"[REDIS CACHE HIT] {cache_key}")
+        return cached_data
+
     query = select(Product).options(selectinload(Product.category), selectinload(Product.variants)).where(Product.handle == handle)
     result = await db.execute(query)
     product = result.scalars().first()
@@ -55,7 +92,14 @@ async def get_product(handle: str, db: AsyncSession = Depends(get_db)):
             
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
-        
+
+    # 💾 2. Store in Redis Cache with 300s TTL
+    try:
+        serialized = ProductSchema.model_validate(product).model_dump(mode="json")
+        await set_cached_json(cache_key, serialized, expire_seconds=300)
+    except Exception as err:
+        print(f"[CACHE SERDE ERROR] {err}")
+
     return product
 
 
@@ -89,6 +133,7 @@ async def admin_create_product(payload: dict = Body(...), db: AsyncSession = Dep
     db.add(product)
     await db.commit()
     await db.refresh(product)
+    await invalidate_cache_pattern("products:*")
     return {"message": "Product created successfully", "id": product.id, "handle": product.handle}
 
 
@@ -116,6 +161,7 @@ async def admin_update_product(product_id: int, payload: dict = Body(...), db: A
         product.stock_quantity = int(payload["stock_quantity"])
 
     await db.commit()
+    await invalidate_cache_pattern("products:*")
     return {"message": "Product updated successfully", "id": product.id}
 
 
@@ -129,6 +175,7 @@ async def admin_delete_product(product_id: int, db: AsyncSession = Depends(get_d
 
     await db.delete(product)
     await db.commit()
+    await invalidate_cache_pattern("products:*")
     return {"message": "Product deleted successfully"}
 
 

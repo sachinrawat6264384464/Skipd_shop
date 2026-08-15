@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { BuyNowButton } from "components/auth/buy-now-button";
@@ -22,11 +23,93 @@ interface ProductDetailViewProps {
   relatedProducts: any[];
 }
 
+const SUB_NAV_ITEMS = [
+  {
+    key: "mobiles",
+    title: "Mobiles & Accessories",
+    subtitle: "Mobiles",
+    mainSlug: "smartphones",
+    links: [
+      { name: "Smartphones & Basic Mobiles", slug: "smartphones" },
+      { name: "Mobile Cases & Covers", slug: "mobile-cases" },
+      { name: "Fast Chargers & Cables", slug: "chargers" },
+      { name: "Power Banks & Wireless Pads", slug: "power-banks" },
+    ]
+  },
+  {
+    key: "laptops",
+    title: "Laptops & Accessories",
+    subtitle: "Laptops",
+    mainSlug: "gaming-laptops",
+    links: [
+      { name: "Gaming & Performance Laptops", slug: "gaming-laptops" },
+      { name: "Thin & Light Ultrabooks", slug: "ultrabooks" },
+      { name: "Laptop Sleeves & Backpacks", slug: "backpacks" },
+      { name: "Wireless Mice & Keyboards", slug: "wireless-mice" },
+    ]
+  },
+  {
+    key: "tv",
+    title: "TV & Home Entertainment",
+    subtitle: "Home Cinema",
+    mainSlug: "4k-smart-tvs",
+    links: [
+      { name: "4K Ultra HD Smart TVs", slug: "4k-smart-tvs" },
+      { name: "Home Theatre Soundbars", slug: "soundbars" },
+      { name: "Streaming Sticks & Boxes", slug: "streaming-boxes" },
+    ]
+  },
+  {
+    key: "audio",
+    title: "Audio",
+    subtitle: "Audio Gear",
+    mainSlug: "anc-headphones",
+    links: [
+      { name: "Active ANC Headphones", slug: "anc-headphones" },
+      { name: "True Wireless Earbuds (TWS)", slug: "tws-earbuds" },
+      { name: "Portable Bluetooth Speakers", slug: "bluetooth-speakers" },
+    ]
+  },
+  {
+    key: "camera",
+    title: "Camera",
+    subtitle: "Photography",
+    mainSlug: "drones",
+    links: [
+      { name: "RC 4K Camera Pro Drones", slug: "drones" },
+      { name: "DSLR & Mirrorless Cameras", slug: "dslr-cameras" },
+      { name: "Action Cameras & Gimbals", slug: "action-gimbals" },
+    ]
+  },
+  {
+    key: "computer",
+    title: "Computer Accessories",
+    subtitle: "Peripherals",
+    mainSlug: "ssds-drives",
+    links: [
+      { name: "External SSDs & Hard Drives", slug: "ssds-drives" },
+      { name: "USB Type-C Hubs & Adapters", slug: "usb-hubs" },
+      { name: "Full HD Webcams & Mics", slug: "webcams-mics" },
+    ]
+  },
+  {
+    key: "smart",
+    title: "Smart Technology",
+    subtitle: "Wearables & Smart",
+    mainSlug: "smartwatches",
+    links: [
+      { name: "Smartwatches & Fitness Bands", slug: "smartwatches" },
+      { name: "Smart Home Lighting & Plugs", slug: "smart-lighting" },
+    ]
+  }
+];
+
 export function ProductDetailView({ product, relatedProducts }: ProductDetailViewProps) {
   const [selectedImage, setSelectedImage] = useState(
     product.images[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"
   );
   const [exchangeOption, setExchangeOption] = useState<"without" | "with">("without");
+  const [openSubNav, setOpenSubNav] = useState<string | null>(null);
 
   // Bundle Items State for "Frequently Purchased Together"
   const [bundleChecked, setBundleChecked] = useState({
@@ -73,110 +156,99 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     : 16;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 font-sans">
       
-      {/* 🏷️ Top Sub-Navigation Header Bar with Interactive Hover Dropdowns */}
-      <div className="bg-white border-b border-gray-200 py-2.5 px-4 overflow-visible shadow-2xs z-30 relative">
-        <div className="max-w-7xl mx-auto flex items-center gap-6 text-xs font-semibold text-gray-700 whitespace-nowrap">
+      {/* 🏷️ Top Sub-Navigation Header Bar with Interactive Click & Hover Dropdowns */}
+      <div className="bg-white border-b border-gray-200 py-2.5 px-4 shadow-2xs z-30 relative">
+        <div className="max-w-7xl mx-auto flex items-center gap-4 sm:gap-6 text-xs font-semibold text-gray-700 whitespace-nowrap overflow-x-auto md:overflow-visible scrollbar-hide py-1">
           <Link href="/search" className="font-black text-gray-900 hover:text-orange-600">
             {product.category?.name || "Electronics"}
           </Link>
           <span className="text-gray-300">|</span>
 
-          {/* 1. Mobiles & Accessories */}
-          <div className="relative group py-1 cursor-pointer">
-            <Link href="/category/smartphones" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
-              Mobiles &amp; Accessories <span className="text-[10px] text-gray-400">▾</span>
-            </Link>
-            <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
-              <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Mobiles</p>
-              <Link href="/category/smartphones" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smartphones &amp; Basic Mobiles</Link>
-              <Link href="/category/mobile-cases" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Mobile Cases &amp; Covers</Link>
-              <Link href="/category/chargers" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Fast Chargers &amp; Cables</Link>
-              <Link href="/category/power-banks" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Power Banks &amp; Wireless Pads</Link>
-            </div>
-          </div>
+          {SUB_NAV_ITEMS.map((cat) => (
+            <div
+              key={cat.key}
+              className="relative group py-1 cursor-pointer"
+              onMouseEnter={() => setOpenSubNav(cat.key)}
+              onMouseLeave={() => setOpenSubNav(null)}
+            >
+              <button
+                type="button"
+                onClick={() => setOpenSubNav(openSubNav === cat.key ? null : cat.key)}
+                className="hover:text-orange-600 flex items-center gap-1 font-semibold text-gray-700 bg-transparent border-none p-0 cursor-pointer whitespace-nowrap"
+              >
+                {cat.title} <span className="text-[10px] text-gray-400">▾</span>
+              </button>
 
-          {/* 2. Laptops & Accessories */}
-          <div className="relative group py-1 cursor-pointer">
-            <Link href="/category/gaming-laptops" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
-              Laptops &amp; Accessories <span className="text-[10px] text-gray-400">▾</span>
-            </Link>
-            <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
-              <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Laptops</p>
-              <Link href="/category/gaming-laptops" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Gaming &amp; Performance Laptops</Link>
-              <Link href="/category/ultrabooks" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Thin &amp; Light Ultrabooks</Link>
-              <Link href="/category/backpacks" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Laptop Sleeves &amp; Backpacks</Link>
-              <Link href="/category/wireless-mice" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Wireless Mice &amp; Keyboards</Link>
+              {/* 💻 DESKTOP DROPDOWN POPUP */}
+              <div className={`hidden md:block absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 z-50 text-xs space-y-1 transition duration-150 ${
+                openSubNav === cat.key ? "opacity-100 pointer-events-auto block" : "opacity-0 pointer-events-none hidden group-hover:block group-hover:opacity-100 group-hover:pointer-events-auto"
+              }`}>
+                <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">{cat.subtitle}</p>
+                {cat.links.map((link) => (
+                  <Link
+                    key={link.slug}
+                    href={`/category/${link.slug}`}
+                    onClick={() => setOpenSubNav(null)}
+                    className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition"
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </div>
             </div>
-          </div>
-
-          {/* 3. TV & Home Entertainment */}
-          <div className="relative group py-1 cursor-pointer">
-            <Link href="/category/4k-smart-tvs" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
-              TV &amp; Home Entertainment <span className="text-[10px] text-gray-400">▾</span>
-            </Link>
-            <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
-              <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Home Cinema</p>
-              <Link href="/category/4k-smart-tvs" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">4K Ultra HD Smart TVs</Link>
-              <Link href="/category/soundbars" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Home Theatre Soundbars</Link>
-              <Link href="/category/streaming-boxes" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Streaming Sticks &amp; Boxes</Link>
-            </div>
-          </div>
-
-          {/* 4. Audio */}
-          <div className="relative group py-1 cursor-pointer">
-            <Link href="/category/anc-headphones" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
-              Audio <span className="text-[10px] text-gray-400">▾</span>
-            </Link>
-            <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
-              <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Audio Gear</p>
-              <Link href="/category/anc-headphones" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Active ANC Headphones</Link>
-              <Link href="/category/tws-earbuds" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">True Wireless Earbuds (TWS)</Link>
-              <Link href="/category/bluetooth-speakers" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Portable Bluetooth Speakers</Link>
-            </div>
-          </div>
-
-          {/* 5. Camera */}
-          <div className="relative group py-1 cursor-pointer">
-            <Link href="/category/drones" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
-              Camera <span className="text-[10px] text-gray-400">▾</span>
-            </Link>
-            <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
-              <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Photography</p>
-              <Link href="/category/drones" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">RC 4K Camera Pro Drones</Link>
-              <Link href="/category/dslr-cameras" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">DSLR &amp; Mirrorless Cameras</Link>
-              <Link href="/category/action-gimbals" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Action Cameras &amp; Gimbals</Link>
-            </div>
-          </div>
-
-          {/* 6. Computer Accessories */}
-          <div className="relative group py-1 cursor-pointer">
-            <Link href="/category/ssds-drives" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
-              Computer Accessories <span className="text-[10px] text-gray-400">▾</span>
-            </Link>
-            <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
-              <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Peripherals</p>
-              <Link href="/category/ssds-drives" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">External SSDs &amp; Hard Drives</Link>
-              <Link href="/category/usb-hubs" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">USB Type-C Hubs &amp; Adapters</Link>
-              <Link href="/category/webcams-mics" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Full HD Webcams &amp; Mics</Link>
-            </div>
-          </div>
-
-          {/* 7. Smart Technology */}
-          <div className="relative group py-1 cursor-pointer">
-            <Link href="/category/smartwatches" className="hover:text-orange-600 flex items-center gap-1 font-semibold">
-              Smart Technology <span className="text-[10px] text-gray-400">▾</span>
-            </Link>
-            <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
-              <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">Wearables &amp; Smart</p>
-              <Link href="/category/smartwatches" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smartwatches &amp; Fitness Bands</Link>
-              <Link href="/category/smart-lighting" className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700">Smart Home Lighting &amp; Plugs</Link>
-            </div>
-          </div>
+          ))}
 
         </div>
       </div>
+
+      {/* 📱 MOBILE CATEGORY SHEET MODAL (Renders via Portal on Mobile Click) */}
+      {openSubNav && typeof document !== "undefined" && createPortal(
+        <div className="block md:hidden fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-end justify-center font-sans animate-in fade-in duration-150">
+          {/* Backdrop dismiss */}
+          <div className="absolute inset-0" onClick={() => setOpenSubNav(null)} />
+
+          {/* Sheet Container */}
+          <div className="relative bg-white w-full rounded-t-3xl p-5 shadow-2xl space-y-4 z-10 animate-in slide-in-from-bottom duration-200 border-t border-gray-200">
+            
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
+              <div>
+                <h3 className="font-black text-gray-900 text-sm">
+                  {SUB_NAV_ITEMS.find((c) => c.key === openSubNav)?.title}
+                </h3>
+                <p className="text-[10px] text-amber-700 font-extrabold uppercase tracking-wider">
+                  {SUB_NAV_ITEMS.find((c) => c.key === openSubNav)?.subtitle}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setOpenSubNav(null)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-xs flex items-center justify-center cursor-pointer transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-1.5 text-xs">
+              {SUB_NAV_ITEMS.find((c) => c.key === openSubNav)?.links.map((link) => (
+                <Link
+                  key={link.slug}
+                  href={`/category/${link.slug}`}
+                  onClick={() => setOpenSubNav(null)}
+                  className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-emerald-50 text-gray-800 font-bold transition border border-gray-100"
+                >
+                  <span>{link.name}</span>
+                  <span className="text-emerald-600 font-black text-sm">&rsaquo;</span>
+                </Link>
+              ))}
+            </div>
+
+          </div>
+        </div>,
+        document.body
+      )}
 
       {/* 📍 Breadcrumb Bar */}
       <div className="max-w-[1536px] mx-auto px-4 lg:px-8">

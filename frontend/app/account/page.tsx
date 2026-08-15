@@ -8,12 +8,21 @@ import { LoginModal } from "components/auth/login-modal";
 import { useWishlist } from "components/wishlist/wishlist-context";
 import { getUserAddressesKey, getUserOrdersKey } from "lib/utils";
 
+interface TimelineStep {
+  status: string;
+  location: string;
+  timestamp: string;
+  completed: boolean;
+  active?: boolean;
+}
+
 function AccountContent() {
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "addresses";
   const [activeTab, setActiveTab] = useState<string>(initialTab);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const tabParam = searchParams.get("tab");
@@ -22,33 +31,32 @@ function AccountContent() {
     }
   }, [searchParams]);
 
-  const [user, setUser] = useState<{ user_name: string; email: string; phone?: string; gender?: string }>({
-    user_name: "Sachin Rawat",
-    email: "sachin.rawat@email.com",
-    phone: "+91 6264384464",
-    gender: "Male"
-  });
-
-  const [firstName, setFirstName] = useState("Sachin");
-  const [lastName, setLastName] = useState("Rawat");
+  const [user, setUser] = useState<{ user_name: string; email: string; phone?: string; gender?: string } | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isEditingName, setIsEditingName] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem("skipd_token");
     const stored = localStorage.getItem("skipd_user");
     if (token || stored) {
-      setIsLoggedIn(true);
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
           setUser(parsed);
-          const nameParts = (parsed.user_name || "Sachin Rawat").split(" ");
-          setFirstName(nameParts[0] || "Sachin");
-          setLastName(nameParts.slice(1).join(" ") || "Rawat");
-        } catch (e) {}
+          setIsLoggedIn(true);
+          const nameParts = (parsed.user_name || parsed.name || "").split(" ");
+          setFirstName(nameParts[0] || "");
+          setLastName(nameParts.slice(1).join(" ") || "");
+        } catch (e) {
+          setIsLoggedIn(false);
+        }
+      } else if (token) {
+        setIsLoggedIn(true);
       }
     } else {
-      setIsLoggedIn(true); // Default preview
+      setIsLoggedIn(false);
+      setUser(null);
     }
   }, []);
 
@@ -120,8 +128,8 @@ function AccountContent() {
 
   const handleOpenAddModal = () => {
     setEditingAddress(null);
-    setFormName(user.user_name || "");
-    setFormPhone(user.phone || "");
+    setFormName(user?.user_name || "");
+    setFormPhone(user?.phone || "");
     setFormPincode("");
     setFormAddress("");
     setFormLandmark("");
@@ -172,8 +180,8 @@ function AccountContent() {
     } else {
       const newObj = {
         id: Date.now(),
-        name: formName || user.user_name || "Customer",
-        phone: formPhone || user.phone || "+91 9876543210",
+        name: formName || user?.user_name || "Customer",
+        phone: formPhone || user?.phone || "+91 9876543210",
         pincode: formPincode || "560103",
         address: formAddress,
         landmark: formLandmark || "Near Central Location",
@@ -189,6 +197,121 @@ function AccountContent() {
     saveAddresses(updatedList);
     setIsAddAddressModalOpen(false);
     setEditingAddress(null);
+  };
+
+  // -------------------------------------------------------------
+  // 🚀 LIVE SHIPMENT TRACKER TAB STATE & LOGIC
+  // -------------------------------------------------------------
+  const [selectedTrackOrderId, setSelectedTrackOrderId] = useState<string>("SKIPD-984201");
+  const [trackingInput, setTrackingInput] = useState<string>("");
+  const [trackingSearchError, setTrackingSearchError] = useState("");
+
+  const trackableOrders = [
+    {
+      order_number: "SKIPD-984201",
+      created_at: new Date(Date.now() - 3600000 * 5).toISOString(),
+      total_amount: 1799,
+      payment_method: "Razorpay Online",
+      status: "IN_TRANSIT",
+      items: [
+        {
+          title: "boAt Rockerz Plus 550 ANC Headphones",
+          price: 1799,
+          quantity: 1,
+          image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+        }
+      ],
+      shipping_address: {
+        name: user?.user_name || "Customer",
+        street: "Flat 402, Signature Towers, MG Road",
+        city: "Gwalior",
+        state: "Madhya Pradesh",
+        pincode: "474001"
+      }
+    },
+    {
+      order_number: "SKIPD-842109",
+      created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
+      total_amount: 3499,
+      payment_method: "UPI Online",
+      status: "DELIVERED",
+      items: [
+        {
+          title: "Matte Black Chrono Watch",
+          price: 3499,
+          quantity: 1,
+          image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"
+        }
+      ],
+      shipping_address: {
+        name: user?.user_name || "Customer",
+        street: "Building 5, Tech Park, Electronic City",
+        city: "Bengaluru",
+        state: "Karnataka",
+        pincode: "560100"
+      }
+    }
+  ];
+
+  const currentTrackOrder = trackableOrders.find(
+    o => o.order_number.toLowerCase() === selectedTrackOrderId.toLowerCase()
+  ) || trackableOrders[0];
+
+  const getTimelineForStatus = (status: string): TimelineStep[] => {
+    const isDelivered = status === "DELIVERED";
+    const isInTransit = status === "IN_TRANSIT" || isDelivered;
+    const isPacked = status === "PACKED" || isInTransit || isDelivered;
+
+    return [
+      {
+        status: "Order Confirmed & Placed",
+        location: "SKIPD Fulfillment Hub, Mumbai",
+        timestamp: "Today, 10:30 AM",
+        completed: true
+      },
+      {
+        status: "Order Packed & Quality Checked",
+        location: "Central Warehouse, Line 4",
+        timestamp: "Today, 12:45 PM",
+        completed: isPacked
+      },
+      {
+        status: "In Transit — Dispatched via Express",
+        location: "Logistics Hub (AWB: SR-894201)",
+        timestamp: isPacked ? "Today, 03:15 PM" : "Pending",
+        completed: isInTransit
+      },
+      {
+        status: "Out for Delivery",
+        location: "Assigned to Executive (Vikram Sharma)",
+        timestamp: isDelivered ? "Yesterday, 04:00 PM" : (isInTransit ? "Expected by 06:00 PM" : "Pending"),
+        completed: isDelivered,
+        active: isInTransit && !isDelivered
+      },
+      {
+        status: "Delivered to Customer",
+        location: "Destination Address",
+        timestamp: isDelivered ? "Yesterday, 05:12 PM" : "Expected Aug 15",
+        completed: isDelivered
+      }
+    ];
+  };
+
+  const handleTrackingSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setTrackingSearchError("");
+    const q = trackingInput.trim().toLowerCase();
+    if (!q) return;
+
+    const match = trackableOrders.find(
+      o => o.order_number.toLowerCase() === q || o.order_number.toLowerCase().includes(q)
+    );
+
+    if (match) {
+      setSelectedTrackOrderId(match.order_number);
+    } else {
+      setTrackingSearchError(`No order found matching "${trackingInput}". Try SKIPD-984201.`);
+    }
   };
 
   // -------------------------------------------------------------
@@ -389,6 +512,48 @@ function AccountContent() {
     { id: 2, title: "Supercoins Credited", text: "250 Supercoins added to your wallet.", time: "1 day ago" }
   ];
 
+  // 🔒 LOGGED OUT GUARD VIEW: If user is not authenticated, show clean Sign In screen with LoginModal trigger
+  if (isLoggedIn === false) {
+    return (
+      <div className="min-h-screen bg-[#F4F6F8] text-gray-900 flex items-center justify-center p-4 font-sans">
+        <div className="bg-white border border-gray-200/80 rounded-3xl p-8 md:p-12 max-w-md w-full text-center space-y-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-[#059669] flex items-center justify-center mx-auto text-2xl shadow-xs">
+            <svg className="w-8 h-8 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+
+          <div className="space-y-2">
+            <h2 className="text-2xl font-black text-gray-900">Sign In Required</h2>
+            <p className="text-xs text-gray-500 leading-relaxed font-medium">
+              Please sign in to your account to view your profile, active orders, live shipment tracking, 24h returns, and wallet rewards.
+            </p>
+          </div>
+
+          <div className="pt-2 space-y-3">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-3.5 px-6 rounded-2xl transition shadow-xs cursor-pointer"
+            >
+              Sign In / Register
+            </button>
+
+            <Link
+              href="/"
+              className="block text-xs font-bold text-gray-500 hover:text-gray-900 transition"
+            >
+              &larr; Return to Store Homepage
+            </Link>
+          </div>
+
+          <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </div>
+      </div>
+    );
+  }
+
+  const currentUser = user || { user_name: "Customer", email: "user@skipd.in" };
+
   return (
     <div className="min-h-screen bg-[#F4F6F8] text-gray-900 p-4 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-6">
@@ -397,22 +562,267 @@ function AccountContent() {
         <div className="space-y-4 lg:col-span-1">
           
           {/* User Header Profile Card */}
-          <div className="bg-white border border-gray-200/80 rounded-2xl p-4 flex items-center gap-3.5 shadow-2xs">
-            <div className="w-12 h-12 rounded-full bg-[#10B981] text-white font-black text-xl flex items-center justify-center shadow-xs shrink-0">
-              {user.user_name[0] || "S"}
+          <div className="bg-white border border-gray-200/80 rounded-2xl p-4 flex items-center justify-between gap-3.5 shadow-2xs">
+            <div className="flex items-center gap-3.5 min-w-0">
+              <div className="w-12 h-12 rounded-full bg-[#10B981] text-white font-black text-xl flex items-center justify-center shadow-xs shrink-0">
+                {currentUser.user_name[0] || "S"}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">Hello,</p>
+                <p className="font-black text-base text-gray-900 truncate">{currentUser.user_name}</p>
+                <p className="text-xs text-gray-400 font-medium truncate">{currentUser.email}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">Hello,</p>
-              <p className="font-black text-base text-gray-900 truncate">{user.user_name}</p>
-              <p className="text-xs text-gray-400 font-medium truncate">{user.email}</p>
-            </div>
+            <button
+              onClick={handleLogout}
+              className="lg:hidden text-xs font-black text-red-600 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl border border-red-200 shrink-0 cursor-pointer"
+            >
+              Logout
+            </button>
           </div>
 
-          {/* Navigation Sidebar Menu */}
-          <div className="bg-white border border-gray-200/80 rounded-2xl p-4 space-y-4 text-xs shadow-2xs divide-y divide-gray-100 font-bold text-gray-700">
+          {/* 📱 MOBILE VERTICAL ACCOUNT SERVICES NAVIGATION CARD (Visible on < lg) */}
+          <div className="block lg:hidden bg-white border border-gray-200/80 rounded-2xl p-3 shadow-2xs space-y-3">
+            
+            {/* Collapsible Header Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="w-full flex items-center justify-between bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl p-3 text-xs font-black text-gray-900 cursor-pointer shadow-2xs transition"
+            >
+              <div className="flex items-center gap-2.5">
+                <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+                <span>Account Services Menu</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="bg-[#059669] text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-full capitalize">
+                  {activeTab === "track-order" ? "Live Track" : activeTab === "returns" ? "24h Returns" : activeTab}
+                </span>
+                <span className="text-gray-400 text-xs font-bold">{isMobileMenuOpen ? "▲" : "▼"}</span>
+              </div>
+            </button>
+
+            {/* Top-to-Bottom Vertical Services Menu List (Shown when open) */}
+            {isMobileMenuOpen && (
+              <div className="space-y-3 pt-1 divide-y divide-gray-100 text-xs font-bold text-gray-700 animate-in fade-in slide-in-from-top-1">
+                
+                {/* MY ORDERS GROUP */}
+                <div className="space-y-1">
+                  <p className="font-extrabold text-gray-400 px-2 uppercase text-[10px] tracking-wider mb-1">
+                    MY ORDERS &amp; LOGISTICS
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("orders"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "orders" ? "bg-gray-900 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
+                      </svg>
+                      <span>My Orders</span>
+                    </div>
+                    <span className="text-xs">&rsaquo;</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("track-order"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "track-order" ? "bg-[#059669] text-white font-black shadow-2xs" : "bg-emerald-50 text-[#059669] border border-emerald-200/60"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>Track Shipment Live</span>
+                    </div>
+                    <span className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full">Live</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("returns"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "returns" ? "bg-[#059669] text-white font-black shadow-2xs" : "bg-emerald-50 text-[#059669] border border-emerald-200/60"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                      <span>Return Products Policy</span>
+                    </div>
+                    <span className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full">24h Policy</span>
+                  </button>
+                </div>
+
+                {/* ACCOUNT SETTINGS GROUP */}
+                <div className="pt-2 space-y-1">
+                  <p className="font-extrabold text-gray-400 px-2 uppercase text-[10px] tracking-wider mb-1">
+                    ACCOUNT SETTINGS
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("profile"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "profile" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span>Profile Information</span>
+                    </div>
+                    <span className="text-xs">&rsaquo;</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("addresses"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "addresses" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 opacity-80 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      <span>Manage Addresses</span>
+                    </div>
+                    <span className="text-xs">&rsaquo;</span>
+                  </button>
+                </div>
+
+                {/* PAYMENTS & WALLET GROUP */}
+                <div className="pt-2 space-y-1">
+                  <p className="font-extrabold text-gray-400 px-2 uppercase text-[10px] tracking-wider mb-1">
+                    PAYMENTS &amp; WALLET
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("gift-cards"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "gift-cards" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span>Gift Cards</span>
+                    </div>
+                    <span className="text-[#059669] font-black">₹0</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("wallet"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "wallet" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                      <span>Saved Cards &amp; Wallet</span>
+                    </div>
+                    <span className="text-xs">&rsaquo;</span>
+                  </button>
+                </div>
+
+                {/* MY STUFF GROUP */}
+                <div className="pt-2 space-y-1">
+                  <p className="font-extrabold text-gray-400 px-2 uppercase text-[10px] tracking-wider mb-1">
+                    MY STUFF
+                  </p>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("coupons"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "coupons" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 11h.01M7 15h.01M13 7h.01M13 11h.01M13 15h.01M17 7h.01M17 11h.01M17 15h.01" />
+                      </svg>
+                      <span>My Coupons (2 Active)</span>
+                    </div>
+                    <span className="text-xs">&rsaquo;</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("supercoin"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "supercoin" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      <span>Supercoins &amp; Plus Zone</span>
+                    </div>
+                    <span className="text-xs">&rsaquo;</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("wishlist"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "wishlist" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                      <span>My Wishlist ({wishlist.length})</span>
+                    </div>
+                    <span className="text-xs">&rsaquo;</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => { setActiveTab("notifications"); setIsMobileMenuOpen(false); }}
+                    className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
+                      activeTab === "notifications" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      </svg>
+                      <span>All Notifications</span>
+                    </div>
+                    <span className="text-xs">&rsaquo;</span>
+                  </button>
+                </div>
+
+              </div>
+            )}
+          </div>
+
+          {/* Navigation Sidebar Menu (Hidden on mobile < lg, visible on desktop lg+) */}
+          <div className="hidden lg:block bg-white border border-gray-200/80 rounded-2xl p-4 space-y-4 text-xs shadow-2xs divide-y divide-gray-100 font-bold text-gray-700">
             
             {/* MY ORDERS */}
-            <div>
+            <div className="space-y-1">
               <button
                 onClick={() => setActiveTab("orders")}
                 className={`w-full flex items-center justify-between font-black text-xs py-2.5 px-3.5 rounded-xl transition cursor-pointer ${
@@ -428,10 +838,29 @@ function AccountContent() {
                 <span className="text-sm font-black">&rsaquo;</span>
               </button>
 
-              {/* ♻️ 24h Return Products Policy Single Sidebar Link */}
+              {/* 🚀 Track Order & Live Shipment Link */}
+              <button
+                onClick={() => setActiveTab("track-order")}
+                className={`w-full flex items-center justify-between font-bold text-xs py-2.5 px-3.5 rounded-xl transition cursor-pointer ${
+                  activeTab === "track-order"
+                    ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black"
+                    : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  <span>Track Shipment Live</span>
+                </div>
+                <span className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full">Live</span>
+              </button>
+
+              {/* ↺ 24h Return Products Policy Single Sidebar Link */}
               <button
                 onClick={() => setActiveTab("returns")}
-                className={`w-full flex items-center justify-between font-bold text-xs py-2.5 px-3.5 rounded-xl transition cursor-pointer mt-1 ${
+                className={`w-full flex items-center justify-between font-bold text-xs py-2.5 px-3.5 rounded-xl transition cursor-pointer ${
                   activeTab === "returns"
                     ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black"
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
@@ -590,6 +1019,216 @@ function AccountContent() {
 
         {/* 📄 Right Main Content Panel */}
         <div className="lg:col-span-3 space-y-6">
+
+          {/* 🚀 TAB: TRACK ORDER & LIVE SHIPMENT LOGISTICS (EMBEDDED IN USER PROFILE) */}
+          {activeTab === "track-order" && (
+            <div className="space-y-6">
+              
+              {/* Header Bar */}
+              <div className="bg-white border border-gray-200/80 p-5 md:p-6 rounded-2xl shadow-2xs flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-[10px] uppercase px-3 py-1 rounded-full tracking-wider">
+                    🚀 LIVE SHIPMENT &amp; LOGISTICS TRACKER
+                  </span>
+                  <h1 className="text-xl md:text-2xl font-black text-gray-900 mt-2">Track Your Orders Live</h1>
+                  <p className="text-xs text-gray-500 font-medium mt-1">Real-time status updates and delivery executive contact info.</p>
+                </div>
+
+                <button
+                  onClick={() => setActiveTab("orders")}
+                  className="text-xs font-bold text-[#059669] hover:underline"
+                >
+                  View All Order History &rsaquo;
+                </button>
+              </div>
+
+              {/* 2-Column Split Layout */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                
+                {/* Left 4-Col: Recent Orders Selector Cards */}
+                <div className="lg:col-span-4 space-y-4">
+                  <h3 className="font-black text-base text-gray-900">Your Recent Orders ({trackableOrders.length})</h3>
+
+                  <div className="space-y-3">
+                    {trackableOrders.map((ord) => {
+                      const isSelected = currentTrackOrder?.order_number === ord.order_number;
+                      const firstItem = ord.items[0];
+
+                      return (
+                        <div
+                          key={ord.order_number}
+                          onClick={() => setSelectedTrackOrderId(ord.order_number)}
+                          className={`p-4 rounded-2xl border transition cursor-pointer flex gap-3 items-center ${
+                            isSelected
+                              ? "bg-[#EAF8F2] border-[#059669] ring-2 ring-emerald-500/20 shadow-xs"
+                              : "bg-white border-gray-200 hover:border-emerald-300 shadow-2xs"
+                          }`}
+                        >
+                          <img
+                            src={firstItem?.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"}
+                            alt={firstItem?.title || "Product"}
+                            className="w-12 h-12 object-contain bg-white rounded-xl p-1 border border-gray-200 shrink-0"
+                          />
+
+                          <div className="flex-1 min-w-0 text-xs space-y-1">
+                            <div className="flex justify-between items-center">
+                              <span className="font-black text-gray-900 text-xs">{ord.order_number}</span>
+                              <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase ${
+                                ord.status === "DELIVERED"
+                                  ? "bg-emerald-100 text-emerald-800"
+                                  : "bg-amber-100 text-amber-900"
+                              }`}>
+                                {ord.status}
+                              </span>
+                            </div>
+                            <p className="font-bold text-gray-800 truncate">{firstItem?.title}</p>
+                            <div className="flex justify-between text-[10px] text-gray-500 pt-0.5">
+                              <span>{new Date(ord.created_at).toLocaleDateString("en-IN")}</span>
+                              <span className="font-black text-gray-900">₹{ord.total_amount.toLocaleString("en-IN")}</span>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Right 8-Col: Live Order Details & Stepper */}
+                <div className="lg:col-span-8 space-y-6">
+                  
+                  {/* Search Input Box */}
+                  <div className="bg-white border border-gray-200/80 rounded-2xl p-4 md:p-5 shadow-2xs space-y-2.5">
+                    <h3 className="text-xs font-bold text-gray-900">Lookup Order by ID</h3>
+                    <form onSubmit={handleTrackingSearch} className="flex flex-col sm:flex-row gap-2.5">
+                      <input
+                        type="text"
+                        placeholder="e.g. SKIPD-984201"
+                        value={trackingInput}
+                        onChange={(e) => setTrackingInput(e.target.value)}
+                        className="flex-1 min-w-0 bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-600 focus:outline-none uppercase tracking-wider font-mono"
+                      />
+                      <button
+                        type="submit"
+                        className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-5 py-2.5 rounded-xl transition shadow-xs whitespace-nowrap cursor-pointer shrink-0 text-center"
+                      >
+                        Track Live &rarr;
+                      </button>
+                    </form>
+                    {trackingSearchError && <p className="text-xs text-red-600 font-bold">{trackingSearchError}</p>}
+                  </div>
+
+                  {/* Selected Order Live Card */}
+                  {currentTrackOrder && (
+                    <div className="bg-white border border-gray-200/80 rounded-2xl p-6 md:p-8 shadow-2xs space-y-6">
+                      
+                      {/* Header Summary Bar */}
+                      <div className="flex flex-wrap justify-between items-center gap-4 border-b border-gray-100 pb-5 text-xs">
+                        <div>
+                          <span className="text-gray-400 font-bold block text-[10px] uppercase tracking-wider">ORDER ID</span>
+                          <span className="text-base font-black text-gray-900">{currentTrackOrder.order_number}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 font-bold block text-[10px] uppercase tracking-wider">PAYMENT METHOD</span>
+                          <span className="font-bold text-emerald-700 uppercase">{currentTrackOrder.payment_method || "RAZORPAY ONLINE"}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400 font-bold block text-[10px] uppercase tracking-wider">ESTIMATED DELIVERY</span>
+                          <span className="font-bold text-gray-900">Saturday, Aug 15</span>
+                        </div>
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-1.5 text-right">
+                          <span className="text-[10px] text-gray-500 font-bold block">DELIVERY SECURITY OTP</span>
+                          <span className="text-sm font-black text-emerald-700 font-mono tracking-widest">8942</span>
+                        </div>
+                      </div>
+
+                      {/* 🛵 Delivery Executive Info Card */}
+                      <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-2xl p-5 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-white shrink-0">
+                            <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <span className="bg-emerald-500 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full uppercase">
+                              Assigned Delivery Executive
+                            </span>
+                            <h4 className="text-sm font-black mt-0.5">Vikram Sharma</h4>
+                            <p className="text-xs text-emerald-200 font-medium">Vehicle: MP-07-EV-4210 • Express Courier</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 w-full md:w-auto justify-between">
+                          <div className="text-right hidden md:block">
+                            <p className="text-[10px] text-gray-300">Live Status</p>
+                            <p className="text-xs font-bold text-emerald-300">1.4 km away • Arriving in 18 mins</p>
+                          </div>
+
+                          <a
+                            href="tel:+919826012345"
+                            className="bg-emerald-500 hover:bg-emerald-400 text-gray-900 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                          >
+                            📞 Call Executive
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* 5-Stage Visual Order Stepper */}
+                      <div className="space-y-4">
+                        <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">Live Status Progress</h3>
+
+                        <div className="space-y-6 relative pl-6 border-l-2 border-emerald-500 my-4 text-xs">
+                          {getTimelineForStatus(currentTrackOrder.status).map((step, idx) => (
+                            <div key={idx} className="relative pl-4">
+                              <div
+                                className={`absolute -left-[31px] top-0 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black ${
+                                  step.completed
+                                    ? "bg-[#059669] text-white ring-4 ring-emerald-100 shadow-2xs"
+                                    : step.active
+                                    ? "bg-amber-500 text-white ring-4 ring-amber-100 animate-pulse"
+                                    : "bg-gray-200 text-gray-400"
+                                }`}
+                              >
+                                {step.completed ? "✓" : idx + 1}
+                              </div>
+
+                              <h4 className={`font-bold text-xs ${step.completed ? "text-gray-900" : "text-gray-400"}`}>
+                                {step.status}
+                              </h4>
+                              <p className="text-gray-500 text-[11px] mt-0.5">{step.location} • <span className="font-semibold text-gray-700">{step.timestamp}</span></p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Shipping Destination & Ordered Items */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-gray-100 pt-5 text-xs">
+                        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-1">
+                          <p className="font-black text-gray-900 text-xs uppercase tracking-wider">📍 Delivery Address</p>
+                          <p className="font-bold text-gray-900">{currentTrackOrder.shipping_address?.name || "Sachin Rawat"}</p>
+                          <p className="text-gray-600 line-clamp-2 text-xs">{currentTrackOrder.shipping_address?.street}, {currentTrackOrder.shipping_address?.city}, {currentTrackOrder.shipping_address?.state} - {currentTrackOrder.shipping_address?.pincode}</p>
+                        </div>
+
+                        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2">
+                          <p className="font-black text-gray-900 text-xs uppercase tracking-wider">🛍️ Items in this Package</p>
+                          {currentTrackOrder.items.map((item, idx) => (
+                            <div key={idx} className="flex justify-between items-center text-xs">
+                              <span className="font-bold text-gray-800 truncate max-w-[180px]">{item.title}</span>
+                              <span className="font-black text-gray-900">Qty {item.quantity} • ₹{item.price.toLocaleString("en-IN")}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                    </div>
+                  )}
+
+                </div>
+
+              </div>
+
+            </div>
+          )}
 
           {/* ♻️ TAB: 24-HOUR EXPRESS PRODUCT RETURN WINDOW (UNIFIED SINGLE SIDEBAR) */}
           {activeTab === "returns" && (
@@ -1158,7 +1797,12 @@ function AccountContent() {
                 <button
                   onClick={() => {
                     const fullName = `${firstName} ${lastName}`.trim();
-                    const updated = { ...user, user_name: fullName };
+                    const updated = {
+                      user_name: fullName,
+                      email: user?.email || "customer@skipd.in",
+                      phone: user?.phone,
+                      gender: user?.gender
+                    };
                     setUser(updated);
                     localStorage.setItem("skipd_user", JSON.stringify(updated));
                     setIsEditingName(false);
@@ -1198,12 +1842,15 @@ function AccountContent() {
                       <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">
                         {ord.status}
                       </span>
-                      <Link
-                        href={`/track-order?id=${ord.id}`}
-                        className="bg-gray-900 hover:bg-black text-white text-xs font-black px-4 py-2 rounded-xl transition"
+                      <button
+                        onClick={() => {
+                          setActiveTab("track-order");
+                          setSelectedTrackOrderId(ord.id);
+                        }}
+                        className="bg-gray-900 hover:bg-black text-white text-xs font-black px-4 py-2 rounded-xl transition cursor-pointer"
                       >
                         Track Order &rsaquo;
-                      </Link>
+                      </button>
                     </div>
                   </div>
                 ))}

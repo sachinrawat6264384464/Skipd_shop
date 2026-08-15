@@ -28,6 +28,8 @@ import { AuthProvider } from "components/auth/auth-provider";
 import { LanguageProvider } from "components/language/language-context";
 import { WishlistProvider } from "components/wishlist/wishlist-context";
 
+import { NavbarWrapper } from "components/layout/navbar/navbar-wrapper";
+
 export default async function RootLayout({
   children,
 }: {
@@ -43,7 +45,9 @@ export default async function RootLayout({
           <AuthProvider>
             <WishlistProvider>
               <CartProvider cartPromise={cart}>
-                <Navbar />
+                <NavbarWrapper>
+                  <Navbar />
+                </NavbarWrapper>
                 <main>
                   {children}
                   <Toaster closeButton />

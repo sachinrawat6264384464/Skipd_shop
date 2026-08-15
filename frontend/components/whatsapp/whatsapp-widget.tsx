@@ -1,10 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 export function WhatsAppFloatingWidget() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const phoneNumber = "919876543210"; // SKIPD Support Line
+
+  // Hide WhatsApp widget on admin routes
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const handleOpenWhatsApp = (message: string) => {
     const encoded = encodeURIComponent(message);
@@ -40,7 +47,7 @@ export function WhatsAppFloatingWidget() {
               onClick={() => handleOpenWhatsApp("Hi, I have a query about sizing and product quality!")}
               className="w-full text-left bg-neutral-950 hover:bg-neutral-800 border border-neutral-800 p-2 rounded-lg text-xs transition text-white"
             >
-              👕 Product & Size Assistance
+              👕 Product &amp; Size Assistance
             </button>
           </div>
         </div>
@@ -48,7 +55,7 @@ export function WhatsAppFloatingWidget() {
 
       <button
         onClick={() => setOpen(!open)}
-        className="w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-full shadow-2xl flex items-center justify-center text-2xl transition-transform hover:scale-110 focus:ring-4 focus:ring-emerald-400/50"
+        className="w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-full shadow-2xl flex items-center justify-center text-2xl transition-transform hover:scale-110 focus:ring-4 focus:ring-emerald-400/50 cursor-pointer"
         title="Chat on WhatsApp"
       >
         💬

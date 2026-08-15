@@ -10,11 +10,16 @@ export function UserAccountDropdown() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
+    const token = localStorage.getItem("skipd_token");
     const stored = localStorage.getItem("skipd_user");
-    if (stored) {
+    if (token && stored) {
       try {
         setUser(JSON.parse(stored));
-      } catch (e) {}
+      } catch (e) {
+        setUser(null);
+      }
+    } else {
+      setUser(null);
     }
   }, []);
 
@@ -31,9 +36,10 @@ export function UserAccountDropdown() {
       <>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+          className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl transition shadow-xs cursor-pointer whitespace-nowrap"
         >
-          Sign In / Register
+          <span className="inline sm:hidden">Sign In</span>
+          <span className="hidden sm:inline">Sign In / Register</span>
         </button>
 
         <LoginModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
@@ -51,15 +57,15 @@ export function UserAccountDropdown() {
       {/* 👤 User Avatar + Full Name Dropdown Button (Matching Screenshot 2) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-xs font-bold text-gray-900 bg-gray-100/90 border border-gray-200/80 hover:bg-gray-200/90 px-3 py-1.5 rounded-2xl transition cursor-pointer shadow-2xs"
+        className="flex items-center gap-1.5 text-xs font-bold text-gray-900 bg-gray-100/90 border border-gray-200/80 hover:bg-gray-200/90 p-1 sm:px-3 sm:py-1.5 rounded-2xl transition cursor-pointer shadow-2xs"
       >
-        <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
+        <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0">
           {initials}
         </div>
-        <span className="font-bold text-xs text-gray-900 leading-none">
+        <span className="font-bold text-xs text-gray-900 leading-none hidden sm:inline">
           {user.user_name}
         </span>
-        <span className="text-[10px] text-gray-500 font-black">▾</span>
+        <span className="text-[10px] text-gray-500 font-black hidden sm:inline">▾</span>
       </button>
 
       {/*  dropdown Menu Card */}

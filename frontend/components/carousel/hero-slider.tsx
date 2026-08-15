@@ -132,15 +132,15 @@ export function HeroSlider() {
       >
         {slides.map((slide, idx) => (
           <div key={slide.id || idx} className="w-full shrink-0">
-            <div className={`bg-gradient-to-r ${slide.bgGradient || "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"} border rounded-3xl p-8 md:p-12 shadow-xs flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden min-h-[320px]`}>
+            <div className={`bg-gradient-to-r ${slide.bgGradient || "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"} border rounded-3xl p-4 sm:p-8 md:p-12 shadow-xs flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 relative overflow-hidden min-h-[280px]`}>
 
               {/* Text Content */}
-              <div className="space-y-4 max-w-xl z-10">
+              <div className="space-y-3 sm:space-y-4 max-w-xl z-10 w-full">
                 <span className={`inline-block border font-extrabold text-[10px] uppercase px-3 py-1 rounded-full tracking-wider ${slide.tagColor || "bg-emerald-100 text-emerald-800 border-emerald-300"}`}>
                   {slide.tag}
                 </span>
 
-                <h1 className="text-3xl md:text-5xl font-black text-gray-900 leading-tight">
+                <h1 className="text-2xl sm:text-3xl md:text-5xl font-black text-gray-900 leading-tight">
                   {slide.title}
                   <span className="text-emerald-600">{slide.highlightText}</span>
                 </h1>
@@ -149,17 +149,17 @@ export function HeroSlider() {
                   {slide.description}
                 </p>
 
-                <div className="flex items-center gap-3 pt-2">
+                <div className="flex flex-wrap items-center gap-3 pt-2">
                   <Link
                     href={slide.primaryButtonHref || "/search"}
-                    className={`font-extrabold text-xs px-6 py-3.5 rounded-xl transition shadow-md cursor-pointer ${slide.btnColor || "bg-emerald-600 hover:bg-emerald-700 text-white"}`}
+                    className={`font-extrabold text-xs px-5 py-3 rounded-xl transition shadow-md cursor-pointer ${slide.btnColor || "bg-emerald-600 hover:bg-emerald-700 text-white"}`}
                   >
-                    {slide.primaryButtonText || "SHOP NOW"}
+                    {slide.primaryButtonText || "SHOP NOW"} &rarr;
                   </Link>
                   {slide.secondaryButtonText && (
                     <Link
                       href={slide.secondaryButtonHref || "/deals"}
-                      className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 font-bold text-xs px-5 py-3.5 rounded-xl transition shadow-2xs cursor-pointer"
+                      className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 font-bold text-xs px-4 py-3 rounded-xl transition shadow-2xs cursor-pointer"
                     >
                       {slide.secondaryButtonText}
                     </Link>
@@ -168,7 +168,7 @@ export function HeroSlider() {
               </div>
 
               {/* Right Image Container */}
-              <div className="relative w-full md:w-96 h-64 md:h-72 rounded-2xl overflow-hidden shadow-lg border border-emerald-100 shrink-0">
+              <div className="relative w-full md:w-96 h-44 sm:h-64 md:h-72 rounded-2xl overflow-hidden shadow-lg border border-emerald-100 shrink-0">
                 <img
                   src={slide.imageUrl}
                   alt={slide.title}

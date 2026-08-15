@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import Search, { SearchSkeleton } from "./search";
 import { UserAccountDropdown } from "./user-dropdown";
 import { DeliveryLocationPicker } from "./delivery-location";
+import MobileMenu from "./mobile-menu";
 
 import { WishlistNavButton } from "./wishlist-nav-button";
 import { LanguagePicker } from "components/language/language-picker";
@@ -11,16 +12,18 @@ import { InstantSearchModal } from "components/search/search-modal";
 
 export async function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 px-4 lg:px-6 py-2.5 flex items-center justify-between shadow-2xs">
-      <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto gap-4">
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 px-3 sm:px-4 lg:px-6 py-2 flex items-center justify-between shadow-2xs">
+      <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto gap-2 sm:gap-4">
         
-        {/* Left Section: Brand Logo, Top Links & Delivery Location (Tight Gap) */}
-        <div className="flex items-center gap-4 lg:gap-6 shrink-0">
-          <Link href="/" className="flex items-center gap-2 text-gray-900 font-black text-2xl tracking-tight shrink-0">
-            <span className="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-base shadow-sm">
+        {/* Left Section: Mobile Drawer Toggle, Brand Logo, Top Links & Delivery Location */}
+        <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 shrink-0 min-w-0">
+          <MobileMenu />
+
+          <Link href="/" className="flex items-center gap-2 text-gray-900 font-black text-xl sm:text-2xl tracking-tight shrink-0">
+            <span className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-sm sm:text-base shadow-sm">
               S
             </span>
-            <span>SKIPD</span>
+            <span className="truncate">SKIPD</span>
           </Link>
 
           <ul className="hidden lg:flex items-center gap-4 xl:gap-5 text-xs font-semibold text-gray-700 whitespace-nowrap">
@@ -53,11 +56,7 @@ export async function Navbar() {
                 Explore Store
               </Link>
             </li>
-            <li>
-              <Link href="/track-order" className="text-emerald-600 font-bold hover:text-emerald-700 transition flex items-center gap-1">
-                Track Order
-              </Link>
-            </li>
+
             <li>
               <Link href="/deals" className="text-orange-600 font-extrabold hover:text-orange-700 transition flex items-center gap-1">
                 Deals <span className="bg-red-500 text-white font-extrabold text-[9px] px-1.5 py-0.2 rounded-full uppercase">Hot</span>
@@ -79,12 +78,14 @@ export async function Navbar() {
           <DeliveryLocationPicker />
         </div>
 
-        {/* Right Section: Action Buttons (Instant Search, Language Picker, Sign In, Wishlist, Cart) */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Right Section: Action Buttons */}
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           <InstantSearchModal />
           <LanguagePicker />
           <UserAccountDropdown />
-          <WishlistNavButton />
+          <div className="hidden sm:block">
+            <WishlistNavButton />
+          </div>
           <CartModal />
         </div>
 

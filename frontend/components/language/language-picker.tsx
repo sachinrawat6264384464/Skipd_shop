@@ -79,7 +79,7 @@ export function LanguagePicker() {
   const currentLangObj = LANGUAGES.find((l) => l.code === selectedLang) ?? LANGUAGES[0]!;
 
   return (
-    <div className="relative inline-block text-left z-40">
+    <div className="relative hidden md:inline-block text-left z-40">
       {/* Hidden Google Translate Element Container */}
       <div id="google_translate_element" className="hidden" />
 

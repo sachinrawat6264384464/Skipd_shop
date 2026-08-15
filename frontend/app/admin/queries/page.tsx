@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function AdminProductQueriesPage() {
@@ -81,8 +81,50 @@ export default function AdminProductQueriesPage() {
   const [selectedType, setSelectedType] = useState("All Types");
   const [searchQuery, setSearchQuery] = useState("");
 
+  useEffect(() => {
+    try {
+      const storedQueriesStr = localStorage.getItem("skipd_return_queries");
+      if (storedQueriesStr) {
+        const localQueries = JSON.parse(storedQueriesStr);
+        if (Array.isArray(localQueries) && localQueries.length > 0) {
+          const formatted = localQueries.map((l: any) => ({
+            id: l.id || `#Q-${Math.floor(10000 + Math.random() * 90000)}`,
+            customer: l.customer_name || "Customer",
+            email: l.email || "customer@skipd.in",
+            product: l.product_title || "Returned Product",
+            price: `₹${l.refund_amount ? l.refund_amount.toLocaleString("en-IN") : '2,999'}`,
+            img: l.product_image || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100",
+            queryText: `24h Return Request: ${l.reason} (${l.description || 'Defective item'})`,
+            type: "Return & Refund",
+            status: l.status || "Pending",
+            priority: "High",
+            priorityColor: "text-red-500",
+            date: l.date || "Just now"
+          }));
+          setQueries(prev => {
+            const ids = new Set(prev.map(p => p.id));
+            const newItems = formatted.filter((f: any) => !ids.has(f.id));
+            return [...newItems, ...prev];
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Could not load return queries");
+    }
+  }, []);
+
   const handleStatusChange = (id: string, newStatus: string) => {
     setQueries(queries.map(q => q.id === id ? { ...q, status: newStatus } : q));
+
+    // Update in localStorage for live customer sync
+    try {
+      const storedQueriesStr = localStorage.getItem("skipd_return_queries") || "[]";
+      const localQueries = JSON.parse(storedQueriesStr);
+      const updated = localQueries.map((l: any) => l.id === id ? { ...l, status: newStatus } : l);
+      localStorage.setItem("skipd_return_queries", JSON.stringify(updated));
+    } catch (e) {}
+
+    alert(`✓ Query ${id} status updated to ${newStatus}`);
   };
 
   return (

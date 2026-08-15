@@ -410,22 +410,23 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto font-sans">
-      <div className="relative bg-white rounded-3xl overflow-hidden max-w-2xl w-full shadow-2xl flex flex-col md:flex-row animate-in fade-in zoom-in-95 duration-200 border border-gray-100">
+    <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-y-auto font-sans">
+      <div className="relative bg-white rounded-3xl overflow-hidden max-w-2xl w-full max-h-[92vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row animate-in fade-in zoom-in-95 duration-200 border border-gray-100 my-auto">
         
-        {/* Close Button (Always Resets & Closes) */}
+        {/* Close Button (Always Sticky Top Right & Accessible) */}
         <button
+          type="button"
           onClick={handleModalClose}
-          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-sm flex items-center justify-center cursor-pointer transition shadow-xs"
-          title="Close"
+          className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-gray-900 font-black text-sm flex items-center justify-center cursor-pointer transition shadow-md border border-gray-200"
+          title="Close Modal"
         >
           ✕
         </button>
 
-        {/* 📘 Left Blue Hero Panel */}
-        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white p-8 md:w-2/5 flex flex-col justify-between relative overflow-hidden shrink-0">
-          <div className="space-y-3 z-10">
-            <h2 className="text-2xl md:text-3xl font-black leading-tight">
+        {/* 📘 Left Blue Hero Panel (Compact on Mobile, Full on Tablet/Desktop) */}
+        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white p-4 sm:p-6 md:p-8 md:w-2/5 flex flex-col justify-between relative overflow-hidden shrink-0">
+          <div className="space-y-2 sm:space-y-3 z-10">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black leading-tight">
               {isForgotView
                 ? forgotStep === 1
                   ? "Forgot Password"
@@ -438,7 +439,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 ? "Create Account"
                 : "Login"}
             </h2>
-            <p className="text-blue-100 text-xs md:text-sm leading-relaxed font-medium">
+            <p className="text-blue-100 text-[11px] sm:text-xs md:text-sm leading-relaxed font-medium">
               {isForgotView
                 ? forgotStep === 1
                   ? "Step 1: Enter your registered Email to receive OTP"
@@ -448,26 +449,26 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 : step === 2
                 ? `6-digit verification code sent to ${emailOrPhone}`
                 : isRegisterView
-                ? "Sign up with your mobile or email to get started with SKIPD Commerce"
-                : "Get access to your Orders, Wishlist and Recommendations"}
+                ? "Sign up with mobile or email for SKIPD Store"
+                : "Get access to your Orders, Wishlist & Tracking"}
             </p>
           </div>
 
-          <div className="z-10 mt-6 space-y-3">
+          <div className="z-10 mt-3 sm:mt-6 hidden sm:block space-y-3">
             <div className="p-3 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-xs space-y-1">
               <span className="bg-emerald-400 text-black font-extrabold text-[10px] px-2 py-0.5 rounded uppercase">
                 ✓ VERIFIED CUSTOMER AUTH
               </span>
               <p className="text-[11px] text-blue-100 font-medium">🔒 256-bit Encrypted SSL Commerce Portal</p>
             </div>
-            <div className="w-20 h-20 mx-auto opacity-90 flex items-center justify-center text-4xl">
+            <div className="w-14 h-14 md:w-20 md:h-20 mx-auto opacity-90 flex items-center justify-center text-3xl md:text-4xl">
               📦
             </div>
           </div>
         </div>
 
         {/* 📄 Right Form Area */}
-        <div className="p-6 md:p-8 md:w-3/5 space-y-5 flex flex-col justify-between">
+        <div className="p-4 sm:p-6 md:p-8 md:w-3/5 space-y-4 flex flex-col justify-between font-sans text-gray-800">
           
           {/* Error Banner */}
           {error && (

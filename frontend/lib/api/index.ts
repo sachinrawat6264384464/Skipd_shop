@@ -1237,5 +1237,26 @@ export async function seedCatalogProducts() {
   return { message: "10 catalog products seeded successfully" };
 }
 
+export async function fetchAdminOrders() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/orders`, { cache: "no-store" });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Fetch admin orders offline fallback");
+  }
+  return null;
+}
+
+export async function fetchAdminCustomers() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/admin/all`, { cache: "no-store" });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Fetch admin customers offline fallback");
+  }
+  return null;
+}
+
+
 
 

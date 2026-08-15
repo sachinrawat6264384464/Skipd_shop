@@ -21,6 +21,17 @@ export default async function DedicatedCategoryPage(props: {
 
   // Mapping slugs to human-friendly subcategory titles and search queries
   const categoryConfig: Record<string, { title: string; query: string; icon: string }> = {
+    // Top Category Bubbles
+    mobiles: { title: "Smartphones & Mobiles", query: "phone", icon: "📱" },
+    laptops: { title: "Laptops & Computers", query: "laptop", icon: "💻" },
+    electronics: { title: "Electronics & Tech Gadgets", query: "tech", icon: "🎧" },
+    fashion: { title: "Fashion & Clothing", query: "saree", icon: "👕" },
+    footwear: { title: "Shoes & Footwear", query: "shoes", icon: "👟" },
+    watches: { title: "Smartwatches & Chronos", query: "watch", icon: "⌚" },
+    beauty: { title: "Beauty & Personal Care", query: "beauty", icon: "💄" },
+    home: { title: "Home & Living", query: "home", icon: "🏠" },
+    gaming: { title: "Gaming & Performance", query: "gaming", icon: "🎮" },
+
     // Mobiles & Accessories
     smartphones: { title: "Smartphones & Basic Mobiles", query: "phone", icon: "📱" },
     "mobile-cases": { title: "Mobile Cases & Covers", query: "case", icon: "📱" },
