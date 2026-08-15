@@ -32,19 +32,19 @@ export async function Navbar() {
               {/* Hover Categories Dropdown Menu */}
               <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition duration-150 z-50 text-xs space-y-1">
                 <Link href="/search" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-emerald-50 text-emerald-800 font-extrabold">
-                  <span>☷</span> All Categories
+                  All Categories
                 </Link>
                 <Link href="/search/tech" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-semibold">
-                  <span>📱</span> Electronics &amp; Tech
+                  Electronics &amp; Tech
                 </Link>
                 <Link href="/search/apparel" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-semibold">
-                  <span>👕</span> Fashion &amp; Apparel
+                  Fashion &amp; Apparel
                 </Link>
                 <Link href="/search/lifestyle" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-semibold">
-                  <span>⌚</span> Lifestyle &amp; Watches
+                  Lifestyle &amp; Watches
                 </Link>
                 <Link href="/gift-cards" className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-amber-50 text-amber-800 font-semibold">
-                  <span>🎁</span> Gift Cards &amp; Points
+                  Gift Cards &amp; Points
                 </Link>
               </div>
             </li>
@@ -55,7 +55,7 @@ export async function Navbar() {
             </li>
             <li>
               <Link href="/track-order" className="text-emerald-600 font-bold hover:text-emerald-700 transition flex items-center gap-1">
-                📍 Track Order
+                Track Order
               </Link>
             </li>
             <li>
@@ -65,7 +65,7 @@ export async function Navbar() {
             </li>
             <li>
               <Link href="/gift-cards" className="hover:text-black transition flex items-center gap-1">
-                🎁 Gift Cards
+                Gift Cards
               </Link>
             </li>
             <li>

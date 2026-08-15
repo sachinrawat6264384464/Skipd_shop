@@ -92,7 +92,6 @@ export function DeliveryLocationPicker() {
         className="flex items-center gap-1.5 text-xs font-semibold text-gray-700 hover:text-gray-900 transition group cursor-pointer px-2 py-1.5 rounded-xl hover:bg-gray-100"
         title="Choose delivery location"
       >
-        <span className="text-emerald-600 text-sm">📍</span>
         <div className="text-left leading-tight">
           <span className="text-[10px] text-gray-400 font-medium block leading-none">
             Deliver to {isLoggedIn ? userName : ""}
