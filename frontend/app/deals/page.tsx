@@ -51,18 +51,18 @@ export default function DealsPage() {
     productsToDisplay = featuredOffers;
   } else if (sale?.products?.length > 0) {
     productsToDisplay = sale.products.map((p: any, i: number) => {
-      const fallback = sampleDealProducts[i % sampleDealProducts.length] || sampleDealProducts[0];
+      const fallback = sampleDealProducts[i % sampleDealProducts.length];
       return {
         id: p.id || i + 1,
         title: p.title,
-        handle: p.handle || fallback.handle,
+        handle: p.handle || fallback?.handle || "saree-premium-silk",
         price: p.sale_price || 299,
-        image: p.image || fallback.image,
+        image: p.image || fallback?.image || "",
         easyShip: p.shipping_type === "Easy Ship",
         weight: p.weight_range || "<500gm",
-        earlier: Math.round(p.original_price * 0.15) || fallback.earlier,
-        now: Math.round(p.sale_price * 0.1) || fallback.now,
-        save: Math.round(p.savings) || fallback.save
+        earlier: Math.round(p.original_price * 0.15) || fallback?.earlier || 90,
+        now: Math.round(p.sale_price * 0.1) || fallback?.now || 30,
+        save: Math.round(p.savings) || fallback?.save || 60
       };
     });
   } else {
