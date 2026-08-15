@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { CategoryNav } from "components/layout/category-nav";
+import { HeroSlider } from "components/carousel/hero-slider";
 import { fetchProducts } from "lib/api";
 import Footer from "components/layout/footer";
 import { BuyNowButton } from "components/auth/buy-now-button";
@@ -128,47 +129,9 @@ export default async function HomePage() {
       {/* 🏷️ Top Horizontal Category Navigation Bar */}
       <CategoryNav />
 
-      {/* 🟢 Hero Carousel Banner */}
+      {/* 🟢 Hero Carousel Banner (2-Second Auto-Slide Right-to-Left, Hover-Pause, Admin Configurable) */}
       <section className="max-w-7xl mx-auto px-4 pt-6 pb-4">
-        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100 border border-emerald-200/80 rounded-3xl p-8 md:p-12 shadow-xs flex flex-col md:flex-row justify-between items-center gap-8 relative overflow-hidden">
-          
-          <div className="space-y-4 max-w-xl z-10">
-            <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-[10px] uppercase px-3 py-1 rounded-full tracking-wider">
-              🌿 SUMMER SALE
-            </span>
-
-            <h1 className="text-3xl md:text-5xl font-black text-gray-900 leading-tight">
-              Refresh Your Style<br />
-              This <span className="text-emerald-600">Summer</span>
-            </h1>
-
-            <p className="text-gray-600 text-xs md:text-sm font-medium leading-relaxed">
-              Discover up to <strong className="text-emerald-700 font-black">60% OFF</strong> on top-rated electronics, fashion, and lifestyle essentials. Guaranteed fast delivery across India.
-            </p>
-
-            <div className="flex items-center gap-3 pt-2">
-              <Link href="/search" className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-6 py-3.5 rounded-xl transition shadow-md shadow-emerald-600/20 cursor-pointer">
-                SHOP NOW
-              </Link>
-              <Link href="/deals" className="bg-white hover:bg-gray-50 text-gray-800 border border-gray-300 font-bold text-xs px-5 py-3.5 rounded-xl transition shadow-2xs cursor-pointer">
-                EXPLORE DEALS
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Image */}
-          <div className="relative w-full md:w-96 h-64 md:h-72 rounded-2xl overflow-hidden shadow-lg border border-emerald-100 shrink-0">
-            <img 
-              src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600" 
-              alt="Summer Sale Deals" 
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute top-3 right-3 bg-red-600 text-white font-black text-xs px-3 py-1.5 rounded-full shadow-md">
-              60% OFF
-            </div>
-          </div>
-
-        </div>
+        <HeroSlider />
       </section>
 
       {/* 🚚 Trust & Delivery Features Strip */}
