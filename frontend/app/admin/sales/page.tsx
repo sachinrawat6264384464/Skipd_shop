@@ -403,8 +403,6 @@ export default function AdminSalesPage() {
           </div>
         )}
 
-      </div>
-
       {/* ➕ Create Sale Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
