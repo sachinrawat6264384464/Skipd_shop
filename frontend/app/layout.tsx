@@ -12,16 +12,43 @@ import { WhatsAppFloatingWidget } from "components/whatsapp/whatsapp-widget";
 
 const { SITE_NAME } = process.env;
 
+const siteBaseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "https://skipd-shop.vercel.app";
+
 export const metadata = {
-  metadataBase: new URL(baseUrl),
+  metadataBase: new URL(siteBaseUrl),
   title: {
-    default: SITE_NAME!,
-    template: `%s | ${SITE_NAME}`,
+    default: "SKIPD Commerce | Next-Gen E-Commerce & Personal Tech",
+    template: "%s | SKIPD Commerce",
   },
+  description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones, 4K Smart TVs & smart wearables on SKIPD Commerce.",
   robots: {
     follow: true,
     index: true,
   },
+  openGraph: {
+    title: "SKIPD Commerce | Next-Gen E-Commerce & Personal Tech",
+    description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones & smart wearables with 24-hour express delivery.",
+    url: "https://skipd-shop.vercel.app",
+    siteName: "SKIPD Commerce",
+    images: [
+      {
+        url: "https://skipd-shop.vercel.app/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "SKIPD Commerce Storefront Preview"
+      }
+    ],
+    locale: "en_US",
+    type: "website"
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SKIPD Commerce | Next-Gen E-Commerce & Personal Tech",
+    description: "Upgrade your daily setup with studio ANC headphones, gaming phones & smart wearables on SKIPD Commerce.",
+    images: ["https://skipd-shop.vercel.app/og-image.png"]
+  }
 };
 
 import { AuthProvider } from "components/auth/auth-provider";

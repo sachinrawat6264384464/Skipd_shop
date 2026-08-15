@@ -1,12 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean | null>(null);
+  const [adminUser, setAdminUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (pathname === "/admin/login") return;
+    const token = localStorage.getItem("skipd_admin_token");
+    const storedUser = localStorage.getItem("skipd_admin_user");
+
+    if (!token) {
+      setIsAdminAuthenticated(false);
+      router.push("/admin/login");
+    } else {
+      setIsAdminAuthenticated(true);
+      if (storedUser) {
+        try {
+          setAdminUser(JSON.parse(storedUser));
+        } catch (e) {}
+      }
+    }
+  }, [pathname, router]);
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem("skipd_admin_token");
+    localStorage.removeItem("skipd_admin_user");
+    router.push("/admin/login");
+  };
 
   const isActive = (path: string) => pathname === path;
 
@@ -52,6 +79,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (pathname === "/admin/login") {
     return <>{children}</>;
+  }
+
+  if (isAdminAuthenticated === null) {
+    return (
+      <div className="bg-[#0B1329] min-h-screen flex flex-col items-center justify-center text-white text-xs font-bold font-mono space-y-3">
+        <div className="w-10 h-10 rounded-2xl bg-emerald-500 text-white font-black text-xl flex items-center justify-center animate-pulse">
+          S
+        </div>
+        <p className="animate-pulse">Authenticating Admin Credentials...</p>
+      </div>
+    );
+  }
+
+  if (isAdminAuthenticated === false) {
+    return null;
   }
 
   return (
