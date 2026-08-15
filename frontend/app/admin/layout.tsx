@@ -37,6 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { title: "Customer Engagement", href: "/admin/engagement", icon: "❤️" },
         { title: "Content & CMS", href: "/admin/homepage", icon: "📝" },
         { title: "Support & Tickets", href: "/admin/tickets", icon: "🎧" },
+        { title: "Product Queries & Returns", href: "/admin/queries", icon: "❓", badge: "New", badgeColor: "bg-emerald-500 text-white" },
       ]
     },
     {
