@@ -11,8 +11,8 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     PORT: int = 8000
     
-    # Database (PostgreSQL Port 5433 / Neon Cloud / Supabase)
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5433/skipd_commerce_db"
+    # Database (Neon Cloud PostgreSQL)
+    DATABASE_URL: str = "postgresql+asyncpg://neondb_owner:npg_co6MJSXeWK8z@ep-still-king-axcdr7h1-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require"
 
     @validator("DATABASE_URL", pre=True)
     def assemble_database_url(cls, v: str) -> str:
@@ -27,7 +27,8 @@ class Settings(BaseSettings):
     CORS_ORIGINS: Union[str, List[str]] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        "https://skipd.vercel.app"
+        "https://skipd.vercel.app",
+        "https://skipd-shop.vercel.app"
     ]
 
     @validator("CORS_ORIGINS", pre=True)
@@ -43,8 +44,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 43200 # 30 days
 
-    # Redis & Celery Config
-    REDIS_URL: str = "redis://127.0.0.1:6379/0"
+    # Redis & Celery Config (Upstash Cloud Redis)
+    REDIS_URL: str = "rediss://default:gQAAAAAAApeoAAIgcDIyYmVlZDhhODBhY2Q0MjhiYmUzYzkzMzlkNDY3N2ZiYw@relaxed-beetle-169896.upstash.io:6379"
 
     # Third Party Integrations
     RAZORPAY_KEY_ID: str = "rzp_test_skipd_demo"

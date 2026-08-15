@@ -16,6 +16,7 @@ venv/
 *.env
 *-firebase-adminsdk-*.json
 firebase-key.json
+client_secret_*.json
 
 # Databases & Logs
 *.db
