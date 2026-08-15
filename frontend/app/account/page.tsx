@@ -1945,6 +1945,8 @@ function AccountContent() {
             </form>
           </div>
         </div>
+      )}
+
       {/* 🏡 ADD / EDIT ADDRESS MODAL */}
       {isAddAddressModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
