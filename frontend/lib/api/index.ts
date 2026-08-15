@@ -479,6 +479,128 @@ const MOCK_PRODUCTS: Product[] = [
     images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
     tags: ["health", "safety"],
     category: { name: "Health", slug: "health" }
+  },
+
+  // 🛍️ DEALS / FREEDOM SALE OFFER PRODUCTS
+  {
+    id: 101,
+    title: "Saree Premium Silk",
+    handle: "saree-premium-silk",
+    description: "Exquisite hand-woven premium silk saree with intricate golden zari border. Ideal for weddings, festivities and special occasions. Pure silk with traditional Banarasi weaving craft.",
+    price: 299,
+    compare_at_price: 590,
+    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800",
+      "https://images.unsplash.com/photo-1599841222-e3d3a6e7de04?w=800"
+    ],
+    tags: ["fashion", "saree", "silk", "ethnic"],
+    category: { name: "Fashion", slug: "fashion" }
+  },
+  {
+    id: 102,
+    title: "Cold Pressed Oil 1L",
+    handle: "cold-pressed-oil-1l",
+    description: "100% pure wood-pressed cold pressed oil, extracted without heat to retain all nutrients. Rich in Omega fatty acids and antioxidants. No chemicals, no preservatives — straight from the farm.",
+    price: 249,
+    compare_at_price: 499,
+    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800",
+      "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=800"
+    ],
+    tags: ["organic", "oil", "kitchen", "health"],
+    category: { name: "Artisan", slug: "artisan" }
+  },
+  {
+    id: 103,
+    title: "Velvet Cushion Cover",
+    handle: "velvet-cushion-cover",
+    description: "Luxurious premium velvet cushion cover with hidden zipper. Super soft feel with vibrant color retention. Machine washable and wrinkle-resistant. Perfect for sofa, bed and home decor.",
+    price: 800,
+    compare_at_price: 1499,
+    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800",
+      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800"
+    ],
+    tags: ["home", "decor", "cushion"],
+    category: { name: "Home & Living", slug: "home" }
+  },
+  {
+    id: 104,
+    title: "20000mAh Power Bank",
+    handle: "20000mah-power-bank",
+    description: "Ultra-capacity 20000mAh fast-charging power bank with 22.5W PD charging. Features dual USB-A and USB-C outputs with LED indicator. Airline-approved, compact design with built-in safety protections.",
+    price: 999,
+    compare_at_price: 1999,
+    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=800",
+      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800"
+    ],
+    tags: ["electronics", "power bank", "charging"],
+    category: { name: "Electronics", slug: "electronics" }
+  },
+  {
+    id: 105,
+    title: "Nike Running Shoe",
+    handle: "nike-running-shoe",
+    description: "High-performance Nike running shoes with React foam midsole for maximum cushioning and energy return. Breathable Flyknit upper keeps feet cool. Rubber outsole provides traction on all surfaces.",
+    price: 700,
+    compare_at_price: 1299,
+    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
+      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800"
+    ],
+    tags: ["footwear", "nike", "sports", "running"],
+    category: { name: "Footwear", slug: "footwear" }
+  },
+  {
+    id: 106,
+    title: "Leather Jacket",
+    handle: "leather-jacket",
+    description: "Premium genuine leather biker jacket with quilted lining, side buckles and YKK zippers. Timeless design that gets better with age. Available in multiple sizes. Perfect for winters and style.",
+    price: 999,
+    compare_at_price: 3499,
+    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1544441893-675973e31985?w=800",
+      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800"
+    ],
+    tags: ["fashion", "jacket", "leather"],
+    category: { name: "Fashion", slug: "fashion" }
+  },
+  {
+    id: 107,
+    title: "FPV Toy Drone",
+    handle: "fpv-toy-drone",
+    description: "Feature-packed FPV toy drone with 4K HD camera, altitude hold, one-key return and gesture photo/video control. 25-min flight time, 300m range, foldable design for easy carry. Perfect for beginners and enthusiasts.",
+    price: 999,
+    compare_at_price: 2499,
+    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=800",
+      "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800"
+    ],
+    tags: ["electronics", "drone", "gadget"],
+    category: { name: "Electronics", slug: "electronics" }
+  },
+  {
+    id: 108,
+    title: "Pro Headphones",
+    handle: "pro-headphones",
+    description: "Studio-grade over-ear headphones with 40mm dynamic drivers, active noise cancellation and 35-hour playtime. Foldable design with premium memory foam ear cups. Compatible with all devices via 3.5mm and Bluetooth 5.3.",
+    price: 950,
+    compare_at_price: 2499,
+    featured: true,
+    images: [
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
+      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800"
+    ],
+    tags: ["electronics", "audio", "headphones"],
+    category: { name: "Electronics", slug: "electronics" }
   }
 ];
 
@@ -539,8 +661,10 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
     console.warn("[API SDK Warning] FastAPI backend offline, using fallback product detail.", err);
   }
 
+  // Backend product not found — search MOCK_PRODUCTS by exact handle or id
   const found = MOCK_PRODUCTS.find(p => p.handle === handle || String(p.id) === handle);
-  return found ?? MOCK_PRODUCTS[0] ?? null;
+  // Return found mock OR null (let page show notFound() — never show wrong product)
+  return found ?? null;
 }
 
 export async function fetchCategories(): Promise<Category[]> {
