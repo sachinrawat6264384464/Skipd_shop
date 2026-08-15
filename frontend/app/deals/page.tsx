@@ -51,7 +51,7 @@ export default function DealsPage() {
     productsToDisplay = featuredOffers;
   } else if (sale?.products?.length > 0) {
     productsToDisplay = sale.products.map((p: any, i: number) => {
-      const fallback = sampleDealProducts[i % sampleDealProducts.length];
+      const fallback = sampleDealProducts[i % sampleDealProducts.length] || sampleDealProducts[0];
       return {
         id: p.id || i + 1,
         title: p.title,
