@@ -58,6 +58,7 @@ class ProductSchema(BaseModel):
     featured: bool = False
     images: List[str] = []
     tags: List[str] = []
+    stock_quantity: int = 100
     category: Optional[CategorySchema] = None
     variants: List[VariantSchema] = []
 

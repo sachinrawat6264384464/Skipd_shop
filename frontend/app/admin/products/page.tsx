@@ -23,6 +23,7 @@ export default function AdminProductsPage() {
     description: "",
     price: "",
     compare_at_price: "",
+    stock_quantity: "50",
     category_slug: "tech",
     featured: true,
     image_url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
@@ -50,6 +51,7 @@ export default function AdminProductsPage() {
       description: newProduct.description || "Premium quality product",
       price: parseFloat(newProduct.price),
       compare_at_price: newProduct.compare_at_price ? parseFloat(newProduct.compare_at_price) : undefined,
+      stock_quantity: parseInt(newProduct.stock_quantity) || 0,
       category_slug: newProduct.category_slug,
       featured: newProduct.featured,
       images: [newProduct.image_url],
@@ -64,13 +66,14 @@ export default function AdminProductsPage() {
       description: "",
       price: "",
       compare_at_price: "",
+      stock_quantity: "50",
       category_slug: "tech",
       featured: true,
       image_url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
       tags: "bestseller, tech"
     });
     loadProducts();
-    alert(`🎉 Product "${payload.title}" created successfully!`);
+    alert(`🎉 Product "${payload.title}" created successfully with ${payload.stock_quantity} units in stock!`);
   };
 
   const handleUpdateProduct = async (e: React.FormEvent) => {
@@ -81,6 +84,7 @@ export default function AdminProductsPage() {
       title: editingProduct.title,
       price: parseFloat(editingProduct.price),
       compare_at_price: editingProduct.compare_at_price ? parseFloat(editingProduct.compare_at_price) : null,
+      stock_quantity: parseInt(editingProduct.stock_quantity ?? 0),
       description: editingProduct.description,
       featured: editingProduct.featured,
       images: [editingProduct.images?.[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"]
@@ -118,7 +122,7 @@ export default function AdminProductsPage() {
               <span className="text-xs text-gray-400">Products Catalog</span>
             </div>
             <h1 className="text-2xl font-black text-white mt-1">📦 Catalog &amp; Products Manager</h1>
-            <p className="text-xs text-gray-400 mt-0.5">Add, edit, or delete storefront products dynamically with instant database sync</p>
+            <p className="text-xs text-gray-400 mt-0.5">Add, edit stock quantity, or delete storefront products dynamically with real-time sync</p>
           </div>
 
           <div className="flex gap-3 flex-wrap">
@@ -165,56 +169,71 @@ export default function AdminProductsPage() {
                     <th className="px-6 py-4">Category</th>
                     <th className="px-6 py-4">Price (₹)</th>
                     <th className="px-6 py-4">MRP (₹)</th>
+                    <th className="px-6 py-4">Stock Quantity</th>
                     <th className="px-6 py-4">Featured</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800 font-medium">
-                  {products.map((p) => (
-                    <tr key={p.id} className="hover:bg-gray-900/40 transition">
-                      <td className="px-6 py-4 flex items-center gap-3">
-                        <img
-                          src={p.images?.[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200"}
-                          alt={p.title}
-                          className="w-12 h-12 rounded-xl object-cover bg-gray-900 border border-gray-800 shrink-0"
-                        />
-                        <div>
-                          <p className="font-bold text-white text-sm line-clamp-1">{p.title}</p>
-                          <p className="text-[10px] text-gray-400 font-mono">/product/{p.handle}</p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">
-                          {p.category?.name || p.category?.slug || "Tech"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 font-black text-white text-sm">₹{p.price?.toLocaleString("en-IN")}</td>
-                      <td className="px-6 py-4 text-gray-400 line-through">
-                        {p.compare_at_price ? `₹${p.compare_at_price.toLocaleString("en-IN")}` : "—"}
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          p.featured ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "bg-gray-800 text-gray-400"
-                        }`}>
-                          {p.featured ? "★ Featured" : "Standard"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right space-x-2">
-                        <button
-                          onClick={() => setEditingProduct(p)}
-                          className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(p.id, p.title)}
-                          className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer"
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                  {products.map((p) => {
+                    const stock = p.stock_quantity ?? 50;
+                    return (
+                      <tr key={p.id} className="hover:bg-gray-900/40 transition">
+                        <td className="px-6 py-4 flex items-center gap-3">
+                          <img
+                            src={p.images?.[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200"}
+                            alt={p.title}
+                            className="w-12 h-12 rounded-xl object-cover bg-gray-900 border border-gray-800 shrink-0"
+                          />
+                          <div>
+                            <p className="font-bold text-white text-sm line-clamp-1">{p.title}</p>
+                            <p className="text-[10px] text-gray-400 font-mono">/product/{p.handle}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">
+                            {p.category?.name || p.category?.slug || "Tech"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 font-black text-white text-sm">₹{p.price?.toLocaleString("en-IN")}</td>
+                        <td className="px-6 py-4 text-gray-400 line-through">
+                          {p.compare_at_price ? `₹${p.compare_at_price.toLocaleString("en-IN")}` : "—"}
+                        </td>
+                        <td className="px-6 py-4">
+                          {stock > 0 ? (
+                            <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[11px] font-extrabold px-3 py-1 rounded-xl">
+                              📦 {stock} units left
+                            </span>
+                          ) : (
+                            <span className="bg-red-500/20 text-red-400 border border-red-500/40 text-[11px] font-black px-3 py-1 rounded-xl uppercase tracking-wider animate-pulse">
+                              🚫 OUT OF STOCK
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                            p.featured ? "bg-amber-500/20 text-amber-400 border border-amber-500/30" : "bg-gray-800 text-gray-400"
+                          }`}>
+                            {p.featured ? "★ Featured" : "Standard"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right space-x-2">
+                          <button
+                            onClick={() => setEditingProduct({ ...p, stock_quantity: p.stock_quantity ?? 50 })}
+                            className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(p.id, p.title)}
+                            className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -245,7 +264,7 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-gray-400 block mb-1 font-semibold">Selling Price (₹)</label>
                   <input
@@ -258,13 +277,25 @@ export default function AdminProductsPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-400 block mb-1 font-semibold">MRP / Compare Price (₹)</label>
+                  <label className="text-gray-400 block mb-1 font-semibold">MRP / Compare (₹)</label>
                   <input
                     type="number"
                     placeholder="52999"
                     value={newProduct.compare_at_price}
                     onChange={(e) => setNewProduct({ ...newProduct, compare_at_price: e.target.value })}
                     className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="text-gray-400 block mb-1 font-semibold text-emerald-400">Stock Quantity</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    placeholder="50"
+                    value={newProduct.stock_quantity}
+                    onChange={(e) => setNewProduct({ ...newProduct, stock_quantity: e.target.value })}
+                    className="w-full bg-gray-900 border border-emerald-500/50 rounded-xl px-3 py-2 text-white focus:border-emerald-500 focus:outline-none font-bold"
                   />
                 </div>
               </div>
@@ -350,7 +381,7 @@ export default function AdminProductsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-gray-400 block mb-1 font-semibold">Price (₹)</label>
                   <input
@@ -368,6 +399,17 @@ export default function AdminProductsPage() {
                     value={editingProduct.compare_at_price || ""}
                     onChange={(e) => setEditingProduct({ ...editingProduct, compare_at_price: e.target.value })}
                     className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 py-2 text-white"
+                  />
+                </div>
+                <div>
+                  <label className="text-gray-400 block mb-1 font-semibold text-emerald-400">Stock Quantity</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={editingProduct.stock_quantity ?? 0}
+                    onChange={(e) => setEditingProduct({ ...editingProduct, stock_quantity: e.target.value })}
+                    className="w-full bg-gray-900 border border-emerald-500/50 rounded-xl px-3 py-2 text-white font-bold"
                   />
                 </div>
               </div>

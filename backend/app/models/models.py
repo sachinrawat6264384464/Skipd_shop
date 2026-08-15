@@ -61,6 +61,7 @@ class Product(Base):
     featured = Column(Boolean, default=False)
     images = Column(JSON, default=list) # List of image URLs
     tags = Column(JSON, default=list)
+    stock_quantity = Column(Integer, default=100)  # Direct product stock
     created_at = Column(DateTime, default=datetime.utcnow)
 
     category = relationship("Category", back_populates="products")

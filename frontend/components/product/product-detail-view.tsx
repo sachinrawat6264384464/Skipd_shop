@@ -14,6 +14,7 @@ interface ProductDetailViewProps {
     description: string;
     price: number;
     compare_at_price?: number;
+    stock_quantity?: number;
     category?: { name: string; slug: string };
     images: string[];
     tags?: string[];
@@ -211,8 +212,15 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               </div>
 
               {/* Main Preview Image with Amazon-Style Interactive Magnifier */}
-              <div className="flex-1">
+              <div className="flex-1 relative">
                 <ProductZoomMagnifier imageSrc={selectedImage} altText={product.title} />
+                {(product.stock_quantity === 0) && (
+                  <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] rounded-3xl z-20 flex items-center justify-center pointer-events-none">
+                    <div className="border-4 border-red-600 text-red-600 font-black text-2xl px-6 py-2.5 rounded-2xl transform -rotate-12 uppercase tracking-widest bg-white/95 shadow-2xl animate-in zoom-in-90 duration-200">
+                      🚫 OUT OF STOCK
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -528,25 +536,40 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               <div className="space-y-1 text-xs text-gray-700">
                 <p className="font-bold text-emerald-700">FREE delivery Saturday, Aug 15.</p>
                 <p className="text-[11px] text-gray-500">📍 Deliver to Gwalior 474001</p>
-                <p className="text-emerald-600 font-extrabold text-sm pt-1">In Stock</p>
+                {product.stock_quantity === 0 ? (
+                  <p className="text-red-600 font-black text-sm pt-1 uppercase tracking-wider animate-pulse">🚫 OUT OF STOCK</p>
+                ) : (
+                  <p className="text-emerald-600 font-extrabold text-sm pt-1">In Stock ({product.stock_quantity ?? 50} units available)</p>
+                )}
                 <p className="text-[10px] text-gray-500">Ships from and sold by SKIPD Official Retail.</p>
               </div>
 
               {/* 🛒 Add to Cart (Yellow) & ⚡ Buy Now (Orange) */}
               <div className="space-y-2 pt-2">
-                <BuyNowButton
-                  mode="cart"
-                  className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  🛒 Add to Cart
-                </BuyNowButton>
+                {product.stock_quantity === 0 ? (
+                  <button
+                    disabled
+                    className="w-full bg-red-50 border-2 border-red-500 text-red-600 font-black text-xs py-3.5 rounded-2xl text-center uppercase tracking-wider cursor-not-allowed opacity-90 flex items-center justify-center gap-1.5 shadow-xs"
+                  >
+                    🚫 Currently Out of Stock
+                  </button>
+                ) : (
+                  <>
+                    <BuyNowButton
+                      mode="cart"
+                      className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      🛒 Add to Cart
+                    </BuyNowButton>
 
-                <BuyNowButton
-                  productHandle={product.handle}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-xs py-3 rounded-2xl transition shadow-md shadow-orange-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  ⚡ Buy Now
-                </BuyNowButton>
+                    <BuyNowButton
+                      productHandle={product.handle}
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-xs py-3 rounded-2xl transition shadow-md shadow-orange-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      ⚡ Buy Now
+                    </BuyNowButton>
+                  </>
+                )}
               </div>
 
             </div>

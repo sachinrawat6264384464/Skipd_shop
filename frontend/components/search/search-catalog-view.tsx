@@ -15,6 +15,7 @@ interface Product {
   featured: boolean;
   images: string[];
   tags: string[];
+  stock_quantity?: number;
   category?: { name: string; slug: string };
 }
 
@@ -174,6 +175,7 @@ export function SearchCatalogView({
               ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
               : 36;
             const isLiked = wishlist.includes(product.id);
+            const isOutOfStock = product.stock_quantity === 0;
 
             return (
               <div
@@ -183,13 +185,21 @@ export function SearchCatalogView({
                 {/* Badges & Wishlist Heart */}
                 <div className="flex justify-between items-center z-10 w-full">
                   <div className="flex gap-1">
-                    <span className="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase">
-                      -{discountPercent}% OFF
-                    </span>
-                    {idx % 2 === 1 && (
-                      <span className="bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase">
-                        Bestseller
+                    {isOutOfStock ? (
+                      <span className="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider animate-pulse">
+                        🚫 OUT OF STOCK
                       </span>
+                    ) : (
+                      <>
+                        <span className="bg-red-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase">
+                          -{discountPercent}% OFF
+                        </span>
+                        {idx % 2 === 1 && (
+                          <span className="bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase">
+                            Bestseller
+                          </span>
+                        )}
+                      </>
                     )}
                   </div>
 
@@ -209,8 +219,18 @@ export function SearchCatalogView({
                   <img
                     src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                     alt={product.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500 rounded-lg"
+                    className={`w-full h-full object-cover rounded-lg transition duration-500 ${
+                      isOutOfStock ? "grayscale opacity-50" : "group-hover:scale-105"
+                    }`}
                   />
+                  {/* 🚫 OUT OF STOCK STAMP IN CENTER */}
+                  {isOutOfStock && (
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] flex items-center justify-center p-2">
+                      <div className="border-4 border-red-600 text-red-600 font-black text-xs px-2.5 py-1 rounded-xl transform -rotate-12 uppercase tracking-widest bg-white/95 shadow-xl text-center">
+                        OUT OF STOCK
+                      </div>
+                    </div>
+                  )}
                 </Link>
 
                 {/* Details */}
@@ -233,19 +253,30 @@ export function SearchCatalogView({
                 </div>
 
                 {/* Dual Action Buttons */}
-                <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-gray-100 w-full">
-                  <BuyNowButton
-                    mode="cart"
-                    className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
-                  >
-                    🛒 Add to Cart
-                  </BuyNowButton>
-                  <BuyNowButton
-                    productHandle={product.handle}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
-                  >
-                    ⚡ Buy Now
-                  </BuyNowButton>
+                <div className="pt-2 border-t border-gray-100 w-full">
+                  {isOutOfStock ? (
+                    <button
+                      disabled
+                      className="w-full bg-red-50 border border-red-300 text-red-600 text-[10px] font-black py-2 rounded-xl text-center cursor-not-allowed uppercase tracking-wider"
+                    >
+                      🚫 Out of Stock
+                    </button>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-1.5">
+                      <BuyNowButton
+                        mode="cart"
+                        className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
+                      >
+                        🛒 Add to Cart
+                      </BuyNowButton>
+                      <BuyNowButton
+                        productHandle={product.handle}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
+                      >
+                        ⚡ Buy Now
+                      </BuyNowButton>
+                    </div>
+                  )}
                 </div>
               </div>
             );

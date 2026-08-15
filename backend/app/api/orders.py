@@ -51,6 +51,22 @@ async def create_checkout(
                     status_code=400,
                     detail=f"Item '{product.title}' is out of stock or insufficient quantity available!"
                 )
+        else:
+            # 🔒 Deduct from product-level stock_quantity
+            stock_stmt = (
+                update(Product)
+                .where(
+                    Product.id == item.product_id,
+                    Product.stock_quantity >= item.quantity
+                )
+                .values(stock_quantity=Product.stock_quantity - item.quantity)
+            )
+            stock_res = await db.execute(stock_stmt)
+            if stock_res.rowcount == 0:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Item '{product.title}' is out of stock or insufficient quantity available!"
+                )
 
         unit_price = product.price
         item_total = unit_price * item.quantity

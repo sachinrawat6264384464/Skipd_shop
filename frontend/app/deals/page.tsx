@@ -167,56 +167,87 @@ export default function DealsPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {productsToDisplay.map((item: any) => (
-              <div
-                key={item.id}
-                className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition duration-300 flex flex-col group"
-              >
-                {/* Clickable area — image + info → product page */}
-                <Link href={`/product/${item.handle || item.id}`} className="block p-4 space-y-3 flex-1 cursor-pointer">
-                  {/* Product Image */}
-                  <div className="relative aspect-square w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 p-3">
-                    <img
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-300"
-                    />
-                    <div className="absolute top-2 right-2 bg-orange-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
-                      ₹{item.price}
-                    </div>
-                  </div>
+            {productsToDisplay.map((item: any) => {
+              const isOutOfStock = item.stock_quantity === 0;
+              return (
+                <div
+                  key={item.id}
+                  className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition duration-300 flex flex-col group relative"
+                >
+                  {/* Clickable area — image + info → product page */}
+                  <Link href={`/product/${item.handle || item.id}`} className="block p-4 space-y-3 flex-1 cursor-pointer">
+                    {/* Product Image */}
+                    <div className="relative aspect-square w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 p-3">
+                      <img
+                        src={item.image}
+                        alt={item.title}
+                        className={`w-full h-full object-cover rounded-xl transition duration-300 ${
+                          isOutOfStock ? "grayscale opacity-60" : "group-hover:scale-105"
+                        }`}
+                      />
+                      <div className="absolute top-2 right-2 bg-orange-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
+                        ₹{item.price}
+                      </div>
 
-                  {/* Info & Badges */}
-                  <div className="space-y-2">
-                    <h3 className="font-black text-base text-gray-900 group-hover:text-orange-600 transition truncate">
-                      {item.title}
-                    </h3>
-                    <div className="flex items-center gap-1.5 text-[10px]">
-                      <span className="bg-orange-100 text-orange-800 border border-orange-200 font-bold px-2 py-0.5 rounded-md">
-                        {item.easyShip ? "🚚 Easy Ship" : "🏬 FC"}
-                      </span>
-                      <span className="bg-gray-100 text-gray-700 border border-gray-200 font-semibold px-2 py-0.5 rounded-md">
-                        {item.weight}
-                      </span>
+                      {/* 🚫 OUT OF STOCK STAMP IN CENTER */}
+                      {isOutOfStock && (
+                        <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] flex items-center justify-center p-2">
+                          <div className="border-4 border-red-600 text-red-600 font-black text-sm px-3 py-1.5 rounded-xl transform -rotate-12 uppercase tracking-widest bg-white/95 shadow-xl text-center">
+                            OUT OF STOCK
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center justify-between text-[11px] pt-1">
-                      <span className="bg-gray-800 text-white font-bold px-2 py-0.5 rounded">Earlier ₹{item.earlier}</span>
-                      <span className="bg-emerald-600 text-white font-bold px-2 py-0.5 rounded">Now ₹{item.now}</span>
-                    </div>
-                  </div>
-                </Link>
 
-                {/* Save Button — kept separate from navigation Link */}
-                <div className="px-4 pb-4">
-                  <BuyNowButton
-                    productTitle={item.title}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black py-2.5 rounded-2xl text-center transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-                  >
-                    <span>🪙</span> Save ₹{item.save} / unit
-                  </BuyNowButton>
+                    {/* Info & Badges */}
+                    <div className="space-y-2">
+                      <h3 className="font-black text-base text-gray-900 group-hover:text-orange-600 transition truncate">
+                        {item.title}
+                      </h3>
+                      <div className="flex items-center gap-1.5 text-[10px]">
+                        {isOutOfStock ? (
+                          <span className="bg-red-100 text-red-700 border border-red-300 font-black px-2 py-0.5 rounded-md uppercase">
+                            🚫 Out of Stock
+                          </span>
+                        ) : (
+                          <>
+                            <span className="bg-orange-100 text-orange-800 border border-orange-200 font-bold px-2 py-0.5 rounded-md">
+                              {item.easyShip ? "🚚 Easy Ship" : "🏬 FC"}
+                            </span>
+                            <span className="bg-gray-100 text-gray-700 border border-gray-200 font-semibold px-2 py-0.5 rounded-md">
+                              {item.weight}
+                            </span>
+                          </>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] pt-1">
+                        <span className="bg-gray-800 text-white font-bold px-2 py-0.5 rounded">Earlier ₹{item.earlier}</span>
+                        <span className="bg-emerald-600 text-white font-bold px-2 py-0.5 rounded">Now ₹{item.now}</span>
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Save Button — or Disabled Out of Stock Button */}
+                  <div className="px-4 pb-4">
+                    {isOutOfStock ? (
+                      <button
+                        disabled
+                        className="w-full bg-red-50 border border-red-300 text-red-600 text-xs font-black py-2.5 rounded-2xl text-center cursor-not-allowed opacity-90 uppercase tracking-wider"
+                      >
+                        🚫 Out of Stock
+                      </button>
+                    ) : (
+                      <BuyNowButton
+                        productTitle={item.title}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black py-2.5 rounded-2xl text-center transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                      >
+                        <span>🪙</span> Save ₹{item.save} / unit
+                      </BuyNowButton>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

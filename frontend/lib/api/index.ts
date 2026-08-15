@@ -12,6 +12,7 @@ export interface Product {
   featured: boolean;
   images: string[];
   tags: string[];
+  stock_quantity?: number;  // 0 = Out of Stock
   category?: {
     name: string;
     slug: string;
