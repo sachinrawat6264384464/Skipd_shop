@@ -112,8 +112,10 @@ function AccountContent() {
   useEffect(() => {
     loadUserAddresses();
     window.addEventListener("skipd_auth_changed", loadUserAddresses);
+    window.addEventListener("skipd_address_changed", loadUserAddresses);
     return () => {
       window.removeEventListener("skipd_auth_changed", loadUserAddresses);
+      window.removeEventListener("skipd_address_changed", loadUserAddresses);
     };
   }, []);
 
@@ -121,10 +123,63 @@ function AccountContent() {
     setAddresses(newAddrs);
     const key = getUserAddressesKey();
     localStorage.setItem(key, JSON.stringify(newAddrs));
+    window.dispatchEvent(new Event("skipd_address_changed"));
   };
+
 
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<any | null>(null);
+
+  // Custom Toast Notification State & Function
+  const [toastMessage, setToastMessage] = useState<{ text: string; type?: "success" | "info" | "error" } | null>(null);
+  const showToast = (text: string, type: "success" | "info" | "error" = "success") => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 4500);
+  };
+
+  // Custom Modal States for Order Details & Policy
+  const [viewingOrderDetail, setViewingOrderDetail] = useState<any | null>(null);
+  const [showReturnPolicyModal, setShowReturnPolicyModal] = useState(false);
+
+  // Return Request Photo Evidence Upload State
+  const [returnPhotos, setReturnPhotos] = useState<string[]>([]);
+  const [returnPhotoNames, setReturnPhotoNames] = useState<string[]>([]);
+
+  // Gift Cards & Wallet State Handlers
+  const [giftCardBalance, setGiftCardBalance] = useState(2500);
+  const [giftCardCode, setGiftCardCode] = useState("");
+  const [giftCardPin, setGiftCardPin] = useState("");
+  const [walletBalance, setWalletBalance] = useState(1250);
+
+  const handleRedeemGiftCard = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!giftCardCode.trim()) return;
+    setGiftCardBalance((prev) => prev + 500);
+    showToast(`🎉 Gift Card "${giftCardCode}" redeemed! ₹500 added to your Gift Card balance.`);
+    setGiftCardCode("");
+    setGiftCardPin("");
+  };
+
+  const handleReturnPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          setReturnPhotos((prev) => [...prev, reader.result as string]);
+          setReturnPhotoNames((prev) => [...prev, file.name]);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleRemoveReturnPhoto = (idx: number) => {
+    setReturnPhotos((prev) => prev.filter((_, i) => i !== idx));
+    setReturnPhotoNames((prev) => prev.filter((_, i) => i !== idx));
+  };
 
   // Modal Form Inputs
   const [formName, setFormName] = useState("");
@@ -441,7 +496,7 @@ function AccountContent() {
     const updatedOrders = [newOrderObj, ...existing];
     localStorage.setItem(key, JSON.stringify(updatedOrders));
     loadUserReturnOrders();
-    alert(`🎉 Success! New order ${newOrderId} placed! 24-Hour Return Window timer is now active.`);
+    showToast(`🎉 Success! New order ${newOrderId} placed! 24-Hour Return Window timer is now active.`);
   };
 
   const handleSubmitReturnForm = (e: React.FormEvent) => {
@@ -449,15 +504,24 @@ function AccountContent() {
     if (!selectedReturnProduct) return;
 
     const queryId = `Q-${Math.floor(10000 + Math.random() * 90000)}`;
-    const updated = returnOrders.map(o => o.id === selectedReturnProduct.id ? { ...o, returnStatus: "REQUESTED", queryId } : o);
+    const updated = returnOrders.map(o => o.id === selectedReturnProduct.id ? {
+      ...o,
+      returnStatus: "REQUESTED",
+      queryId,
+      returnReason,
+      returnDescription,
+      returnPhotos
+    } : o);
     
     const key = getUserOrdersKey();
     localStorage.setItem("skipd_user_return_orders", JSON.stringify(updated));
     setReturnOrders(updated);
 
-    alert(`✓ Return query #${queryId} submitted successfully! Our support team will review within 12 hours.`);
+    showToast(`✓ Return query #${queryId} submitted with ${returnPhotos.length} attached photo(s)! Support team will review within 12 hours.`);
     setSelectedReturnProduct(null);
     setReturnPhotoUploaded(false);
+    setReturnPhotos([]);
+    setReturnPhotoNames([]);
     setReturnDescription("");
   };
 
@@ -1457,10 +1521,9 @@ function AccountContent() {
                                     Return Period Expired
                                   </button>
                                 )}
-
                                 <button
-                                  onClick={() => alert(`Order Details for ${item.id}:\nItem: ${item.productName}\nAmount: ₹${item.price}\nStatus: ${item.status}`)}
-                                  className="text-[11px] font-bold text-gray-500 hover:text-gray-900 block w-full text-center cursor-pointer"
+                                  onClick={() => setViewingOrderDetail(item)}
+                                  className="text-[11px] font-bold text-emerald-700 hover:underline block w-full text-center cursor-pointer"
                                 >
                                   View Order Details &rsaquo;
                                 </button>
@@ -1535,7 +1598,7 @@ function AccountContent() {
                     </div>
 
                     <button
-                      onClick={() => alert("SKIPD 24-Hour Return Policy:\n\n1. Return window opens immediately upon delivery.\n2. Raise request with photos within 24 hours.\n3. Inspection completed within 12h.\n4. Pickup & refund processed in 3-5 days.")}
+                      onClick={() => setShowReturnPolicyModal(true)}
                       className="w-full border border-[#059669] text-[#059669] hover:bg-[#EAF8F2] font-bold text-xs py-2.5 rounded-xl transition cursor-pointer"
                     >
                       Read Full Return Policy &rsaquo;
@@ -1906,6 +1969,322 @@ function AccountContent() {
             </div>
           )}
 
+          {/* TAB: GIFT CARDS */}
+          {activeTab === "gift-cards" && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-emerald-800 via-teal-900 to-gray-900 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden space-y-4">
+                <div className="flex flex-wrap justify-between items-center gap-4 relative z-10">
+                  <div>
+                    <span className="bg-amber-400 text-gray-900 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                      🎁 SKIPD GIFT CARD VAULT
+                    </span>
+                    <h2 className="text-2xl md:text-3xl font-black mt-2">Gift Cards &amp; Store Credits</h2>
+                    <p className="text-xs text-gray-300 max-w-md mt-1">
+                      Redeem digital vouchers, send instant gift cards to friends &amp; family, or view active voucher balances.
+                    </p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-right">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-gray-300 block">Available Gift Balance</span>
+                    <span className="text-2xl md:text-3xl font-black text-amber-300">₹{giftCardBalance.toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
+                <h3 className="font-black text-base text-gray-900">Add / Redeem Gift Card Voucher</h3>
+                <form onSubmit={handleRedeemGiftCard} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Gift Card Code (e.g. SKIPD-GIFT-992)"
+                    value={giftCardCode}
+                    onChange={(e) => setGiftCardCode(e.target.value)}
+                    required
+                    className="bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-mono font-bold focus:border-emerald-600 focus:outline-none uppercase"
+                  />
+                  <input
+                    type="password"
+                    maxLength={4}
+                    placeholder="4-Digit PIN"
+                    value={giftCardPin}
+                    onChange={(e) => setGiftCardPin(e.target.value)}
+                    required
+                    className="bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-mono font-bold focus:border-emerald-600 focus:outline-none text-center"
+                  />
+                  <button
+                    type="submit"
+                    className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-2.5 px-5 rounded-xl transition shadow-xs cursor-pointer"
+                  >
+                    Apply &amp; Add Balance &rarr;
+                  </button>
+                </form>
+              </div>
+
+              <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
+                <h3 className="font-black text-base text-gray-900">Purchase Digital Gift Cards</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { amount: 500, label: "Starter Card", color: "from-blue-600 to-indigo-700" },
+                    { amount: 1000, label: "Popular Choice", color: "from-emerald-600 to-teal-700" },
+                    { amount: 2500, label: "VIP Premium", color: "from-amber-500 to-orange-600" },
+                  ].map((card) => (
+                    <div key={card.amount} className={`bg-gradient-to-br ${card.color} text-white p-5 rounded-2xl shadow-md flex flex-col justify-between space-y-4 relative`}>
+                      <div className="flex justify-between items-start">
+                        <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-0.5 rounded-md">{card.label}</span>
+                        <span className="text-xl">🎁</span>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black">₹{card.amount.toLocaleString("en-IN")}</p>
+                        <p className="text-[10px] opacity-80 mt-0.5">Instant delivery via email / SMS</p>
+                      </div>
+                      <button
+                        onClick={() => showToast(`🎉 Gift Card ₹${card.amount} added to cart for checkout!`)}
+                        className="bg-white text-gray-900 hover:bg-gray-100 font-extrabold text-xs py-2 rounded-xl text-center cursor-pointer shadow-xs"
+                      >
+                        Buy Now &rsaquo;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: WALLET & SAVED CARDS */}
+          {activeTab === "wallet" && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-emerald-700 via-emerald-800 to-teal-900 text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <span className="bg-white/20 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                    💳 SKIPD PAY WALLET
+                  </span>
+                  <h2 className="text-2xl md:text-3xl font-black mt-2">Saved Cards &amp; Wallet Balance</h2>
+                  <p className="text-xs text-emerald-100 max-w-md mt-1">
+                    1-Click Razorpay instant checkout with zero OTP delays.
+                  </p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-right">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200 block">Wallet Balance</span>
+                  <span className="text-2xl md:text-3xl font-black text-amber-300">₹{walletBalance.toLocaleString("en-IN")}</span>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
+                <div className="flex justify-between items-center">
+                  <h3 className="font-black text-base text-gray-900">Saved Credit &amp; Debit Cards</h3>
+                  <button
+                    onClick={() => showToast("💳 Card addition form opened. Encrypted with Razorpay Vault.")}
+                    className="text-xs font-bold text-emerald-700 hover:underline cursor-pointer"
+                  >
+                    + Add New Card
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { bank: "HDFC Bank", type: "VISA Debit Card", last4: "4821", exp: "08/28", default: true },
+                    { bank: "ICICI Bank", type: "Mastercard Credit", last4: "9102", exp: "11/27", default: false },
+                  ].map((c, i) => (
+                    <div key={i} className="border border-gray-200 rounded-2xl p-4 bg-gray-50 flex items-center justify-between shadow-2xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-gray-900 text-xs">{c.bank}</span>
+                          {c.default && <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded">DEFAULT</span>}
+                        </div>
+                        <p className="text-xs font-mono font-bold text-gray-700">•••• •••• •••• {c.last4}</p>
+                        <p className="text-[10px] text-gray-400">Expires {c.exp} • {c.type}</p>
+                      </div>
+                      <button
+                        onClick={() => showToast("Card removed successfully.")}
+                        className="text-red-500 hover:text-red-700 font-bold text-xs cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: COUPONS */}
+          {activeTab === "coupons" && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-amber-500 via-orange-600 to-amber-700 text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <span className="bg-white/20 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                    🎟️ PROMO &amp; DISCOUNT VOUCHERS
+                  </span>
+                  <h2 className="text-2xl md:text-3xl font-black mt-2">Active Discount Coupons</h2>
+                  <p className="text-xs text-amber-100 max-w-md mt-1">
+                    Apply these coupon codes during checkout for maximum savings on your orders!
+                  </p>
+                </div>
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-center">
+                  <span className="text-2xl font-black text-white">{coupons.length} Active</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-100 block">Available Coupons</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {coupons.map((c) => (
+                  <div key={c.code} className="bg-white border border-amber-200/80 rounded-3xl p-5 shadow-2xs space-y-3 flex justify-between items-center border-l-8 border-l-amber-500">
+                    <div className="space-y-1">
+                      <span className="bg-amber-100 text-amber-900 font-black text-[10px] px-2.5 py-0.5 rounded-md uppercase font-mono">
+                        {c.code}
+                      </span>
+                      <h3 className="text-lg font-black text-gray-900">{c.discount}</h3>
+                      <p className="text-xs text-gray-500 font-medium">{c.minOrder} • {c.expiry}</p>
+                    </div>
+
+                    <button
+                      onClick={() => {
+                        navigator.clipboard?.writeText(c.code);
+                        showToast(`🎉 Coupon "${c.code}" copied to clipboard! Apply at checkout.`);
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer shrink-0"
+                    >
+                      Copy Code
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TAB: SUPERCOIN & PLUS ZONE */}
+          {activeTab === "supercoin" && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-gray-900 via-amber-950 to-gray-900 text-white rounded-3xl p-6 md:p-8 shadow-2xl space-y-4 border border-amber-500/30">
+                <div className="flex flex-wrap justify-between items-center gap-4">
+                  <div>
+                    <span className="bg-amber-400 text-gray-900 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                      ⚡ PLUS VIP ZONE
+                    </span>
+                    <h2 className="text-2xl md:text-3xl font-black mt-2 text-amber-400">SKIPD SuperCoins</h2>
+                    <p className="text-xs text-gray-300 max-w-md mt-1">
+                      Earn 5 SuperCoins for every ₹100 spent. Redeem coins for instant cash discounts &amp; free shipping!
+                    </p>
+                  </div>
+                  <div className="bg-amber-400/10 border border-amber-400/30 p-4 rounded-2xl text-right">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 block">SuperCoins Balance</span>
+                    <span className="text-3xl font-black text-amber-400">⚡ 350 Coins</span>
+                    <span className="text-[10px] text-gray-400 block mt-0.5">Worth ₹350 Cash Equivalent</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
+                <h3 className="font-black text-base text-gray-900">Redeem SuperCoins for Rewards</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { title: "FLAT ₹100 Instant Discount", coins: 100 },
+                    { title: "Free Express Delivery Voucher", coins: 150 },
+                    { title: "FLAT ₹250 Off Electronics", coins: 250 },
+                    { title: "1-Year VIP Plus Membership", coins: 350 },
+                  ].map((r, i) => (
+                    <div key={i} className="border border-gray-200 p-4 rounded-2xl flex justify-between items-center bg-gray-50 shadow-2xs">
+                      <div>
+                        <p className="font-bold text-xs text-gray-900">{r.title}</p>
+                        <p className="text-[10px] text-amber-600 font-bold mt-0.5">⚡ {r.coins} SuperCoins</p>
+                      </div>
+                      <button
+                        onClick={() => showToast(`🎉 Reward "${r.title}" claimed with ${r.coins} SuperCoins!`)}
+                        className="bg-amber-500 hover:bg-amber-600 text-gray-900 font-black text-xs px-3.5 py-2 rounded-xl transition shadow-2xs cursor-pointer"
+                      >
+                        Redeem
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB: WISHLIST */}
+          {activeTab === "wishlist" && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-red-600 via-rose-700 to-pink-800 text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <span className="bg-white/20 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                    ❤️ YOUR SAVED FAVORITES
+                  </span>
+                  <h2 className="text-2xl md:text-3xl font-black mt-2">My Wishlist ({wishlist.length})</h2>
+                  <p className="text-xs text-rose-100 max-w-md mt-1">
+                    Items you've saved for later. Move them to your cart with 1-click whenever you're ready!
+                  </p>
+                </div>
+              </div>
+
+              {wishlist.length === 0 ? (
+                <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center space-y-4 shadow-2xs">
+                  <div className="text-5xl">❤️</div>
+                  <h3 className="text-xl font-black text-gray-900">Your Wishlist is Empty</h3>
+                  <p className="text-xs text-gray-500">Explore our catalog and click the heart icon on items you love.</p>
+                  <Link href="/search" className="inline-block bg-[#059669] text-white font-bold text-xs px-6 py-3 rounded-xl hover:bg-[#047857] transition shadow-md">
+                    Explore Catalog &rarr;
+                  </Link>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {wishlist.map((item: any) => (
+                    <div key={item.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-2xs space-y-3 flex flex-col justify-between">
+                      <div className="space-y-2">
+                        <img src={item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"} alt={item.title} className="w-full h-36 object-contain rounded-xl bg-gray-50 p-2" />
+                        <h4 className="font-bold text-xs text-gray-900 line-clamp-2">{item.title}</h4>
+                        <p className="font-black text-gray-900 text-sm">₹{item.price?.toLocaleString("en-IN") || "999"}</p>
+                      </div>
+                      <button
+                        onClick={() => showToast(`🎉 "${item.title}" moved to Cart!`)}
+                        className="w-full bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs py-2 rounded-xl text-center cursor-pointer shadow-xs"
+                      >
+                        Move to Cart &rsaquo;
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB: NOTIFICATIONS */}
+          {activeTab === "notifications" && (
+            <div className="space-y-6">
+              <div className="bg-gradient-to-r from-blue-700 via-indigo-800 to-slate-900 text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-wrap justify-between items-center gap-4">
+                <div>
+                  <span className="bg-white/20 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
+                    🔔 NOTIFICATION CENTER
+                  </span>
+                  <h2 className="text-2xl md:text-3xl font-black mt-2">All System Notifications</h2>
+                  <p className="text-xs text-blue-100 max-w-md mt-1">
+                    Stay updated with shipment dispatch tracking, price drop alerts &amp; security notifications.
+                  </p>
+                </div>
+              </div>
+
+              <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
+                <div className="space-y-3">
+                  {notifications.map((n) => (
+                    <div key={n.id} className="p-4 rounded-2xl border border-gray-200 bg-gray-50 flex items-start justify-between gap-3 shadow-2xs">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-xs text-gray-900">{n.title}</span>
+                          <span className="text-[10px] text-gray-400 font-medium">{n.time}</span>
+                        </div>
+                        <p className="text-xs text-gray-600 leading-relaxed">{n.text}</p>
+                      </div>
+                      <button
+                        onClick={() => showToast("Notification cleared.")}
+                        className="text-gray-400 hover:text-gray-900 text-xs font-bold cursor-pointer shrink-0"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
         </div>
 
       </div>
@@ -1940,16 +2319,40 @@ function AccountContent() {
 
               <div>
                 <label className="block text-gray-700 font-bold mb-1">Upload Product Photos / Evidence *</label>
-                <div
-                  onClick={() => setReturnPhotoUploaded(true)}
-                  className="border-2 border-dashed border-gray-300 hover:border-emerald-500 bg-gray-50 rounded-2xl p-4 text-center cursor-pointer transition"
-                >
-                  {returnPhotoUploaded ? (
-                    <div className="text-[#059669] font-bold">✓ 2 Photos Uploaded Successfully (image_01.jpg, image_02.jpg)</div>
-                  ) : (
-                    <div className="text-gray-500 font-bold">📷 Click to upload defect photo / unboxing video</div>
-                  )}
-                </div>
+                <label className="border-2 border-dashed border-gray-300 hover:border-emerald-500 bg-gray-50 hover:bg-emerald-50/40 rounded-2xl p-4 text-center cursor-pointer transition block space-y-1">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    onChange={handleReturnPhotoUpload}
+                    className="hidden"
+                  />
+                  <div className="text-2xl">📷</div>
+                  <div className="text-gray-800 font-bold text-xs">Click to browse &amp; upload defect photo / unboxing video</div>
+                  <p className="text-[10px] text-gray-400 font-medium">Supports JPG, PNG, WEBP files from your device</p>
+                </label>
+
+                {returnPhotos.length > 0 && (
+                  <div className="mt-3 space-y-2">
+                    <p className="text-[11px] font-bold text-emerald-700">
+                      ✓ {returnPhotos.length} Photo(s) Attached ({returnPhotoNames.join(", ")})
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {returnPhotos.map((img, idx) => (
+                        <div key={idx} className="relative w-16 h-16 rounded-xl border border-gray-200 overflow-hidden bg-white shadow-2xs group">
+                          <img src={img} alt={`Evidence ${idx + 1}`} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveReturnPhoto(idx)}
+                            className="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-600 hover:bg-red-700 text-white text-[10px] font-black flex items-center justify-center shadow-xs cursor-pointer"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -2154,7 +2557,7 @@ function AccountContent() {
       {/* Floating Support Chat Widget */}
       <div className="fixed bottom-6 right-6 z-40">
         <button
-          onClick={() => alert("Live Customer Support Chat Available 24/7!")}
+          onClick={() => showToast("💬 Live Customer Support Chat Active 24/7!", "info")}
           className="w-14 h-14 bg-[#10B981] hover:bg-[#059669] text-white rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-105 cursor-pointer"
           title="Customer Support Chat"
         >
@@ -2163,6 +2566,102 @@ function AccountContent() {
           </svg>
         </button>
       </div>
+
+      {/* 🔔 In-Page Custom Toast Notification Banner */}
+      {toastMessage && (
+        <div className="fixed top-6 right-6 z-[9999] max-w-md bg-gray-900 text-white p-4 rounded-2xl shadow-2xl border border-gray-700 flex items-center gap-3 animate-in slide-in-from-top duration-200">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white font-black flex items-center justify-center text-sm shrink-0">
+            ✓
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-bold text-xs leading-snug">{toastMessage.text}</p>
+          </div>
+          <button onClick={() => setToastMessage(null)} className="text-gray-400 hover:text-white font-bold text-xs cursor-pointer">✕</button>
+        </div>
+      )}
+
+      {/* 📦 Custom Order Details Modal Popup (Replaces Browser alert) */}
+      {viewingOrderDetail && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl text-xs">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <div>
+                <h3 className="text-base font-black text-gray-900">📦 Order Details Summary</h3>
+                <p className="text-xs text-gray-500 font-mono">Order ID #{viewingOrderDetail.id}</p>
+              </div>
+              <button onClick={() => setViewingOrderDetail(null)} className="text-gray-400 hover:text-gray-900 text-lg font-bold cursor-pointer">✕</button>
+            </div>
+
+            <div className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-100">
+              <img src={viewingOrderDetail.image} alt={viewingOrderDetail.productName} className="w-14 h-14 object-cover rounded-xl bg-white p-1 border border-gray-200" />
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-gray-900 text-sm line-clamp-1">{viewingOrderDetail.productName}</p>
+                <p className="text-gray-500 text-[11px]">{viewingOrderDetail.specs || "Standard Package"}</p>
+                <p className="font-black text-emerald-700 text-sm mt-0.5">₹{viewingOrderDetail.price.toLocaleString("en-IN")}</p>
+              </div>
+            </div>
+
+            <div className="space-y-2 bg-gray-50 p-3 rounded-2xl border border-gray-100 text-[11px]">
+              <div className="flex justify-between">
+                <span className="text-gray-500 font-medium">Payment Status:</span>
+                <span className="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded text-[10px] uppercase">{viewingOrderDetail.status}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500 font-medium">Delivered Date:</span>
+                <span className="font-bold text-gray-900">{viewingOrderDetail.deliveredDate || "Aug 17, 2026"}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-500 font-medium">Return Window:</span>
+                <span className="font-bold text-emerald-700">24-Hour Policy Active</span>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setViewingOrderDetail(null)}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl cursor-pointer text-center"
+            >
+              Close Details
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 📄 Custom Return Policy Modal Popup */}
+      {showReturnPolicyModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl text-xs">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <div>
+                <h3 className="text-base font-black text-gray-900">🛡️ SKIPD Official 24-Hour Return Policy</h3>
+                <p className="text-xs text-gray-500">Guaranteed instant replacement or full refund</p>
+              </div>
+              <button onClick={() => setShowReturnPolicyModal(false)} className="text-gray-400 hover:text-gray-900 text-lg font-bold cursor-pointer">✕</button>
+            </div>
+
+            <div className="space-y-3 leading-relaxed text-gray-700">
+              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-emerald-900">
+                <p className="font-bold text-xs">1. 24-Hour Window Timer</p>
+                <p className="text-[11px] mt-0.5">Return requests must be submitted within 24 hours of successful product delivery.</p>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 p-3 rounded-2xl">
+                <p className="font-bold text-xs text-gray-900">2. Defect Photo / Video Proof Required</p>
+                <p className="text-[11px] mt-0.5 text-gray-500">Attach clear photos or an unboxing video showing the item condition &amp; original box.</p>
+              </div>
+              <div className="bg-gray-50 border border-gray-200 p-3 rounded-2xl">
+                <p className="font-bold text-xs text-gray-900">3. 12-Hour Inspection &amp; Pickup Dispatch</p>
+                <p className="text-[11px] mt-0.5 text-gray-500">Our customer support team reviews proofs in 12h and schedules courier doorstep pickup.</p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowReturnPolicyModal(false)}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl cursor-pointer text-center"
+            >
+              Got it, Close Policy
+            </button>
+          </div>
+        </div>
+      )}
 
     </div>
   );

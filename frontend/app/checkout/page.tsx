@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "components/auth/auth-provider";
 import Link from "next/link";
-import { getUserCartKey, getUserOrdersKey } from "lib/utils";
+import { getUserCartKey, getUserOrdersKey, getUserAddressesKey } from "lib/utils";
 
 interface Address {
   id: string;
@@ -33,31 +33,9 @@ export default function CheckoutPage() {
   // Cart State
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   
-  // Addresses State
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: "addr-1",
-      type: "Home",
-      name: "Sachin Rawat",
-      phone: "9876543210",
-      street: "Flat 402, Signature Towers, MG Road",
-      city: "Gwalior",
-      state: "Madhya Pradesh",
-      pincode: "474001",
-      isDefault: true
-    },
-    {
-      id: "addr-2",
-      type: "Office",
-      name: "Sachin Rawat",
-      phone: "9876543210",
-      street: "Building 5, Tech Park, Electronic City",
-      city: "Bengaluru",
-      state: "Karnataka",
-      pincode: "560100"
-    }
-  ]);
-  const [selectedAddrId, setSelectedAddrId] = useState<string>("addr-1");
+  // Addresses State (Dynamically synchronized with User Profile in LocalStorage & PostgreSQL)
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  const [selectedAddrId, setSelectedAddrId] = useState<string>("");
   const [showAddAddrModal, setShowAddAddrModal] = useState(false);
   const [newAddr, setNewAddr] = useState<Address>({
     id: "",
@@ -69,6 +47,48 @@ export default function CheckoutPage() {
     state: "",
     pincode: ""
   });
+
+  const loadCheckoutAddresses = () => {
+    const key = getUserAddressesKey();
+    const saved = localStorage.getItem(key);
+    if (saved !== null) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const normalized: Address[] = parsed.map((a: any) => ({
+            id: String(a.id),
+            type: a.type || "Home",
+            name: a.name || user?.user_name || "Customer",
+            phone: a.phone || user?.phone || "9876543210",
+            street: a.address || a.street || "Delivery Address",
+            city: a.city || "Gwalior",
+            state: a.state || "Madhya Pradesh",
+            pincode: a.pincode || "474001",
+            isDefault: a.isDefault || false
+          }));
+          setAddresses(normalized);
+          setSelectedAddrId(prev => {
+            if (prev && normalized.some(a => a.id === prev)) return prev;
+            const def = normalized.find(a => a.isDefault);
+            return def ? def.id : (normalized[0]?.id || "");
+          });
+          return;
+        }
+      } catch (e) {}
+    }
+    setAddresses([]);
+    setSelectedAddrId("");
+  };
+
+  useEffect(() => {
+    loadCheckoutAddresses();
+    window.addEventListener("skipd_address_changed", loadCheckoutAddresses);
+    window.addEventListener("skipd_auth_changed", loadCheckoutAddresses);
+    return () => {
+      window.removeEventListener("skipd_address_changed", loadCheckoutAddresses);
+      window.removeEventListener("skipd_auth_changed", loadCheckoutAddresses);
+    };
+  }, []);
 
   // Coupon Engine State
   const [couponInput, setCouponInput] = useState("");
@@ -164,26 +184,51 @@ export default function CheckoutPage() {
     setCouponInput("");
   };
 
-  // Add Address Handler
+  // Add Address Handler (Saves to user profile & syncs everywhere)
   const handleSaveNewAddress = (e: React.FormEvent) => {
     e.preventDefault();
-    const created: Address = {
-      ...newAddr,
-      id: `addr-${Date.now()}`
+    const key = getUserAddressesKey();
+    const existingRaw = JSON.parse(localStorage.getItem(key) || "[]");
+
+    const newId = String(Date.now());
+    const newAddrObj = {
+      id: newId,
+      name: newAddr.name || user?.user_name || "Customer",
+      phone: newAddr.phone || user?.phone || "9876543210",
+      pincode: newAddr.pincode || "474001",
+      address: newAddr.street,
+      city: newAddr.city || "Gwalior",
+      state: newAddr.state || "Madhya Pradesh",
+      landmark: "",
+      type: (newAddr.type || "Home").toUpperCase(),
+      isDefault: existingRaw.length === 0
     };
-    setAddresses([...addresses, created]);
-    setSelectedAddrId(created.id);
+
+    const updatedRaw = [...existingRaw, newAddrObj];
+    localStorage.setItem(key, JSON.stringify(updatedRaw));
+
+    // Dispatch global event so profile & checkout update live
+    window.dispatchEvent(new Event("skipd_address_changed"));
+
+    loadCheckoutAddresses();
+    setSelectedAddrId(newId);
     setShowAddAddrModal(false);
     setNewAddr({ id: "", type: "Home", name: "", phone: "", street: "", city: "", state: "", pincode: "" });
   };
 
   // Proceed to Payment Trigger
   const handleProceedToPayment = () => {
+    if (addresses.length === 0) {
+      alert("Please add a delivery address before proceeding to payment!");
+      setShowAddAddrModal(true);
+      return;
+    }
     const orderNum = `SKIPD-${Math.floor(100000 + Math.random() * 900000)}`;
     setCreatedOrderNumber(orderNum);
     setQrTimer(300);
     setPaymentModalOpen(true);
   };
+
 
   // Payment Success Popup Modal State
   const [showSuccessModal, setShowSuccessModal] = useState(false);
@@ -383,32 +428,54 @@ export default function CheckoutPage() {
                 </button>
               </div>
 
-              {/* Saved Addresses List */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {addresses.map((addr) => (
-                  <div
-                    key={addr.id}
-                    onClick={() => setSelectedAddrId(addr.id)}
-                    className={`border-2 rounded-2xl p-4 text-xs space-y-2 cursor-pointer transition relative ${
-                      selectedAddrId === addr.id
-                        ? "border-emerald-500 bg-emerald-50/40 shadow-xs"
-                        : "border-gray-200 bg-white hover:border-gray-300"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="bg-gray-900 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-md uppercase">
-                        {addr.type}
-                      </span>
-                      {selectedAddrId === addr.id && (
-                        <span className="text-emerald-600 font-extrabold text-sm">✓ Selected</span>
-                      )}
-                    </div>
-                    <p className="font-bold text-gray-900 text-sm">{addr.name}</p>
-                    <p className="text-gray-600 line-clamp-2 leading-snug">{addr.street}, {addr.city}, {addr.state} - {addr.pincode}</p>
-                    <p className="text-gray-500 font-semibold">📞 {addr.phone}</p>
+              {/* Saved Addresses List (100% Dynamic from User Profile & LocalStorage) */}
+              {addresses.length === 0 ? (
+                <div className="bg-emerald-50/50 border-2 border-dashed border-emerald-200 rounded-2xl p-6 md:p-8 text-center space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center mx-auto text-xl font-black shadow-xs">
+                    📍
                   </div>
-                ))}
-              </div>
+                  <div>
+                    <h3 className="font-black text-gray-900 text-sm">No Delivery Address Found in Your Account</h3>
+                    <p className="text-xs text-gray-500 max-w-sm mx-auto mt-1 font-medium">
+                      You haven't added any delivery addresses in your account profile yet. Please add a delivery address to complete your checkout!
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddAddrModal(true)}
+                    className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-6 py-3 rounded-xl transition shadow-xs cursor-pointer inline-flex items-center gap-2"
+                  >
+                    <span>+ Add Delivery Address Now</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {addresses.map((addr) => (
+                    <div
+                      key={addr.id}
+                      onClick={() => setSelectedAddrId(addr.id)}
+                      className={`border-2 rounded-2xl p-4 text-xs space-y-2 cursor-pointer transition relative ${
+                        selectedAddrId === addr.id
+                          ? "border-emerald-500 bg-emerald-50/40 shadow-xs"
+                          : "border-gray-200 bg-white hover:border-gray-300"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="bg-gray-900 text-white font-extrabold text-[10px] px-2 py-0.5 rounded-md uppercase">
+                          {addr.type}
+                        </span>
+                        {selectedAddrId === addr.id && (
+                          <span className="text-emerald-600 font-extrabold text-sm">✓ Selected</span>
+                        )}
+                      </div>
+                      <p className="font-bold text-gray-900 text-sm">{addr.name}</p>
+                      <p className="text-gray-600 line-clamp-2 leading-snug">{addr.street}, {addr.city}, {addr.state} - {addr.pincode}</p>
+                      <p className="text-gray-500 font-semibold">📞 {addr.phone}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
             </div>
 
             {/* 2. Promo Coupon Code Section */}

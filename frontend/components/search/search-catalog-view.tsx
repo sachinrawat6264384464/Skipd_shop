@@ -80,11 +80,8 @@ export function SearchCatalogView({
 
   // Generate dynamic page numbers array
   const pageNumbers: number[] = [];
-  for (let i = 1; i <= Math.min(5, totalPages); i++) {
+  for (let i = 1; i <= totalPages; i++) {
     pageNumbers.push(i);
-  }
-  if (totalPages > 5 && !pageNumbers.includes(totalPages)) {
-    pageNumbers.push(totalPages);
   }
 
   const handlePageChange = (page: number) => {
@@ -265,12 +262,14 @@ export function SearchCatalogView({
                     <div className="grid grid-cols-2 gap-1.5">
                       <BuyNowButton
                         mode="cart"
+                        productObj={product}
                         className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
                         🛒 Add to Cart
                       </BuyNowButton>
                       <BuyNowButton
                         productHandle={product.handle}
+                        productObj={product}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
                         ⚡ Buy Now
@@ -347,12 +346,14 @@ export function SearchCatalogView({
                     <div className="flex items-center gap-2">
                       <BuyNowButton
                         mode="cart"
+                        productObj={product}
                         className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
                       >
                         🛒 Add to Cart
                       </BuyNowButton>
                       <BuyNowButton
                         productHandle={product.handle}
+                        productObj={product}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-2.5 px-5 rounded-xl transition text-center flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                       >
                         ⚡ Buy Now
@@ -379,25 +380,20 @@ export function SearchCatalogView({
             &lt;
           </button>
 
-          {pageNumbers.map((num, i) => {
+          {pageNumbers.map((num) => {
             const isCurrent = num === validCurrentPage;
-            const prevNum = pageNumbers[i - 1] ?? 0;
-            const showEllipsis = i > 0 && num - prevNum > 1;
-
             return (
-              <div key={num} className="flex items-center gap-1.5">
-                {showEllipsis && <span className="px-1 text-gray-400 font-bold">...</span>}
-                <button
-                  onClick={() => handlePageChange(num)}
-                  className={`web-page-btn w-8 h-8 rounded-xl font-bold flex items-center justify-center transition cursor-pointer ${
-                    isCurrent
-                      ? "bg-emerald-600 text-white shadow-xs"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                  }`}
-                >
-                  {num}
-                </button>
-              </div>
+              <button
+                key={num}
+                onClick={() => handlePageChange(num)}
+                className={`web-page-btn w-8 h-8 rounded-xl font-bold flex items-center justify-center transition cursor-pointer ${
+                  isCurrent
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {num}
+              </button>
             );
           })}
 
@@ -421,6 +417,7 @@ export function SearchCatalogView({
             }}
             className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-1.5 font-bold text-gray-900 focus:outline-none cursor-pointer"
           >
+            <option value="4">4</option>
             <option value="8">8</option>
             <option value="12">12</option>
             <option value="24">24</option>

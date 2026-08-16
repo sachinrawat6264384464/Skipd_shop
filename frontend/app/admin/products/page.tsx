@@ -250,7 +250,8 @@ export default function AdminProductsPage() {
         newProduct.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
         ...(newProduct.gallery_images.filter(Boolean))
       ],
-      tags: newProduct.tags ? newProduct.tags.split(",").map(t => t.trim()) : ["bestseller"]
+      tags: newProduct.tags ? newProduct.tags.split(",").map(t => t.trim()) : ["bestseller"],
+      colors: newProduct.variant_color ? newProduct.variant_color.split(",").map(c => c.trim()) : ["Default Black"]
     };
 
     const res = await createAdminProduct(payload);

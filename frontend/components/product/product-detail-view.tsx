@@ -4,7 +4,8 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
-import { BuyNowButton } from "components/auth/buy-now-button";
+import { useRouter } from "next/navigation";
+import { getUserCartKey } from "lib/utils";
 import { ProductZoomMagnifier } from "./product-zoom-magnifier";
 
 interface ProductDetailViewProps {
@@ -19,9 +20,147 @@ interface ProductDetailViewProps {
     category?: { name: string; slug: string };
     images: string[];
     tags?: string[];
+    colors?: string[] | { name: string; price: number; mrp?: number }[];
   };
   relatedProducts: any[];
 }
+
+export function ProductDetailView({ product, relatedProducts }: ProductDetailViewProps) {
+  const router = useRouter();
+  const [selectedImage, setSelectedImage] = useState(
+    product.images[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"
+  );
+  const [exchangeOption, setExchangeOption] = useState<"without" | "with">("without");
+  const [openSubNav, setOpenSubNav] = useState<string | null>(null);
+
+  // States for Add-on Items and Toast
+  const [addon1Added, setAddon1Added] = useState(false);
+  const [addon2Added, setAddon2Added] = useState(false);
+  const [cartAddedToast, setCartAddedToast] = useState(false);
+
+  // Dynamic Color Variants parsing
+  const rawColors = (product as any).colors || (product as any).variant_color;
+  let parsedColorList: { name: string; price: number; mrp: number }[] = [];
+
+  if (Array.isArray(rawColors) && rawColors.length > 0) {
+    parsedColorList = rawColors.map((c: any) => {
+      if (typeof c === "string") {
+        return {
+          name: c,
+          price: product.price,
+          mrp: product.compare_at_price || Math.round(product.price * 1.25)
+        };
+      }
+      return {
+        name: c.name || "Default",
+        price: c.price || product.price,
+        mrp: c.mrp || product.compare_at_price || Math.round(product.price * 1.25)
+      };
+    });
+  } else if (typeof rawColors === "string" && rawColors.trim().length > 0) {
+    parsedColorList = rawColors.split(",").map((c: string) => ({
+      name: c.trim(),
+      price: product.price,
+      mrp: product.compare_at_price || Math.round(product.price * 1.25)
+    }));
+  }
+
+  if (parsedColorList.length === 0) {
+    parsedColorList = [
+      { name: "Black Manas", price: product.price, mrp: product.compare_at_price || Math.round(product.price * 1.25) },
+      { name: "Blue Psyche", price: product.price, mrp: product.compare_at_price || Math.round(product.price * 1.25) },
+      { name: "Solid Black", price: Math.round(product.price * 1.1), mrp: Math.round(product.price * 1.35) },
+      { name: "Army Green", price: Math.round(product.price * 1.1), mrp: Math.round(product.price * 1.35) },
+      { name: "Camo Green", price: Math.round(product.price * 0.95), mrp: Math.round(product.price * 1.2) },
+      { name: "Olive Green", price: product.price, mrp: product.compare_at_price || Math.round(product.price * 1.25) }
+    ];
+  }
+
+  const [selectedColor, setSelectedColor] = useState(parsedColorList[0]?.name || "Default");
+
+  // Add to Cart handler
+  const handleAddToCart = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    const cartKey = getUserCartKey();
+    const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
+    const itemToAdd = {
+      id: product.id,
+      handle: product.handle,
+      title: `${product.title} (${selectedColor})`,
+      price: product.price,
+      quantity: 1,
+      image: selectedImage
+    };
+
+    const idx = existing.findIndex((i: any) => i.id === product.id || i.handle === product.handle);
+    let updated;
+    if (idx > -1) {
+      existing[idx].quantity += 1;
+      updated = [...existing];
+    } else {
+      updated = [...existing, itemToAdd];
+    }
+    localStorage.setItem(cartKey, JSON.stringify(updated));
+    window.dispatchEvent(new Event("skipd_cart_changed"));
+
+    setCartAddedToast(true);
+    setTimeout(() => setCartAddedToast(false), 3000);
+  };
+
+  // Buy Now handler
+  const handleBuyNow = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    handleAddToCart();
+    router.push("/checkout");
+  };
+
+  // Buy Combo handler ("Add Both to Cart" -> "Buy Combo")
+  const handleBuyCombo = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
+    const cartKey = getUserCartKey();
+    const mainItem = {
+      id: product.id,
+      handle: product.handle,
+      title: `${product.title} (${selectedColor})`,
+      price: product.price,
+      quantity: 1,
+      image: selectedImage
+    };
+    const comboItem = {
+      id: product.id + 9901,
+      handle: "gadgetbite-eva-hard-case",
+      title: "GadgetBite Headphone Carrying Hard EVA Case Storage Bag (Black)",
+      price: 400,
+      quantity: 1,
+      image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400"
+    };
+
+    localStorage.setItem(cartKey, JSON.stringify([mainItem, comboItem]));
+    window.dispatchEvent(new Event("skipd_cart_changed"));
+    router.push("/checkout");
+  };
+
+  // Add Add-on Item handler
+  const handleAddAddon = (
+    addon: { id: number; title: string; price: number; image: string },
+    setAddedState: (v: boolean) => void
+  ) => {
+    const cartKey = getUserCartKey();
+    const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
+    const newItem = {
+      id: addon.id,
+      handle: addon.title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+      title: addon.title,
+      price: addon.price,
+      quantity: 1,
+      image: addon.image
+    };
+
+    const updated = [...existing, newItem];
+    localStorage.setItem(cartKey, JSON.stringify(updated));
+    window.dispatchEvent(new Event("skipd_cart_changed"));
+    setAddedState(true);
+  };
 
 const SUB_NAV_ITEMS = [
   {
@@ -103,13 +242,6 @@ const SUB_NAV_ITEMS = [
     ]
   }
 ];
-
-export function ProductDetailView({ product, relatedProducts }: ProductDetailViewProps) {
-  const [selectedImage, setSelectedImage] = useState(
-    product.images[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"
-  );
-  const [exchangeOption, setExchangeOption] = useState<"without" | "with">("without");
-  const [openSubNav, setOpenSubNav] = useState<string | null>(null);
 
   // Bundle Items State for "Frequently Purchased Together"
   const [bundleChecked, setBundleChecked] = useState({
@@ -484,27 +616,22 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               </div>
             </div>
 
-            {/* 🎨 Color Swatches Selector */}
+            {/* 🎨 Dynamic Color Swatches Selector */}
             <div className="space-y-2 pt-1">
-              <p className="text-xs font-bold text-gray-900">Color: <span className="font-extrabold text-emerald-700">Black Manas</span></p>
+              <p className="text-xs font-bold text-gray-900">Color: <span className="font-extrabold text-emerald-700">{selectedColor}</span></p>
               <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                {[
-                  { name: "Black Manas", price: "₹1,799", mrp: "₹4,990", active: true },
-                  { name: "Blue Psyche", price: "₹1,799", mrp: "₹4,990", active: false },
-                  { name: "Solid Black", price: "₹2,499", mrp: "₹7,990", active: false },
-                  { name: "Army Green", price: "₹2,499", mrp: "₹7,990", active: false },
-                  { name: "Camo Green", price: "₹1,798", mrp: "₹4,999", active: false },
-                  { name: "Olive Green", price: "₹1,799", mrp: "₹4,990", active: false }
-                ].map((sw, idx) => (
+                {parsedColorList.map((sw, idx) => (
                   <button
                     key={idx}
+                    type="button"
+                    onClick={() => setSelectedColor(sw.name)}
                     className={`shrink-0 border-2 rounded-2xl p-2 text-center text-[10px] transition cursor-pointer ${
-                      sw.active ? "border-amber-500 bg-amber-50/50 text-gray-900 font-extrabold" : "border-gray-200 bg-white hover:border-gray-400 text-gray-700 font-medium"
+                      selectedColor === sw.name ? "border-amber-500 bg-amber-50/50 text-gray-900 font-extrabold shadow-2xs" : "border-gray-200 bg-white hover:border-gray-400 text-gray-700 font-medium"
                     }`}
                   >
                     <p className="font-bold line-clamp-1">{sw.name}</p>
-                    <p className="text-emerald-700 font-black">{sw.price}</p>
-                    <p className="text-gray-400 line-through text-[9px]">{sw.mrp}</p>
+                    <p className="text-emerald-700 font-black">₹{sw.price.toLocaleString("en-IN")}</p>
+                    <p className="text-gray-400 line-through text-[9px]">₹{sw.mrp.toLocaleString("en-IN")}</p>
                   </button>
                 ))}
               </div>
@@ -545,7 +672,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               </div>
             </div>
 
-            {/* 🏆 Brand Trust Card (boAt Official Brand Card) */}
+            {/* 🏆 Brand Trust Card */}
             <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-3 space-y-1 text-xs">
               <div className="flex items-center justify-between">
                 <span className="font-black text-gray-900 text-sm">boAt Official Retail</span>
@@ -616,7 +743,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                 <p className="text-[10px] text-gray-500">Ships from and sold by SKIPD Official Retail.</p>
               </div>
 
-              {/* 🛒 Add to Cart (Yellow) & ⚡ Buy Now (Orange) */}
+              {/* 🛒 Add to Cart (Yellow) & ⚡ Buy Now (Orange) Buttons */}
               <div className="space-y-2 pt-2">
                 {product.stock_quantity === 0 ? (
                   <button
@@ -627,19 +754,21 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                   </button>
                 ) : (
                   <>
-                    <BuyNowButton
-                      mode="cart"
-                      className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                    <button
+                      type="button"
+                      onClick={handleAddToCart}
+                      className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3.5 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      🛒 Add to Cart
-                    </BuyNowButton>
+                      {cartAddedToast ? "✓ Added to Cart!" : "🛒 Add to Cart"}
+                    </button>
 
-                    <BuyNowButton
-                      productHandle={product.handle}
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-xs py-3 rounded-2xl transition shadow-md shadow-orange-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                    <button
+                      type="button"
+                      onClick={handleBuyNow}
+                      className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-orange-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       ⚡ Buy Now
-                    </BuyNowButton>
+                    </button>
                   </>
                 )}
               </div>
@@ -686,7 +815,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               </div>
             </div>
 
-            {/* 4. 🎧 Recommended Accessories Card */}
+            {/* 4. 🎧 Recommended Accessories Card (+ Add Working Buttons) */}
             <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
               <h4 className="font-black text-gray-900 text-xs uppercase tracking-wider">⚡ Frequently Add-on Items</h4>
               
@@ -697,8 +826,14 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                     <p className="font-bold text-gray-900 truncate">EVA Hard Storage Case</p>
                     <p className="font-black text-emerald-700 text-xs">₹400.00</p>
                   </div>
-                  <button className="bg-gray-900 text-white font-bold text-[10px] px-2.5 py-1 rounded-xl hover:bg-black transition cursor-pointer">
-                    + Add
+                  <button
+                    type="button"
+                    onClick={() => handleAddAddon({ id: 9901, title: "EVA Hard Storage Case", price: 400, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400" }, setAddon1Added)}
+                    className={`font-extrabold text-[10px] px-3 py-1.5 rounded-xl transition cursor-pointer ${
+                      addon1Added ? "bg-emerald-600 text-white" : "bg-gray-900 hover:bg-black text-white"
+                    }`}
+                  >
+                    {addon1Added ? "✓ Added" : "+ Add"}
                   </button>
                 </div>
 
@@ -708,27 +843,16 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                     <p className="font-bold text-gray-900 truncate">65W Fast Wall Adapter</p>
                     <p className="font-black text-emerald-700 text-xs">₹599.00</p>
                   </div>
-                  <button className="bg-gray-900 text-white font-bold text-[10px] px-2.5 py-1 rounded-xl hover:bg-black transition cursor-pointer">
-                    + Add
+                  <button
+                    type="button"
+                    onClick={() => handleAddAddon({ id: 9902, title: "65W Fast Wall Adapter", price: 599, image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" }, setAddon2Added)}
+                    className={`font-extrabold text-[10px] px-3 py-1.5 rounded-xl transition cursor-pointer ${
+                      addon2Added ? "bg-emerald-600 text-white" : "bg-gray-900 hover:bg-black text-white"
+                    }`}
+                  >
+                    {addon2Added ? "✓ Added" : "+ Add"}
                   </button>
                 </div>
-              </div>
-            </div>
-
-            {/* 5. 💬 24x7 Customer Support Helpline Card */}
-            <div className="bg-emerald-50/80 border border-emerald-200 rounded-3xl p-5 shadow-2xs space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-black text-emerald-900 text-xs">💬 Need Order Assistance?</span>
-                <span className="bg-emerald-600 text-white text-[9px] font-bold px-2 py-0.5 rounded uppercase">24x7</span>
-              </div>
-              <p className="text-[11px] text-emerald-800 leading-tight">Call our sales expert or live chat for corporate orders &amp; custom deals.</p>
-              <div className="flex gap-2 pt-1">
-                <button className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 rounded-xl text-[10px] transition text-center cursor-pointer">
-                  📞 Call Agent
-                </button>
-                <button className="flex-1 bg-white border border-emerald-300 text-emerald-900 font-bold py-2 rounded-xl text-[10px] transition text-center hover:bg-emerald-100 cursor-pointer">
-                  💬 Live Chat
-                </button>
               </div>
             </div>
 
@@ -792,18 +916,20 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               <span className="text-xs text-gray-600 font-bold block">Total Price:</span>
               <span className="text-2xl font-black text-gray-900 block">₹{(product.price + 400).toLocaleString("en-IN")}.00</span>
 
-              <BuyNowButton
-                productHandle={product.handle}
-                className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3.5 rounded-2xl transition shadow-xs text-center block cursor-pointer"
+              <button
+                type="button"
+                onClick={handleBuyCombo}
+                className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-amber-400/20 text-center block cursor-pointer uppercase tracking-wider"
               >
-                Add Both to Cart
-              </BuyNowButton>
-              <p className="text-[10px] text-gray-500">Sponsored Products Related to This Item</p>
+                ⚡ Buy Combo
+              </button>
+              <p className="text-[10px] text-gray-500">Includes Main Product + Hard Storage Case</p>
             </div>
 
           </div>
         </div>
       </div>
+
 
       {/* 📦 Sponsored Products Section */}
       <div className="max-w-[1536px] mx-auto px-4 lg:px-8 pt-6">
