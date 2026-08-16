@@ -311,6 +311,19 @@ export default function CheckoutPage() {
         const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
         localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
+        // Credit Gift Card Balance if buying Gift Cards
+        cartItems.forEach((item: any) => {
+          if (item.isGiftCard || item.giftAmount || (item.title && item.title.toLowerCase().includes("gift"))) {
+            const amount = Number(item.giftAmount || item.price || 0);
+            if (amount > 0) {
+              const currentBal = Number(localStorage.getItem("skipd_gift_balance") || "2500");
+              const updatedBal = currentBal + amount;
+              localStorage.setItem("skipd_gift_balance", updatedBal.toString());
+              window.dispatchEvent(new Event("skipd_gift_balance_changed"));
+            }
+          }
+        });
+
         // Clear User Cart
         localStorage.setItem(cartKey, JSON.stringify([]));
 

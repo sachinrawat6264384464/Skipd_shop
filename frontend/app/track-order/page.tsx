@@ -54,8 +54,8 @@ function TrackOrderContent() {
         // Find matching shipment or default to first
         const match = shipmentsData.find(
           (s: ShipmentDetail) =>
-            s.awbCode.toLowerCase() === initialAwb.toLowerCase() ||
-            s.orderId.toLowerCase() === initialAwb.toLowerCase()
+            (s.awbCode || "").toLowerCase() === (initialAwb || "").toLowerCase() ||
+            (s.orderId || "").toLowerCase() === (initialAwb || "").toLowerCase()
         );
         setCurrentShipment(match || shipmentsData[0] || null);
       } else {
@@ -71,10 +71,10 @@ function TrackOrderContent() {
             courierName: "Delhivery Surface",
             destination: "Gwalior, Madhya Pradesh",
             pinCode: "474001",
-            estDeliveryDate: "May 27, 2026",
+            estDeliveryDate: "Aug 20, 2026",
             status: "IN TRANSIT",
-            currentLocation: "Bhopal Sort Center (May 25, 2025 02:32 PM)",
-            date: "May 25, 2025"
+            currentLocation: "Bhopal Sort Center (Aug 17, 2026 02:32 PM)",
+            date: "Aug 17, 2026"
           },
           {
             id: 2,
@@ -86,10 +86,10 @@ function TrackOrderContent() {
             courierName: "Bluedart Express Air",
             destination: "Ahmedabad, Gujarat",
             pinCode: "380001",
-            estDeliveryDate: "May 26, 2026",
+            estDeliveryDate: "Aug 19, 2026",
             status: "OUT FOR DELIVERY",
-            currentLocation: "Out for Delivery (May 25, 2025 09:15 AM)",
-            date: "May 24, 2025"
+            currentLocation: "Out for Delivery (Aug 17, 2026 09:15 AM)",
+            date: "Aug 16, 2026"
           },
           {
             id: 4,
@@ -101,15 +101,15 @@ function TrackOrderContent() {
             courierName: "Ekart Surface",
             destination: "Pune, Maharashtra",
             pinCode: "411001",
-            estDeliveryDate: "May 24, 2025",
+            estDeliveryDate: "Aug 15, 2026",
             status: "DELIVERED",
-            currentLocation: "Delivered (May 24, 2025 06:20 PM)",
-            date: "May 20, 2025"
+            currentLocation: "Delivered (Aug 15, 2026 06:20 PM)",
+            date: "Aug 14, 2026"
           }
         ];
         setAllShipments(fallbackList);
         const match = fallbackList.find(
-          s => s.awbCode.toLowerCase() === initialAwb.toLowerCase() || s.orderId.toLowerCase() === initialAwb.toLowerCase()
+          s => (s.awbCode || "").toLowerCase() === (initialAwb || "").toLowerCase() || (s.orderId || "").toLowerCase() === (initialAwb || "").toLowerCase()
         );
         setCurrentShipment(match || fallbackList[0] || null);
       }

@@ -56,8 +56,8 @@ export interface UserOrder {
   title: string;
   image: string;
   status: string;
-  awb: string;
-  deliveryText: string;
+  awb?: string;
+  deliveryText?: string;
 }
 
 const MOCK_PRODUCTS: Product[] = [

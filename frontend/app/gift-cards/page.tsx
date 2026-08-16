@@ -3,11 +3,23 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import Footer from "components/layout/footer";
 import { BuyNowButton } from "components/auth/buy-now-button";
+import { getUserCartKey } from "lib/utils";
 
 export default function GiftCardsPage() {
+  const router = useRouter();
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [sortBy, setSortBy] = useState("bestselling");
+  const [maxPrice, setMaxPrice] = useState(50000);
+  const [wishlistIds, setWishlistIds] = useState<number[]>([]);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 4000);
+  };
 
   const giftProducts = [
     {
@@ -67,28 +79,84 @@ export default function GiftCardsPage() {
     },
   ];
 
-  const filteredProducts =
-    selectedCategory === "All Categories"
-      ? giftProducts
-      : giftProducts.filter((p) => p.category === selectedCategory);
+  // 1. Filter by Category & Price
+  let processedProducts = giftProducts.filter((p) => {
+    const matchesCat = selectedCategory === "All Categories" || p.category === selectedCategory;
+    const matchesPrice = p.price <= maxPrice;
+    return matchesCat && matchesPrice;
+  });
+
+  // 2. Sort Products
+  if (sortBy === "price-low") {
+    processedProducts.sort((a, b) => a.price - b.price);
+  } else if (sortBy === "price-high") {
+    processedProducts.sort((a, b) => b.price - a.price);
+  }
+
+  const toggleWishlist = (id: number, title: string) => {
+    if (wishlistIds.includes(id)) {
+      setWishlistIds((prev) => prev.filter((item) => item !== id));
+      showToast(`🖤 Removed "${title}" from Wishlist`);
+    } else {
+      setWishlistIds((prev) => [...prev, id]);
+      showToast(`❤️ Added "${title}" to Wishlist!`);
+    }
+  };
+
+  const handleBuyBrandVoucher = (brandName: string, amount: number) => {
+    const voucherItem = {
+      id: Date.now(),
+      handle: `skipd-voucher-${brandName.toLowerCase().replace(/\s+/g, "-")}`,
+      title: `SKIPD ${brandName} Digital Store Voucher (₹${amount.toLocaleString("en-IN")})`,
+      price: amount,
+      quantity: 1,
+      image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400",
+      isGiftCard: true,
+      giftAmount: amount
+    };
+
+    const cartKey = getUserCartKey();
+    const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
+    localStorage.setItem(cartKey, JSON.stringify([...existing, voucherItem]));
+    window.dispatchEvent(new Event("skipd_cart_changed"));
+
+    showToast(`🎉 ${brandName} Voucher ₹${amount} added! Redirecting to Checkout...`);
+    setTimeout(() => {
+      router.push("/checkout");
+    }, 600);
+  };
 
   return (
     <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between" suppressHydrationWarning>
+      
+      {/* In-Page Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-20 right-5 z-50 bg-gray-900 text-white font-bold text-xs px-5 py-3 rounded-2xl shadow-2xl border border-emerald-500/40 animate-bounce">
+          {toastMessage}
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8 w-full">
         
-        {/* 🎁 Page Header Title (Matching Screenshot 1) */}
+        {/* 🎁 Page Header Title */}
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-gray-900">Gift Cards for Every Occasion</h1>
           <p className="text-xs text-gray-500 font-medium mt-1">Easy to buy, easy to send. Let them choose what they love.</p>
         </div>
 
-        {/* 🃏 4 Gift Card Type Cards (Matching Screenshot 1) */}
+        {/* 🃏 4 Gift Card Type Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* E-Gift Card */}
-          <div className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer">
+          <div
+            onClick={() => {
+              setSelectedCategory("Electronics");
+              showToast("📱 Showing Electronics E-Gift Cards!");
+            }}
+            className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
+          >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white border border-emerald-200 flex items-center justify-center text-xl shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-white border border-emerald-200 flex items-center justify-center text-xl shadow-xs group-hover:scale-110 transition">
                 📱
               </div>
               <div>
@@ -96,15 +164,21 @@ export default function GiftCardsPage() {
                 <p className="text-[10px] text-gray-500">Instant delivery on email or SMS</p>
               </div>
             </div>
-            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-emerald-600">
+            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition">
               &rarr;
             </span>
           </div>
 
           {/* Physical Gift Card */}
-          <div className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer">
+          <div
+            onClick={() => {
+              setSelectedCategory("Fashion & Apparel");
+              showToast("💳 Showing Fashion Physical Gift Cards!");
+            }}
+            className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
+          >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-xs group-hover:scale-110 transition">
                 💳
               </div>
               <div>
@@ -112,15 +186,21 @@ export default function GiftCardsPage() {
                 <p className="text-[10px] text-gray-500">Beautifully packed &amp; delivered</p>
               </div>
             </div>
-            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-indigo-600">
+            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition">
               &rarr;
             </span>
           </div>
 
           {/* Brand Gift Card */}
-          <div className="bg-amber-50/60 border border-amber-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer">
+          <div
+            onClick={() => {
+              setSelectedCategory("Lifestyle");
+              showToast("🛍️ Showing Lifestyle Brand Gift Cards!");
+            }}
+            className="bg-amber-50/60 border border-amber-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
+          >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white border border-amber-200 flex items-center justify-center text-xl shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-white border border-amber-200 flex items-center justify-center text-xl shadow-xs group-hover:scale-110 transition">
                 🛍️
               </div>
               <div>
@@ -128,15 +208,21 @@ export default function GiftCardsPage() {
                 <p className="text-[10px] text-gray-500">Top brands, endless choices</p>
               </div>
             </div>
-            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-amber-600">
+            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition">
               &rarr;
             </span>
           </div>
 
           {/* Corporate / Bulk */}
-          <div className="bg-purple-50/60 border border-purple-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer">
+          <div
+            onClick={() => {
+              setSelectedCategory("All Categories");
+              showToast("💼 Showing All Corporate Bulk Gifting Options!");
+            }}
+            className="bg-purple-50/60 border border-purple-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
+          >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-700 text-white flex items-center justify-center text-xl shadow-xs">
+              <div className="w-10 h-10 rounded-xl bg-purple-700 text-white flex items-center justify-center text-xl shadow-xs group-hover:scale-110 transition">
                 💼
               </div>
               <div>
@@ -144,14 +230,14 @@ export default function GiftCardsPage() {
                 <p className="text-[10px] text-gray-500">Bulk gifting for employees</p>
               </div>
             </div>
-            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-purple-600">
+            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition">
               &rarr;
             </span>
           </div>
 
         </div>
 
-        {/* 💊 4 Value Prop Pill Icons Bar (Matching Screenshot 1) */}
+        {/* 💊 4 Value Prop Pill Icons Bar */}
         <div className="bg-white border border-gray-200/80 rounded-2xl p-3 shadow-2xs grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-medium text-gray-700">
           <div className="flex items-center gap-2.5 px-2">
             <span className="text-xl">💳</span>
@@ -183,7 +269,7 @@ export default function GiftCardsPage() {
           </div>
         </div>
 
-        {/* 🎁 Offer Banners Row (Matching Screenshot 1) */}
+        {/* 🎁 Offer Banners Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* Banner 1: Contest Points */}
@@ -192,8 +278,11 @@ export default function GiftCardsPage() {
               <p className="text-[10px] font-bold text-gray-600 uppercase">Send a Gift Card &amp; Get</p>
               <h3 className="text-base font-black text-gray-900">₹3,000 Gift Points 🎁</h3>
             </div>
-            <button className="bg-emerald-600 text-white font-bold text-[11px] px-4 py-1.5 rounded-xl hover:bg-emerald-700 transition w-fit cursor-pointer">
-              Explore Now
+            <button
+              onClick={() => router.push("/account?tab=gift-cards")}
+              className="bg-emerald-600 text-white font-bold text-[11px] px-4 py-1.5 rounded-xl hover:bg-emerald-700 transition w-fit cursor-pointer shadow-xs"
+            >
+              Explore Now &rsaquo;
             </button>
           </div>
 
@@ -204,8 +293,14 @@ export default function GiftCardsPage() {
               <h3 className="text-lg font-black text-gray-900">50% OFF</h3>
               <p className="text-[10px] text-gray-600 font-semibold">on Brand Gift Cards</p>
             </div>
-            <button className="bg-white border border-teal-300 text-teal-800 font-bold text-[11px] px-4 py-1.5 rounded-xl hover:bg-teal-100 transition w-fit cursor-pointer">
-              View Brands
+            <button
+              onClick={() => {
+                setSelectedCategory("Fashion & Apparel");
+                showToast("🛍️ Filtered 50% OFF Brand Gift Cards!");
+              }}
+              className="bg-white border border-teal-300 text-teal-800 font-bold text-[11px] px-4 py-1.5 rounded-xl hover:bg-teal-100 transition w-fit cursor-pointer shadow-xs"
+            >
+              View Brands &rsaquo;
             </button>
           </div>
 
@@ -215,8 +310,11 @@ export default function GiftCardsPage() {
               <p className="text-[10px] font-bold text-gray-500 uppercase">Flat</p>
               <h3 className="text-base font-black text-gray-900">12% OFF</h3>
               <p className="text-[10px] text-gray-500 font-medium">Central Brand New</p>
-              <button className="mt-2 bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-[10px] px-3.5 py-1 rounded-xl transition cursor-pointer">
-                Buy Now
+              <button
+                onClick={() => handleBuyBrandVoucher("Central Brand", 1000)}
+                className="mt-2 bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-[10px] px-3.5 py-1 rounded-xl transition cursor-pointer shadow-xs"
+              >
+                Buy Now &rsaquo;
               </button>
             </div>
             <div className="w-14 h-14 bg-white rounded-xl border border-amber-200 flex flex-col items-center justify-center p-1 shadow-2xs">
@@ -230,8 +328,11 @@ export default function GiftCardsPage() {
               <p className="text-[10px] font-bold text-gray-500 uppercase">Flat</p>
               <h3 className="text-base font-black text-gray-900">5% OFF</h3>
               <p className="text-[10px] text-gray-500 font-medium">Big Bazaar</p>
-              <button className="mt-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px] px-3.5 py-1 rounded-xl transition cursor-pointer">
-                Buy Now
+              <button
+                onClick={() => handleBuyBrandVoucher("Big Bazaar", 2000)}
+                className="mt-2 bg-purple-600 hover:bg-purple-700 text-white font-bold text-[10px] px-3.5 py-1 rounded-xl transition cursor-pointer shadow-xs"
+              >
+                Buy Now &rsaquo;
               </button>
             </div>
             <div className="w-14 h-14 bg-white rounded-xl border border-purple-200 flex flex-col items-center justify-center p-1 shadow-2xs">
@@ -241,17 +342,21 @@ export default function GiftCardsPage() {
 
         </div>
 
-        {/* 🛍️ Bestsellers Section with Left Category Sidebar & Cards Grid (Matching Screenshot 1) */}
+        {/* 🛍️ Bestsellers Section */}
         <div className="space-y-4">
           <div className="flex justify-between items-center border-b border-gray-200 pb-3">
             <div>
-              <h2 className="text-xl font-black text-gray-900">Bestsellers</h2>
+              <h2 className="text-xl font-black text-gray-900">Bestsellers ({processedProducts.length})</h2>
               <p className="text-xs text-gray-500">Most loved gifts, chosen by thousands.</p>
             </div>
             
             <div className="flex items-center gap-2 text-xs">
               <span className="text-gray-500 font-medium">Sort by:</span>
-              <select className="bg-white border border-gray-300 rounded-xl px-3 py-1.5 font-bold text-gray-800 text-xs focus:outline-none">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+                className="bg-white border border-gray-300 rounded-xl px-3 py-1.5 font-bold text-gray-800 text-xs focus:outline-none cursor-pointer"
+              >
                 <option value="bestselling">Best Selling</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
@@ -261,7 +366,7 @@ export default function GiftCardsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            {/* Left 3-Col Sidebar: Category Filter */}
+            {/* Left 3-Col Sidebar: Category & Price Filter */}
             <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-2xl p-4 space-y-4 shadow-2xs">
               <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">Categories</h3>
               
@@ -290,63 +395,123 @@ export default function GiftCardsPage() {
               </ul>
 
               <div className="border-t border-gray-100 pt-4 space-y-2">
-                <h4 className="text-xs font-bold text-gray-900">Price Range</h4>
-                <input type="range" min="0" max="20000" className="w-full accent-emerald-600 cursor-pointer" />
+                <h4 className="text-xs font-bold text-gray-900">Price Range (Under ₹{maxPrice.toLocaleString("en-IN")})</h4>
+                <input
+                  type="range"
+                  min="2000"
+                  max="50000"
+                  step="1000"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(Number(e.target.value))}
+                  className="w-full accent-emerald-600 cursor-pointer"
+                />
                 <div className="flex justify-between text-[11px] font-bold text-gray-500">
-                  <span>₹0</span>
-                  <span>₹20,000+</span>
+                  <span>₹2,000</span>
+                  <span>₹50,000+</span>
                 </div>
               </div>
             </div>
 
-            {/* Right 9-Col Product Grid (Matching Screenshot 1) */}
-            <div className="lg:col-span-9 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {filteredProducts.map((p) => (
-                <div
-                  key={p.id}
-                  className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden p-3 shadow-2xs space-y-2 flex flex-col justify-between hover:shadow-md transition relative group"
-                >
-                  <span className="absolute top-4 left-4 z-10 bg-red-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-md uppercase">
-                    {p.discount}
-                  </span>
-
-                  <button className="absolute top-4 right-4 z-10 text-gray-400 hover:text-red-500 text-xs">
-                    🖤
+            {/* Right 9-Col Product Grid */}
+            <div className="lg:col-span-9">
+              {processedProducts.length === 0 ? (
+                <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center text-xs text-gray-500 font-bold space-y-2">
+                  <p className="text-3xl">🛍️</p>
+                  <p>No products found under ₹{maxPrice.toLocaleString("en-IN")} in "{selectedCategory}".</p>
+                  <button
+                    onClick={() => {
+                      setSelectedCategory("All Categories");
+                      setMaxPrice(50000);
+                    }}
+                    className="mt-2 text-emerald-700 hover:underline"
+                  >
+                    Reset Filters
                   </button>
-
-                  <Link href={`/product/${p.handle}`} className="block relative aspect-square bg-gray-50 rounded-xl overflow-hidden p-2">
-                    <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition" />
-                  </Link>
-
-                  <div className="space-y-1">
-                    <h4 className="font-bold text-xs text-gray-900 line-clamp-2 leading-snug">
-                      <Link href={`/product/${p.handle}`}>{p.title}</Link>
-                    </h4>
-                    <p className="text-[10px] text-amber-500 font-bold">★ {p.rating}</p>
-                    <div className="flex items-baseline gap-1.5">
-                      <span className="text-sm font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
-                      <span className="text-[10px] text-gray-400 line-through">₹{p.compare_at_price.toLocaleString("en-IN")}</span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-gray-100">
-                    <BuyNowButton
-                      mode="cart"
-                      className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold text-[10px] py-2 rounded-xl text-center cursor-pointer"
-                    >
-                      🛒 Add to Cart
-                    </BuyNowButton>
-
-                    <BuyNowButton
-                      productHandle={p.handle}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] py-2 rounded-xl text-center cursor-pointer shadow-2xs"
-                    >
-                      ⚡ Buy Now
-                    </BuyNowButton>
-                  </div>
-
                 </div>
-              ))}
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {processedProducts.map((p) => {
+                    const isWishlisted = wishlistIds.includes(p.id);
+
+                    return (
+                      <div
+                        key={p.id}
+                        className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden p-3 shadow-2xs space-y-2 flex flex-col justify-between hover:shadow-md transition relative group"
+                      >
+                        <span className="absolute top-4 left-4 z-10 bg-red-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-md uppercase">
+                          {p.discount}
+                        </span>
+
+                        <button
+                          onClick={() => toggleWishlist(p.id, p.title)}
+                          className="absolute top-4 right-4 z-10 text-xs transition transform hover:scale-125 cursor-pointer"
+                        >
+                          {isWishlisted ? "❤️" : "🖤"}
+                        </button>
+
+                        <Link href={`/product/${p.handle}`} className="block relative aspect-square bg-gray-50 rounded-xl overflow-hidden p-2">
+                          <img src={p.image} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                        </Link>
+
+                        <div className="space-y-1">
+                          <h4 className="font-bold text-xs text-gray-900 line-clamp-2 leading-snug">
+                            <Link href={`/product/${p.handle}`} className="hover:text-emerald-700 transition">{p.title}</Link>
+                          </h4>
+                          <p className="text-[10px] text-amber-500 font-bold">★ {p.rating}</p>
+                          <div className="flex items-baseline gap-1.5">
+                            <span className="text-sm font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
+                            <span className="text-[10px] text-gray-400 line-through">₹{p.compare_at_price.toLocaleString("en-IN")}</span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-1.5 pt-2 border-t border-gray-100">
+                          <BuyNowButton
+                            mode="cart"
+                            productObj={{
+                              id: p.id,
+                              handle: p.handle,
+                              title: p.title,
+                              price: p.price,
+                              originalPrice: p.compare_at_price,
+                              savings: p.compare_at_price - p.price,
+                              image: p.image,
+                              rating: p.rating,
+                              seller: "SKIPD Official",
+                              delivery: "Delivery in 2 days | Free Delivery",
+                              selected: true
+                            }}
+                            className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold text-[10px] py-2 rounded-xl text-center cursor-pointer transition"
+                          >
+                            🛒 Add to Cart
+                          </BuyNowButton>
+
+                          <BuyNowButton
+                            mode="buy"
+                            productHandle={p.handle}
+                            productObj={{
+                              id: p.id,
+                              handle: p.handle,
+                              title: p.title,
+                              price: p.price,
+                              originalPrice: p.compare_at_price,
+                              savings: p.compare_at_price - p.price,
+                              image: p.image,
+                              rating: p.rating,
+                              seller: "SKIPD Official",
+                              delivery: "Delivery in 2 days | Free Delivery",
+                              selected: true
+                            }}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] py-2 rounded-xl text-center cursor-pointer shadow-2xs transition"
+                          >
+                            ⚡ Buy Now
+                          </BuyNowButton>
+                        </div>
+
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
           </div>

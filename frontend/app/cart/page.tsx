@@ -73,9 +73,11 @@ export default function CartItemsPage() {
 
     window.addEventListener("skipd_auth_changed", loadUserCart);
     window.addEventListener("skipd_cart_updated", loadUserCart);
+    window.addEventListener("skipd_cart_changed", loadUserCart);
     return () => {
       window.removeEventListener("skipd_auth_changed", loadUserCart);
       window.removeEventListener("skipd_cart_updated", loadUserCart);
+      window.removeEventListener("skipd_cart_changed", loadUserCart);
     };
   }, []);
 
@@ -84,14 +86,15 @@ export default function CartItemsPage() {
     const cartKey = getUserCartKey();
     localStorage.setItem(cartKey, JSON.stringify(newItems));
     window.dispatchEvent(new Event("skipd_cart_updated"));
+    window.dispatchEvent(new Event("skipd_cart_changed"));
   };
 
-  const updateQty = (id: number, delta: number) => {
-    const updated = items.map(item => item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item);
+  const updateQty = (id: number | string, delta: number) => {
+    const updated = items.map(item => item.id === id ? { ...item, quantity: Math.max(1, (item.quantity || 1) + delta) } : item);
     saveCartState(updated);
   };
 
-  const removeItem = (id: number) => {
+  const removeItem = (id: number | string) => {
     const updated = items.filter(item => item.id !== id);
     saveCartState(updated);
   };
@@ -100,7 +103,21 @@ export default function CartItemsPage() {
     saveCartState([]);
   };
 
-  const selectedItems = items.filter(i => i.selected);
+  const normalizedItems = items.map(item => ({
+    ...item,
+    selected: item.selected !== false,
+    quantity: Number(item.quantity || 1),
+    price: Number(item.price || 999),
+    originalPrice: Number(item.originalPrice || item.compare_at_price || (item.price ? item.price * 1.3 : 1299)),
+    savings: Math.max(0, Number(item.savings || ((item.originalPrice || item.compare_at_price || (item.price ? item.price * 1.3 : 1299)) - Number(item.price || 999)))),
+    rating: item.rating || "4.5",
+    reviews: item.reviews || "1,240",
+    seller: item.seller || "SKIPD Official",
+    delivery: item.delivery || "Delivery in 2 days | Free Delivery",
+    image: item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"
+  }));
+
+  const selectedItems = normalizedItems.filter(i => i.selected);
   const subtotal = selectedItems.reduce((acc, item) => acc + (item.originalPrice * item.quantity), 0);
   const totalDiscount = selectedItems.reduce((acc, item) => acc + (item.savings * item.quantity), 0);
   const finalTotal = selectedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
@@ -145,7 +162,7 @@ export default function CartItemsPage() {
             
             {/* Left Column: Cart Items List */}
             <div className="lg:col-span-2 space-y-4">
-              {items.map((item) => (
+              {normalizedItems.map((item) => (
                 <div key={item.id} className="bg-white border border-gray-200 rounded-3xl p-6 shadow-2xs space-y-4 relative">
                   
                   <div className="flex gap-4 items-start">

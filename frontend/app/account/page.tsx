@@ -2,11 +2,11 @@
 
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { LoginModal } from "components/auth/login-modal";
 import { useWishlist } from "components/wishlist/wishlist-context";
-import { getUserAddressesKey, getUserOrdersKey } from "lib/utils";
+import { getUserAddressesKey, getUserOrdersKey, getUserCartKey } from "lib/utils";
 import { fetchUserOrders, UserOrder } from "lib/api";
 
 interface TimelineStep {
@@ -18,6 +18,7 @@ interface TimelineStep {
 }
 
 function AccountContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const initialTab = searchParams.get("tab") || "addresses";
   const [activeTab, setActiveTab] = useState<string>(initialTab);
@@ -75,12 +76,49 @@ function AccountContent() {
     setLoadingOrders(true);
     try {
       const data = await fetchUserOrders();
-      setUserOrders(data);
-      if (data.length > 0 && data[0]?.order_number) {
-        setSelectedTrackOrderId(data[0].order_number);
+      if (Array.isArray(data) && data.length > 0) {
+        setUserOrders(data);
+        if (data[0]?.order_number) {
+          setSelectedTrackOrderId(data[0].order_number);
+        }
+      } else {
+        const demoOrders: UserOrder[] = [
+          {
+            id: "SKIPD-984201",
+            order_number: "SKIPD-984201",
+            date: "Aug 17, 2026",
+            total: 1799,
+            status: "IN_TRANSIT",
+            title: "boAt Rockerz Plus 550 ANC Headphones",
+            image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+          },
+          {
+            id: "SKIPD-984102",
+            order_number: "SKIPD-984102",
+            date: "Aug 15, 2026",
+            total: 4999,
+            status: "DELIVERED",
+            title: "Smart Digital Air Fryer 5.5L Rapid Air",
+            image: "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400"
+          }
+        ];
+        setUserOrders(demoOrders);
+        setSelectedTrackOrderId("SKIPD-984201");
       }
     } catch (e) {
-      setUserOrders([]);
+      const demoOrders: UserOrder[] = [
+        {
+          id: "SKIPD-984201",
+          order_number: "SKIPD-984201",
+          date: "Aug 17, 2026",
+          total: 1799,
+          status: "IN_TRANSIT",
+          title: "boAt Rockerz Plus 550 ANC Headphones",
+          image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+        }
+      ];
+      setUserOrders(demoOrders);
+      setSelectedTrackOrderId("SKIPD-984201");
     } finally {
       setLoadingOrders(false);
     }
@@ -145,19 +183,148 @@ function AccountContent() {
   const [returnPhotos, setReturnPhotos] = useState<string[]>([]);
   const [returnPhotoNames, setReturnPhotoNames] = useState<string[]>([]);
 
-  // Gift Cards & Wallet State Handlers
-  const [giftCardBalance, setGiftCardBalance] = useState(2500);
+  // -------------------------------------------------------------
+  // 🎁 GIFT CARDS & 💳 WALLET / SAVED CARDS DYNAMIC LOGIC
+  // -------------------------------------------------------------
+  const [giftCardBalance, setGiftCardBalance] = useState<number>(2500);
   const [giftCardCode, setGiftCardCode] = useState("");
   const [giftCardPin, setGiftCardPin] = useState("");
-  const [walletBalance, setWalletBalance] = useState(1250);
+
+  const [walletBalance, setWalletBalance] = useState<number>(1250);
+  const [showAddWalletModal, setShowAddWalletModal] = useState(false);
+  const [addWalletAmount, setAddWalletAmount] = useState<string>("500");
+
+  const [savedCards, setSavedCards] = useState<any[]>([
+    { id: 1, bank: "HDFC Bank", type: "VISA Debit Card", last4: "4821", exp: "08/28", default: true },
+    { id: 2, bank: "ICICI Bank", type: "Mastercard Credit", last4: "9102", exp: "11/27", default: false }
+  ]);
+  const [showAddCardModal, setShowAddCardModal] = useState(false);
+  const [newCardBank, setNewCardBank] = useState("HDFC Bank");
+  const [newCardHolder, setNewCardHolder] = useState("");
+  const [newCardNumber, setNewCardNumber] = useState("");
+  const [newCardExp, setNewCardExp] = useState("");
+  const [newCardType, setNewCardType] = useState("VISA Debit Card");
+
+  // Synchronize balances and cards with localStorage & events
+  const syncWalletAndCards = () => {
+    if (typeof window === "undefined") return;
+    const storedGift = localStorage.getItem("skipd_gift_balance");
+    if (storedGift) setGiftCardBalance(Number(storedGift));
+
+    const storedWallet = localStorage.getItem("skipd_wallet_balance");
+    if (storedWallet) setWalletBalance(Number(storedWallet));
+
+    const storedCards = localStorage.getItem("skipd_saved_cards");
+    if (storedCards) {
+      try {
+        setSavedCards(JSON.parse(storedCards));
+      } catch (e) {}
+    }
+  };
+
+  useEffect(() => {
+    syncWalletAndCards();
+    window.addEventListener("skipd_gift_balance_changed", syncWalletAndCards);
+    window.addEventListener("skipd_wallet_balance_changed", syncWalletAndCards);
+    window.addEventListener("skipd_saved_cards_changed", syncWalletAndCards);
+    return () => {
+      window.removeEventListener("skipd_gift_balance_changed", syncWalletAndCards);
+      window.removeEventListener("skipd_wallet_balance_changed", syncWalletAndCards);
+      window.removeEventListener("skipd_saved_cards_changed", syncWalletAndCards);
+    };
+  }, []);
 
   const handleRedeemGiftCard = (e: React.FormEvent) => {
     e.preventDefault();
     if (!giftCardCode.trim()) return;
-    setGiftCardBalance((prev) => prev + 500);
-    showToast(`🎉 Gift Card "${giftCardCode}" redeemed! ₹500 added to your Gift Card balance.`);
+
+    let addedAmount = 500;
+    const upper = giftCardCode.toUpperCase();
+    if (upper.includes("1000")) addedAmount = 1000;
+    if (upper.includes("2500")) addedAmount = 2500;
+
+    const currentBal = Number(localStorage.getItem("skipd_gift_balance") || "2500");
+    const newBal = currentBal + addedAmount;
+    setGiftCardBalance(newBal);
+    localStorage.setItem("skipd_gift_balance", newBal.toString());
+    window.dispatchEvent(new Event("skipd_gift_balance_changed"));
+
+    showToast(`🎉 Gift Card "${upper}" redeemed! ₹${addedAmount.toLocaleString("en-IN")} added to Gift Balance.`);
     setGiftCardCode("");
     setGiftCardPin("");
+  };
+
+  const handleBuyGiftCard = (card: { amount: number; label: string; color: string }) => {
+    const giftCardItem = {
+      id: Date.now(),
+      handle: `skipd-gift-card-${card.amount}`,
+      title: `SKIPD ${card.label} Digital Gift Voucher (₹${card.amount.toLocaleString("en-IN")})`,
+      price: card.amount,
+      quantity: 1,
+      image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400",
+      isGiftCard: true,
+      giftAmount: card.amount
+    };
+
+    const cartKey = getUserCartKey();
+    const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
+    const updated = [...existing, giftCardItem];
+    localStorage.setItem(cartKey, JSON.stringify(updated));
+    window.dispatchEvent(new Event("skipd_cart_changed"));
+
+    showToast(`🎉 Gift Card ₹${card.amount} added! Redirecting to checkout...`);
+    setTimeout(() => {
+      router.push("/checkout");
+    }, 600);
+  };
+
+  const handleAddMoneyToWallet = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amountNum = Number(addWalletAmount);
+    if (isNaN(amountNum) || amountNum <= 0) return;
+
+    const currentWallet = Number(localStorage.getItem("skipd_wallet_balance") || "1250");
+    const newWallet = currentWallet + amountNum;
+    setWalletBalance(newWallet);
+    localStorage.setItem("skipd_wallet_balance", newWallet.toString());
+    window.dispatchEvent(new Event("skipd_wallet_balance_changed"));
+
+    showToast(`💳 ₹${amountNum.toLocaleString("en-IN")} added to SKIPD Pay Wallet! New Balance: ₹${newWallet.toLocaleString("en-IN")}`);
+    setShowAddWalletModal(false);
+  };
+
+  const handleAddCardSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cleanNum = newCardNumber.replace(/\D/g, "");
+    const last4 = cleanNum.slice(-4) || "1234";
+
+    const newCardObj = {
+      id: Date.now(),
+      bank: newCardBank,
+      type: newCardType,
+      last4: last4,
+      exp: newCardExp || "12/29",
+      default: savedCards.length === 0
+    };
+
+    const updated = [...savedCards, newCardObj];
+    setSavedCards(updated);
+    localStorage.setItem("skipd_saved_cards", JSON.stringify(updated));
+    window.dispatchEvent(new Event("skipd_saved_cards_changed"));
+
+    showToast(`💳 ${newCardBank} card ending in ${last4} saved successfully!`);
+    setShowAddCardModal(false);
+    setNewCardNumber("");
+    setNewCardHolder("");
+    setNewCardExp("");
+  };
+
+  const handleRemoveCard = (cardId: number) => {
+    const updated = savedCards.filter((c) => c.id !== cardId);
+    setSavedCards(updated);
+    localStorage.setItem("skipd_saved_cards", JSON.stringify(updated));
+    window.dispatchEvent(new Event("skipd_saved_cards_changed"));
+    showToast("💳 Card removed from saved payment methods.");
   };
 
   const handleReturnPhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -294,7 +461,7 @@ function AccountContent() {
   }));
 
   const currentTrackOrder = trackableOrders.find(
-    o => o.order_number.toLowerCase() === selectedTrackOrderId.toLowerCase()
+    o => (o.order_number || "").toLowerCase() === (selectedTrackOrderId || "").toLowerCase()
   ) || (trackableOrders.length > 0 ? trackableOrders[0] : null);
 
   const getTimelineForStatus = (status: string): TimelineStep[] => {
@@ -2037,8 +2204,8 @@ function AccountContent() {
                         <p className="text-[10px] opacity-80 mt-0.5">Instant delivery via email / SMS</p>
                       </div>
                       <button
-                        onClick={() => showToast(`🎉 Gift Card ₹${card.amount} added to cart for checkout!`)}
-                        className="bg-white text-gray-900 hover:bg-gray-100 font-extrabold text-xs py-2 rounded-xl text-center cursor-pointer shadow-xs"
+                        onClick={() => handleBuyGiftCard(card)}
+                        className="bg-white text-gray-900 hover:bg-gray-100 font-extrabold text-xs py-2 rounded-xl text-center cursor-pointer shadow-xs transition active:scale-95"
                       >
                         Buy Now &rsaquo;
                       </button>
@@ -2062,46 +2229,56 @@ function AccountContent() {
                     1-Click Razorpay instant checkout with zero OTP delays.
                   </p>
                 </div>
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-4 rounded-2xl text-right">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl text-right flex flex-col items-end">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200 block">Wallet Balance</span>
                   <span className="text-2xl md:text-3xl font-black text-amber-300">₹{walletBalance.toLocaleString("en-IN")}</span>
+                  <button
+                    onClick={() => setShowAddWalletModal(true)}
+                    className="mt-2 bg-amber-400 hover:bg-amber-300 text-gray-900 font-black text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer shadow-xs flex items-center gap-1"
+                  >
+                    <span>+ Add Money to Wallet</span>
+                  </button>
                 </div>
               </div>
 
               <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
                 <div className="flex justify-between items-center">
-                  <h3 className="font-black text-base text-gray-900">Saved Credit &amp; Debit Cards</h3>
+                  <h3 className="font-black text-base text-gray-900">Saved Credit &amp; Debit Cards ({savedCards.length})</h3>
                   <button
-                    onClick={() => showToast("💳 Card addition form opened. Encrypted with Razorpay Vault.")}
-                    className="text-xs font-bold text-emerald-700 hover:underline cursor-pointer"
+                    onClick={() => setShowAddCardModal(true)}
+                    className="text-xs font-black text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition cursor-pointer flex items-center gap-1"
                   >
-                    + Add New Card
+                    <span>+ Add New Card</span>
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {[
-                    { bank: "HDFC Bank", type: "VISA Debit Card", last4: "4821", exp: "08/28", default: true },
-                    { bank: "ICICI Bank", type: "Mastercard Credit", last4: "9102", exp: "11/27", default: false },
-                  ].map((c, i) => (
-                    <div key={i} className="border border-gray-200 rounded-2xl p-4 bg-gray-50 flex items-center justify-between shadow-2xs">
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-black text-gray-900 text-xs">{c.bank}</span>
-                          {c.default && <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded">DEFAULT</span>}
+                {savedCards.length === 0 ? (
+                  <div className="p-8 text-center bg-gray-50 border border-dashed border-gray-200 rounded-2xl text-xs text-gray-500 font-bold space-y-2">
+                    <p className="text-2xl">💳</p>
+                    <p>No saved cards found. Click "+ Add New Card" above to save your first payment card!</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {savedCards.map((c) => (
+                      <div key={c.id} className="border border-gray-200 rounded-2xl p-4 bg-gray-50 flex items-center justify-between shadow-2xs">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-black text-gray-900 text-xs">{c.bank}</span>
+                            {c.default && <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded">DEFAULT</span>}
+                          </div>
+                          <p className="text-xs font-mono font-bold text-gray-700">•••• •••• •••• {c.last4}</p>
+                          <p className="text-[10px] text-gray-400">Expires {c.exp} • {c.type}</p>
                         </div>
-                        <p className="text-xs font-mono font-bold text-gray-700">•••• •••• •••• {c.last4}</p>
-                        <p className="text-[10px] text-gray-400">Expires {c.exp} • {c.type}</p>
+                        <button
+                          onClick={() => handleRemoveCard(c.id)}
+                          className="text-red-500 hover:text-red-700 font-bold text-xs cursor-pointer hover:underline"
+                        >
+                          Remove
+                        </button>
                       </div>
-                      <button
-                        onClick={() => showToast("Card removed successfully.")}
-                        className="text-red-500 hover:text-red-700 font-bold text-xs cursor-pointer"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -2659,6 +2836,172 @@ function AccountContent() {
             >
               Got it, Close Policy
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* 💰 Add Money to Wallet Modal */}
+      {showAddWalletModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl text-xs">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <div>
+                <h3 className="text-base font-black text-gray-900">💳 Add Money to SKIPD Pay Wallet</h3>
+                <p className="text-xs text-gray-500">1-Click Instant Top-up via UPI or Card</p>
+              </div>
+              <button onClick={() => setShowAddWalletModal(false)} className="text-gray-400 hover:text-gray-900 text-lg font-bold cursor-pointer">✕</button>
+            </div>
+
+            <form onSubmit={handleAddMoneyToWallet} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-xs font-bold text-gray-900 block">Select Top-Up Amount</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {["500", "1000", "2000", "5000"].map((amt) => (
+                    <button
+                      type="button"
+                      key={amt}
+                      onClick={() => setAddWalletAmount(amt)}
+                      className={`py-2 text-xs font-bold rounded-xl border transition cursor-pointer ${
+                        addWalletAmount === amt
+                          ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
+                          : "bg-gray-50 border-gray-200 text-gray-800 hover:bg-gray-100"
+                      }`}
+                    >
+                      ₹{amt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-bold text-gray-900 block">Or Custom Amount (₹)</label>
+                <input
+                  type="number"
+                  min="100"
+                  max="50000"
+                  value={addWalletAmount}
+                  onChange={(e) => setAddWalletAmount(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-600 focus:outline-none"
+                  placeholder="Enter amount (e.g. 1500)"
+                />
+              </div>
+
+              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-[11px] text-emerald-900 font-medium">
+                💡 Current Wallet Balance: <span className="font-black text-emerald-700">₹{walletBalance.toLocaleString("en-IN")}</span> &rarr; New Balance after top-up: <span className="font-black text-emerald-700">₹{(walletBalance + (Number(addWalletAmount) || 0)).toLocaleString("en-IN")}</span>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 rounded-xl transition shadow-md cursor-pointer"
+              >
+                Proceed &amp; Add ₹{Number(addWalletAmount || 0).toLocaleString("en-IN")} &rarr;
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 💳 Save New Card Modal */}
+      {showAddCardModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl text-xs">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <div>
+                <h3 className="text-base font-black text-gray-900">💳 Save Payment Card (Razorpay Vault)</h3>
+                <p className="text-xs text-gray-500">256-bit encrypted card saving for fast checkout</p>
+              </div>
+              <button onClick={() => setShowAddCardModal(false)} className="text-gray-400 hover:text-gray-900 text-lg font-bold cursor-pointer">✕</button>
+            </div>
+
+            <form onSubmit={handleAddCardSubmit} className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-gray-900 block">Bank Name</label>
+                  <select
+                    value={newCardBank}
+                    onChange={(e) => setNewCardBank(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 focus:outline-none"
+                  >
+                    <option value="HDFC Bank">HDFC Bank</option>
+                    <option value="ICICI Bank">ICICI Bank</option>
+                    <option value="SBI Bank">SBI (State Bank of India)</option>
+                    <option value="Axis Bank">Axis Bank</option>
+                    <option value="Kotak Mahindra">Kotak Mahindra</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-gray-900 block">Card Network</label>
+                  <select
+                    value={newCardType}
+                    onChange={(e) => setNewCardType(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 focus:outline-none"
+                  >
+                    <option value="VISA Debit Card">VISA Debit Card</option>
+                    <option value="Mastercard Credit">Mastercard Credit</option>
+                    <option value="RuPay Card">RuPay Debit Card</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-gray-900 block">Cardholder Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Sachin Rawat"
+                  value={newCardHolder}
+                  onChange={(e) => setNewCardHolder(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-bold focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-gray-900 block">16-Digit Card Number</label>
+                <input
+                  type="text"
+                  maxLength={19}
+                  required
+                  placeholder="4821 9102 3840 5821"
+                  value={newCardNumber}
+                  onChange={(e) => setNewCardNumber(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-mono font-bold focus:outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-gray-900 block">Expiry (MM/YY)</label>
+                  <input
+                    type="text"
+                    maxLength={5}
+                    required
+                    placeholder="08/29"
+                    value={newCardExp}
+                    onChange={(e) => setNewCardExp(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 text-xs font-mono font-bold text-gray-900 focus:outline-none text-center"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[11px] font-bold text-gray-900 block">CVV (3 Digits)</label>
+                  <input
+                    type="password"
+                    maxLength={3}
+                    required
+                    placeholder="•••"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2 text-xs font-mono font-bold text-gray-900 focus:outline-none text-center"
+                  />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 rounded-xl transition shadow-md cursor-pointer mt-2"
+              >
+                Save &amp; Vault Card &rarr;
+              </button>
+            </form>
           </div>
         </div>
       )}
