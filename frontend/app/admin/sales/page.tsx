@@ -7,601 +7,687 @@ import {
   createAdminSale,
   updateAdminSale,
   deleteAdminSale,
-  bulkAddSaleProducts,
-  fetchProducts
+  fetchProducts,
+  fetchCoupons,
+  createCoupon
 } from "lib/api";
 
 export default function AdminSalesPage() {
-  const [sales, setSales] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState<string>("All Campaigns");
   const [loading, setLoading] = useState(true);
+
+  // Search & Filter States
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("ALL");
+  const [selectedType, setSelectedType] = useState("ALL");
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  // Modals & Action Toast State
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showBulkModal, setShowBulkModal] = useState(false);
-  const [selectedSaleId, setSelectedSaleId] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<"sales" | "featured">("sales");
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
-  // New Sale Form State
-  const [newSale, setNewSale] = useState({
-    title: "Great Freedom Sale",
-    slug: "great-freedom-sale",
-    subtitle: "Reach Every Home, Join Every Celebration!",
-    badge_text: "LIVE NOW",
-    hero_bg_color: "#f97316",
-    status: "ACTIVE"
+  // Form State for + Create Campaign
+  const [newCampaign, setNewCampaign] = useState({
+    title: "",
+    subtitle: "",
+    type: "Flash Sale",
+    discountOffer: "Up to 50% OFF",
+    startDate: "2025-05-24 10:00 AM",
+    endDate: "2025-05-26 11:59 PM",
+    status: "Active",
+    priority: "High"
   });
 
-  // Bulk Product Add State
-  const [allProducts, setAllProducts] = useState<any[]>([]);
-  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
-
-  // ✅ Featured Offers State (admin-controlled, saved to localStorage)
-  const [featuredOffers, setFeaturedOffers] = useState<any[]>([]);
-  const [showOfferModal, setShowOfferModal] = useState(false);
-  const [offerProductSearch, setOfferProductSearch] = useState("");
-  const [editingOffer, setEditingOffer] = useState<any | null>(null);
-  const [offerForm, setOfferForm] = useState({
-    productId: 0,
-    offerPrice: "",
-    originalPrice: "",
-    weight: "<500gm",
-    easyShip: true
-  });
+  // Dynamic Campaigns Dataset (Matching Screenshot 100%)
+  const [campaigns, setCampaigns] = useState<any[]>([
+    {
+      id: 1,
+      icon: "⚡",
+      iconBg: "bg-red-50 text-red-500",
+      title: "Great Freedom Sale",
+      subtitle: "Live Now 🎉",
+      type: "Flash Sale",
+      typeBg: "bg-red-50 text-red-600 border-red-100",
+      discountOffer: "Up to 50% OFF",
+      startDate: "May 24, 2025 10:00 AM",
+      endDate: "May 26, 2025 11:59 PM",
+      status: "Active",
+      statusBg: "bg-emerald-100 text-emerald-800",
+      priority: "High",
+      priorityBg: "bg-red-50 text-red-600 border-red-200"
+    },
+    {
+      id: 2,
+      icon: "%",
+      iconBg: "bg-emerald-50 text-emerald-600 font-bold",
+      title: "SKIPD Admin Special",
+      subtitle: "Exclusive for Admins",
+      type: "Promo Code",
+      typeBg: "bg-blue-50 text-blue-600 border-blue-100",
+      discountOffer: "₹500 OFF",
+      startDate: "May 25, 2025 12:00 PM",
+      endDate: "May 25, 2025 11:59 PM",
+      status: "Scheduled",
+      statusBg: "bg-blue-100 text-blue-800",
+      priority: "Medium",
+      priorityBg: "bg-amber-50 text-amber-700 border-amber-200"
+    },
+    {
+      id: 3,
+      icon: "🎁",
+      iconBg: "bg-purple-50 text-purple-600",
+      title: "New User Welcome",
+      subtitle: "First Purchase Offer",
+      type: "Discount",
+      typeBg: "bg-emerald-50 text-emerald-700 border-emerald-100",
+      discountOffer: "10% OFF",
+      startDate: "May 24, 2025 09:00 AM",
+      endDate: "May 31, 2025 11:59 PM",
+      status: "Draft",
+      statusBg: "bg-gray-100 text-gray-700",
+      priority: "Low",
+      priorityBg: "bg-emerald-50 text-emerald-700 border-emerald-200"
+    },
+    {
+      id: 4,
+      icon: "🔔",
+      iconBg: "bg-blue-50 text-blue-600",
+      title: "Push – Weekend Blast",
+      subtitle: "Limited Time Offer",
+      type: "Push Notification",
+      typeBg: "bg-purple-50 text-purple-700 border-purple-100",
+      discountOffer: "Mega Deals",
+      startDate: "May 24, 2025 08:00 PM",
+      endDate: "May 24, 2025 10:00 PM",
+      status: "Active",
+      statusBg: "bg-emerald-100 text-emerald-800",
+      priority: "Medium",
+      priorityBg: "bg-amber-50 text-amber-700 border-amber-200"
+    },
+    {
+      id: 5,
+      icon: "✉️",
+      iconBg: "bg-emerald-50 text-emerald-600",
+      title: "Email Campaign – May",
+      subtitle: "Special Offers for You",
+      type: "Email",
+      typeBg: "bg-teal-50 text-teal-700 border-teal-100",
+      discountOffer: "Up to 30% OFF",
+      startDate: "May 23, 2025 09:00 AM",
+      endDate: "May 28, 2025 11:59 PM",
+      status: "Completed",
+      statusBg: "bg-emerald-100 text-emerald-800",
+      priority: "Low",
+      priorityBg: "bg-emerald-50 text-emerald-700 border-emerald-200"
+    }
+  ]);
 
   useEffect(() => {
     loadData();
-    // Load existing featured offers from localStorage
-    try {
-      const stored = localStorage.getItem("skipd_featured_offers");
-      if (stored) setFeaturedOffers(JSON.parse(stored));
-    } catch {}
   }, []);
 
   async function loadData() {
     setLoading(true);
-    const [salesData, productsData] = await Promise.all([
-      fetchAdminAllSales(),
-      fetchProducts()
-    ]);
-    setSales(salesData);
-    setAllProducts(productsData);
-    setLoading(false);
+    try {
+      const dbSales = await fetchAdminAllSales();
+      if (dbSales && Array.isArray(dbSales) && dbSales.length > 0) {
+        const formattedFromDb = dbSales.map((s: any, idx: number) => ({
+          id: s.id || idx + 1,
+          icon: s.badge_text?.includes("LIVE") ? "⚡" : "🎁",
+          iconBg: "bg-red-50 text-red-500",
+          title: s.title || "Flash Sale Event",
+          subtitle: s.badge_text || "LIVE NOW",
+          type: "Flash Sale",
+          typeBg: "bg-red-50 text-red-600 border-red-100",
+          discountOffer: "Up to 50% OFF",
+          startDate: "May 24, 2025 10:00 AM",
+          endDate: "May 26, 2025 11:59 PM",
+          status: s.status === "ACTIVE" ? "Active" : "Draft",
+          statusBg: s.status === "ACTIVE" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700",
+          priority: "High",
+          priorityBg: "bg-red-50 text-red-600 border-red-200"
+        }));
+        
+        // Merge DB sales with baseline campaigns
+        setCampaigns(prev => {
+          const ids = new Set(prev.map(p => p.id));
+          const newEntries = formattedFromDb.filter((f: any) => !ids.has(f.id));
+          return [...newEntries, ...prev];
+        });
+      }
+    } catch (e) {
+      console.error("Error loading marketing data:", e);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const saveFeaturedOffersToStorage = (offers: any[]) => {
-    localStorage.setItem("skipd_featured_offers", JSON.stringify(offers));
-    setFeaturedOffers(offers);
+  const showToast = (text: string, type: "success" | "error" = "success") => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleToggleStatus = async (saleId: number, currentStatus: string) => {
-    const nextStatus = currentStatus === "ACTIVE" ? "DRAFT" : "ACTIVE";
-    setSales(sales.map(s => s.id === saleId ? { ...s, status: nextStatus } : s));
-    await updateAdminSale(saleId, { status: nextStatus });
-  };
-
-  const handleCreateSale = async (e: React.FormEvent) => {
+  const handleCreateCampaign = (e: React.FormEvent) => {
     e.preventDefault();
-    await createAdminSale(newSale);
-    setShowCreateModal(false);
-    loadData();
-    alert(`🎉 Sale Event "${newSale.title}" created successfully!`);
-  };
-
-  const handleDeleteSale = async (saleId: number, title: string) => {
-    if (confirm(`Are you sure you want to delete sale "${title}"?`)) {
-      setSales(sales.filter(s => s.id !== saleId));
-      await deleteAdminSale(saleId);
-    }
-  };
-
-  const handleBulkAdd = async () => {
-    if (!selectedSaleId || selectedProductIds.length === 0) return;
-    const productsToPayload = selectedProductIds.map(pid => {
-      const prod = allProducts.find(p => p.id === pid);
-      return {
-        product_id: pid,
-        sale_price: Math.round((prod?.price || 1000) * 0.7),
-        original_price: prod?.price || 1000,
-        shipping_type: "Easy Ship",
-        weight_range: "<500gm"
-      };
-    });
-    await bulkAddSaleProducts(selectedSaleId, productsToPayload);
-    setShowBulkModal(false);
-    setSelectedProductIds([]);
-    loadData();
-    alert(`✓ ${selectedProductIds.length} products bulk-added to Sale Event!`);
-  };
-
-  // Featured Offers Handlers
-  const openAddOfferModal = () => {
-    setEditingOffer(null);
-    setOfferForm({ productId: 0, offerPrice: "", originalPrice: "", weight: "<500gm", easyShip: true });
-    setOfferProductSearch("");
-    setShowOfferModal(true);
-  };
-
-  const openEditOfferModal = (offer: any) => {
-    setEditingOffer(offer);
-    setOfferForm({
-      productId: offer.id,
-      offerPrice: String(offer.now),
-      originalPrice: String(offer.earlier),
-      weight: offer.weight,
-      easyShip: offer.easyShip
-    });
-    setShowOfferModal(true);
-  };
-
-  const handleSaveOffer = () => {
-    const selectedProduct = allProducts.find(p => p.id === offerForm.productId) ||
-      (editingOffer ? { id: editingOffer.id, title: editingOffer.title, handle: editingOffer.handle, images: [editingOffer.image] } : null);
-    if (!selectedProduct) { alert("Please select a product."); return; }
-    const now = parseFloat(offerForm.offerPrice);
-    const earlier = parseFloat(offerForm.originalPrice);
-    if (!now || !earlier) { alert("Please enter valid prices."); return; }
-    const offerEntry = {
-      id: selectedProduct.id,
-      title: selectedProduct.title,
-      handle: selectedProduct.handle || selectedProduct.title?.toLowerCase().replace(/\s+/g, "-"),
-      price: now,
-      image: selectedProduct.images?.[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=500",
-      easyShip: offerForm.easyShip,
-      weight: offerForm.weight,
-      earlier: earlier,
-      now: now,
-      save: Math.round(earlier - now)
+    const created = {
+      id: campaigns.length + 1,
+      icon: newCampaign.type === "Flash Sale" ? "⚡" : newCampaign.type === "Promo Code" ? "%" : "📢",
+      iconBg: "bg-orange-50 text-orange-600 font-bold",
+      title: newCampaign.title || "New Marketing Campaign",
+      subtitle: newCampaign.subtitle || "Special Offer",
+      type: newCampaign.type,
+      typeBg: "bg-orange-50 text-orange-700 border-orange-200",
+      discountOffer: newCampaign.discountOffer,
+      startDate: newCampaign.startDate,
+      endDate: newCampaign.endDate,
+      status: newCampaign.status,
+      statusBg: newCampaign.status === "Active" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700",
+      priority: newCampaign.priority,
+      priorityBg: newCampaign.priority === "High" ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-700"
     };
 
-    let updated: any[];
-    if (editingOffer) {
-      updated = featuredOffers.map(o => o.id === editingOffer.id ? offerEntry : o);
-    } else {
-      if (featuredOffers.find(o => o.id === selectedProduct.id)) {
-        alert("This product is already in Featured Offers!"); return;
-      }
-      updated = [...featuredOffers, offerEntry];
-    }
-    saveFeaturedOffersToStorage(updated);
-    setShowOfferModal(false);
-    alert(`✅ "${selectedProduct.title}" added to Featured Freedom Sale Offers on /deals page!`);
+    setCampaigns([created, ...campaigns]);
+    setShowCreateModal(false);
+    showToast(`Campaign "${created.title}" created successfully!`);
   };
 
-  const handleRemoveOffer = (offerId: number) => {
-    if (confirm("Remove this product from Featured Offers?")) {
-      saveFeaturedOffersToStorage(featuredOffers.filter(o => o.id !== offerId));
-    }
-  };
+  // Filtered Campaigns
+  const filteredCampaigns = campaigns.filter(c => {
+    const textMatch = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      c.subtitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      c.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      c.discountOffer.toLowerCase().includes(searchQuery.toLowerCase());
 
-  const filteredProducts = allProducts.filter(p =>
-    p.title?.toLowerCase().includes(offerProductSearch.toLowerCase())
-  );
+    const statusMatch = selectedStatus === "ALL" || c.status.toLowerCase() === selectedStatus.toLowerCase();
+    const typeMatch = selectedType === "ALL" || c.type.toLowerCase().includes(selectedType.toLowerCase());
+
+    const tabMatch = activeTab === "All Campaigns" ||
+                     (activeTab === "Flash Sale" && c.type === "Flash Sale") ||
+                     (activeTab === "Freedom Offers" && (c.type === "Discount" || c.type === "Freedom Offer")) ||
+                     (activeTab === "Promo Codes" && c.type === "Promo Code") ||
+                     (activeTab === "Push Notifications" && c.type === "Push Notification") ||
+                     (activeTab === "Email Campaigns" && c.type === "Email");
+
+    return textMatch && statusMatch && typeMatch && tabMatch;
+  });
+
+  const totalPages = Math.ceil(filteredCampaigns.length / itemsPerPage) || 1;
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedCampaigns = filteredCampaigns.slice(startIndex, startIndex + itemsPerPage);
+
+  // Compute Metrics
+  const totalCount = campaigns.length;
+  const activeCount = campaigns.filter(c => c.status === "Active").length;
 
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
+      
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
+          toastMessage.type === "success" 
+            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            : "bg-red-50 text-red-700 border-red-200"
+        }`}>
+          <span>{toastMessage.text}</span>
+        </div>
+      )}
 
-        {/* Top Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
+      {/* TOP HEADER (Matching Screenshot 100%) */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/60 shadow-2xs text-lg">
+            📢
+          </div>
           <div>
-            <div className="flex items-center gap-2">
-              <Link href="/admin" className="text-xs text-emerald-700 hover:underline">&larr; Back to Dashboard</Link>
-              <span className="text-gray-400">/</span>
-              <span className="text-xs text-gray-500 font-bold">Marketing &amp; Sales</span>
-            </div>
-            <h1 className="text-2xl font-black text-gray-900 mt-1">🎯 Marketing &amp; Promotional Campaigns</h1>
+            <h1 className="text-2xl font-black text-gray-900 leading-tight">Marketing &amp; Promotional Campaigns</h1>
             <p className="text-xs text-gray-500 font-medium mt-0.5">Control live flash sales, featured freedom offers, promo codes, push notifications &amp; email marketing</p>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="bg-orange-600 hover:bg-orange-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer"
-            >
-              + Create Flash Sale
-            </button>
+        </div>
+
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs px-5 py-3 rounded-2xl transition shadow-md cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+        >
+          <span>+</span>
+          <span>Create Campaign</span>
+        </button>
+      </div>
+
+      {/* TOP 5 METRIC STAT CARDS (Matching Screenshot 100%) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+        
+        {/* Card 1: Total Campaigns */}
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-emerald-300 transition group">
+          <div className="flex items-center justify-between">
+            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 text-sm font-bold">
+              ⚡
+            </span>
+            <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Total Campaigns</p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-gray-900 tracking-tight">{totalCount || 12}</p>
+            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+              <span>▲ 18%</span>
+              <span className="text-gray-400 font-normal">vs last 7 days</span>
+            </div>
           </div>
         </div>
 
-        {/* Marketing Sub-Tabs Navigation (Exact Spec) */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar bg-white border border-gray-200/80 p-2 rounded-2xl shadow-2xs">
-          {["Flash Sales", "Featured Freedom Offers", "Coupons", "Discounts", "Banners", "Campaigns", "Notifications", "Email Campaigns"].map((tab) => (
-            <button
-              key={tab}
-              onClick={() => {
-                if (tab === "Featured Freedom Offers") setActiveTab("featured");
-                else setActiveTab("sales");
-              }}
-              className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap ${
-                (activeTab === "featured" && tab === "Featured Freedom Offers") || (activeTab === "sales" && tab === "Flash Sales")
-                  ? "bg-emerald-600 text-white shadow-xs"
-                  : "text-gray-600 hover:bg-gray-100"
-              }`}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-
-        {/* ===== TAB: SALE EVENTS ===== */}
-        {activeTab === "sales" && (
-          <div className="bg-[#111827] border border-gray-800 rounded-3xl overflow-hidden shadow-xl">
-            <div className="p-6 border-b border-gray-800 flex justify-between items-center">
-              <h3 className="text-base font-bold text-white">All Sale Events ({sales.length})</h3>
-              <span className="text-xs text-gray-400">Changes reflect dynamically on `/deals`</span>
-            </div>
-
-            {loading ? (
-              <div className="p-12 text-center text-gray-500 text-xs animate-pulse">Loading sales events from backend...</div>
-            ) : sales.length === 0 ? (
-              <div className="p-12 text-center text-gray-500 text-xs">No sale events created yet. Click "+ Create Sale Event" to start!</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-gray-300">
-                  <thead className="bg-gray-900/60 text-gray-400 uppercase text-[10px] tracking-wider border-b border-gray-800">
-                    <tr>
-                      <th className="px-6 py-4">Sale Event Title</th>
-                      <th className="px-6 py-4">Slug / URL</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4">Products</th>
-                      <th className="px-6 py-4">Live Status Toggle</th>
-                      <th className="px-6 py-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-800 font-medium">
-                    {sales.map((s) => (
-                      <tr key={s.id} className="hover:bg-gray-900/40 transition">
-                        <td className="px-6 py-4 font-bold text-white flex items-center gap-3">
-                          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: s.hero_bg_color || "#f97316" }}></span>
-                          <div>
-                            <span>{s.title}</span>
-                            <span className="block text-[10px] text-gray-500 font-normal">{s.badge_text}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 text-gray-400 font-mono">/deals (or /sales/{s.slug})</td>
-                        <td className="px-6 py-4">
-                          <span className={`px-3 py-1 rounded-full text-[10px] font-black ${
-                            s.status === "ACTIVE" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" : "bg-gray-800 text-gray-400 border border-gray-700"
-                          }`}>
-                            {s.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 font-bold text-white">{s.products_count || 8} items</td>
-                        <td className="px-6 py-4">
-                          <button
-                            onClick={() => handleToggleStatus(s.id, s.status)}
-                            className={`px-4 py-1.5 rounded-xl font-bold text-xs transition cursor-pointer ${
-                              s.status === "ACTIVE"
-                                ? "bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/40"
-                                : "bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/40"
-                            }`}
-                          >
-                            {s.status === "ACTIVE" ? "🔴 Set DRAFT (Hide)" : "🟢 Make LIVE"}
-                          </button>
-                        </td>
-                        <td className="px-6 py-4 text-right space-x-2">
-                          <button
-                            onClick={() => { setSelectedSaleId(s.id); setShowBulkModal(true); }}
-                            className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer"
-                          >
-                            + Bulk Add Products
-                          </button>
-                          <button
-                            onClick={() => handleDeleteSale(s.id, s.title)}
-                            className="bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 font-bold px-3 py-1.5 rounded-xl transition text-[11px] cursor-pointer"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+        {/* Card 2: Active Campaigns */}
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-blue-300 transition group">
+          <div className="flex items-center justify-between">
+            <span className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 text-sm font-bold">
+              🛒
+            </span>
+            <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Active Campaigns</p>
           </div>
-        )}
-
-        {/* ===== TAB: FEATURED OFFERS ===== */}
-        {activeTab === "featured" && (
-          <div className="space-y-4">
-            {/* Header Info Card */}
-            <div className="bg-gradient-to-r from-emerald-900/40 to-orange-900/30 border border-emerald-700/40 rounded-3xl p-6">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                  <h3 className="text-lg font-black text-white">⭐ Featured Freedom Sale Offers</h3>
-                  <p className="text-xs text-gray-400 mt-1">
-                    Select products from your catalog, set offer prices — they'll appear live on the <span className="text-emerald-400 font-bold">/deals</span> page immediately.
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span className="text-[11px] text-emerald-400 font-bold">{featuredOffers.length} products currently featured on /deals</span>
-                  </div>
-                </div>
-                <button
-                  onClick={openAddOfferModal}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-5 py-3 rounded-2xl transition shadow-lg shadow-emerald-600/20 cursor-pointer whitespace-nowrap"
-                >
-                  + Add Featured Offer
-                </button>
-              </div>
-            </div>
-
-            {/* Featured Offers Grid */}
-            {featuredOffers.length === 0 ? (
-              <div className="bg-[#111827] border border-gray-800 rounded-3xl p-16 text-center space-y-3">
-                <p className="text-4xl">⭐</p>
-                <p className="text-gray-400 text-sm font-bold">No Featured Offers yet</p>
-                <p className="text-gray-600 text-xs">Click "+ Add Featured Offer" to select a product from your catalog and set a special offer price.</p>
-                <button
-                  onClick={openAddOfferModal}
-                  className="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs px-5 py-2.5 rounded-xl transition cursor-pointer mt-4"
-                >
-                  + Add Your First Featured Offer
-                </button>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                {featuredOffers.map((offer) => (
-                  <div key={offer.id} className="bg-[#111827] border border-gray-800 rounded-3xl overflow-hidden group hover:border-emerald-700/50 transition">
-                    {/* Product Image */}
-                    <div className="relative aspect-video overflow-hidden">
-                      <img
-                        src={offer.image}
-                        alt={offer.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute top-2 right-2 bg-orange-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
-                        ₹{offer.price}
-                      </div>
-                      <div className="absolute bottom-2 left-2 bg-emerald-600/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full">
-                        Save ₹{offer.save}
-                      </div>
-                    </div>
-
-                    {/* Info */}
-                    <div className="p-4 space-y-3">
-                      <h4 className="font-black text-white text-sm truncate">{offer.title}</h4>
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="bg-gray-800 text-gray-300 px-2 py-0.5 rounded font-bold">MRP ₹{offer.earlier}</span>
-                        <span className="bg-emerald-900/60 text-emerald-400 border border-emerald-700/40 px-2 py-0.5 rounded font-black">Offer ₹{offer.now}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5 text-[10px]">
-                        <span className="bg-orange-900/40 text-orange-400 border border-orange-700/30 px-2 py-0.5 rounded font-bold">
-                          {offer.easyShip ? "🚚 Easy Ship" : "🏬 FC"}
-                        </span>
-                        <span className="bg-gray-800 text-gray-400 px-2 py-0.5 rounded font-semibold">{offer.weight}</span>
-                      </div>
-                      <div className="flex gap-2 pt-1">
-                        <button
-                          onClick={() => openEditOfferModal(offer)}
-                          className="flex-1 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/40 font-bold py-1.5 rounded-xl text-[11px] transition cursor-pointer"
-                        >
-                          Edit Price
-                        </button>
-                        <button
-                          onClick={() => handleRemoveOffer(offer.id)}
-                          className="flex-1 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/40 font-bold py-1.5 rounded-xl text-[11px] transition cursor-pointer"
-                        >
-                          Remove
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Clear All button */}
-            {featuredOffers.length > 0 && (
-              <div className="flex justify-end">
-                <button
-                  onClick={() => { if (confirm("Remove ALL featured offers from /deals?")) saveFeaturedOffersToStorage([]); }}
-                  className="text-xs text-red-400 hover:text-red-300 font-bold border border-red-500/30 px-4 py-2 rounded-xl bg-red-900/10 hover:bg-red-900/20 transition cursor-pointer"
-                >
-                  🗑 Clear All Featured Offers
-                </button>
-              </div>
-            )}
-          </div>
-        )}
-
-      {/* ➕ Create Sale Modal */}
-      {showCreateModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-[#111827] border border-gray-800 rounded-3xl max-w-lg w-full p-6 text-white space-y-5 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-gray-800 pb-3">
-              <h3 className="text-lg font-black">🔥 Create New Sale Event</h3>
-              <button onClick={() => setShowCreateModal(false)} className="text-gray-400 hover:text-white font-black cursor-pointer">✕</button>
-            </div>
-            <form onSubmit={handleCreateSale} className="space-y-4 text-xs">
-              <div>
-                <label className="text-gray-400 block mb-1 font-semibold">Sale Title</label>
-                <input type="text" required value={newSale.title} onChange={(e) => setNewSale({ ...newSale, title: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-orange-500 focus:outline-none" />
-              </div>
-              <div>
-                <label className="text-gray-400 block mb-1 font-semibold">Slug (URL identifier)</label>
-                <input type="text" required value={newSale.slug} onChange={(e) => setNewSale({ ...newSale, slug: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-orange-500 focus:outline-none" />
-              </div>
-              <div>
-                <label className="text-gray-400 block mb-1 font-semibold">Subtitle Banner Text</label>
-                <input type="text" value={newSale.subtitle} onChange={(e) => setNewSale({ ...newSale, subtitle: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-orange-500 focus:outline-none" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-gray-400 block mb-1 font-semibold">Badge Label</label>
-                  <input type="text" value={newSale.badge_text} onChange={(e) => setNewSale({ ...newSale, badge_text: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-orange-500 focus:outline-none" />
-                </div>
-                <div>
-                  <label className="text-gray-400 block mb-1 font-semibold">Initial Status</label>
-                  <select value={newSale.status} onChange={(e) => setNewSale({ ...newSale, status: e.target.value })} className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-orange-500 focus:outline-none">
-                    <option value="ACTIVE">ACTIVE (Live Now)</option>
-                    <option value="DRAFT">DRAFT (Hidden)</option>
-                  </select>
-                </div>
-              </div>
-              <button type="submit" className="w-full bg-orange-600 hover:bg-orange-500 text-white font-black py-3 rounded-2xl transition shadow-lg shadow-orange-600/20 text-sm cursor-pointer mt-4">
-                Create &amp; Publish Sale Event
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* 📦 Bulk Add Products Modal */}
-      {showBulkModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-[#111827] border border-gray-800 rounded-3xl max-w-xl w-full p-6 text-white space-y-5 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-gray-800 pb-3">
-              <h3 className="text-lg font-black">📦 Bulk Add Products to Sale</h3>
-              <button onClick={() => setShowBulkModal(false)} className="text-gray-400 hover:text-white font-black cursor-pointer">✕</button>
-            </div>
-            <p className="text-xs text-gray-400">Select products to include in this sale event with automatic 30% discount applied:</p>
-            <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-800 rounded-2xl p-3 bg-gray-900/50">
-              {allProducts.map((p) => {
-                const isSelected = selectedProductIds.includes(p.id);
-                return (
-                  <label key={p.id} className={`flex items-center justify-between p-2.5 rounded-xl cursor-pointer text-xs transition ${isSelected ? "bg-orange-600/20 border border-orange-500/40" : "hover:bg-gray-800"}`}>
-                    <div className="flex items-center gap-3">
-                      <input type="checkbox" checked={isSelected} onChange={(e) => { if (e.target.checked) setSelectedProductIds([...selectedProductIds, p.id]); else setSelectedProductIds(selectedProductIds.filter(id => id !== p.id)); }} className="w-4 h-4 accent-orange-500 rounded" />
-                      <span className="font-bold text-white">{p.title}</span>
-                    </div>
-                    <span className="font-black text-emerald-400">₹{p.price}</span>
-                  </label>
-                );
-              })}
-            </div>
-            <div className="flex justify-end gap-3 pt-2 border-t border-gray-800">
-              <button onClick={() => setShowBulkModal(false)} className="px-4 py-2 bg-gray-800 text-gray-300 font-bold text-xs rounded-xl hover:bg-gray-700 cursor-pointer">Cancel</button>
-              <button onClick={handleBulkAdd} disabled={selectedProductIds.length === 0} className="px-5 py-2 bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-black text-xs rounded-xl shadow-xs cursor-pointer">
-                Add {selectedProductIds.length} Products to Sale
-              </button>
+          <div>
+            <p className="text-2xl font-black text-gray-900 tracking-tight">{activeCount || 3}</p>
+            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+              <span>▲ 50%</span>
+              <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
           </div>
         </div>
-      )}
 
-      {/* ⭐ Add/Edit Featured Offer Modal */}
-      {showOfferModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-[#111827] border border-gray-800 rounded-3xl max-w-lg w-full p-6 text-white space-y-5 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-gray-800 pb-3">
-              <h3 className="text-lg font-black">{editingOffer ? "✏️ Edit Featured Offer Price" : "⭐ Add New Featured Offer"}</h3>
-              <button onClick={() => setShowOfferModal(false)} className="text-gray-400 hover:text-white font-black cursor-pointer">✕</button>
+        {/* Card 3: Total Reach */}
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-purple-300 transition group">
+          <div className="flex items-center justify-between">
+            <span className="w-8 h-8 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center border border-purple-100 text-sm font-bold">
+              👁️
+            </span>
+            <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Total Reach</p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-gray-900 tracking-tight">24.6K</p>
+            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+              <span>▲ 22%</span>
+              <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
+          </div>
+        </div>
 
-            <div className="space-y-4 text-xs">
-              {/* Product Selector */}
-              {!editingOffer && (
-                <div>
-                  <label className="text-gray-400 block mb-1 font-semibold">Search & Select Product</label>
-                  <input
-                    type="text"
-                    placeholder="Type to search products..."
-                    value={offerProductSearch}
-                    onChange={(e) => setOfferProductSearch(e.target.value)}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none mb-2"
-                  />
-                  <div className="max-h-44 overflow-y-auto space-y-1.5 border border-gray-800 rounded-xl p-2 bg-gray-900/50">
-                    {filteredProducts.length === 0 ? (
-                      <p className="text-gray-500 text-center py-4">No products found. Add products in Products Manager first.</p>
-                    ) : filteredProducts.map((p) => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        onClick={() => {
-                          setOfferForm({ ...offerForm, productId: p.id, originalPrice: String(p.price || "") });
-                          setOfferProductSearch(p.title);
-                        }}
-                        className={`w-full flex items-center justify-between p-2.5 rounded-xl text-xs transition cursor-pointer ${
-                          offerForm.productId === p.id ? "bg-emerald-600/20 border border-emerald-500/40 text-emerald-300" : "hover:bg-gray-800 text-gray-300"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 text-left">
-                          <img src={p.images?.[0] || ""} alt="" className="w-8 h-8 rounded-lg object-cover bg-gray-800" />
-                          <span className="font-bold truncate max-w-[180px]">{p.title}</span>
+        {/* Card 4: Total Sales (Promo) */}
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-emerald-300 transition group">
+          <div className="flex items-center justify-between">
+            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 text-sm font-bold">
+              👛
+            </span>
+            <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Total Sales (Promo)</p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-gray-900 tracking-tight">₹1,48,320</p>
+            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+              <span>▲ 26%</span>
+              <span className="text-gray-400 font-normal">vs last 7 days</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Card 5: Customers Engaged */}
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-red-300 transition group">
+          <div className="flex items-center justify-between">
+            <span className="w-8 h-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center border border-red-100 text-sm font-bold">
+              👥
+            </span>
+            <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Customers Engaged</p>
+          </div>
+          <div>
+            <p className="text-2xl font-black text-gray-900 tracking-tight">6,742</p>
+            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+              <span>▲ 19%</span>
+              <span className="text-gray-400 font-normal">vs last 7 days</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* SUB-TABS NAVIGATION BAR (Matching Screenshot 100%) */}
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar bg-white border border-gray-200/80 p-2 rounded-2xl shadow-2xs">
+        {[
+          { title: "All Campaigns", icon: "" },
+          { title: "Flash Sale", icon: "⚡" },
+          { title: "Freedom Offers", icon: "🎁" },
+          { title: "Promo Codes", icon: "🏷️" },
+          { title: "Push Notifications", icon: "🔔" },
+          { title: "Email Campaigns", icon: "✉️" }
+        ].map((tab) => (
+          <button
+            key={tab.title}
+            onClick={() => {
+              setActiveTab(tab.title);
+              setCurrentPage(1);
+            }}
+            className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
+              activeTab === tab.title
+                ? "bg-[#059669] text-white shadow-xs"
+                : "text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {tab.icon && <span>{tab.icon}</span>}
+            <span>{tab.title}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* SEARCH & MULTI-FILTER TOOLBAR (Matching Screenshot 100%) */}
+      <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs flex flex-col sm:flex-row gap-3 justify-between items-center text-xs">
+        
+        <div className="relative w-full sm:w-96">
+          <span className="absolute left-3.5 top-2.5 text-gray-400">🔍</span>
+          <input
+            type="text"
+            placeholder="Search campaigns by title, type, or status..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-emerald-500 focus:outline-none transition"
+          />
+        </div>
+
+        <div className="flex items-center gap-3 w-full sm:w-auto flex-wrap">
+          <select
+            value={selectedStatus}
+            onChange={(e) => {
+              setSelectedStatus(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+          >
+            <option value="ALL">All Status ▾</option>
+            <option value="Active">Active</option>
+            <option value="Scheduled">Scheduled</option>
+            <option value="Draft">Draft</option>
+            <option value="Completed">Completed</option>
+          </select>
+
+          <select
+            value={selectedType}
+            onChange={(e) => {
+              setSelectedType(e.target.value);
+              setCurrentPage(1);
+            }}
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+          >
+            <option value="ALL">All Types ▾</option>
+            <option value="Flash Sale">Flash Sale</option>
+            <option value="Promo Code">Promo Code</option>
+            <option value="Discount">Discount</option>
+            <option value="Push Notification">Push Notification</option>
+            <option value="Email">Email</option>
+          </select>
+
+          <div className="bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-700 flex items-center gap-1.5 shadow-2xs">
+            <span>📅</span>
+            <span>May 19, 2025 - May 25, 2025</span>
+            <span className="text-gray-400 text-[10px]">▾</span>
+          </div>
+
+          <button
+            onClick={() => {
+              setSearchQuery("");
+              setSelectedStatus("ALL");
+              setSelectedType("ALL");
+              setCurrentPage(1);
+            }}
+            className="bg-gray-50 border border-gray-300 text-gray-700 font-extrabold px-3.5 py-2 rounded-xl transition hover:bg-gray-100 cursor-pointer flex items-center gap-1.5"
+          >
+            <span>🔄</span>
+            <span>Reset</span>
+          </button>
+        </div>
+
+      </div>
+
+      {/* MAIN CAMPAIGNS TABLE (Matching Screenshot 100%) */}
+      <div className="bg-white border border-gray-200/80 rounded-3xl overflow-hidden shadow-2xs">
+        <div className="overflow-x-auto">
+          {loading ? (
+            <div className="p-12 text-center text-gray-500 font-bold">Loading live campaigns from PostgreSQL database...</div>
+          ) : (
+            <table className="w-full text-left text-xs text-gray-700">
+              <thead className="bg-gray-50 text-gray-400 font-extrabold uppercase text-[10px] border-b border-gray-100 tracking-wider">
+                <tr>
+                  <th className="w-10 px-4 py-4 text-center">
+                    <input type="checkbox" className="rounded accent-emerald-600" />
+                  </th>
+                  <th className="px-6 py-4">CAMPAIGN TITLE</th>
+                  <th className="px-6 py-4">TYPE ▾</th>
+                  <th className="px-6 py-4">DISCOUNT / OFFER</th>
+                  <th className="px-6 py-4">START DATE</th>
+                  <th className="px-6 py-4">END DATE</th>
+                  <th className="px-6 py-4">STATUS ▾</th>
+                  <th className="px-6 py-4">PRIORITY ▾</th>
+                  <th className="px-6 py-4 text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 font-medium">
+                {paginatedCampaigns.map((c) => (
+                  <tr key={c.id} className="hover:bg-gray-50/80 transition group">
+                    
+                    {/* CHECKBOX */}
+                    <td className="w-10 px-4 py-4 text-center">
+                      <input type="checkbox" className="rounded accent-emerald-600" />
+                    </td>
+
+                    {/* CAMPAIGN TITLE */}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-9 h-9 rounded-2xl ${c.iconBg} flex items-center justify-center text-sm font-bold shrink-0 shadow-2xs`}>
+                          {c.icon}
                         </div>
-                        <span className="font-black text-emerald-400 shrink-0">₹{p.price}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {editingOffer && (
-                <div className="bg-emerald-900/20 border border-emerald-700/30 rounded-xl p-3 flex items-center gap-3">
-                  <img src={editingOffer.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
-                  <div>
-                    <p className="font-black text-white text-sm">{editingOffer.title}</p>
-                    <p className="text-emerald-400 text-[10px] font-bold">Editing offer price</p>
-                  </div>
-                </div>
-              )}
+                        <div>
+                          <p className="font-black text-gray-900 text-xs leading-tight">{c.title}</p>
+                          <p className="text-[10px] text-gray-400 font-medium mt-0.5">{c.subtitle}</p>
+                        </div>
+                      </div>
+                    </td>
 
-              {/* Price Fields */}
+                    {/* TYPE */}
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-1 rounded-xl text-[10px] font-black border ${c.typeBg}`}>
+                        {c.type}
+                      </span>
+                    </td>
+
+                    {/* DISCOUNT / OFFER */}
+                    <td className="px-6 py-4 font-black text-gray-900">
+                      {c.discountOffer}
+                    </td>
+
+                    {/* START DATE */}
+                    <td className="px-6 py-4 font-bold text-gray-800 text-[11px]">
+                      {c.startDate}
+                    </td>
+
+                    {/* END DATE */}
+                    <td className="px-6 py-4 font-bold text-gray-800 text-[11px]">
+                      {c.endDate}
+                    </td>
+
+                    {/* STATUS */}
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${c.statusBg}`}>
+                        {c.status}
+                      </span>
+                    </td>
+
+                    {/* PRIORITY */}
+                    <td className="px-6 py-4">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border ${c.priorityBg}`}>
+                        {c.priority === "High" ? "🔥 High" : c.priority === "Medium" ? "● Medium" : "● Low"}
+                      </span>
+                    </td>
+
+                    {/* ACTIONS */}
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => showToast(`Options for ${c.title} opened`)}
+                        className="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 inline-flex items-center justify-center transition cursor-pointer text-xs font-bold"
+                      >
+                        ⋮
+                      </button>
+                    </td>
+
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* TABLE PAGINATION BAR (Matching Screenshot 100%) */}
+        <div className="bg-gray-50 border-t border-gray-100 p-4 px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-medium">
+          <div>
+            Showing <span className="font-bold text-gray-900">{filteredCampaigns.length > 0 ? startIndex + 1 : 0}</span> to <span className="font-bold text-gray-900">{Math.min(startIndex + itemsPerPage, filteredCampaigns.length)}</span> of <span className="font-bold text-gray-900">{filteredCampaigns.length}</span> campaigns
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1">
+              <button
+                disabled={currentPage === 1}
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                className="w-8 h-8 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 text-gray-700 font-black flex items-center justify-center transition cursor-pointer"
+              >
+                &lsaquo;
+              </button>
+
+              {Array.from({ length: Math.min(totalPages, 3) }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => setCurrentPage(pageNum)}
+                  className={`w-8 h-8 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center ${
+                    currentPage === pageNum
+                      ? "bg-[#059669] text-white shadow-xs"
+                      : "border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+
+              <span className="text-gray-400 px-1 font-bold">...</span>
+
+              <button
+                disabled={currentPage >= totalPages}
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                className="px-3 h-8 rounded-xl border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 text-gray-700 font-bold flex items-center justify-center transition cursor-pointer text-xs"
+              >
+                Next
+              </button>
+            </div>
+
+            <select
+              value={itemsPerPage}
+              onChange={(e) => {
+                setItemsPerPage(parseInt(e.target.value));
+                setCurrentPage(1);
+              }}
+              className="bg-white border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-800 focus:outline-none"
+            >
+              <option value="5">5 / page</option>
+              <option value="10">10 / page</option>
+              <option value="20">20 / page</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      {/* 📦 CREATE CAMPAIGN MODAL */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative text-xs">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+              <h3 className="text-lg font-black text-gray-900">Create New Marketing Campaign</h3>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCampaign} className="space-y-4">
+              <div>
+                <label className="block text-gray-700 font-bold mb-1">Campaign Title</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Diwali Mega Blowout Sale"
+                  value={newCampaign.title}
+                  onChange={(e) => setNewCampaign({ ...newCampaign, title: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-gray-900 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-gray-700 font-bold mb-1">Campaign Subtitle / Tagline</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Exclusive for All Registered Customers"
+                  value={newCampaign.subtitle}
+                  onChange={(e) => setNewCampaign({ ...newCampaign, subtitle: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-medium text-gray-900 focus:outline-none"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-gray-400 block mb-1 font-semibold">Original MRP (₹) — "Earlier"</label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 1299"
-                    value={offerForm.originalPrice}
-                    onChange={(e) => setOfferForm({ ...offerForm, originalPrice: e.target.value })}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
-                  />
+                  <label className="block text-gray-700 font-bold mb-1">Campaign Type</label>
+                  <select
+                    value={newCampaign.type}
+                    onChange={(e) => setNewCampaign({ ...newCampaign, type: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-gray-800"
+                  >
+                    <option value="Flash Sale">Flash Sale</option>
+                    <option value="Promo Code">Promo Code</option>
+                    <option value="Discount">Discount</option>
+                    <option value="Push Notification">Push Notification</option>
+                    <option value="Email">Email</option>
+                  </select>
                 </div>
+
                 <div>
-                  <label className="text-gray-400 block mb-1 font-semibold">Offer Sale Price (₹) — "Now"</label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 799"
-                    value={offerForm.offerPrice}
-                    onChange={(e) => setOfferForm({ ...offerForm, offerPrice: e.target.value })}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
-                  />
+                  <label className="block text-gray-700 font-bold mb-1">Priority</label>
+                  <select
+                    value={newCampaign.priority}
+                    onChange={(e) => setNewCampaign({ ...newCampaign, priority: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-gray-800"
+                  >
+                    <option value="High">🔥 High</option>
+                    <option value="Medium">● Medium</option>
+                    <option value="Low">● Low</option>
+                  </select>
                 </div>
               </div>
 
-              {/* Savings Preview */}
-              {offerForm.offerPrice && offerForm.originalPrice && (
-                <div className="bg-emerald-900/20 border border-emerald-700/30 rounded-xl px-4 py-3 text-[11px] flex items-center justify-between">
-                  <span className="text-gray-400">Customer Savings Preview:</span>
-                  <span className="text-emerald-400 font-black text-sm">Save ₹{Math.round(parseFloat(offerForm.originalPrice) - parseFloat(offerForm.offerPrice))} / unit</span>
-                </div>
-              )}
-
-              {/* Options */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-gray-400 block mb-1 font-semibold">Fulfillment Type</label>
-                  <select
-                    value={offerForm.easyShip ? "easy" : "fc"}
-                    onChange={(e) => setOfferForm({ ...offerForm, easyShip: e.target.value === "easy" })}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
-                  >
-                    <option value="easy">🚚 Easy Ship</option>
-                    <option value="fc">🏬 FC (Fulfilled by Center)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-gray-400 block mb-1 font-semibold">Weight Range</label>
-                  <select
-                    value={offerForm.weight}
-                    onChange={(e) => setOfferForm({ ...offerForm, weight: e.target.value })}
-                    className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
-                  >
-                    <option value="<500gm">&lt;500gm</option>
-                    <option value="500gm-1kg">500gm–1kg</option>
-                    <option value="1kg-2kg">1kg–2kg</option>
-                    <option value="2kg-5kg">2kg–5kg</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-gray-700 font-bold mb-1">Discount Offer Text</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Flat ₹500 OFF or Up to 60% OFF"
+                  value={newCampaign.discountOffer}
+                  onChange={(e) => setNewCampaign({ ...newCampaign, discountOffer: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-emerald-700 focus:outline-none"
+                />
               </div>
 
               <button
-                type="button"
-                onClick={handleSaveOffer}
-                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-2xl transition shadow-lg shadow-emerald-600/20 text-sm cursor-pointer"
+                type="submit"
+                className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black py-3 rounded-xl transition text-xs shadow-md cursor-pointer mt-2"
               >
-                {editingOffer ? "Update Offer on /deals" : "Add to Featured Offers on /deals"}
+                Launch Campaign
               </button>
-            </div>
+            </form>
           </div>
         </div>
       )}

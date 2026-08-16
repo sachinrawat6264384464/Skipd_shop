@@ -30,15 +30,17 @@ from app.api.inventory import router as inventory_router
 from app.api.wallet import router as wallet_router
 from app.models.models import SaleEvent, SaleProduct, SaleStatus, HomepageSection
 
+from init_db_tables import initialize_and_migrate_all_tables
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Auto-create tables on startup
+    # Auto-create & migrate all tables on startup
     try:
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        print("[Backend Startup] Database connection verified & tables initialized!")
+        await initialize_and_migrate_all_tables()
+        print("[Backend Startup] Master Database Migration & Tables Initialized!")
     except Exception as err:
-        print(f"[Backend Startup Warning] DB auto-creation skipped ({err}). Startup continuing...")
+        print(f"[Backend Startup Warning] DB auto-migration skipped ({err}). Startup continuing...")
+
     
     # Seed initial B2C categories and products if database is fresh
     try:

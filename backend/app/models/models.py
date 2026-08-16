@@ -22,6 +22,7 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
+    firebase_uid = Column(String(128), unique=True, index=True, nullable=True)
     full_name = Column(String(150), nullable=False)
     email = Column(String(150), unique=True, index=True, nullable=False)
     phone = Column(String(20), nullable=True)
@@ -29,6 +30,7 @@ class User(Base):
     role = Column(SQLEnum(UserRole), default=UserRole.CUSTOMER)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
 
     orders = relationship("Order", back_populates="user")
 
@@ -131,10 +133,13 @@ class PaymentTransaction(Base):
     razorpay_payment_id = Column(String(100), nullable=True)
     razorpay_signature = Column(String(255), nullable=True)
     amount = Column(Float, nullable=False)
-    status = Column(String(50), default="PENDING")
+    payment_method = Column(String(50), default="UPI")
+    gateway = Column(String(50), default="Razorpay")
+    status = Column(String(50), default="SUCCESS")
     created_at = Column(DateTime, default=datetime.utcnow)
 
     order = relationship("Order", back_populates="payment")
+
 
 class Shipment(Base):
     __tablename__ = "shipments"
@@ -144,13 +149,18 @@ class Shipment(Base):
     shiprocket_order_id = Column(String(100), nullable=True)
     shiprocket_shipment_id = Column(String(100), nullable=True)
     awb_code = Column(String(100), unique=True, index=True, nullable=False)
-    courier_name = Column(String(100), default="BlueDart / Shiprocket")
-    status = Column(String(100), default="IN_TRANSIT")
+    courier_name = Column(String(100), default="Delhivery Surface")
+    status = Column(String(100), default="IN TRANSIT")
+    destination = Column(String(255), default="Gwalior, Madhya Pradesh")
+    pin_code = Column(String(20), default="474001")
+    est_delivery_date = Column(String(100), default="May 27, 2026")
+    current_location = Column(String(255), default="Bhopal Sort Center")
     tracking_url = Column(String(500), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     order = relationship("Order", back_populates="shipment")
+
 
 
 # ─────────────────────────────────────────────

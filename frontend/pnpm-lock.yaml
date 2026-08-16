@@ -14,6 +14,9 @@ importers:
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@19.0.0)
+      chart.js:
+        specifier: ^4.5.1
+        version: 4.5.1
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -29,6 +32,9 @@ importers:
       react:
         specifier: 19.0.0
         version: 19.0.0
+      react-chartjs-2:
+        specifier: ^5.3.1
+        version: 5.3.1(chart.js@4.5.1)(react@19.0.0)
       react-dom:
         specifier: 19.0.0
         version: 19.0.0(react@19.0.0)
@@ -502,6 +508,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@kurkle/color@0.3.4':
+    resolution: {integrity: sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w==}
+
   '@next/env@15.6.0-canary.60':
     resolution: {integrity: sha512-VVoy8NpkI2ngEr3RsD8jzum8SbXisObkvcCMBJeiWRSMOtACIm6kbnTYjgLWeGEwHHKsVBdeJpnf558rF6ktbw==}
 
@@ -744,6 +753,10 @@ packages:
 
   caniuse-lite@1.0.30001706:
     resolution: {integrity: sha512-3ZczoTApMAZwPKYWmwVbQMFpXBDds3/0VciVoUwPUbldlYyVLmRVuRs/PcUZtHpbLRpzzDvrvnFuREsGt6lUug==}
+
+  chart.js@4.5.1:
+    resolution: {integrity: sha512-GIjfiT9dbmHRiYi6Nl2yFCq7kkwdkp1W/lp2J99rX0yo9tgJGn3lKQATztIjb5tVtevcBtIdICNWqlq5+E8/Pw==}
+    engines: {pnpm: '>=8'}
 
   client-only@0.0.1:
     resolution: {integrity: sha512-IV3Ou0jSMzZrd3pZ48nLkT9DA7Ag1pnPzaiQhpW7c3RbcqqzvzzVu+L8gfqMp/8IM2MQtSiqaCxrrcfu8I8rMA==}
@@ -1014,6 +1027,12 @@ packages:
   re2js@2.8.6:
     resolution: {integrity: sha512-xLgQil4kIUCrAzVk9fRSkxkFNwmygLFjVxXrLc65aE1F0+Zsb8rxumFBy4XKyvgMCTL6kilDq3EZ0piE2dP/Dg==}
     engines: {node: '>=18.0.0'}
+
+  react-chartjs-2@5.3.1:
+    resolution: {integrity: sha512-h5IPXKg9EXpjoBzUfyWJvllMjG2mQ4EiuHQFhms/AjUm0XSZHhyRy2xVmLXHKrtcdrPO4mnGqRtYoD0vp95A0A==}
+    peerDependencies:
+      chart.js: ^4.1.1
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   react-dom@19.0.0:
     resolution: {integrity: sha512-4GV5sHFG0e/0AD4X+ySy6UJd3jVl1iNsNHdpad0qhABJ11twS3TTBnseqsKurKcsNqCEFeGL3uLpVChpIO3QfQ==}
@@ -1599,6 +1618,8 @@ snapshots:
   '@img/sharp-win32-x64@0.34.5':
     optional: true
 
+  '@kurkle/color@0.3.4': {}
+
   '@next/env@15.6.0-canary.60': {}
 
   '@next/swc-darwin-arm64@15.6.0-canary.58':
@@ -1799,6 +1820,10 @@ snapshots:
       color-convert: 2.0.1
 
   caniuse-lite@1.0.30001706: {}
+
+  chart.js@4.5.1:
+    dependencies:
+      '@kurkle/color': 0.3.4
 
   client-only@0.0.1: {}
 
@@ -2007,6 +2032,11 @@ snapshots:
       long: 5.3.2
 
   re2js@2.8.6: {}
+
+  react-chartjs-2@5.3.1(chart.js@4.5.1)(react@19.0.0):
+    dependencies:
+      chart.js: 4.5.1
+      react: 19.0.0
 
   react-dom@19.0.0(react@19.0.0):
     dependencies:

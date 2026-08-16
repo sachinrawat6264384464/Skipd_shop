@@ -20,11 +20,13 @@ async def get_current_user(
 
     email: Optional[str] = None
     full_name: str = "User"
+    firebase_uid: Optional[str] = None
 
     # 1. Try verifying Firebase JWT Token
     firebase_payload = verify_firebase_id_token(token)
     if firebase_payload:
         email = firebase_payload.get("email")
+        firebase_uid = firebase_payload.get("uid")
         full_name = firebase_payload.get("name") or (email.split("@")[0] if email else "User")
     else:
         # 2. Fallback to standard FastAPI JWT Token
@@ -41,6 +43,7 @@ async def get_current_user(
     if not user:
         try:
             user = User(
+                firebase_uid=firebase_uid,
                 full_name=full_name,
                 email=email,
                 hashed_password="firebase_auth_user",
@@ -50,10 +53,17 @@ async def get_current_user(
             await db.commit()
             await db.refresh(user)
         except Exception as e:
-            print(f"⚠️ [USER SYNC WARN] Could not auto-create user in PostgreSQL: {e}")
+            print(f"[USER SYNC WARN] Could not auto-create user in PostgreSQL: {e}")
             await db.rollback()
             result = await db.execute(select(User).where(User.email == email))
             user = result.scalars().first()
+    else:
+        # Update firebase_uid if missing
+        if firebase_uid and not user.firebase_uid:
+            user.firebase_uid = firebase_uid
+            db.add(user)
+            await db.commit()
+            await db.refresh(user)
 
     return user
 

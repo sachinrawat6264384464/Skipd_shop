@@ -1,23 +1,23 @@
 import asyncio
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from app.core.database import AsyncSessionLocal
+from app.models.models import User, Review, Order
 from sqlalchemy import select
-from sqlalchemy.orm import selectinload
-from app.models.models import Product
 
-async def test():
-    engine = create_async_engine("postgresql+asyncpg://postgres:postgres@127.0.0.1:5433/skipd_commerce_db")
-    SessionLocal = async_sessionmaker(bind=engine, class_=AsyncSession)
-    
-    async with SessionLocal() as db:
-        try:
-            query = select(Product).options(selectinload(Product.category), selectinload(Product.variants))
-            res = await db.execute(query)
-            products = res.scalars().all()
-            print(f"[EXPLICIT DB SUCCESS] Found {len(products)} products in PostgreSQL 5433!")
-            for p in products:
-                print(f" - {p.title} (Price: ₹{p.price})")
-        except Exception as e:
-            print("[EXPLICIT DB ERROR]:", e)
+async def check_db_users():
+    async with AsyncSessionLocal() as session:
+        # Check users
+        users_res = await session.execute(select(User))
+        users = users_res.scalars().all()
+        print(f"--- POSTGRESQL USERS COUNT: {len(users)} ---")
+        for u in users:
+            print(f"ID: {u.id} | Name: {u.full_name} | Email: {u.email} | Role: {u.role}")
+
+        # Check reviews
+        reviews_res = await session.execute(select(Review))
+        reviews = reviews_res.scalars().all()
+        print(f"\n--- POSTGRESQL REVIEWS COUNT: {len(reviews)} ---")
+        for r in reviews:
+            print(f"ID: {r.id} | User: {r.user_name} | Rating: {r.rating} | Comment: {r.comment}")
 
 if __name__ == "__main__":
-    asyncio.run(test())
+    asyncio.run(check_db_users())
