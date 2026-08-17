@@ -238,6 +238,76 @@ export default function AdminProductsPage() {
     setTimeout(() => setActionMessage(null), 3500);
   };
 
+  const openEditProductModal = (product: any) => {
+    let parsedBoxItems: { title: string; image: string }[] = [];
+    if (Array.isArray(product.box_contents) && product.box_contents.length > 0) {
+      parsedBoxItems = product.box_contents.map((b: any) => {
+        if (typeof b === "object" && b !== null) {
+          return { title: b.title || b.name || "Item", image: b.image || b.img || "" };
+        }
+        return { title: String(b), image: "" };
+      });
+    } else if (typeof product.box_contents === "string" && product.box_contents.trim().length > 0) {
+      parsedBoxItems = product.box_contents.split(",").map((s: string) => ({ title: s.trim(), image: "" }));
+    } else {
+      parsedBoxItems = [
+        { title: "Headphones", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200" },
+        { title: "Charging Cable", image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200" }
+      ];
+    }
+
+    setEditingProduct(product);
+    setNewProduct({
+      title: product.title || "",
+      sku: product.sku || product.handle || `SKU-${product.id}`,
+      category_slug: product.category_slug || product.category?.slug || "electronics",
+      subcategory: product.subcategory || "",
+      brand: product.brand || "",
+      tags: Array.isArray(product.tags) ? product.tags.join(", ") : (product.tags || ""),
+      short_description: product.short_description || (product.description ? product.description.substring(0, 150) : ""),
+      description: product.description || "",
+      features: product.features || ["", "", "", ""],
+      product_type: product.product_type || "Simple Product",
+      condition: product.condition || "New",
+      weight: product.weight || "",
+      dimensions_length: product.dimensions_length || "",
+      dimensions_width: product.dimensions_width || "",
+      dimensions_height: product.dimensions_height || "",
+      warranty: product.warranty || "1 Year Manufacturer Warranty",
+      status: product.status || "Active",
+      visibility: product.visibility || "Visible",
+      in_stock: (product.stock_quantity ?? 10) > 0,
+      featured: product.featured ?? true,
+      allow_backorders: product.allow_backorders ?? false,
+      price: String(product.price || ""),
+      compare_at_price: String(product.compare_at_price || ""),
+      cost_per_item: String(product.cost_per_item || Math.round((product.price || 0) * 0.7)),
+      tax_rate: product.tax_rate || "18% GST",
+      stock_quantity: String(product.stock_quantity ?? 50),
+      low_stock_threshold: String(product.low_stock_threshold || 10),
+      track_quantity: true,
+      image_url: (product.images && product.images.length > 0) ? product.images[0] : (product.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"),
+      gallery_images: product.images && product.images.length > 1 ? product.images.slice(1) : ["https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800"],
+      alt_text: product.alt_text || product.title || "",
+      has_variants: product.has_variants ?? true,
+      variant_color: Array.isArray(product.colors) ? product.colors.join(", ") : (product.variant_color || "Pitch Black"),
+      variant_size: product.variant_size || "Standard",
+      variant_ram: product.variant_ram || "12GB",
+      variant_storage: product.variant_storage || "256GB",
+      meta_title: product.meta_title || product.title || "",
+      meta_desc: product.meta_desc || product.description || "",
+      handle: product.handle || "",
+      hsn_code: product.hsn_code || "85183000",
+      country: product.country || "India",
+      highlights: product.highlights || (product.features && product.features.length > 0 ? product.features : ["", "", "", ""]),
+      box_items: parsedBoxItems,
+      box_contents: typeof product.box_contents === "string" ? product.box_contents : ""
+    });
+
+    setCreateStep("basic");
+    setShowCreateModal(true);
+  };
+
   const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProduct.title || !newProduct.price) {
@@ -264,6 +334,21 @@ export default function AdminProductsPage() {
         ? newProduct.box_items.filter(b => b.title.trim().length > 0)
         : (newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : [])
     };
+
+    if (editingProduct) {
+      const targetId = editingProduct.id;
+      const res = await updateAdminProduct(targetId, payload);
+      if (res) {
+        setProducts(prev => prev.map(p => (p.id === targetId || String(p.id) === String(targetId)) ? { ...p, ...payload } : p));
+        showNotification(`✓ Product #${targetId} ("${newProduct.title}") updated successfully!`);
+        setShowCreateModal(false);
+        setEditingProduct(null);
+        await loadProducts();
+      } else {
+        showNotification("Failed to update product", "error");
+      }
+      return;
+    }
 
     const res = await createAdminProduct(payload);
     if (res) {
@@ -712,7 +797,7 @@ export default function AdminProductsPage() {
                           <td className="px-6 py-4 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <button
-                                onClick={() => setEditingProduct({ ...p })}
+                                onClick={() => openEditProductModal(p)}
                                 className="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition cursor-pointer text-xs flex items-center gap-1"
                               >
                                 ✏️ Edit
@@ -1275,15 +1360,22 @@ export default function AdminProductsPage() {
             <div className="flex justify-between items-start border-b border-gray-100 pb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-600 font-bold flex items-center justify-center text-xl">
-                  📄
+                  {editingProduct ? "✏️" : "📄"}
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-gray-900">Add New Product</h3>
-                  <p className="text-xs text-gray-500 font-medium mt-0.5">Create a new product and add it to your store. All fields marked with * are required.</p>
+                  <h3 className="text-xl font-black text-gray-900">
+                    {editingProduct ? `Edit Product #${editingProduct.id}` : "Add New Product"}
+                  </h3>
+                  <p className="text-xs text-gray-500 font-medium mt-0.5">
+                    {editingProduct ? "Update live pricing, title, stock, images, highlights, box contents and full details." : "Create a new product and add it to your store. All fields marked with * are required."}
+                  </p>
                 </div>
               </div>
               <button
-                onClick={() => setShowCreateModal(false)}
+                onClick={() => {
+                  setShowCreateModal(false);
+                  setEditingProduct(null);
+                }}
                 className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer"
               >
                 ✕
@@ -1954,7 +2046,10 @@ export default function AdminProductsPage() {
               <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                 <button
                   type="button"
-                  onClick={() => setShowCreateModal(false)}
+                  onClick={() => {
+                    setShowCreateModal(false);
+                    setEditingProduct(null);
+                  }}
                   className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-2.5 rounded-xl transition cursor-pointer"
                 >
                   Cancel
@@ -1966,6 +2061,7 @@ export default function AdminProductsPage() {
                     onClick={() => {
                       showNotification("Product saved as Draft");
                       setShowCreateModal(false);
+                      setEditingProduct(null);
                     }}
                     className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-bold px-5 py-2.5 rounded-xl transition cursor-pointer"
                   >
@@ -1976,105 +2072,12 @@ export default function AdminProductsPage() {
                     type="submit"
                     className="bg-[#059669] hover:bg-[#047857] text-white font-black px-6 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
                   >
-                    <span>🚀</span>
-                    <span>Save &amp; Publish</span>
+                    <span>{editingProduct ? "✓" : "🚀"}</span>
+                    <span>{editingProduct ? "Save & Update Product" : "Save & Publish"}</span>
                   </button>
                 </div>
               </div>
 
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ✏️ EDIT PRODUCT MODAL */}
-      {editingProduct && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 shadow-2xl relative max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-              <div>
-                <h3 className="text-xl font-black text-gray-900">✏️ Edit Product #{editingProduct.id}</h3>
-                <p className="text-xs text-gray-500 font-medium mt-0.5">Update live pricing, title, stock and description</p>
-              </div>
-              <button
-                onClick={() => setEditingProduct(null)}
-                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdateProduct} className="space-y-4 text-xs font-medium">
-              <div>
-                <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">Product Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={editingProduct.title}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, title: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none transition"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">Selling Price (₹) *</label>
-                  <input
-                    type="number"
-                    required
-                    value={editingProduct.price}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, price: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-black text-gray-900 focus:border-emerald-500 focus:outline-none transition"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">Stock Units *</label>
-                  <input
-                    type="number"
-                    required
-                    value={editingProduct.stock_quantity ?? 100}
-                    onChange={(e) => setEditingProduct({ ...editingProduct, stock_quantity: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none transition"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">M.R.P. Compare Price (₹)</label>
-                <input
-                  type="number"
-                  value={editingProduct.compare_at_price || ""}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, compare_at_price: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-extrabold text-gray-700 uppercase mb-1">Description</label>
-                <textarea
-                  rows={3}
-                  value={editingProduct.description || ""}
-                  onChange={(e) => setEditingProduct({ ...editingProduct, description: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none transition"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-3 border-t border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => setEditingProduct(null)}
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-extrabold py-3 rounded-xl transition cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-xl transition shadow-md cursor-pointer"
-                >
-                  Save Changes
-                </button>
-              </div>
             </form>
           </div>
         </div>
