@@ -881,10 +881,10 @@ export default function AdminCustomersCRMPage() {
                       <td className="px-6 py-4 text-right">
                         <button
                           onClick={async () => {
-                            await deleteAdminUser(c.id);
+                            await deleteAdminUser(c.id, c.email);
                             const updated = customers.filter(u => u.id !== c.id);
                             setCustomers(updated);
-                            showToast(`🗑️ User #${c.id} deleted from database`, "error");
+                            showToast(`🗑️ User #${c.id} (${c.email}) and all schema data permanently purged!`, "error");
                           }}
                           className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer"
                         >

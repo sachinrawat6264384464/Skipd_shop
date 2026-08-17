@@ -32,7 +32,13 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-    orders = relationship("Order", back_populates="user")
+    orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
+    wishlist_items = relationship("WishlistItem", cascade="all, delete-orphan")
+    cart_items = relationship("CartItem", cascade="all, delete-orphan")
+    addresses = relationship("Address", cascade="all, delete-orphan")
+    reviews = relationship("Review", cascade="all, delete-orphan")
+    wallet = relationship("Wallet", back_populates="user", cascade="all, delete-orphan", uselist=False)
+    return_requests = relationship("ReturnRequest", back_populates="user", cascade="all, delete-orphan")
 
 class Category(Base):
     __tablename__ = "categories"

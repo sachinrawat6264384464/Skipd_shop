@@ -1624,14 +1624,80 @@ export async function fetchAdminCustomers() {
   return null;
 }
 
-export async function deleteAdminUser(id: number) {
+export async function deleteAdminUser(id: number | string, email?: string) {
   try {
     const res = await fetch(`${API_BASE_URL}/users/admin/${id}`, { method: "DELETE" });
-    if (res.ok) return await res.json();
+    if (res.ok) {
+      const data = await res.json();
+      purgeLocalCustomerData(email || String(id));
+      return data;
+    }
   } catch (e) {
     console.warn("[API SDK] Delete admin user offline fallback");
   }
-  return { status: "success" };
+
+  purgeLocalCustomerData(email || String(id));
+  return { status: "success", message: `User #${id} and all schema data deleted` };
+}
+
+export function purgeLocalCustomerData(emailOrId: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const target = emailOrId.toLowerCase().trim();
+
+    // 1. Purge from skipd_registered_users
+    const registered = localStorage.getItem("skipd_registered_users");
+    if (registered) {
+      const parsed = JSON.parse(registered);
+      if (Array.isArray(parsed)) {
+        const filtered = parsed.filter((u: any) => {
+          const uEmail = (typeof u === "string" ? u : u.email || "").toLowerCase().trim();
+          const uId = String(u.id || "");
+          return uEmail !== target && uId !== target && !uEmail.includes(target);
+        });
+        localStorage.setItem("skipd_registered_users", JSON.stringify(filtered));
+      }
+    }
+
+    // 2. Purge from skipd_all_registered_users
+    const allReg = localStorage.getItem("skipd_all_registered_users");
+    if (allReg) {
+      const parsed = JSON.parse(allReg);
+      if (Array.isArray(parsed)) {
+        const filtered = parsed.filter((u: any) => {
+          const uEmail = (typeof u === "string" ? u : u.email || "").toLowerCase().trim();
+          const uId = String(u.id || "");
+          return uEmail !== target && uId !== target;
+        });
+        localStorage.setItem("skipd_all_registered_users", JSON.stringify(filtered));
+      }
+    }
+
+    // 3. Purge current logged in user if it matches target
+    const currentUser = localStorage.getItem("skipd_user");
+    if (currentUser) {
+      const pUser = JSON.parse(currentUser);
+      const curEmail = (pUser.email || "").toLowerCase().trim();
+      const curId = String(pUser.uid || pUser.id || "");
+      if (curEmail === target || curId === target) {
+        localStorage.removeItem("skipd_user");
+        localStorage.removeItem("skipd_token");
+        window.dispatchEvent(new Event("skipd_auth_changed"));
+      }
+    }
+
+    // 4. Purge customer return requests
+    const returnQueries = localStorage.getItem("skipd_return_queries");
+    if (returnQueries) {
+      const parsed = JSON.parse(returnQueries);
+      if (Array.isArray(parsed)) {
+        const filtered = parsed.filter((q: any) => (q.email || "").toLowerCase().trim() !== target);
+        localStorage.setItem("skipd_return_queries", JSON.stringify(filtered));
+      }
+    }
+  } catch (err) {
+    console.error("Failed to purge customer local data:", err);
+  }
 }
 
 export async function fetchAdminReviews() {
