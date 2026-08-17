@@ -201,9 +201,15 @@ export default function CheckoutPage() {
     return () => clearInterval(interval);
   }, [paymentModalOpen, selectedMethod, qrTimer]);
 
+  // Delivery Speed & Gift Wrap Addons State
+  const [deliverySpeed, setDeliverySpeed] = useState<"standard" | "express">("standard");
+  const [deliverySlot, setDeliverySlot] = useState<"morning" | "evening">("morning");
+  const [isGiftWrap, setIsGiftWrap] = useState(false);
+  const [giftMessage, setGiftMessage] = useState("");
+
   // Pricing Calculations
   const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  
+
   let couponDiscount = 0;
   if (appliedCoupon) {
     if (appliedCoupon.discountPercent) {
@@ -214,8 +220,10 @@ export default function CheckoutPage() {
   }
 
   const shippingFee = subtotal > 499 ? 0 : 99;
+  const expressFee = deliverySpeed === "express" ? 49 : 0;
+  const giftWrapFee = isGiftWrap ? 49 : 0;
   const gstAmount = Math.round((subtotal - couponDiscount) * 0.18);
-  const finalPayable = Math.max(0, subtotal - couponDiscount + shippingFee + gstAmount);
+  const finalPayable = Math.max(0, subtotal - couponDiscount + shippingFee + expressFee + giftWrapFee + gstAmount);
 
   // Apply Coupon Handler
   const handleApplyCoupon = (e: React.FormEvent) => {
@@ -549,28 +557,54 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-gray-900 px-4 py-8 md:py-12">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto space-y-6">
         
-        {/* Header Breadcrumb & Security Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-white border border-gray-200 p-5 rounded-3xl shadow-2xs">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black border border-emerald-200 shadow-2xs">
-              🔒
+        {/* Top 3-Step Checkout Stepper */}
+        <div className="bg-white border border-gray-200/80 rounded-3xl p-4 md:p-5 shadow-2xs">
+          <div className="flex items-center justify-between max-w-2xl mx-auto text-xs font-black">
+            <Link href="/cart" className="flex items-center gap-2 text-emerald-600 hover:underline">
+              <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-extrabold text-xs">✓</span>
+              <span>1. Shopping Cart</span>
+            </Link>
+            <div className="h-0.5 flex-1 bg-emerald-500 mx-3"></div>
+            <div className="flex items-center gap-2 text-emerald-700">
+              <span className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center font-extrabold text-xs shadow-xs">2</span>
+              <span>2. Shipping &amp; Delivery</span>
             </div>
-            <div>
-              <h1 className="text-xl font-black text-gray-900 leading-tight">Express Checkout &amp; Payment Gateway</h1>
-              <p className="text-xs text-gray-500 font-medium mt-0.5">Bank-Grade 256-Bit Encryption • Razorpay Official Partner</p>
+            <div className="h-0.5 flex-1 bg-gray-200 mx-3"></div>
+            <div className="flex items-center gap-2 text-gray-400">
+              <span className="w-7 h-7 rounded-full bg-gray-100 text-gray-400 flex items-center justify-center font-extrabold text-xs border border-gray-300">3</span>
+              <span>3. Payment Gateway</span>
             </div>
           </div>
+        </div>
 
-          <div className="flex items-center gap-2 text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200">
-            <span>🛡️ 100% Buyer Protection Guaranteed</span>
+        {/* Top Security & Trust Highlights Bar */}
+        <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-gray-900 text-white rounded-2xl p-3.5 px-6 shadow-md flex items-center justify-between text-[11px] font-bold overflow-x-auto gap-4 no-scrollbar">
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-emerald-400">🛡️</span>
+            <span>100% Purchase Guarantee</span>
+          </div>
+          <div className="hidden sm:block text-emerald-500/40">•</div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-emerald-400">⚡</span>
+            <span>Express Delivery via BlueDart</span>
+          </div>
+          <div className="hidden sm:block text-emerald-500/40">•</div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-emerald-400">↩️</span>
+            <span>7-Day Hassle-Free Replacement</span>
+          </div>
+          <div className="hidden sm:block text-emerald-500/40">•</div>
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="text-emerald-400">🔒</span>
+            <span>256-Bit SSL Bank Level Security</span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* LEFT 7-COL: Address Selection & Payment Details */}
+          {/* LEFT 7-COL: Address Selection, Delivery Options & Gift Packaging */}
           <div className="lg:col-span-7 space-y-6">
             
             {/* 1. Delivery Address Selection Card */}
@@ -637,10 +671,120 @@ export default function CheckoutPage() {
 
             </div>
 
-            {/* 2. Promo Coupon Code Section */}
+            {/* 2. Delivery Options & Speed Selection Card */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-4">
+              <h2 className="text-base font-black text-gray-900 flex items-center justify-between border-b border-gray-100 pb-3">
+                <span className="flex items-center gap-2">🚚 2. Delivery Speed &amp; Preferred Time Slot</span>
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                  BlueDart Air Cargo Active
+                </span>
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {/* Standard Shipping */}
+                <div
+                  onClick={() => setDeliverySpeed("standard")}
+                  className={`border-2 rounded-2xl p-4 cursor-pointer transition space-y-1.5 ${
+                    deliverySpeed === "standard"
+                      ? "border-emerald-500 bg-emerald-50/40 shadow-2xs"
+                      : "border-gray-200 bg-white hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-gray-900">Standard Delivery</span>
+                    <span className="text-emerald-600 font-extrabold">FREE</span>
+                  </div>
+                  <p className="text-gray-500 text-[11px]">Delivered in 2-3 Business Days via BlueDart Surface</p>
+                </div>
+
+                {/* Express Air Shipping */}
+                <div
+                  onClick={() => setDeliverySpeed("express")}
+                  className={`border-2 rounded-2xl p-4 cursor-pointer transition space-y-1.5 ${
+                    deliverySpeed === "express"
+                      ? "border-emerald-500 bg-emerald-50/40 shadow-2xs"
+                      : "border-gray-200 bg-white hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-black text-gray-900 flex items-center gap-1">
+                      <span>⚡ Express Air Cargo</span>
+                    </span>
+                    <span className="text-emerald-700 font-black">+₹49</span>
+                  </div>
+                  <p className="text-gray-500 text-[11px]">Guaranteed Tomorrow Delivery by 2 PM via Air Express</p>
+                </div>
+              </div>
+
+              {/* Time Slot Preference */}
+              <div className="pt-1">
+                <p className="text-xs font-bold text-gray-700 mb-2">Preferred Delivery Time Slot:</p>
+                <div className="flex gap-3 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setDeliverySlot("morning")}
+                    className={`flex-1 py-2 px-3 rounded-xl border font-bold transition cursor-pointer text-center ${
+                      deliverySlot === "morning"
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    🌅 Morning (9 AM - 1 PM)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setDeliverySlot("evening")}
+                    className={`flex-1 py-2 px-3 rounded-xl border font-bold transition cursor-pointer text-center ${
+                      deliverySlot === "evening"
+                        ? "bg-gray-900 text-white border-gray-900"
+                        : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    🌆 Evening (4 PM - 8 PM)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. Premium Gift Packaging Add-on */}
+            <div className="bg-gradient-to-r from-purple-50/80 via-pink-50/50 to-amber-50/50 border border-purple-200/80 rounded-3xl p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-lg font-black shadow-xs">
+                    🎁
+                  </div>
+                  <div>
+                    <h3 className="font-black text-gray-900 text-xs sm:text-sm">Add Luxury Gift Packaging &amp; Greeting Card</h3>
+                    <p className="text-[11px] text-gray-500 font-medium">Includes velvet ribbon packaging &amp; handwritten personalized card (+₹49)</p>
+                  </div>
+                </div>
+
+                <input
+                  type="checkbox"
+                  checked={isGiftWrap}
+                  onChange={(e) => setIsGiftWrap(e.target.checked)}
+                  className="w-5 h-5 accent-purple-600 rounded cursor-pointer shrink-0"
+                />
+              </div>
+
+              {isGiftWrap && (
+                <div className="pt-2 space-y-2 text-xs">
+                  <textarea
+                    rows={2}
+                    placeholder="Write custom gift message for recipient (e.g. Happy Birthday Sachin! Wish you all the best 🎉)"
+                    value={giftMessage}
+                    onChange={(e) => setGiftMessage(e.target.value)}
+                    className="w-full bg-white border border-purple-200 rounded-2xl p-3 text-xs text-gray-900 font-medium focus:outline-none focus:border-purple-500 shadow-2xs"
+                  />
+                  <p className="text-[10px] text-purple-700 font-bold">✓ Product prices will be omitted from the recipient invoice.</p>
+                </div>
+              )}
+            </div>
+
+            {/* 4. Promo Coupon Code Section */}
             <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-3">
               <h2 className="text-base font-black text-gray-900 flex items-center gap-2">
-                <span>🏷️ 2. Apply Coupon Code</span>
+                <span>🏷️ 4. Apply Promo Coupon Code</span>
               </h2>
 
               {appliedCoupon ? (
@@ -699,209 +843,13 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* 3. Choose Payment Method & Gateway Card */}
-            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-5">
-              <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-                <h2 className="text-base font-black text-gray-900 flex items-center gap-2">
-                  <span>💳 3. Choose Payment Method &amp; Gateway</span>
-                </h2>
-                <span className="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
-                  🔒 256-Bit SSL Encrypted
-                </span>
-              </div>
-
-              {/* Payment Method Selector Tabs */}
-              <div className="flex bg-gray-100 p-1 rounded-2xl text-xs font-bold text-gray-700">
-                <button
-                  onClick={() => setSelectedMethod("upi")}
-                  className={`flex-1 py-2.5 rounded-xl transition cursor-pointer ${selectedMethod === "upi" ? "bg-[#059669] text-white shadow-sm font-black" : "hover:text-gray-900"}`}
-                >
-                  📱 UPI / QR
-                </button>
-                <button
-                  onClick={() => setSelectedMethod("card")}
-                  className={`flex-1 py-2.5 rounded-xl transition cursor-pointer ${selectedMethod === "card" ? "bg-[#059669] text-white shadow-sm font-black" : "hover:text-gray-900"}`}
-                >
-                  💳 Card
-                </button>
-                <button
-                  onClick={() => setSelectedMethod("netbanking")}
-                  className={`flex-1 py-2.5 rounded-xl transition cursor-pointer ${selectedMethod === "netbanking" ? "bg-[#059669] text-white shadow-sm font-black" : "hover:text-gray-900"}`}
-                >
-                  🏦 Net Banking
-                </button>
-                <button
-                  onClick={() => setSelectedMethod("cod")}
-                  className={`flex-1 py-2.5 rounded-xl transition cursor-pointer ${selectedMethod === "cod" ? "bg-[#059669] text-white shadow-sm font-black" : "hover:text-gray-900"}`}
-                >
-                  💵 COD
-                </button>
-              </div>
-
-              {/* TAB 1: REAL SCANNABLE UPI QR CODE & DIRECT INTENT */}
-              {selectedMethod === "upi" && (() => {
-                const upiPayUrl = `upi://pay?pa=6264384464@ybl&pn=SKIPD%20Commerce&am=${finalPayable.toFixed(2)}&cu=INR&tn=Order%20${createdOrderNumber || 'SKIPD'}`;
-                const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiPayUrl)}`;
-
-                return (
-                  <div className="space-y-4 text-center">
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-5 flex flex-col items-center justify-center space-y-3">
-                      <p className="text-xs font-black text-emerald-950">Scan QR with GPay, PhonePe, Paytm, BHIM or Cred</p>
-                      
-                      {/* 100% Real Scannable UPI QR Code Image */}
-                      <div className="w-52 h-52 bg-white p-2.5 rounded-2xl border-4 border-emerald-500 shadow-lg flex items-center justify-center relative group">
-                        <img
-                          src={qrImageUrl}
-                          alt="Scannable UPI QR Code"
-                          className="w-full h-full object-contain rounded-lg"
-                        />
-                        <div className="absolute -bottom-2 bg-emerald-600 text-white font-black text-[10px] px-3 py-0.5 rounded-full shadow-md">
-                          ₹{finalPayable.toLocaleString("en-IN")}
-                        </div>
-                      </div>
-
-                      <p className="text-[11px] font-extrabold text-emerald-700 pt-1">
-                        ⏱️ QR Code Expires in {Math.floor(qrTimer / 60)}:{String(qrTimer % 60).padStart(2, '0')}
-                      </p>
-
-                      {/* Direct UPI App Launchers for Mobile Users */}
-                      <div className="pt-1 flex items-center justify-center gap-2 flex-wrap">
-                        <a
-                          href={upiPayUrl}
-                          className="bg-white hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-extrabold text-[11px] px-4 py-2 rounded-xl transition shadow-2xs flex items-center gap-1.5"
-                        >
-                          <span>📲 Open in GPay / PhonePe / Paytm</span>
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-
-              {/* TAB 2: CREDIT / DEBIT CARD */}
-              {selectedMethod === "card" && (
-                <div className="space-y-4 text-xs">
-                  <div className="bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 text-white rounded-3xl p-5 shadow-xl space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="font-extrabold text-sm tracking-wider">SKIPD CARD</span>
-                      <span className="text-xs font-bold text-amber-400">VISA / MasterCard</span>
-                    </div>
-                    <p className="font-mono text-base tracking-widest py-2">
-                      {cardData.number || "•••• •••• •••• ••••"}
-                    </p>
-                    <div className="flex justify-between text-[10px] uppercase">
-                      <div>
-                        <p className="text-gray-400">Card Holder</p>
-                        <p className="font-bold">{cardData.holder || "YOUR NAME"}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Expires</p>
-                        <p className="font-bold">{cardData.exp || "MM/YY"}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <input
-                      type="text"
-                      maxLength={19}
-                      placeholder="Card Number (16 Digits)"
-                      value={cardData.number}
-                      onChange={(e) => setCardData({ ...cardData, number: e.target.value })}
-                      className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
-                    />
-                    <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="text"
-                        maxLength={5}
-                        placeholder="MM/YY"
-                        value={cardData.exp}
-                        onChange={(e) => setCardData({ ...cardData, exp: e.target.value })}
-                        className="bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
-                      />
-                      <input
-                        type="password"
-                        maxLength={3}
-                        placeholder="CVV"
-                        value={cardData.cvv}
-                        onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
-                        className="bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 3: NET BANKING */}
-              {selectedMethod === "netbanking" && (
-                <div className="space-y-4 text-xs">
-                  <p className="font-bold text-gray-700">Select Your Bank:</p>
-                  <div className="grid grid-cols-3 gap-2">
-                    {["HDFC", "SBI", "ICICI", "Axis", "Kotak", "PNB"].map((bank) => (
-                      <button
-                        key={bank}
-                        onClick={() => setSelectedBank(bank)}
-                        className={`p-3 rounded-2xl border font-extrabold transition text-center cursor-pointer ${
-                          selectedBank === bank ? "bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs" : "bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-300"
-                        }`}
-                      >
-                        🏦 {bank}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* TAB 4: CASH ON DELIVERY */}
-              {selectedMethod === "cod" && (
-                <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 text-xs space-y-3">
-                  <p className="font-bold text-amber-900 text-sm">💵 Cash on Delivery (COD) Selected</p>
-                  <p className="text-amber-800">Pay ₹{finalPayable.toLocaleString("en-IN")} in cash to the delivery agent upon receiving your package.</p>
-                  
-                  {!codOtpSent ? (
-                    <button
-                      onClick={() => setCodOtpSent(true)}
-                      className="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold py-2.5 rounded-2xl transition cursor-pointer"
-                    >
-                      📲 Send 4-Digit Security OTP to Phone
-                    </button>
-                  ) : (
-                    <div className="space-y-2">
-                      <p className="text-emerald-700 font-bold">✓ OTP Sent to your registered mobile number!</p>
-                      <input
-                        type="text"
-                        maxLength={4}
-                        placeholder="Enter OTP (e.g. 8942)"
-                        value={codOtp}
-                        onChange={(e) => setCodOtp(e.target.value)}
-                        className="w-full bg-white border border-amber-300 rounded-2xl px-4 py-2 font-mono text-center text-sm font-bold focus:outline-none"
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Direct Payment Action Button */}
-              <button
-                onClick={() => {
-                  if (selectedMethod === "cod") {
-                    handleFinalOrderSubmit();
-                  } else {
-                    handleLaunchRazorpayGateway();
-                  }
-                }}
-                disabled={processingPayment}
-                className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black text-base py-4 rounded-3xl transition shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {processingPayment ? (
-                  <span className="flex items-center gap-2">
-                    <span className="animate-spin text-lg">⏳</span> Opening Razorpay Gateway...
-                  </span>
-                ) : (
-                  <span>🔒 Confirm Order &amp; Pay ₹{finalPayable.toLocaleString("en-IN")}</span>
-                )}
-              </button>
-            </div>
+            {/* 5. Proceed to Payment Action Button */}
+            <button
+              onClick={handleProceedToPayment}
+              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base py-4 rounded-3xl transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              🔒 Proceed to Secure Payment (₹{finalPayable.toLocaleString("en-IN")})
+            </button>
 
           </div>
 
@@ -1026,12 +974,47 @@ export default function CheckoutPage() {
                   <span className="font-bold text-gray-900">₹{shippingFee}.00</span>
                 )}
               </div>
+
+              {deliverySpeed === "express" && (
+                <div className="flex justify-between text-emerald-800 font-bold">
+                  <span>⚡ Express Air Shipping</span>
+                  <span>+₹49.00</span>
+                </div>
+              )}
+
+              {isGiftWrap && (
+                <div className="flex justify-between text-purple-800 font-bold">
+                  <span>🎁 Luxury Gift Packaging</span>
+                  <span>+₹49.00</span>
+                </div>
+              )}
+            </div>
+
+            {/* Total Savings Callout Ribbon */}
+            <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3 text-center text-xs font-black text-emerald-900 shadow-2xs">
+              🎉 Great Choice! Free BlueDart Express Shipping Included.
             </div>
 
             {/* Total Payable */}
             <div className="flex justify-between items-center text-sm font-black text-gray-900 pt-1">
               <span>Total Payable Amount</span>
               <span className="text-xl text-emerald-700">₹{finalPayable.toLocaleString("en-IN")}.00</span>
+            </div>
+
+            {/* Logistics & Verified Security Card */}
+            <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-2.5 text-xs text-gray-600">
+              <div className="flex items-center justify-between border-b border-gray-200/60 pb-2">
+                <span className="font-bold text-gray-800">Logistics Partner</span>
+                <span className="font-black text-blue-700">BlueDart / Delhivery Express</span>
+              </div>
+              <div className="flex items-center justify-between border-b border-gray-200/60 pb-2">
+                <span className="font-bold text-gray-800">Payment Gateway</span>
+                <span className="font-black text-emerald-700">Razorpay SSL Verified</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-gray-800">Founder Live Support</span>
+                <span className="font-black text-purple-700">+91 98765 43210</span>
+              </div>
             </div>
 
             <p className="text-[10px] text-gray-400 text-center">
