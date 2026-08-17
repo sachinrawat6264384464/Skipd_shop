@@ -33,11 +33,33 @@ export default function AdminProductsPage() {
   const [createStep, setCreateStep] = useState<"basic" | "pricing" | "images" | "variants" | "highlights" | "seo">("basic");
   const [customTaxonomyMode, setCustomTaxonomyMode] = useState(false);
 
-  // Sub-Tab Creation Modals
+  // Sub-Tab Creation & Edit Modals State
   const [showAddBrandModal, setShowAddBrandModal] = useState(false);
+  const [showEditBrandModal, setShowEditBrandModal] = useState(false);
+  const [editingBrand, setEditingBrand] = useState<any | null>(null);
+  const [editBrandForm, setEditBrandForm] = useState({ name: "", website: "", logo: "" });
+  const [deletingBrandId, setDeletingBrandId] = useState<number | null>(null);
+
   const [showAddVariantModal, setShowAddVariantModal] = useState(false);
+  const [showEditVariantModal, setShowEditVariantModal] = useState(false);
+  const [editingVariant, setEditingVariant] = useState<any | null>(null);
+  const [editVariantForm, setEditVariantForm] = useState({ sku: "", product: "", variant: "", priceExtra: "Standard", stock: "25" });
+  const [deletingVariantId, setDeletingVariantId] = useState<string | null>(null);
+
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
+  const [showAddSubCategoryModal, setShowAddSubCategoryModal] = useState(false);
+  const [showEditSubCategoryModal, setShowEditSubCategoryModal] = useState(false);
+  const [editingSubCategory, setEditingSubCategory] = useState<any | null>(null);
+  const [newSubCategoryForm, setNewSubCategoryForm] = useState({ name: "", parent: "Mobiles & Tablets", slug: "" });
+  const [editSubCategoryForm, setEditSubCategoryForm] = useState({ name: "", parent: "Mobiles & Tablets", slug: "" });
+  const [deletingSubCategoryId, setDeletingSubCategoryId] = useState<number | null>(null);
+
   const [showAddAttributeModal, setShowAddAttributeModal] = useState(false);
+  const [showEditAttributeModal, setShowEditAttributeModal] = useState(false);
+  const [editingAttribute, setEditingAttribute] = useState<any | null>(null);
+  const [newAttributeForm, setNewAttributeForm] = useState({ name: "", type: "Visual Swatch", values: "" });
+  const [editAttributeForm, setEditAttributeForm] = useState({ name: "", type: "Visual Swatch", values: "" });
+  const [deletingAttributeId, setDeletingAttributeId] = useState<number | null>(null);
 
   // Edit / Delete Category State
   const [editingCategory, setEditingCategory] = useState<any | null>(null);
@@ -108,6 +130,50 @@ export default function AdminProductsPage() {
     setDeletingCategoryId(null);
   };
 
+  // Sub-Category Handlers
+  const handleCreateSubCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSubCategoryForm.name) return;
+    const newSub = {
+      id: Date.now(),
+      name: newSubCategoryForm.name,
+      parent: newSubCategoryForm.parent,
+      slug: newSubCategoryForm.slug || newSubCategoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      count: 0
+    };
+    setSubCategories(prev => {
+      const updated = [newSub, ...prev];
+      if (typeof window !== "undefined") localStorage.setItem("skipd_subcategories", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`✓ Sub-Category "${newSubCategoryForm.name}" created!`);
+    setShowAddSubCategoryModal(false);
+    setNewSubCategoryForm({ name: "", parent: "Mobiles & Tablets", slug: "" });
+  };
+
+  const handleUpdateSubCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingSubCategory) return;
+    setSubCategories(prev => {
+      const updated = prev.map(sc => sc.id === editingSubCategory.id ? { ...sc, ...editSubCategoryForm } : sc);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_subcategories", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`✓ Sub-Category "${editSubCategoryForm.name}" updated!`);
+    setShowEditSubCategoryModal(false);
+    setEditingSubCategory(null);
+  };
+
+  const handleDeleteSubCategory = (id: number) => {
+    setSubCategories(prev => {
+      const updated = prev.filter(sc => sc.id !== id);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_subcategories", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`🗑️ Sub-Category deleted`, "error");
+    setDeletingSubCategoryId(null);
+  };
+
   // New Brand Form State
   const [newBrandForm, setNewBrandForm] = useState({
     name: "",
@@ -115,7 +181,95 @@ export default function AdminProductsPage() {
     logo_url: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200"
   });
 
-  // New Variant Form State
+  const handleCreateBrand = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newBrandForm.name) return;
+    const newB = {
+      id: Date.now(),
+      name: newBrandForm.name,
+      website: newBrandForm.website || `${newBrandForm.name.toLowerCase()}.com`,
+      logo: newBrandForm.logo_url || "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200",
+      count: 0,
+      status: "Verified"
+    };
+    setBrands(prev => {
+      const updated = [newB, ...prev];
+      if (typeof window !== "undefined") localStorage.setItem("skipd_brands", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`✓ Brand "${newBrandForm.name}" created!`);
+    setShowAddBrandModal(false);
+    setNewBrandForm({ name: "", website: "", logo_url: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200" });
+  };
+
+  const handleUpdateBrand = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBrand) return;
+    setBrands(prev => {
+      const updated = prev.map(b => b.id === editingBrand.id ? { ...b, ...editBrandForm } : b);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_brands", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`✓ Brand "${editBrandForm.name}" updated!`);
+    setShowEditBrandModal(false);
+    setEditingBrand(null);
+  };
+
+  const handleDeleteBrand = (id: number, name: string) => {
+    setBrands(prev => {
+      const updated = prev.filter(b => b.id !== id);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_brands", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`🗑️ Brand "${name}" deleted`, "error");
+    setDeletingBrandId(null);
+  };
+
+  // Attribute Handlers
+  const handleCreateAttribute = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newAttributeForm.name) return;
+    const newAttr = {
+      id: Date.now(),
+      name: newAttributeForm.name,
+      type: newAttributeForm.type,
+      values: newAttributeForm.values,
+      count: 0
+    };
+    setAttributes(prev => {
+      const updated = [newAttr, ...prev];
+      if (typeof window !== "undefined") localStorage.setItem("skipd_attributes", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`✓ Attribute "${newAttributeForm.name}" created!`);
+    setShowAddAttributeModal(false);
+    setNewAttributeForm({ name: "", type: "Visual Swatch", values: "" });
+  };
+
+  const handleUpdateAttribute = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingAttribute) return;
+    setAttributes(prev => {
+      const updated = prev.map(a => a.id === editingAttribute.id ? { ...a, ...editAttributeForm } : a);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_attributes", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`✓ Attribute "${editAttributeForm.name}" updated!`);
+    setShowEditAttributeModal(false);
+    setEditingAttribute(null);
+  };
+
+  const handleDeleteAttribute = (id: number) => {
+    setAttributes(prev => {
+      const updated = prev.filter(a => a.id !== id);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_attributes", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`🗑️ Attribute deleted`, "error");
+    setDeletingAttributeId(null);
+  };
+
+  // Variant Handlers
   const [newVariantForm, setNewVariantForm] = useState({
     sku: "",
     product: "",
@@ -123,6 +277,75 @@ export default function AdminProductsPage() {
     priceExtra: "Standard",
     stock: "25"
   });
+
+  const handleCreateVariant = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newVariantForm.sku) return;
+    const newV = {
+      id: newVariantForm.sku,
+      product: newVariantForm.product,
+      variant: newVariantForm.variant,
+      priceExtra: newVariantForm.priceExtra,
+      stock: parseInt(newVariantForm.stock) || 10,
+      status: "In Stock"
+    };
+    setVariants(prev => {
+      const updated = [newV, ...prev];
+      if (typeof window !== "undefined") localStorage.setItem("skipd_variants", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`⚡ Variant SKU "${newVariantForm.sku}" generated!`);
+    setShowAddVariantModal(false);
+    setNewVariantForm({ sku: "", product: "", variant: "", priceExtra: "Standard", stock: "25" });
+  };
+
+  const handleUpdateVariant = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingVariant) return;
+    setVariants(prev => {
+      const updated = prev.map(v => v.id === editingVariant.id ? { ...v, ...editVariantForm, stock: parseInt(editVariantForm.stock) || 10 } : v);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_variants", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`✓ Variant SKU "${editingVariant.id}" updated!`);
+    setShowEditVariantModal(false);
+    setEditingVariant(null);
+  };
+
+  const handleDeleteVariant = (id: string) => {
+    setVariants(prev => {
+      const updated = prev.filter(v => v.id !== id);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_variants", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`🗑️ Variant SKU "${id}" deleted`, "error");
+    setDeletingVariantId(null);
+  };
+
+  // Review Handlers
+  const handleToggleReviewStatus = (id: number) => {
+    setReviews(prev => {
+      const updated = prev.map(r => {
+        if (r.id === id) {
+          const nextStatus = r.status === "Approved" ? "Pending" : "Approved";
+          showNotification(`Review #${id} set to ${nextStatus}`);
+          return { ...r, status: nextStatus };
+        }
+        return r;
+      });
+      if (typeof window !== "undefined") localStorage.setItem("skipd_reviews", JSON.stringify(updated));
+      return updated;
+    });
+  };
+
+  const handleDeleteReview = (id: number) => {
+    setReviews(prev => {
+      const updated = prev.filter(r => r.id !== id);
+      if (typeof window !== "undefined") localStorage.setItem("skipd_reviews", JSON.stringify(updated));
+      return updated;
+    });
+    showNotification(`🗑️ Review #${id} deleted`, "error");
+  };
 
   const initialEmptyProductState = {
     title: "",
@@ -307,6 +530,24 @@ export default function AdminProductsPage() {
   useEffect(() => {
     loadProducts();
     loadCategories();
+    if (typeof window !== "undefined") {
+      try {
+        const subCats = localStorage.getItem("skipd_subcategories");
+        if (subCats) setSubCategories(JSON.parse(subCats));
+
+        const storedBrands = localStorage.getItem("skipd_brands");
+        if (storedBrands) setBrands(JSON.parse(storedBrands));
+
+        const storedAttrs = localStorage.getItem("skipd_attributes");
+        if (storedAttrs) setAttributes(JSON.parse(storedAttrs));
+
+        const storedVars = localStorage.getItem("skipd_variants");
+        if (storedVars) setVariants(JSON.parse(storedVars));
+
+        const storedRevs = localStorage.getItem("skipd_reviews");
+        if (storedRevs) setReviews(JSON.parse(storedRevs));
+      } catch (err) {}
+    }
   }, []);
 
   async function loadProducts() {
@@ -457,45 +698,6 @@ export default function AdminProductsPage() {
     } else {
       showNotification("Failed to publish product", "error");
     }
-  };
-
-  const handleCreateBrand = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newBrandForm.name) return;
-    const newB = {
-      id: Date.now(),
-      name: newBrandForm.name,
-      website: newBrandForm.website || `${newBrandForm.name.toLowerCase()}.com`,
-      logo: newBrandForm.logo_url || "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200",
-      count: 0,
-      status: "Verified"
-    };
-    setBrands([...brands, newB]);
-    showNotification(`✓ Official Brand "${newBrandForm.name}" added successfully!`);
-    setShowAddBrandModal(false);
-    setNewBrandForm({ name: "", website: "", logo_url: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200" });
-  };
-
-  const handleDeleteBrand = (id: number, name: string) => {
-    setBrands(brands.filter(b => b.id !== id));
-    showNotification(`🗑️ Brand "${name}" removed from catalog`, "error");
-  };
-
-  const handleCreateVariant = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newVariantForm.sku || !newVariantForm.product) return;
-    const newV = {
-      id: newVariantForm.sku.toUpperCase(),
-      product: newVariantForm.product,
-      variant: newVariantForm.variant || "Standard SKU",
-      priceExtra: newVariantForm.priceExtra,
-      stock: parseInt(newVariantForm.stock) || 10,
-      status: "In Stock"
-    };
-    setVariants([...variants, newV]);
-    showNotification(`✓ Variant SKU "${newV.id}" created!`);
-    setShowAddVariantModal(false);
-    setNewVariantForm({ sku: "", product: "", variant: "", priceExtra: "Standard", stock: "25" });
   };
 
   const handleUpdateProduct = async (e: React.FormEvent) => {
@@ -1052,7 +1254,7 @@ export default function AdminProductsPage() {
               <p className="text-xs text-gray-500 mt-0.5">Nested taxonomy links mapped to parent categories</p>
             </div>
             <button
-              onClick={() => showNotification("Sub-Category creation modal opened")}
+              onClick={() => setShowAddSubCategoryModal(true)}
               className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
             >
               <span>+ Add Sub Category</span>
@@ -1080,9 +1282,26 @@ export default function AdminProductsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 font-mono text-gray-500 text-[11px]">/category/{sc.slug}</td>
-                    <td className="px-6 py-4 font-black text-gray-900">{sc.count} Products</td>
+                    <td className="px-6 py-4 font-black text-gray-900">{sc.count || 0} Products</td>
                     <td className="px-6 py-4 text-right">
-                      <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">✏️ Edit</button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingSubCategory(sc);
+                            setEditSubCategoryForm({ name: sc.name, parent: sc.parent, slug: sc.slug });
+                            setShowEditSubCategoryModal(true);
+                          }}
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs"
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSubCategory(sc.id)}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -1091,7 +1310,7 @@ export default function AdminProductsPage() {
           </div>
         </div>
       ) : activeTab === "Brands" ? (
-        /* 🟢 TAB 5: BRANDS MANAGER VIEW WITH HIGH-RES LOGO IMAGES & WORKING ADD/EDIT/DELETE ACTIONS */
+        /* 🟢 TAB 5: BRANDS MANAGER VIEW */
         <div className="bg-white border border-gray-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xs">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-4">
             <div>
@@ -1109,7 +1328,7 @@ export default function AdminProductsPage() {
             </button>
           </div>
 
-          {/* Brands Grid with High-Res Images & Action Buttons */}
+          {/* Brands Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {brands.map((b) => (
               <div key={b.id} className="bg-gray-50 border border-gray-200 p-5 rounded-2xl space-y-3 hover:bg-white hover:border-emerald-300 transition shadow-2xs group">
@@ -1123,18 +1342,21 @@ export default function AdminProductsPage() {
                     <div>
                       <p className="font-black text-gray-900 text-base leading-tight">{b.name}</p>
                       <p className="text-[10px] text-gray-400 font-mono">{b.website}</p>
-                      <p className="text-[11px] text-emerald-700 font-bold mt-0.5">{b.count} Store Products</p>
+                      <p className="text-[11px] text-emerald-700 font-bold mt-0.5">{b.count || 0} Store Products</p>
                     </div>
                   </div>
                   <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-emerald-200">
-                    {b.status}
+                    {b.status || "Verified"}
                   </span>
                 </div>
 
-                {/* Edit & Delete Action Buttons for Brands */}
                 <div className="flex items-center justify-end gap-2 pt-2 border-t border-gray-200/60">
                   <button
-                    onClick={() => showNotification(`Editing ${b.name} brand settings`)}
+                    onClick={() => {
+                      setEditingBrand(b);
+                      setEditBrandForm({ name: b.name, website: b.website, logo: b.logo });
+                      setShowEditBrandModal(true);
+                    }}
                     className="bg-white hover:bg-gray-100 text-gray-700 font-bold px-3 py-1 rounded-lg border border-gray-300 text-xs transition cursor-pointer flex items-center gap-1"
                   >
                     <span>✏️ Edit</span>
@@ -1190,9 +1412,26 @@ export default function AdminProductsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 font-mono text-gray-600 text-[11px] max-w-xs truncate">{attr.values}</td>
-                    <td className="px-6 py-4 font-bold text-emerald-700">{attr.count} Items</td>
+                    <td className="px-6 py-4 font-bold text-emerald-700">{attr.count || 0} Items</td>
                     <td className="px-6 py-4 text-right">
-                      <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">✏️ Edit</button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingAttribute(attr);
+                            setEditAttributeForm({ name: attr.name, type: attr.type, values: attr.values });
+                            setShowEditAttributeModal(true);
+                          }}
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs"
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteAttribute(attr.id)}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -1201,7 +1440,7 @@ export default function AdminProductsPage() {
           </div>
         </div>
       ) : activeTab === "Product Variants" ? (
-        /* 🟢 TAB 7: PRODUCT VARIANTS MATRIX VIEW WITH WORKING GENERATE MODAL */
+        /* 🟢 TAB 7: PRODUCT VARIANTS MATRIX VIEW */
         <div className="bg-white border border-gray-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xs">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-4">
             <div>
@@ -1240,7 +1479,24 @@ export default function AdminProductsPage() {
                     <td className="px-6 py-4 font-black text-gray-900">{v.priceExtra}</td>
                     <td className="px-6 py-4 font-black text-gray-900">{v.stock} units</td>
                     <td className="px-6 py-4 text-right">
-                      <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">✏️ Edit SKU</button>
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingVariant(v);
+                            setEditVariantForm({ sku: v.id, product: v.product, variant: v.variant, priceExtra: v.priceExtra, stock: String(v.stock) });
+                            setShowEditVariantModal(true);
+                          }}
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs"
+                        >
+                          ✏️ Edit SKU
+                        </button>
+                        <button
+                          onClick={() => handleDeleteVariant(v.id)}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs"
+                        >
+                          🗑️
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -1284,13 +1540,13 @@ export default function AdminProductsPage() {
                 <p className="text-xs text-gray-700 font-medium italic pl-11">"{rev.comment}"</p>
                 <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
                   <button
-                    onClick={() => showNotification(`Review #${rev.id} approved live`)}
-                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-xl border border-emerald-200 transition text-xs cursor-pointer"
+                    onClick={() => handleToggleReviewStatus(rev.id)}
+                    className={`${rev.status === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"} font-bold px-3 py-1 rounded-xl border transition text-xs cursor-pointer`}
                   >
-                    ✓ Approved
+                    {rev.status === "Approved" ? "✓ Approved" : "⏳ Set Approved"}
                   </button>
                   <button
-                    onClick={() => showNotification(`Review #${rev.id} deleted`, "error")}
+                    onClick={() => handleDeleteReview(rev.id)}
                     className="bg-red-50 hover:bg-red-100 text-red-700 font-bold px-3 py-1 rounded-xl border border-red-200 transition text-xs cursor-pointer"
                   >
                     🗑️ Delete Review
@@ -1643,6 +1899,358 @@ export default function AdminProductsPage() {
                 >
                   Generate Variant
                 </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 📁 ADD SUB-CATEGORY MODAL */}
+      {showAddSubCategoryModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="text-lg font-black text-gray-900">+ Create Sub Category</h3>
+                <p className="text-xs text-gray-500">Map new sub-category to parent category taxonomy</p>
+              </div>
+              <button onClick={() => setShowAddSubCategoryModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleCreateSubCategory} className="space-y-4 text-xs font-medium">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Sub Category Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={newSubCategoryForm.name}
+                  onChange={(e) => {
+                    const name = e.target.value;
+                    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                    setNewSubCategoryForm({ ...newSubCategoryForm, name, slug });
+                  }}
+                  placeholder="e.g. Flagship Smartphones"
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Parent Category *</label>
+                <select
+                  value={newSubCategoryForm.parent}
+                  onChange={(e) => setNewSubCategoryForm({ ...newSubCategoryForm, parent: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                >
+                  {categories.map(c => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Slug Link</label>
+                <input
+                  type="text"
+                  value={newSubCategoryForm.slug}
+                  onChange={(e) => setNewSubCategoryForm({ ...newSubCategoryForm, slug: e.target.value })}
+                  placeholder="flagship-smartphones"
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs font-mono text-gray-700"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t">
+                <button type="button" onClick={() => setShowAddSubCategoryModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">Create Sub Category</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ✏️ EDIT SUB-CATEGORY MODAL */}
+      {showEditSubCategoryModal && editingSubCategory && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="text-lg font-black text-gray-900">Edit Sub Category</h3>
+                <p className="text-xs text-gray-500">Update sub-category name and parent link</p>
+              </div>
+              <button onClick={() => setShowEditSubCategoryModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleUpdateSubCategory} className="space-y-4 text-xs font-medium">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Sub Category Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editSubCategoryForm.name}
+                  onChange={(e) => setEditSubCategoryForm({ ...editSubCategoryForm, name: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Parent Category *</label>
+                <select
+                  value={editSubCategoryForm.parent}
+                  onChange={(e) => setEditSubCategoryForm({ ...editSubCategoryForm, parent: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                >
+                  {categories.map(c => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Slug Link</label>
+                <input
+                  type="text"
+                  value={editSubCategoryForm.slug}
+                  onChange={(e) => setEditSubCategoryForm({ ...editSubCategoryForm, slug: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs font-mono text-gray-700"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t">
+                <button type="button" onClick={() => setShowEditSubCategoryModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ✏️ EDIT BRAND MODAL */}
+      {showEditBrandModal && editingBrand && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="text-lg font-black text-gray-900">Edit Partner Brand</h3>
+                <p className="text-xs text-gray-500">Update logo URL &amp; website domain</p>
+              </div>
+              <button onClick={() => setShowEditBrandModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleUpdateBrand} className="space-y-4 text-xs font-medium">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Brand Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editBrandForm.name}
+                  onChange={(e) => setEditBrandForm({ ...editBrandForm, name: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Website URL</label>
+                <input
+                  type="text"
+                  value={editBrandForm.website}
+                  onChange={(e) => setEditBrandForm({ ...editBrandForm, website: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Logo Image URL</label>
+                <input
+                  type="text"
+                  value={editBrandForm.logo}
+                  onChange={(e) => setEditBrandForm({ ...editBrandForm, logo: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs font-mono text-gray-700"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t">
+                <button type="button" onClick={() => setShowEditBrandModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 🟣 ADD ATTRIBUTE MODAL */}
+      {showAddAttributeModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="text-lg font-black text-gray-900">+ Create Custom Attribute</h3>
+                <p className="text-xs text-gray-500">Add custom specification fields (Color, RAM, Size)</p>
+              </div>
+              <button onClick={() => setShowAddAttributeModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleCreateAttribute} className="space-y-4 text-xs font-medium">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Attribute Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={newAttributeForm.name}
+                  onChange={(e) => setNewAttributeForm({ ...newAttributeForm, name: e.target.value })}
+                  placeholder="e.g. Storage Capacity"
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Display UI Type</label>
+                <select
+                  value={newAttributeForm.type}
+                  onChange={(e) => setNewAttributeForm({ ...newAttributeForm, type: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                >
+                  <option value="Visual Swatch">Visual Swatch</option>
+                  <option value="Radio Selector">Radio Selector</option>
+                  <option value="Dropdown">Dropdown</option>
+                  <option value="Badge">Badge</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Configured Terms / Values (Comma separated)</label>
+                <input
+                  type="text"
+                  value={newAttributeForm.values}
+                  onChange={(e) => setNewAttributeForm({ ...newAttributeForm, values: e.target.value })}
+                  placeholder="128GB, 256GB, 512GB, 1TB"
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t">
+                <button type="button" onClick={() => setShowAddAttributeModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">Create Attribute</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ✏️ EDIT ATTRIBUTE MODAL */}
+      {showEditAttributeModal && editingAttribute && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="text-lg font-black text-gray-900">Edit Product Attribute</h3>
+                <p className="text-xs text-gray-500">Update specification values &amp; selector type</p>
+              </div>
+              <button onClick={() => setShowEditAttributeModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleUpdateAttribute} className="space-y-4 text-xs font-medium">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Attribute Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editAttributeForm.name}
+                  onChange={(e) => setEditAttributeForm({ ...editAttributeForm, name: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Display UI Type</label>
+                <select
+                  value={editAttributeForm.type}
+                  onChange={(e) => setEditAttributeForm({ ...editAttributeForm, type: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                >
+                  <option value="Visual Swatch">Visual Swatch</option>
+                  <option value="Radio Selector">Radio Selector</option>
+                  <option value="Dropdown">Dropdown</option>
+                  <option value="Badge">Badge</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Configured Terms / Values</label>
+                <input
+                  type="text"
+                  value={editAttributeForm.values}
+                  onChange={(e) => setEditAttributeForm({ ...editAttributeForm, values: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t">
+                <button type="button" onClick={() => setShowEditAttributeModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* ✏️ EDIT VARIANT SKU MODAL */}
+      {showEditVariantModal && editingVariant && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="text-lg font-black text-gray-900">Edit Variant SKU #{editingVariant.id}</h3>
+                <p className="text-xs text-gray-500">Update pricing markup and stock levels</p>
+              </div>
+              <button onClick={() => setShowEditVariantModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+            </div>
+
+            <form onSubmit={handleUpdateVariant} className="space-y-4 text-xs font-medium">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Parent Product *</label>
+                <input
+                  type="text"
+                  required
+                  value={editVariantForm.product}
+                  onChange={(e) => setEditVariantForm({ ...editVariantForm, product: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Variant Combination String</label>
+                <input
+                  type="text"
+                  value={editVariantForm.variant}
+                  onChange={(e) => setEditVariantForm({ ...editVariantForm, variant: e.target.value })}
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-700 mb-1">Price Adjustment</label>
+                  <input
+                    type="text"
+                    value={editVariantForm.priceExtra}
+                    onChange={(e) => setEditVariantForm({ ...editVariantForm, priceExtra: e.target.value })}
+                    className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-extrabold text-gray-700 mb-1">Available Stock Units</label>
+                  <input
+                    type="number"
+                    value={editVariantForm.stock}
+                    onChange={(e) => setEditVariantForm({ ...editVariantForm, stock: e.target.value })}
+                    className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t">
+                <button type="button" onClick={() => setShowEditVariantModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
+                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
               </div>
             </form>
           </div>
