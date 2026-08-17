@@ -42,18 +42,49 @@ async def lifespan(app: FastAPI):
         print(f"[Backend Startup Warning] DB auto-migration skipped ({err}). Startup continuing...")
 
     
-    # Seed initial B2C categories and products if database is fresh
+    # Seed initial B2C categories and products if database is fresh or categories missing
     try:
         async with AsyncSessionLocal() as db:
-            res = await db.execute(select(Category))
+            default_cats = [
+                {"name": "Electronics", "slug": "electronics", "icon": "⚡", "description": "Gadgets, audio, power banks and electronics accessories"},
+                {"name": "Mobiles & Tablets", "slug": "mobiles", "icon": "📱", "description": "Smartphones, flagship phones, and tablets"},
+                {"name": "Laptops & Computers", "slug": "laptops", "icon": "💻", "description": "Laptops, MacBooks, PC accessories"},
+                {"name": "Fashion & Apparel", "slug": "fashion", "icon": "👕", "description": "Ethnic wear, graphic tees, jackets and clothing"},
+                {"name": "Footwear & Shoes", "slug": "footwear", "icon": "👟", "description": "Sneakers, formal shoes and footwear"},
+                {"name": "Watches & Smartwear", "slug": "watches", "icon": "⌚", "description": "Smartwatches, analog chronographs and wearables"},
+                {"name": "Home & Living", "slug": "home", "icon": "🏡", "description": "Cushion covers, home decor and kitchen items"}
+            ]
+
+            existing_res = await db.execute(select(Category))
+            existing_cats = existing_res.scalars().all()
+            existing_slugs = {c.slug for c in existing_cats}
+
+            cats_to_add = []
+            for item in default_cats:
+                if item["slug"] not in existing_slugs:
+                    cats_to_add.append(
+                        Category(
+                            name=item["name"],
+                            slug=item["slug"],
+                            icon=item["icon"],
+                            description=item["description"],
+                            status="Active"
+                        )
+                    )
+            if cats_to_add:
+                db.add_all(cats_to_add)
+                await db.commit()
+                print(f"[Backend Startup] Seeded {len(cats_to_add)} default categories into PostgreSQL database!")
+
+            res = await db.execute(select(Product))
             if not res.scalars().first():
                 print("[Backend Startup] Seeding initial B2C catalog data...")
-                cat_apparel = Category(name="Apparel & Wear", slug="apparel", description="Premium fashion & apparel collection", image_url="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800")
-                cat_tech = Category(name="Tech Essentials", slug="tech", description="Next-gen gadgets & everyday gear", image_url="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800")
-                cat_lifestyle = Category(name="Lifestyle Accessories", slug="lifestyle", description="Modern luxury accessories", image_url="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800")
-                
-                db.add_all([cat_apparel, cat_tech, cat_lifestyle])
-                await db.commit()
+                cat_apparel_res = await db.execute(select(Category).where(Category.slug == "fashion"))
+                cat_apparel = cat_apparel_res.scalars().first()
+                cat_tech_res = await db.execute(select(Category).where(Category.slug == "electronics"))
+                cat_tech = cat_tech_res.scalars().first()
+                cat_lifestyle_res = await db.execute(select(Category).where(Category.slug == "watches"))
+                cat_lifestyle = cat_lifestyle_res.scalars().first()
 
                 p1 = Product(
                     title="Minimalist Oversized Graphic Tee",
