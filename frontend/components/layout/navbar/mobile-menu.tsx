@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LoginModal } from "components/auth/login-modal";
+import { LanguagePicker } from "components/language/language-picker";
 
 export default function MobileMenu() {
   const pathname = usePathname();
@@ -85,7 +86,7 @@ export default function MobileMenu() {
           {/* Drawer Panel */}
           <div className="relative w-[85%] max-w-xs bg-white h-full shadow-2xl overflow-y-auto flex flex-col z-50 text-gray-800 font-sans animate-in slide-in-from-left duration-200">
             
-            {/* Header: Brand & Close Button */}
+            {/* Header: Brand, Language Picker & Close Button */}
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
               <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2 font-black text-lg text-gray-900">
                 <span className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-sm shadow-xs">
@@ -94,13 +95,16 @@ export default function MobileMenu() {
                 <span>SKIPD STORE</span>
               </Link>
 
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="w-8 h-8 rounded-xl bg-gray-100 text-gray-500 hover:text-gray-900 font-black text-sm flex items-center justify-center cursor-pointer hover:bg-gray-200"
-              >
-                ✕
-              </button>
+              <div className="flex items-center gap-2">
+                <LanguagePicker />
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="w-8 h-8 rounded-xl bg-gray-100 text-gray-500 hover:text-gray-900 font-black text-sm flex items-center justify-center cursor-pointer hover:bg-gray-200"
+                >
+                  ✕
+                </button>
+              </div>
             </div>
 
             {/* 👤 DYNAMIC USER BANNER: Logged In vs Guest */}
