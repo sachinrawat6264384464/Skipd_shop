@@ -75,28 +75,37 @@ export default async function DedicatedCategoryPage(props: {
     icon: "🛍️"
   };
 
-  // Fetch products (If slug is 'all', 'all-categories', or 'catalog', return ALL products dynamically!)
+  // Fetch products and filter strictly by category
   const isAllCategory = ["all", "all-categories", "catalog", "more"].includes(slug);
-  let products = isAllCategory
-    ? await fetchProducts()
-    : await fetchProducts({ search: config.query });
+  const allProducts = await fetchProducts();
 
-  if (!isAllCategory && products.length < 2) {
-    const allProducts = await fetchProducts();
-    const filtered = allProducts.filter(
-      (p) =>
-        p.title.toLowerCase().includes(config.query.toLowerCase()) ||
-        p.category?.name?.toLowerCase().includes(config.query.toLowerCase()) ||
-        p.tags?.some((t) => t.toLowerCase().includes(config.query.toLowerCase()))
-    );
-    products = filtered.length > 0 ? filtered : allProducts;
-  }
+  let products = isAllCategory
+    ? allProducts
+    : allProducts.filter((p) => {
+        const catName = p.category?.name?.toLowerCase() || "";
+        const catSlug = p.category?.slug?.toLowerCase() || "";
+        const pTags = p.tags?.map((t) => t.toLowerCase()) || [];
+        const pTitle = p.title.toLowerCase();
+
+        return (
+          catSlug === slug ||
+          catName.includes(slug) ||
+          pTags.includes(slug) ||
+          (slug === "mobiles" && (pTitle.includes("nord") || pTitle.includes("phone") || pTitle.includes("mobile") || catName.includes("mobile"))) ||
+          (slug === "electronics" && (pTitle.includes("headphone") || pTitle.includes("anc") || pTitle.includes("drone") || pTitle.includes("tech") || catName.includes("tech"))) ||
+          (slug === "laptops" && (pTitle.includes("macbook") || pTitle.includes("laptop") || catName.includes("laptop"))) ||
+          (slug === "fashion" && (pTitle.includes("tee") || pTitle.includes("jacket") || pTitle.includes("saree") || catName.includes("fashion") || catName.includes("apparel"))) ||
+          (slug === "footwear" && (pTitle.includes("nike") || pTitle.includes("shoe") || pTitle.includes("sneaker") || catName.includes("footwear"))) ||
+          (slug === "watches" && (pTitle.includes("watch") || pTitle.includes("chrono") || catName.includes("watch"))) ||
+          (slug === "home" && (pTitle.includes("home") || catName.includes("home")))
+        );
+      });
 
   const fullDisplayTitle = `${config.icon} ${config.title}`;
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen">
-      <SearchCatalogView products={products} collectionTitle={fullDisplayTitle} />
+      <SearchCatalogView products={products} collectionTitle={fullDisplayTitle} categorySlug={slug} />
     </div>
   );
 }

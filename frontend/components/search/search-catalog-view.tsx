@@ -19,12 +19,81 @@ interface Product {
   category?: { name: string; slug: string };
 }
 
+const CATEGORY_BANNERS: Record<string, { title: string; subtitle: string; tag: string; slides: string[] }> = {
+  mobiles: {
+    title: "Flagship Mobiles & Smartphones",
+    subtitle: "Up to 40% OFF on 5G Smartphones, AMOLED Displays & AI Cameras",
+    tag: "⚡ TECH SPOTLIGHT",
+    slides: [
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=1400",
+      "https://images.unsplash.com/photo-1523206489230-c012c64b2047?w=1400",
+      "https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=1400"
+    ]
+  },
+  laptops: {
+    title: "Laptops & High Performance Workstations",
+    subtitle: "Apple M-Series, Intel i9 & Gaming Laptops with Instant Bank Cashbacks",
+    tag: "💻 COMPUTING POWER",
+    slides: [
+      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1400",
+      "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=1400"
+    ]
+  },
+  electronics: {
+    title: "Next-Gen Electronics & Audio Gear",
+    subtitle: "Studio Noise Cancelling Headphones, 4K Drones & Smart Wearables",
+    tag: "🎧 AUDIO & GADGETS",
+    slides: [
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1400",
+      "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=1400"
+    ]
+  },
+  fashion: {
+    title: "Trending Fashion & Designer Apparel",
+    subtitle: "Heavy Winter Trench Jackets, Cotton Graphic Tees & Festive Wear",
+    tag: "👕 STYLE COLLECTION",
+    slides: [
+      "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=1400",
+      "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1400"
+    ]
+  },
+  footwear: {
+    title: "Footwear & Premium Sneakers",
+    subtitle: "Original Leather Basketball Shoes, Sport Sneakers & Casual Footwear",
+    tag: "👟 SNEAKER HEADQUARTERS",
+    slides: [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1400",
+      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=1400"
+    ]
+  },
+  watches: {
+    title: "Smartwatches & Analog Chronographs",
+    subtitle: "Always-On AMOLED Displays, Fitness Trackers & Leather Watches",
+    tag: "⌚ TIMEPIECE SPOTLIGHT",
+    slides: [
+      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1400",
+      "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=1400"
+    ]
+  },
+  home: {
+    title: "Home & Interior Living Decor",
+    subtitle: "Modern Luxury Home Furnishings, Kitchenware & Ambient Lighting",
+    tag: "🏡 HOME SANCTUARY",
+    slides: [
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=1400",
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1400"
+    ]
+  }
+};
+
 export function SearchCatalogView({
   products,
-  collectionTitle
+  collectionTitle,
+  categorySlug
 }: {
   products: Product[];
   collectionTitle?: string;
+  categorySlug?: string;
 }) {
   const searchParams = useSearchParams();
   const maxPriceParam = searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : 100000;
@@ -37,8 +106,28 @@ export function SearchCatalogView({
   const [sortBy, setSortBy] = useState("bestselling");
   const [wishlist, setWishlist] = useState<number[]>([]);
   const [liveProducts, setLiveProducts] = useState<Product[]>(products);
+  const [activeSlide, setActiveSlide] = useState(0);
 
   const displayTitle = collectionTitle || "All Categories & Catalog";
+
+  const bannerData = categorySlug ? CATEGORY_BANNERS[categorySlug.toLowerCase()] : null;
+  const currentBanner = bannerData || {
+    title: displayTitle.replace(/^[^\w\s]+/, "").trim(),
+    subtitle: "Explore authentic products with 1-Year official brand warranty and instant free delivery",
+    tag: "🛍️ STORE COLLECTION",
+    slides: [
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400",
+      "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=1400"
+    ]
+  };
+
+  useEffect(() => {
+    if (currentBanner.slides.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % currentBanner.slides.length);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [currentBanner]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -144,6 +233,67 @@ export function SearchCatalogView({
   return (
     <div className="space-y-6 w-full">
       
+      {/* 🚀 CATEGORY HERO SLIDER BANNER */}
+      <div className="relative w-full h-56 sm:h-72 md:h-80 rounded-3xl overflow-hidden shadow-xl border border-gray-200/80 group">
+        {/* Slide Background Images with smooth fade transition */}
+        {currentBanner.slides.map((imgUrl, i) => (
+          <div
+            key={i}
+            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+              i === activeSlide ? "opacity-100 scale-105" : "opacity-0 scale-100"
+            }`}
+            style={{ transitionProperty: "opacity, transform" }}
+          >
+            <img src={imgUrl} alt={currentBanner.title} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-gray-950/90 via-gray-900/60 to-transparent" />
+          </div>
+        ))}
+
+        {/* Banner Content Overlay */}
+        <div className="relative z-10 h-full flex flex-col justify-center px-6 sm:px-12 max-w-2xl space-y-3 text-white">
+          <span className="bg-emerald-500/90 backdrop-blur-md text-white text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border border-emerald-300/40 inline-block self-start shadow-md">
+            {currentBanner.tag}
+          </span>
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-md">
+            {currentBanner.title}
+          </h1>
+          <p className="text-xs sm:text-sm text-gray-200 font-medium line-clamp-2 drop-shadow-xs max-w-lg">
+            {currentBanner.subtitle}
+          </p>
+        </div>
+
+        {/* Prev / Next Carousel Controls */}
+        {currentBanner.slides.length > 1 && (
+          <>
+            <button
+              onClick={() => setActiveSlide((prev) => (prev - 1 + currentBanner.slides.length) % currentBanner.slides.length)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center font-bold text-lg backdrop-blur-md border border-white/20 transition cursor-pointer z-20 opacity-0 group-hover:opacity-100"
+            >
+              ‹
+            </button>
+            <button
+              onClick={() => setActiveSlide((prev) => (prev + 1) % currentBanner.slides.length)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center font-bold text-lg backdrop-blur-md border border-white/20 transition cursor-pointer z-20 opacity-0 group-hover:opacity-100"
+            >
+              ›
+            </button>
+
+            {/* Carousel Dot Indicators */}
+            <div className="absolute bottom-4 right-6 z-20 flex gap-2">
+              {currentBanner.slides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveSlide(i)}
+                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    i === activeSlide ? "w-7 bg-emerald-500 shadow-md" : "w-2.5 bg-white/50 hover:bg-white"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
       {/* 📍 Breadcrumb & Top Header Title Controls */}
       <div className="space-y-3">
         <div className="text-xs text-gray-500 font-medium flex items-center gap-1.5">
@@ -156,7 +306,7 @@ export function SearchCatalogView({
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-4 md:p-6 rounded-3xl shadow-2xs">
           <div>
-            <h1 className="text-2xl md:text-3xl font-black text-gray-900 capitalize">{displayTitle}</h1>
+            <h2 className="text-2xl md:text-3xl font-black text-gray-900 capitalize">{displayTitle}</h2>
             <p className="text-xs text-gray-500 font-medium mt-0.5">
               Showing {totalItems > 0 ? startIndex + 1 : 0}–{endIndex} of {totalItems} products in stock
             </p>
@@ -203,15 +353,23 @@ export function SearchCatalogView({
       {/* 👉 PRODUCT CARDS GRID vs LIST VIEW (DYNAMIC FILTERING WORKING LIVE) */}
       {paginatedProducts.length === 0 ? (
         <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center text-gray-500 shadow-xs">
-          <div className="text-5xl mb-4">🔍</div>
-          <p className="text-lg font-bold text-gray-900">No products match your active filters</p>
-          <p className="text-xs mt-1 text-gray-500">Try adjusting your price slider or clearing filters.</p>
-          <Link
-            href="/category/all"
-            className="inline-block mt-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
-          >
-            Clear Filters &amp; Show All Products &rarr;
-          </Link>
+          <div className="text-5xl mb-4">📦</div>
+          <p className="text-lg font-bold text-gray-900">No products added to {displayTitle} yet</p>
+          <p className="text-xs mt-1 text-gray-500">You can add products and assign them to this category from the Admin Panel.</p>
+          <div className="flex justify-center gap-3 mt-4">
+            <Link
+              href="/admin/products"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+            >
+              + Add Products in Admin Panel &rarr;
+            </Link>
+            <Link
+              href="/category/all"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-5 py-2.5 rounded-xl transition cursor-pointer"
+            >
+              Browse All Store Products &rarr;
+            </Link>
+          </div>
         </div>
       ) : viewMode === "grid" ? (
         
@@ -261,12 +419,12 @@ export function SearchCatalogView({
                   </button>
                 </div>
 
-                {/* Product Image */}
-                <Link href={`/product/${product.handle}`} className="block relative aspect-square bg-gray-50 rounded-xl overflow-hidden p-2">
+                {/* Compact Product Image Box */}
+                <Link href={`/product/${product.handle}`} className="block relative h-44 sm:h-52 bg-gray-50/80 rounded-xl overflow-hidden p-3 border border-gray-100 flex items-center justify-center">
                   <img
                     src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                     alt={product.title}
-                    className={`w-full h-full object-cover rounded-lg transition duration-500 ${
+                    className={`max-h-full max-w-full object-contain rounded-lg transition duration-500 ${
                       isOutOfStock ? "grayscale opacity-50" : "group-hover:scale-105"
                     }`}
                   />
