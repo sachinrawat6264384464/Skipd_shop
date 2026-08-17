@@ -31,7 +31,7 @@ ChartJS.register(
 
 export default function AdminDeliveryPage() {
   const [activeTab, setActiveTab] = useState<"Shipments" | "Tracking" | "Delivery Partners" | "Shipping Zones" | "Shipping Rates">("Shipments");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -160,9 +160,10 @@ export default function AdminDeliveryPage() {
   }, []);
 
   async function loadLiveShipmentsData() {
-    setLoading(true);
     try {
       const apiShipments = await fetchAdminShipments();
+      let formatted: any[] = [];
+
       if (apiShipments && Array.isArray(apiShipments) && apiShipments.length > 0) {
         const badges = [
           { badge: "D", bg: "bg-black text-white" },
@@ -172,7 +173,7 @@ export default function AdminDeliveryPage() {
           { badge: "T", bg: "bg-orange-500 text-white" }
         ];
 
-        const formatted = apiShipments.map((s: any, idx: number) => {
+        formatted = apiShipments.map((s: any, idx: number) => {
           const b = badges[idx % badges.length] || { badge: "D", bg: "bg-black text-white" };
           return {
             id: s.id || idx + 1,
@@ -192,24 +193,50 @@ export default function AdminDeliveryPage() {
             currentLocation: s.currentLocation || "Bhopal Sort Center (May 25, 2025 02:32 PM)"
           };
         });
+      }
 
-        setShipments(formatted);
+      // Merge real customer orders from local storage/database into live shipments
+      if (typeof window !== "undefined") {
+        try {
+          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
+          keys.forEach(k => {
+            const item = localStorage.getItem(k);
+            if (item) {
+              const parsed = JSON.parse(item);
+              if (Array.isArray(parsed)) {
+                parsed.forEach((ord: any, idx: number) => {
+                  const ordId = ord.order_number || ord.id || `#SKIPD-${Date.now()}`;
+                  if (!shipments.some(s => s.orderId === ordId)) {
+                    shipments.unshift({
+                      id: 9900 + idx,
+                      awbCode: ord.awb || `SR-${Math.floor(1000000 + Math.random() * 8999999)}`,
+                      orderId: ordId,
+                      customerName: ord.customer || ord.user_name || "Store Customer",
+                      customerEmail: ord.email || "customer@skipd.in",
+                      customerPhone: ord.phone || "+91 98765 43210",
+                      courierName: "Delhivery Surface",
+                      courierBadge: "D",
+                      courierBadgeBg: "bg-black text-white",
+                      destination: ord.address || "Deliver to Customer Address",
+                      pinCode: "474001",
+                      estDeliveryDate: "May 27, 2026",
+                      daysLeft: "2 Days Left",
+                      status: ord.status === "Delivered" ? "DELIVERED" : ord.status === "Shipped" ? "IN TRANSIT" : ord.status === "Cancelled" ? "RTO INITIATED" : "IN TRANSIT",
+                      currentLocation: "Sorting Hub Dispatch"
+                    });
+                  }
+                });
+              }
+            }
+          });
+        } catch (e) {}
+      }
 
-        // Compute Live Metrics
-        const total = formatted.length;
-        const transit = formatted.filter((s: any) => s.status.includes("TRANSIT")).length;
-        const outDel = formatted.filter((s: any) => s.status.includes("OUT")).length;
-        const del = formatted.filter((s: any) => s.status.includes("DELIVERED")).length;
-        const rto = formatted.filter((s: any) => s.status.includes("RTO") || s.status.includes("FAILED")).length;
-        const rate = total > 0 ? ((del / total) * 100).toFixed(1) + "%" : "96.8%";
-
-        setMetrics({
-          totalShipments: total.toLocaleString("en-IN"),
-          inTransit: transit.toLocaleString("en-IN"),
-          outForDelivery: outDel.toLocaleString("en-IN"),
-          delivered: del.toLocaleString("en-IN"),
-          successRate: rate,
-          rtoFailed: rto.toLocaleString("en-IN")
+      if (formatted.length > 0) {
+        setShipments(prev => {
+          const ids = new Set(prev.map(p => p.orderId));
+          const fresh = formatted.filter(r => !ids.has(r.orderId));
+          return [...fresh, ...prev];
         });
       }
     } catch (e) {

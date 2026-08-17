@@ -379,7 +379,6 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     async function loadOrdersData() {
-      setLoading(true);
       try {
         const apiOrders = await fetchAdminOrders();
         if (apiOrders && Array.isArray(apiOrders) && apiOrders.length > 0) {
