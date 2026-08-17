@@ -2130,23 +2130,23 @@ function AccountContent() {
                     </div>
                   </div>
                 ) : (
-                  userOrders.map((ord) => (
-                    <div key={ord.id} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  userOrders.map((ord: any) => (
+                    <div key={ord.id || ord.order_number} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                       <div className="space-y-1">
                         <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
-                          {ord.order_number} • {ord.date}
+                          {ord.order_number || ord.id || "SKIPD-ORDER"} • {ord.date || "Today"}
                         </span>
-                        <h4 className="font-black text-gray-900 text-sm">{ord.title}</h4>
-                        <p className="text-xs text-gray-500 font-bold">Total: ₹{ord.total.toLocaleString("en-IN")}</p>
+                        <h4 className="font-black text-gray-900 text-sm">{ord.title || "Purchased Product"}</h4>
+                        <p className="text-xs text-gray-500 font-bold">Total: ₹{(ord.total || ord.total_amount || 0).toLocaleString("en-IN")}</p>
                       </div>
                       <div className="flex items-center gap-3">
                         <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">
-                          {ord.status}
+                          {ord.status || "CONFIRMED"}
                         </span>
                         <button
                           onClick={() => {
-                            setActiveTab("shipment");
-                            setSelectedTrackOrderId(ord.order_number);
+                            setActiveTab("track-order");
+                            if (ord.order_number) setSelectedTrackOrderId(ord.order_number);
                           }}
                           className="bg-gray-900 hover:bg-black text-white text-xs font-black px-4 py-2 rounded-xl transition cursor-pointer"
                         >
