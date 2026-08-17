@@ -93,8 +93,7 @@ export default function AdminProductsPage() {
     stock: "25"
   });
 
-  // Comprehensive Add Product Multi-Step Form State
-  const [newProduct, setNewProduct] = useState({
+  const initialEmptyProductState = {
     title: "",
     sku: "",
     category_slug: "electronics",
@@ -116,37 +115,43 @@ export default function AdminProductsPage() {
     in_stock: true,
     featured: true,
     allow_backorders: false,
-    price: "29999",
-    compare_at_price: "34999",
-    cost_per_item: "22000",
+    price: "",
+    compare_at_price: "",
+    cost_per_item: "",
     tax_rate: "18% GST",
     stock_quantity: "50",
     low_stock_threshold: "10",
     track_quantity: true,
-    image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
-    gallery_images: [
-      "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800"
-    ],
+    image_url: "",
+    gallery_images: [],
     alt_text: "",
     has_variants: true,
-    variant_color: "Pitch Black",
-    variant_size: "Standard",
-    variant_ram: "12GB",
-    variant_storage: "256GB",
+    variant_color: "",
+    variant_size: "",
+    variant_ram: "",
+    variant_storage: "",
     meta_title: "",
     meta_desc: "",
     handle: "",
     hsn_code: "85183000",
     country: "India",
-    highlights: ["50mm Drivers: Deep bass response", "Battery Life: 100 Hours Playback", "Connectivity: Bluetooth v5.4 & AUX", "Noise Cancellation: Dual AI-ENC mic"],
+    highlights: ["", "", "", ""],
     box_items: [
-      { title: "Headphones", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200" },
-      { title: "Charging Cable", image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200" },
-      { title: "AUX Cable", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=200" },
-      { title: "User Manual", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200" }
+      { title: "", image: "" },
+      { title: "", image: "" }
     ],
     box_contents: ""
-  });
+  };
+
+  // Comprehensive Add Product Multi-Step Form State
+  const [newProduct, setNewProduct] = useState(initialEmptyProductState);
+
+  const handleCloseAndResetForm = () => {
+    setNewProduct(initialEmptyProductState);
+    setEditingProduct(null);
+    setCreateStep("basic");
+    setShowCreateModal(false);
+  };
 
   // Calculate live discount percentage OFF & total savings
   const sellingPriceNum = Number(newProduct.price || 0);
@@ -391,7 +396,7 @@ export default function AdminProductsPage() {
     const res = await createAdminProduct(payload);
     if (res) {
       showNotification(`🚀 Product "${newProduct.title}" (${discountOffPct > 0 ? discountOffPct + "% OFF" : "Published"}) Live to PostgreSQL DB!`);
-      setShowCreateModal(false);
+      handleCloseAndResetForm();
       loadProducts();
     } else {
       showNotification("Failed to publish product", "error");
@@ -1468,8 +1473,14 @@ export default function AdminProductsPage() {
 
       {/* 🚀 5-STEP MULTI-TAB "ADD NEW PRODUCT" MODAL */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-4xl w-full space-y-6 shadow-2xl relative my-8 max-h-[92vh] overflow-y-auto">
+        <div
+          onClick={handleCloseAndResetForm}
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-4xl w-full space-y-6 shadow-2xl relative my-8 max-h-[92vh] overflow-y-auto"
+          >
             
             {/* Modal Header Bar */}
             <div className="flex justify-between items-start border-b border-gray-100 pb-4">
@@ -1487,10 +1498,7 @@ export default function AdminProductsPage() {
                 </div>
               </div>
               <button
-                onClick={() => {
-                  setShowCreateModal(false);
-                  setEditingProduct(null);
-                }}
+                onClick={handleCloseAndResetForm}
                 className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer"
               >
                 ✕
@@ -2157,10 +2165,7 @@ export default function AdminProductsPage() {
               <div className="flex items-center justify-between pt-4 border-t border-gray-200">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowCreateModal(false);
-                    setEditingProduct(null);
-                  }}
+                  onClick={handleCloseAndResetForm}
                   className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold px-6 py-2.5 rounded-xl transition cursor-pointer"
                 >
                   Cancel
@@ -2169,10 +2174,36 @@ export default function AdminProductsPage() {
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => {
-                      showNotification("Product saved as Draft");
+                    onClick={async () => {
+                      if (!newProduct.title) {
+                        showNotification("Please enter at least a product title for draft", "error");
+                        return;
+                      }
+                      const draftPayload = {
+                        title: newProduct.title,
+                        handle: newProduct.handle || newProduct.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+                        description: newProduct.description || newProduct.short_description || "Draft product.",
+                        price: parseFloat(newProduct.price) || 0,
+                        compare_at_price: newProduct.compare_at_price ? parseFloat(newProduct.compare_at_price) : undefined,
+                        stock_quantity: parseInt(newProduct.stock_quantity) || 0,
+                        category_slug: newProduct.category_slug,
+                        status: "Draft",
+                        featured: newProduct.featured,
+                        images: [
+                          newProduct.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
+                          ...(newProduct.gallery_images.filter(Boolean))
+                        ],
+                        tags: newProduct.tags ? newProduct.tags.split(",").map(t => t.trim()) : ["draft"],
+                        highlights: (newProduct.highlights || []).filter(Boolean),
+                        box_contents: newProduct.box_items && newProduct.box_items.length > 0 
+                          ? newProduct.box_items.filter(b => b.title.trim().length > 0)
+                          : (newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : [])
+                      };
+                      await createAdminProduct(draftPayload);
+                      showNotification(`📝 Product "${newProduct.title}" saved as Draft!`);
+                      // Keep form inputs intact for draft!
                       setShowCreateModal(false);
-                      setEditingProduct(null);
+                      loadProducts();
                     }}
                     className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-bold px-5 py-2.5 rounded-xl transition cursor-pointer"
                   >
