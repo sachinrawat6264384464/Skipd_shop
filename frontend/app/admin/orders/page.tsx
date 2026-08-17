@@ -6,7 +6,7 @@ import { fetchAdminOrders, fetchProducts } from "lib/api";
 
 export default function AdminOrdersPage() {
   const [activeTab, setActiveTab] = useState<string>("All Orders");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -839,7 +839,7 @@ export default function AdminOrdersPage() {
 
                       {/* Total Amount */}
                       <td className="px-5 py-4 font-black text-gray-900 text-sm">
-                        ₹{typeof ord.amount === 'number' ? ord.amount.toLocaleString("en-IN") : ord.amount}
+                        ₹{Number(ord?.amount || 0).toLocaleString("en-IN")}
                       </td>
 
                       {/* Payment */}

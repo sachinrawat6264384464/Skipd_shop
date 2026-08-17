@@ -21,6 +21,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   
   const [globalQuery, setGlobalQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const headerControlsRef = useRef<HTMLDivElement>(null);
+
+  // Close all header dropdowns on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (headerControlsRef.current && !headerControlsRef.current.contains(e.target as Node)) {
+        setShowNotifications(false);
+        setShowMessages(false);
+        setShowProfileMenu(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (pathname === "/admin/login") return;
@@ -323,7 +337,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
 
           {/* Top Right Controls (Notifications + Messages + Admin Profile Dropdown) */}
-          <div className="flex items-center gap-3 text-xs relative">
+          <div ref={headerControlsRef} className="flex items-center gap-3 text-xs relative">
             
             {/* 🔔 Notifications Dropdown Button */}
             <div className="relative">

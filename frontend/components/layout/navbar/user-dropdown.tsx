@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { LoginModal } from "components/auth/login-modal";
 
@@ -8,6 +8,18 @@ export function UserAccountDropdown() {
   const [user, setUser] = useState<{ user_name: string; email: string } | null>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown on outside click anywhere on the page
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem("skipd_token");
@@ -52,7 +64,7 @@ export function UserAccountDropdown() {
     : "SR";
 
   return (
-    <div className="relative">
+    <div ref={dropdownRef} className="relative">
       
       {/* 👤 User Avatar + Full Name Dropdown Button (Matching Screenshot 2) */}
       <button
