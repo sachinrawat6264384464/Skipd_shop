@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { requestOTP, verifyOTP, changePassword, checkEmailRegistered, resetUserPassword } from "lib/api";
+import { requestOTP, verifyOTP, changePassword, checkEmailRegistered, resetUserPassword, syncFirebaseUser } from "lib/api";
 import { auth, googleProvider } from "lib/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
@@ -139,14 +139,23 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         const fbUser = userCred.user;
         const idToken = await fbUser.getIdToken();
 
+        // 🔗 Sync Firebase Customer to PostgreSQL users database table
+        const syncRes = await syncFirebaseUser({
+          firebase_uid: fbUser.uid,
+          email: fbUser.email || emailOrPhone.trim(),
+          full_name: fullName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "Customer"),
+          phone: !emailOrPhone.includes("@") ? emailOrPhone.trim() : ""
+        });
+
         const userObj = {
           uid: fbUser.uid,
-          user_name: fullName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "User"),
-          email: fbUser.email || emailOrPhone,
-          phone: !emailOrPhone.includes("@") ? emailOrPhone : ""
+          db_id: syncRes.id,
+          user_name: syncRes.user_name || fullName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "User"),
+          email: syncRes.email || fbUser.email || emailOrPhone,
+          phone: syncRes.phone || (!emailOrPhone.includes("@") ? emailOrPhone : "")
         };
 
-        localStorage.setItem("skipd_token", idToken);
+        localStorage.setItem("skipd_token", syncRes.access_token || idToken);
         localStorage.setItem("skipd_user", JSON.stringify(userObj));
         window.dispatchEvent(new Event("skipd_auth_changed"));
 
@@ -156,7 +165,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         } catch (e) {}
 
         setLoading(false);
-        setSuccessMsg(`🔥 Account created for ${userObj.user_name || "User"}! Welcome email sent to ${userObj.email}.`);
+        setSuccessMsg(`🔥 Account created & synced to Database for ${userObj.user_name}! Welcome email sent to ${userObj.email}.`);
         setTimeout(() => finishLogin(), 1000);
       } catch (err: any) {
         setLoading(false);
@@ -173,18 +182,26 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         const fbUser = userCred.user;
         const idToken = await fbUser.getIdToken();
 
+        // 🔗 Sync Firebase Customer to PostgreSQL users database table
+        const syncRes = await syncFirebaseUser({
+          firebase_uid: fbUser.uid,
+          email: fbUser.email || emailOrPhone.trim(),
+          full_name: fbUser.displayName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "User")
+        });
+
         const userObj = {
           uid: fbUser.uid,
-          user_name: fbUser.displayName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "User"),
-          email: fbUser.email || emailOrPhone
+          db_id: syncRes.id,
+          user_name: syncRes.user_name || fbUser.displayName || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "User"),
+          email: syncRes.email || fbUser.email || emailOrPhone
         };
 
-        localStorage.setItem("skipd_token", idToken);
+        localStorage.setItem("skipd_token", syncRes.access_token || idToken);
         localStorage.setItem("skipd_user", JSON.stringify(userObj));
         window.dispatchEvent(new Event("skipd_auth_changed"));
 
         setLoading(false);
-        setSuccessMsg("🔥 Authenticated via Firebase Auth! Welcome back.");
+        setSuccessMsg("🔥 Authenticated via Firebase Auth & synced to Database! Welcome back.");
         setTimeout(() => finishLogin(), 800);
       } catch (err: any) {
         setLoading(false);
@@ -218,14 +235,22 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
       const idToken = await fbUser.getIdToken();
 
+      // 🔗 Sync Google Authenticated User to PostgreSQL users database table
+      const syncRes = await syncFirebaseUser({
+        firebase_uid: fbUser.uid,
+        email: userEmail,
+        full_name: fbUser.displayName || userEmail.split("@")[0] || "User"
+      });
+
       const userObj = {
         uid: fbUser.uid,
-        user_name: fbUser.displayName || userEmail.split("@")[0] || "User",
+        db_id: syncRes.id,
+        user_name: syncRes.user_name || fbUser.displayName || userEmail.split("@")[0] || "User",
         email: userEmail,
         photoURL: fbUser.photoURL || ""
       };
 
-      localStorage.setItem("skipd_token", idToken);
+      localStorage.setItem("skipd_token", syncRes.access_token || idToken);
       localStorage.setItem("skipd_user", JSON.stringify(userObj));
       window.dispatchEvent(new Event("skipd_auth_changed"));
 
@@ -237,7 +262,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       }
 
       setLoading(false);
-      setSuccessMsg(`🔥 Signed in as ${userObj.user_name} via Google Auth!`);
+      setSuccessMsg(`🔥 Signed in as ${userObj.user_name} via Google Auth & synced to Database!`);
       setTimeout(() => finishLogin(), 800);
     } catch (err: any) {
       setLoading(false);

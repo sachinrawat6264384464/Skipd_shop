@@ -5,7 +5,26 @@ from app.core.database import get_db
 from app.api.deps import get_current_user
 from app.models.models import User, Order, WishlistItem, CartItem, Address, Review, Wallet, ReturnRequest
 
-@router.delete("/admin/{user_id}")
+router = APIRouter(prefix="/users", tags=["Users"])
+
+@router.get("/admin/all")
+async def get_all_admin_users(db: AsyncSession = Depends(get_db)):
+    """Fetch all registered customer accounts directly from PostgreSQL database."""
+    res = await db.execute(select(User).order_by(User.created_at.desc()))
+    users = res.scalars().all()
+    return [
+        {
+            "id": u.id,
+            "firebase_uid": u.firebase_uid,
+            "full_name": u.full_name,
+            "email": u.email,
+            "phone": u.phone or "",
+            "role": u.role.value if hasattr(u.role, 'value') else str(u.role),
+            "is_active": u.is_active,
+            "created_at": u.created_at.isoformat() if u.created_at else None
+        }
+        for u in users
+    ]
 async def delete_admin_user(user_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a user account and permanently purge all associated schema data from PostgreSQL database."""
     res = await db.execute(select(User).where(User.id == user_id))

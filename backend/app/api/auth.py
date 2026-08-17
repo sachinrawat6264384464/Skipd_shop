@@ -7,10 +7,63 @@ from sqlalchemy import select
 from app.core.database import get_db
 from app.core.security import get_password_hash, verify_password, create_access_token
 from app.models.models import User, UserRole
-from app.schemas.schemas import UserRegister, UserLogin, TokenResponse, UserProfile
+from app.schemas.schemas import UserRegister, UserLogin, TokenResponse, UserProfile, FirebaseSyncInput
 from app.api.deps import get_current_user
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
+
+@router.post("/firebase-sync")
+async def firebase_sync(payload: FirebaseSyncInput, db: AsyncSession = Depends(get_db)):
+    """Synchronize Firebase authenticated user into PostgreSQL users database table linked by firebase_uid."""
+    email_clean = payload.email.strip().lower()
+    
+    # Check if user already exists by firebase_uid or email
+    result = await db.execute(select(User).where((User.firebase_uid == payload.firebase_uid) | (User.email == email_clean)))
+    user = result.scalars().first()
+
+    if not user:
+        # Create fresh customer user row in PostgreSQL database linked to firebase_uid
+        display_name = payload.full_name.strip() if payload.full_name and payload.full_name.strip() else email_clean.split("@")[0].replace(".", " ").title()
+        user = User(
+            firebase_uid=payload.firebase_uid,
+            full_name=display_name,
+            email=email_clean,
+            phone=payload.phone,
+            hashed_password=get_password_hash("firebase_oauth_user_secret"),
+            role=UserRole.CUSTOMER
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
+    else:
+        # Update existing user record with firebase_uid / name / phone
+        updated = False
+        if not user.firebase_uid:
+            user.firebase_uid = payload.firebase_uid
+            updated = True
+        if payload.full_name and payload.full_name.strip() and user.full_name != payload.full_name.strip():
+            user.full_name = payload.full_name.strip()
+            updated = True
+        if payload.phone and not user.phone:
+            user.phone = payload.phone
+            updated = True
+        
+        if updated:
+            await db.commit()
+            await db.refresh(user)
+
+    token = create_access_token(subject=user.email)
+    return {
+        "status": "success",
+        "access_token": token,
+        "id": user.id,
+        "firebase_uid": user.firebase_uid,
+        "user_name": user.full_name,
+        "email": user.email,
+        "phone": user.phone or "",
+        "user_role": user.role.value if hasattr(user.role, 'value') else str(user.role),
+        "message": "User synchronized with PostgreSQL database successfully"
+    }
 
 # In-memory OTP storage with 60-second expiration (NOT stored in DB)
 # Structure: { email_or_phone: { "otp": "123456", "expires_at": timestamp } }

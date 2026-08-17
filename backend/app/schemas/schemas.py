@@ -13,6 +13,12 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+class FirebaseSyncInput(BaseModel):
+    firebase_uid: str
+    email: EmailStr
+    full_name: Optional[str] = "Customer"
+    phone: Optional[str] = None
+
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
