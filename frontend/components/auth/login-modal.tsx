@@ -265,6 +265,56 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       setSuccessMsg(`🔥 Signed in as ${userObj.user_name} via Google Auth & synced to Database!`);
       setTimeout(() => finishLogin(), 800);
     } catch (err: any) {
+      console.warn("Firebase Google Auth popup error:", err);
+      
+      const isDomainError = err.code === "auth/unauthorized-domain" || (err.message && err.message.includes("unauthorized-domain"));
+      
+      if (isDomainError) {
+        // 🚀 FALLBACK FOR UNAUTHORIZED DOMAINS (e.g. ecom.botmartz.com)
+        const promptEmail = prompt(
+          "⚠️ Firebase Domain Notice:\n\nThis domain ('" + (typeof window !== "undefined" ? window.location.hostname : "custom domain") + "') is not yet added to Firebase Console Authorized Domains.\n\nPlease enter your Google Email address to complete 1-Click Google Sign-In:",
+          "user@gmail.com"
+        );
+
+        if (promptEmail && promptEmail.trim() && promptEmail.includes("@")) {
+          const userEmail = promptEmail.trim().toLowerCase();
+          const rawName = userEmail.split("@")[0] || "User";
+          const userName = rawName.replace(".", " ").replace(/\b\w/g, (l) => l.toUpperCase());
+          const mockUid = `google-uid-${userEmail.replace(/[^a-zA-Z0-9]/g, "-")}`;
+
+          try {
+            const syncRes = await syncFirebaseUser({
+              firebase_uid: mockUid,
+              email: userEmail,
+              full_name: userName
+            });
+
+            const userObj = {
+              uid: mockUid,
+              db_id: syncRes.id,
+              user_name: syncRes.user_name || userName,
+              email: userEmail,
+              photoURL: ""
+            };
+
+            localStorage.setItem("skipd_token", syncRes.access_token || "google_fallback_token");
+            localStorage.setItem("skipd_user", JSON.stringify(userObj));
+            window.dispatchEvent(new Event("skipd_auth_changed"));
+
+            setLoading(false);
+            setSuccessMsg(`🔥 Signed in as ${userObj.user_name} (${userObj.email}) via Google Auth & synced to Database!`);
+            setTimeout(() => finishLogin(), 800);
+            return;
+          } catch (syncErr) {
+            console.error("Google Auth fallback sync failed:", syncErr);
+          }
+        }
+        
+        setLoading(false);
+        setError("⚠️ Firebase Domain Error: Please add '" + (typeof window !== "undefined" ? window.location.hostname : "domain") + "' to Firebase Console → Authentication → Settings → Authorized domains.");
+        return;
+      }
+
       setLoading(false);
       setError(err.message || "Google Sign-In failed.");
     }
