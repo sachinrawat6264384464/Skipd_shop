@@ -557,6 +557,7 @@ function AccountContent() {
                   productName: item.title || item.productName || "Ordered Product",
                   specs: item.variant || item.specs || "Standard Variant",
                   price: item.price || ord.totalPrice || ord.amount || 999,
+                  purchasedDate: ord.purchasedDate || `Purchased on ${new Date(orderTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`,
                   deliveredDate: ord.deliveredDate || `Delivered on ${new Date(orderTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`,
                   image: item.featuredImage?.url || item.image || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
                   orderTimestamp: orderTimestamp,
@@ -573,6 +574,7 @@ function AccountContent() {
                 productName: ord.productName || "Ordered Product",
                 specs: ord.specs || "Standard Variant",
                 price: ord.price || ord.totalPrice || ord.amount || 999,
+                purchasedDate: ord.purchasedDate || `Purchased on ${new Date(orderTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`,
                 deliveredDate: ord.deliveredDate || `Delivered on ${new Date(orderTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`,
                 image: ord.image || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
                 orderTimestamp: orderTimestamp,
@@ -1620,7 +1622,11 @@ function AccountContent() {
                                 </div>
                                 <h4 className="font-black text-gray-900 text-sm leading-tight">{item.productName}</h4>
                                 <p className="font-black text-gray-900 text-sm">₹{item.price.toLocaleString("en-IN")}</p>
-                                <p className="text-[10px] text-gray-400 font-medium">{item.deliveredDate}</p>
+                                <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-500 font-bold pt-0.5">
+                                  <span className="text-gray-600">📅 {item.purchasedDate || `Purchased on ${new Date(item.orderTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}</span>
+                                  <span>•</span>
+                                  <span className="text-emerald-700">📦 {item.deliveredDate}</span>
+                                </div>
                               </div>
                             </div>
 
