@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./auth-provider";
-import { getUserCartKey } from "lib/utils";
+import { getUserCartKey, getCartStore, saveCartStore } from "lib/utils";
 import { toast } from "sonner";
 
 interface BuyNowButtonProps {
@@ -31,54 +31,51 @@ export function BuyNowButton({
     e.preventDefault();
     e.stopPropagation();
 
-    requireAuth(() => {
-      const cartKey = getUserCartKey();
-      const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
+    const itemToAdd = productObj ? {
+      id: productObj.id || Date.now(),
+      handle: productObj.handle || productHandle || "product",
+      title: productObj.title || productTitle || "Product",
+      price: Number(productObj.price || 999),
+      quantity: 1,
+      image: (productObj.images && productObj.images[0]) || productObj.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+    } : {
+      id: Date.now(),
+      handle: productHandle || "product",
+      title: productTitle || "Product",
+      price: 999,
+      quantity: 1,
+      image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+    };
 
-      const itemToAdd = productObj ? {
-        id: productObj.id || Date.now(),
-        handle: productObj.handle || productHandle || "product",
-        title: productObj.title || productTitle || "Product",
-        price: Number(productObj.price || 999),
-        quantity: 1,
-        image: (productObj.images && productObj.images[0]) || productObj.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-      } : {
-        id: Date.now(),
-        handle: productHandle || "product",
-        title: productTitle || "Product",
-        price: 999,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-      };
-
-      if (mode === "buy") {
+    if (mode === "buy") {
+      requireAuth(() => {
         sessionStorage.setItem("skipd_buy_now_item", JSON.stringify([itemToAdd]));
         router.push("/checkout?buyNow=true");
+      });
+    } else {
+      // Cart mode: allow guest browsing with auto-reset on page refresh
+      const existing = getCartStore();
+      const idx = existing.findIndex((i: any) => i.id === itemToAdd.id || (i.handle && i.handle === itemToAdd.handle));
+      let updated;
+      if (idx > -1) {
+        existing[idx].quantity += 1;
+        updated = [...existing];
       } else {
-        const idx = existing.findIndex((i: any) => i.id === itemToAdd.id || (i.handle && i.handle === itemToAdd.handle));
-        let updated;
-        if (idx > -1) {
-          existing[idx].quantity += 1;
-          updated = [...existing];
-        } else {
-          updated = [...existing, itemToAdd];
-        }
-
-        localStorage.setItem(cartKey, JSON.stringify(updated));
-        window.dispatchEvent(new Event("skipd_cart_updated"));
-        window.dispatchEvent(new Event("skipd_cart_changed"));
-        setAdded(true);
-
-        try {
-          toast.success(`🛒 Added ${itemToAdd.title} to your cart!`, {
-            description: "Click cart icon in navbar to review or checkout.",
-            duration: 3000
-          });
-        } catch (err) {}
-
-        setTimeout(() => setAdded(false), 2500);
+        updated = [...existing, itemToAdd];
       }
-    });
+
+      saveCartStore(updated);
+      setAdded(true);
+
+      try {
+        toast.success(`🛒 Added ${itemToAdd.title} to your cart!`, {
+          description: "Click cart icon in navbar to review or checkout.",
+          duration: 3000
+        });
+      } catch (err) {}
+
+      setTimeout(() => setAdded(false), 2500);
+    }
   };
 
   return (

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "components/auth/auth-provider";
-import { getUserCartKey } from "lib/utils";
+import { getUserCartKey, getCartStore, saveCartStore } from "lib/utils";
 import { ProductZoomMagnifier } from "./product-zoom-magnifier";
 import { toast } from "sonner";
 import { useWishlist } from "components/wishlist/wishlist-context";
@@ -139,43 +139,38 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     });
   }
 
-  // Add to Cart handler (Requires Login)
+  // Add to Cart handler (Supports transient guest cart with refresh auto-reset & persistent logged-in cart)
   const handleAddToCart = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
-    requireAuth(() => {
-      const cartKey = getUserCartKey();
-      const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
-      const itemToAdd = {
-        id: product.id,
-        handle: product.handle,
-        title: `${product.title} (${selectedColor})`,
-        price: product.price,
-        quantity: 1,
-        image: selectedImage
-      };
+    const existing = getCartStore();
+    const itemToAdd = {
+      id: product.id,
+      handle: product.handle,
+      title: `${product.title} (${selectedColor})`,
+      price: product.price,
+      quantity: 1,
+      image: selectedImage
+    };
 
-      const idx = existing.findIndex((i: any) => i.id === product.id || i.handle === product.handle);
-      let updated;
-      if (idx > -1) {
-        existing[idx].quantity += 1;
-        updated = [...existing];
-      } else {
-        updated = [...existing, itemToAdd];
-      }
-      localStorage.setItem(cartKey, JSON.stringify(updated));
-      window.dispatchEvent(new Event("skipd_cart_updated"));
-      window.dispatchEvent(new Event("skipd_cart_changed"));
+    const idx = existing.findIndex((i: any) => i.id === product.id || i.handle === product.handle);
+    let updated;
+    if (idx > -1) {
+      existing[idx].quantity += 1;
+      updated = [...existing];
+    } else {
+      updated = [...existing, itemToAdd];
+    }
+    saveCartStore(updated);
 
-      try {
-        toast.success(`🛒 Added ${itemToAdd.title} to your cart!`, {
-          description: "Click cart icon in navbar to review or checkout.",
-          duration: 3000
-        });
-      } catch (err) {}
+    try {
+      toast.success(`🛒 Added ${itemToAdd.title} to your cart!`, {
+        description: "Click cart icon in navbar to review or checkout.",
+        duration: 3000
+      });
+    } catch (err) {}
 
-      setCartAddedToast(true);
-      setTimeout(() => setCartAddedToast(false), 3000);
-    });
+    setCartAddedToast(true);
+    setTimeout(() => setCartAddedToast(false), 3000);
   };
 
   // Buy Now handler (Requires Login)

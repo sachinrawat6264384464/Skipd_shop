@@ -8,7 +8,7 @@ import OpenCart from "./open-cart";
 
 import { LoginModal } from "components/auth/login-modal";
 
-import { getUserCartKey } from "lib/utils";
+import { getUserCartKey, getCartStore, saveCartStore } from "lib/utils";
 
 export default function CartModal() {
   const [isOpen, setIsOpen] = useState(false);
@@ -20,14 +20,11 @@ export default function CartModal() {
 
   const loadCart = () => {
     try {
-      const cartKey = getUserCartKey();
-      const saved = localStorage.getItem(cartKey);
-      if (saved !== null) {
-        setCartItems(JSON.parse(saved));
-        return;
-      }
-    } catch (e) {}
-    setCartItems([]);
+      const items = getCartStore();
+      setCartItems(items);
+    } catch (e) {
+      setCartItems([]);
+    }
   };
 
   useEffect(() => {
@@ -36,11 +33,13 @@ export default function CartModal() {
     const handleCartSync = () => loadCart();
     window.addEventListener("storage", handleCartSync);
     window.addEventListener("skipd_cart_updated", handleCartSync);
+    window.addEventListener("skipd_cart_changed", handleCartSync);
     window.addEventListener("skipd_auth_changed", handleCartSync);
 
     return () => {
       window.removeEventListener("storage", handleCartSync);
       window.removeEventListener("skipd_cart_updated", handleCartSync);
+      window.removeEventListener("skipd_cart_changed", handleCartSync);
       window.removeEventListener("skipd_auth_changed", handleCartSync);
     };
   }, []);
@@ -60,9 +59,7 @@ export default function CartModal() {
   const removeItem = (id: number) => {
     const updated = cartItems.filter((item) => item.id !== id);
     setCartItems(updated);
-    const cartKey = getUserCartKey();
-    localStorage.setItem(cartKey, JSON.stringify(updated));
-    window.dispatchEvent(new Event("skipd_cart_updated"));
+    saveCartStore(updated);
   };
 
   const totalQuantity = cartItems.reduce((acc, item) => acc + (item.quantity || 1), 0);

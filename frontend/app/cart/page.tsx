@@ -39,33 +39,18 @@ const INITIAL_CART_ITEMS = [
   }
 ];
 
-import { getUserCartKey } from "lib/utils";
+import { getUserCartKey, getCartStore, saveCartStore, isUserLoggedIn } from "lib/utils";
 
 export default function CartItemsPage() {
   const [items, setItems] = useState<any[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const loadUserCart = () => {
-    const token = localStorage.getItem("skipd_token");
-    const user = localStorage.getItem("skipd_user");
-    const loggedIn = !!(token || user);
+    const loggedIn = isUserLoggedIn();
     setIsLoggedIn(loggedIn);
 
-    const cartKey = getUserCartKey();
-    const savedCart = localStorage.getItem(cartKey);
-
-    if (savedCart !== null) {
-      try {
-        setItems(JSON.parse(savedCart));
-      } catch (e) {
-        setItems([]);
-      }
-    } else {
-      // New logged-in user starts with a clean empty cart (0 items from other users!)
-      const initial = loggedIn ? [] : INITIAL_CART_ITEMS;
-      setItems(initial);
-      localStorage.setItem(cartKey, JSON.stringify(initial));
-    }
+    const storedItems = getCartStore();
+    setItems(storedItems);
   };
 
   useEffect(() => {
@@ -83,10 +68,7 @@ export default function CartItemsPage() {
 
   const saveCartState = (newItems: any[]) => {
     setItems(newItems);
-    const cartKey = getUserCartKey();
-    localStorage.setItem(cartKey, JSON.stringify(newItems));
-    window.dispatchEvent(new Event("skipd_cart_updated"));
-    window.dispatchEvent(new Event("skipd_cart_changed"));
+    saveCartStore(newItems);
   };
 
   const updateQty = (id: number | string, delta: number) => {

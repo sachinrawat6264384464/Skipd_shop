@@ -50,6 +50,22 @@ export const validateEnvironmentVariables = () => {
   }
 };
 
+// 🔒 Check if user is currently logged in
+export function isUserLoggedIn(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    const userStr = localStorage.getItem("skipd_user");
+    const tokenStr = localStorage.getItem("skipd_token");
+    return !!(userStr || tokenStr);
+  } catch {
+    return false;
+  }
+}
+
+// Active guest memory cache (cleared automatically on page refresh)
+let activeGuestMemoryCart: any[] = [];
+let isGuestInitialLoadDone = false;
+
 // 🔒 1. User Cart Storage Key (Scoped per User Account)
 export function getUserCartKey(): string {
   if (typeof window === "undefined") return "skipd_cart_guest";
@@ -64,6 +80,55 @@ export function getUserCartKey(): string {
     }
   } catch (e) {}
   return "skipd_cart_guest";
+}
+
+// 🛒 Get Cart Store: Logged-in users get persistent cart; Guests get transient session cart that resets on F5 refresh
+export function getCartStore(): any[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const loggedIn = isUserLoggedIn();
+    if (!loggedIn) {
+      // 🛑 Guest User Rule: On initial page reload/refresh, guest cart resets to 0 items!
+      if (!isGuestInitialLoadDone) {
+        isGuestInitialLoadDone = true;
+        activeGuestMemoryCart = [];
+        try {
+          sessionStorage.removeItem("skipd_guest_session_cart");
+          localStorage.removeItem("skipd_cart_guest");
+        } catch {}
+        return [];
+      }
+      return activeGuestMemoryCart;
+    }
+
+    // Logged-in Customer: Read persistent cart from localStorage
+    const cartKey = getUserCartKey();
+    const saved = localStorage.getItem(cartKey);
+    return saved ? JSON.parse(saved) : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+// 🛒 Save Cart Store: Logged-in users save to localStorage; Guests save only in active memory (erased on refresh)
+export function saveCartStore(items: any[]): void {
+  if (typeof window === "undefined") return;
+  try {
+    const loggedIn = isUserLoggedIn();
+    if (!loggedIn) {
+      activeGuestMemoryCart = items;
+      isGuestInitialLoadDone = true;
+      try {
+        sessionStorage.setItem("skipd_guest_session_cart", JSON.stringify(items));
+      } catch {}
+    } else {
+      const cartKey = getUserCartKey();
+      localStorage.setItem(cartKey, JSON.stringify(items));
+    }
+  } catch (e) {}
+
+  window.dispatchEvent(new Event("skipd_cart_updated"));
+  window.dispatchEvent(new Event("skipd_cart_changed"));
 }
 
 // 🔒 2. User Wishlist Storage Key (Scoped per User Account)
