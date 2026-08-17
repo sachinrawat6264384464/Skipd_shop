@@ -367,6 +367,20 @@ export default function CheckoutPage() {
         const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
         localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
+        // ✉️ Trigger Order Confirmation & Detailed Invoice Email on Razorpay Payment Success!
+        try {
+          const currentUser = localStorage.getItem("skipd_user");
+          const parsedUser = currentUser ? JSON.parse(currentUser) : null;
+          const targetEmail = parsedUser?.email || (selectedAddressObj as any)?.email || "customer@skipd.in";
+          const targetName = parsedUser?.user_name || selectedAddressObj?.name || "Valued Customer";
+
+          import("lib/services/email-service").then(({ sendOrderInvoiceEmail }) => {
+            sendOrderInvoiceEmail(targetEmail, targetName, newOrder);
+          });
+        } catch (e) {
+          console.error("Failed to send Razorpay order invoice email:", e);
+        }
+
         // Credit Gift Card Balance if buying Gift Cards (Scoped per user)
         cartItems.forEach((item: any) => {
           if (item.isGiftCard || item.giftAmount || (item.title && item.title.toLowerCase().includes("gift"))) {
@@ -394,9 +408,9 @@ export default function CheckoutPage() {
         setShowSuccessModal(true);
       },
       prefill: {
-        name: selectedAddressObj.name || "Sachin Rawat",
-        email: "sachin.rawat@email.com",
-        contact: (selectedAddressObj.phone || "6264384464").replace(/^\+91/, "").replace(/\D/g, "")
+        name: selectedAddressObj.name || user?.user_name || "Customer",
+        email: user?.email || (selectedAddressObj as any)?.email || "customer@skipd.in",
+        contact: (selectedAddressObj.phone || user?.phone || "9876543210").replace(/^\+91/, "").replace(/\D/g, "")
       },
       notes: {
         order_ref: createdOrderNumber
@@ -1205,9 +1219,9 @@ export default function CheckoutPage() {
             </div>
 
             {/* Email Notification Alert Badge */}
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-xs text-emerald-800 font-bold flex items-center gap-2 justify-center">
-              <span>✉️</span>
-              <span>Order confirmation email &amp; invoice sent to your registered inbox!</span>
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-xs text-emerald-800 font-bold flex flex-col sm:flex-row items-center gap-2 justify-center text-center">
+              <span className="text-base">✉️</span>
+              <span>Order confirmation email &amp; invoice sent to <span className="underline font-mono text-emerald-950 font-black">{user?.email || (completedOrderData?.shipping_address as any)?.email || "your email"}</span>!</span>
             </div>
 
             {/* Modal Action Buttons */}
