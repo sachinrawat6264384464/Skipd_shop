@@ -638,10 +638,30 @@ export async function fetchProducts(query?: { category?: string; search?: string
   }
 
   // Safe fallback catalog only if backend server is unreachable
-  let combined = MOCK_PRODUCTS.slice();
+  let customProducts: any[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("skipd_custom_products");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) customProducts = parsed;
+      }
+    } catch {}
+  }
+
+  let combined = [...customProducts, ...MOCK_PRODUCTS];
+  // Remove duplicates by ID or Handle
+  const seenIds = new Set();
+  combined = combined.filter(p => {
+    const key = p.id || p.handle;
+    if (seenIds.has(key)) return false;
+    seenIds.add(key);
+    return true;
+  });
+
   if (query?.featured) combined = combined.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
-    combined = combined.filter(p => p.category?.slug === query.category || p.tags?.includes(query.category!));
+    combined = combined.filter(p => p.category?.slug === query.category || p.category_slug === query.category || p.tags?.includes(query.category!));
   }
   if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
     combined = combined.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()) || p.category?.name?.toLowerCase().includes(query.search!.toLowerCase()));
@@ -1331,17 +1351,48 @@ export async function resetUserPassword(email: string, newPassword: string) {
 // 📦 ADMIN PRODUCT MANAGEMENT SDK
 // ─────────────────────────────────────────────
 export async function createAdminProduct(payload: any) {
+  let createdObj: any = null;
   try {
     const res = await fetch(`${API_BASE_URL}/products/admin/create`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    if (res.ok) return await res.json();
+    if (res.ok) createdObj = await res.json();
   } catch (e) {
     console.warn("[API SDK] Create product offline");
   }
-  return { id: Date.now(), message: "Product created successfully" };
+
+  if (!createdObj) {
+    createdObj = {
+      id: Date.now(),
+      title: payload.title,
+      handle: payload.handle || (payload.title || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      description: payload.description || "Product item",
+      price: payload.price,
+      compare_at_price: payload.compare_at_price,
+      stock_quantity: payload.stock_quantity ?? 50,
+      featured: payload.featured ?? true,
+      images: payload.images && payload.images.length > 0 ? payload.images : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"],
+      tags: payload.tags || ["bestseller"],
+      category: { name: payload.category_slug || "General", slug: payload.category_slug || "general" },
+      category_slug: payload.category_slug || "general"
+    };
+  }
+
+  if (typeof window !== "undefined") {
+    try {
+      const existing = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
+      const updated = [createdObj, ...existing];
+      localStorage.setItem("skipd_custom_products", JSON.stringify(updated));
+    } catch {}
+  }
+
+  if (!MOCK_PRODUCTS.some(p => p.id === createdObj.id)) {
+    MOCK_PRODUCTS.unshift(createdObj);
+  }
+
+  return createdObj;
 }
 
 export async function updateAdminProduct(id: number, payload: any) {
@@ -1365,6 +1416,20 @@ export async function deleteAdminProduct(id: number) {
   } catch (e) {
     console.warn("[API SDK] Delete product offline");
   }
+
+  if (typeof window !== "undefined") {
+    try {
+      const existing = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
+      const updated = existing.filter((p: any) => p.id !== id);
+      localStorage.setItem("skipd_custom_products", JSON.stringify(updated));
+    } catch {}
+  }
+
+  const idx = MOCK_PRODUCTS.findIndex(p => p.id === id);
+  if (idx !== -1) {
+    MOCK_PRODUCTS.splice(idx, 1);
+  }
+
   return { message: "Product deleted successfully" };
 }
 

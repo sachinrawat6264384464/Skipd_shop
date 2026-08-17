@@ -442,8 +442,67 @@ export default function AdminProductsPage() {
 
       {/* 🟢 TAB 1: ALL PRODUCTS TAB */}
       {activeTab === "Products" || activeTab === "Add Product" ? (
-        <div className="space-y-4">
+        <div className="space-y-5">
           
+          {/* 📊 4 Dynamic Stat Overview Cards Row (Updates in Real-Time when adding/deleting products) */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            {/* Total Products Card */}
+            <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-xl shrink-0 border border-emerald-100">
+                📦
+              </div>
+              <div>
+                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Total Store Products</p>
+                <h3 className="text-xl font-black text-gray-900 mt-0.5">{products.length} Items</h3>
+                <p className="text-[10px] text-emerald-600 font-bold">✓ Live Runtime Sync</p>
+              </div>
+            </div>
+
+            {/* In Stock Card */}
+            <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xl shrink-0 border border-blue-100">
+                ☑️
+              </div>
+              <div>
+                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider">In Stock (&gt;15 units)</p>
+                <h3 className="text-xl font-black text-gray-900 mt-0.5">
+                  {products.filter(p => (p.stock_quantity ?? 100) > 15).length} Items
+                </h3>
+                <p className="text-[10px] text-blue-600 font-bold">Available for Order</p>
+              </div>
+            </div>
+
+            {/* Low / Out of Stock Alerts Card */}
+            <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black text-xl shrink-0 border border-amber-100">
+                ⚠️
+              </div>
+              <div>
+                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Low / Out of Stock</p>
+                <h3 className="text-xl font-black text-amber-700 mt-0.5">
+                  {products.filter(p => (p.stock_quantity ?? 100) <= 15).length} Items
+                </h3>
+                <p className="text-[10px] text-amber-600 font-bold">Restock Recommended</p>
+              </div>
+            </div>
+
+            {/* Total Net Valuation Card */}
+            <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-black text-xl shrink-0 border border-purple-100">
+                💰
+              </div>
+              <div>
+                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Catalog Inventory Value</p>
+                <h3 className="text-xl font-black text-gray-900 mt-0.5">
+                  ₹{products.reduce((sum, p) => sum + (Number(p.price || 0) * Number(p.stock_quantity ?? 100)), 0).toLocaleString("en-IN")}
+                </h3>
+                <p className="text-[10px] text-purple-600 font-bold">Net Stock Asset Value</p>
+              </div>
+            </div>
+
+          </div>
+
           {/* Search & Filtering Toolbar */}
           <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs flex flex-col sm:flex-row gap-3 justify-between items-center">
             
