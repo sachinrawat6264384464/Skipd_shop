@@ -6,8 +6,8 @@ import Link from "next/link";
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080/api/v1";
 
 export default function AdminLoginPage() {
-  const [email, setEmail] = useState("admin@skipd.in");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function AdminLoginPage() {
     } catch (e) {
       // Demo fallback mode for offline backend
       localStorage.setItem("skipd_admin_token", "demo_admin_jwt_token");
-      localStorage.setItem("skipd_admin_user", JSON.stringify({ user_name: "SKIPD Admin", email, user_role: "admin" }));
+      localStorage.setItem("skipd_admin_user", JSON.stringify({ user_name: "SKIPD Admin", email: email || "admin@skipd.in", user_role: "admin" }));
       alert("✓ Admin Authorized! (Demo Mode Active)");
       window.location.href = "/admin";
     }
@@ -97,7 +97,7 @@ export default function AdminLoginPage() {
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="admin@skipd.in"
+                    placeholder="Enter admin email address..."
                     className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 text-xs text-gray-900 font-bold focus:border-[#059669] focus:outline-none transition"
                   />
                 </div>
@@ -115,7 +115,7 @@ export default function AdminLoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
+                    placeholder="Enter password..."
                     className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-9 py-2.5 text-xs text-gray-900 font-bold focus:border-[#059669] focus:outline-none transition"
                   />
                   <button
@@ -175,14 +175,12 @@ export default function AdminLoginPage() {
               </div>
             </div>
 
-            {/* Social Logins Row: Google, Microsoft, Apple */}
-            <div className="grid grid-cols-3 gap-2.5">
-              
-              {/* Google */}
+            {/* Social Logins Row: Only Google */}
+            <div>
               <button
                 type="button"
                 onClick={() => alert("Google Workspace Admin Login Initiated...")}
-                className="flex items-center justify-center py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition cursor-pointer shadow-2xs"
+                className="w-full flex items-center justify-center gap-2 py-2.5 border border-gray-200 rounded-xl hover:bg-gray-50 transition cursor-pointer shadow-2xs text-xs font-bold text-gray-700"
                 title="Sign in with Google"
               >
                 <svg className="w-4 h-4" viewBox="0 0 24 24">
@@ -191,35 +189,8 @@ export default function AdminLoginPage() {
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
                 </svg>
+                <span>Sign in with Google</span>
               </button>
-
-              {/* Microsoft */}
-              <button
-                type="button"
-                onClick={() => alert("Microsoft Enterprise Azure AD Login Initiated...")}
-                className="flex items-center justify-center py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition cursor-pointer shadow-2xs"
-                title="Sign in with Microsoft"
-              >
-                <div className="grid grid-cols-2 gap-0.5 w-3.5 h-3.5">
-                  <div className="bg-[#F25022] w-full h-full" />
-                  <div className="bg-[#7FBA00] w-full h-full" />
-                  <div className="bg-[#00A4EF] w-full h-full" />
-                  <div className="bg-[#FFB900] w-full h-full" />
-                </div>
-              </button>
-
-              {/* Apple */}
-              <button
-                type="button"
-                onClick={() => alert("Apple ID Admin Login Initiated...")}
-                className="flex items-center justify-center py-2 border border-gray-200 rounded-xl hover:bg-gray-50 transition cursor-pointer shadow-2xs text-gray-900"
-                title="Sign in with Apple"
-              >
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.32c.67-.82 1.13-1.97.99-3.12-1 .04-2.2.67-2.9 1.49-.62.73-1.17 1.9-1.02 3.03 1.11.09 2.26-.57 2.93-1.4" />
-                </svg>
-              </button>
-
             </div>
 
             {/* Bottom Link */}

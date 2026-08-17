@@ -174,6 +174,25 @@ export default function AdminProductsPage() {
     setDeletingSubCategoryId(null);
   };
 
+  // Handle Brand Logo Local File Upload
+  const handleBrandLogoFileUpload = (e: React.ChangeEvent<HTMLInputElement>, isEdit = false) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          if (isEdit) {
+            setEditBrandForm(prev => ({ ...prev, logo: reader.result as string }));
+          } else {
+            setNewBrandForm(prev => ({ ...prev, logo_url: reader.result as string }));
+          }
+          showNotification("📁 Local Brand Logo Uploaded & Preview Generated!");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // New Brand Form State
   const [newBrandForm, setNewBrandForm] = useState({
     name: "",
@@ -1560,8 +1579,8 @@ export default function AdminProductsPage() {
 
       {/* 📁 CREATE STORE CATEGORY MODAL */}
       {showAddCategoryModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+        <div onClick={() => setShowAddCategoryModal(false)} className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative cursor-default">
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center text-lg">
@@ -1637,8 +1656,8 @@ export default function AdminProductsPage() {
 
       {/* ✏️ EDIT CATEGORY MODAL */}
       {showEditCategoryModal && editingCategory && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+        <div onClick={() => setShowEditCategoryModal(false)} className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative cursor-default">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div className="flex items-center gap-2">
                 <span className="text-xl">✏️</span>
@@ -1718,8 +1737,8 @@ export default function AdminProductsPage() {
 
       {/* 🗑️ DELETE CATEGORY CONFIRMATION MODAL */}
       {deletingCategoryId !== null && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center space-y-4 shadow-2xl relative">
+        <div onClick={() => setDeletingCategoryId(null)} className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center space-y-4 shadow-2xl relative cursor-default">
             <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 text-2xl flex items-center justify-center mx-auto border border-red-100">
               🗑️
             </div>
@@ -1749,14 +1768,14 @@ export default function AdminProductsPage() {
 
       {/* 🏷️ ADD OFFICIAL BRAND MODAL */}
       {showAddBrandModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+        <div onClick={() => setShowAddBrandModal(false)} className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative cursor-default">
             <div className="flex justify-between items-center border-b pb-3">
               <div>
                 <h3 className="text-lg font-black text-gray-900">+ Add Official Partner Brand</h3>
                 <p className="text-xs text-gray-500">Configure new manufacturer brand with logo &amp; website</p>
               </div>
-              <button onClick={() => setShowAddBrandModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+              <button onClick={() => setShowAddBrandModal(false)} className="text-gray-400 hover:text-black font-bold cursor-pointer">✕</button>
             </div>
 
             <form onSubmit={handleCreateBrand} className="space-y-4 text-xs">
@@ -1784,26 +1803,43 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-gray-700 mb-1">High-Res Brand Logo Image URL</label>
-                <input
-                  type="text"
-                  value={newBrandForm.logo_url}
-                  onChange={(e) => setNewBrandForm({ ...newBrandForm, logo_url: e.target.value })}
-                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-mono"
-                />
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">High-Res Brand Logo Image</label>
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={newBrandForm.logo_url}
+                    onChange={(e) => setNewBrandForm({ ...newBrandForm, logo_url: e.target.value })}
+                    placeholder="https://images.unsplash.com/..."
+                    className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-mono"
+                  />
+                  <div className="flex items-center gap-3">
+                    <label className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl border border-emerald-200 text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                      <span>📁 Upload Logo File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleBrandLogoFileUpload(e, false)}
+                        className="hidden"
+                      />
+                    </label>
+                    {newBrandForm.logo_url && (
+                      <img src={newBrandForm.logo_url} alt="Logo Preview" className="w-8 h-8 rounded-lg object-cover border border-gray-200 bg-white p-0.5" />
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="flex gap-3 pt-3 border-t">
                 <button
                   type="button"
                   onClick={() => setShowAddBrandModal(false)}
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs"
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
+                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer"
                 >
                   Create Brand
                 </button>
@@ -1815,14 +1851,14 @@ export default function AdminProductsPage() {
 
       {/* ⚡ ADD VARIANT SKU MODAL */}
       {showAddVariantModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+        <div onClick={() => setShowAddVariantModal(false)} className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative cursor-default">
             <div className="flex justify-between items-center border-b pb-3">
               <div>
                 <h3 className="text-lg font-black text-gray-900">+ Generate Product SKU Variant</h3>
                 <p className="text-xs text-gray-500">Create SKU variant combination with price markup</p>
               </div>
-              <button onClick={() => setShowAddVariantModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+              <button onClick={() => setShowAddVariantModal(false)} className="text-gray-400 hover:text-black font-bold cursor-pointer">✕</button>
             </div>
 
             <form onSubmit={handleCreateVariant} className="space-y-4 text-xs">
@@ -1889,13 +1925,13 @@ export default function AdminProductsPage() {
                 <button
                   type="button"
                   onClick={() => setShowAddVariantModal(false)}
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs"
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
+                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer"
                 >
                   Generate Variant
                 </button>
@@ -1907,14 +1943,14 @@ export default function AdminProductsPage() {
 
       {/* 📁 ADD SUB-CATEGORY MODAL */}
       {showAddSubCategoryModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+        <div onClick={() => setShowAddSubCategoryModal(false)} className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative cursor-default">
             <div className="flex justify-between items-center border-b pb-3">
               <div>
                 <h3 className="text-lg font-black text-gray-900">+ Create Sub Category</h3>
                 <p className="text-xs text-gray-500">Map new sub-category to parent category taxonomy</p>
               </div>
-              <button onClick={() => setShowAddSubCategoryModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+              <button onClick={() => setShowAddSubCategoryModal(false)} className="text-gray-400 hover:text-black font-bold cursor-pointer">✕</button>
             </div>
 
             <form onSubmit={handleCreateSubCategory} className="space-y-4 text-xs font-medium">
@@ -1959,8 +1995,8 @@ export default function AdminProductsPage() {
               </div>
 
               <div className="flex gap-3 pt-3 border-t">
-                <button type="button" onClick={() => setShowAddSubCategoryModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">Create Sub Category</button>
+                <button type="button" onClick={() => setShowAddSubCategoryModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Cancel</button>
+                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer">Create Sub Category</button>
               </div>
             </form>
           </div>
@@ -2025,14 +2061,14 @@ export default function AdminProductsPage() {
 
       {/* ✏️ EDIT BRAND MODAL */}
       {showEditBrandModal && editingBrand && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+        <div onClick={() => setShowEditBrandModal(false)} className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 cursor-pointer">
+          <div onClick={(e) => e.stopPropagation()} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative cursor-default">
             <div className="flex justify-between items-center border-b pb-3">
               <div>
                 <h3 className="text-lg font-black text-gray-900">Edit Partner Brand</h3>
                 <p className="text-xs text-gray-500">Update logo URL &amp; website domain</p>
               </div>
-              <button onClick={() => setShowEditBrandModal(false)} className="text-gray-400 hover:text-black font-bold">✕</button>
+              <button onClick={() => setShowEditBrandModal(false)} className="text-gray-400 hover:text-black font-bold cursor-pointer">✕</button>
             </div>
 
             <form onSubmit={handleUpdateBrand} className="space-y-4 text-xs font-medium">
@@ -2058,18 +2094,34 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-gray-700 mb-1">Logo Image URL</label>
-                <input
-                  type="text"
-                  value={editBrandForm.logo}
-                  onChange={(e) => setEditBrandForm({ ...editBrandForm, logo: e.target.value })}
-                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs font-mono text-gray-700"
-                />
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Logo Image</label>
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={editBrandForm.logo}
+                    onChange={(e) => setEditBrandForm({ ...editBrandForm, logo: e.target.value })}
+                    className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs font-mono text-gray-700"
+                  />
+                  <div className="flex items-center gap-3">
+                    <label className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl border border-emerald-200 text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                      <span>📁 Upload Logo File</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handleBrandLogoFileUpload(e, true)}
+                        className="hidden"
+                      />
+                    </label>
+                    {editBrandForm.logo && (
+                      <img src={editBrandForm.logo} alt="Logo Preview" className="w-8 h-8 rounded-lg object-cover border border-gray-200 bg-white p-0.5" />
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="flex gap-3 pt-3 border-t">
-                <button type="button" onClick={() => setShowEditBrandModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
+                <button type="button" onClick={() => setShowEditBrandModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Cancel</button>
+                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer">✓ Save Changes</button>
               </div>
             </form>
           </div>
