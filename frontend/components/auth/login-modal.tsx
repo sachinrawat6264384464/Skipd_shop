@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { requestOTP, verifyOTP, changePassword, checkEmailRegistered, resetUserPassword, syncFirebaseUser } from "lib/api";
+import { requestOTP, verifyOTP, changePassword, checkEmailRegistered, resetUserPassword, syncFirebaseUser, saveRegisteredEmail } from "lib/api";
 import { auth, googleProvider } from "lib/firebase";
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 
@@ -157,6 +157,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
         localStorage.setItem("skipd_token", syncRes.access_token || idToken);
         localStorage.setItem("skipd_user", JSON.stringify(userObj));
+        saveRegisteredEmail(userObj.email);
         window.dispatchEvent(new Event("skipd_auth_changed"));
 
         try {
@@ -223,7 +224,17 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       const fbUser = result.user;
       const userEmail = fbUser.email || "";
 
-      // Google Sign-In seamlessly authenticates & auto-syncs customer to PostgreSQL database
+      if (!isRegisterView) {
+        // 🔒 Strictly check if account is registered in Database / LocalStorage before allowing Google Login
+        const check = await checkEmailRegistered(userEmail);
+        if (!check || check.exists === false) {
+          setLoading(false);
+          setError(`⚠️ No account found for "${userEmail}". Please click "Create an account" below to register first.`);
+          return;
+        }
+      } else {
+        saveRegisteredEmail(userEmail);
+      }
 
       const idToken = await fbUser.getIdToken();
 

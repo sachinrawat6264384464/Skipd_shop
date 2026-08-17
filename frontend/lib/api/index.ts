@@ -1467,6 +1467,25 @@ export async function changePassword(email: string, newPassword: string) {
   return { status: "success", message: "Password updated successfully!" };
 }
 
+export function saveRegisteredEmail(email: string) {
+  if (typeof window === "undefined" || !email) return;
+  const cleanEmail = email.toLowerCase().trim();
+  try {
+    const existing = localStorage.getItem("skipd_registered_users");
+    let list: string[] = [];
+    if (existing) {
+      try {
+        const parsed = JSON.parse(existing);
+        if (Array.isArray(parsed)) list = parsed.map((item: any) => (typeof item === "string" ? item : item.email)).filter(Boolean);
+      } catch (e) {}
+    }
+    if (!list.includes(cleanEmail)) {
+      list.push(cleanEmail);
+      localStorage.setItem("skipd_registered_users", JSON.stringify(list));
+    }
+  } catch (e) {}
+}
+
 export async function checkEmailRegistered(email: string) {
   const targetEmail = email.toLowerCase().trim();
 
@@ -1484,10 +1503,11 @@ export async function checkEmailRegistered(email: string) {
     console.warn("[API SDK] Check email endpoint offline");
   }
 
-  // Strictly check against registered account list in fallback mode
+  // Strictly check against registered account list in fallback / offline mode
   let registeredEmails = [
     "sachin.rawat@email.com",
     "sachinrawat6264384464@gmail.com",
+    "familyzila1213@gmail.com",
     "customer@skipd.in",
     "admin@skipd.in",
     "sachin.rawat@example.com"
