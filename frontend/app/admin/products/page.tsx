@@ -153,6 +153,19 @@ export default function AdminProductsPage() {
     setShowCreateModal(false);
   };
 
+  const openFreshCreateProductModal = () => {
+    setEditingProduct(null);
+    setNewProduct(initialEmptyProductState);
+    setCreateStep("basic");
+    setShowCreateModal(true);
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      handleCloseAndResetForm();
+    }
+  };
+
   // Calculate live discount percentage OFF & total savings
   const sellingPriceNum = Number(newProduct.price || 0);
   const comparePriceNum = Number(newProduct.compare_at_price || 0);
@@ -550,10 +563,7 @@ export default function AdminProductsPage() {
             <span>⚡ Seed Database Catalog</span>
           </button>
           <button
-            onClick={() => {
-              setCreateStep("basic");
-              setShowCreateModal(true);
-            }}
+            onClick={openFreshCreateProductModal}
             className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
           >
             <span className="text-sm">+</span>
@@ -570,8 +580,7 @@ export default function AdminProductsPage() {
             onClick={() => {
               setActiveTab(tab);
               if (tab === "Add Product") {
-                setCreateStep("basic");
-                setShowCreateModal(true);
+                openFreshCreateProductModal();
               }
             }}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap ${
@@ -1474,7 +1483,7 @@ export default function AdminProductsPage() {
       {/* 🚀 5-STEP MULTI-TAB "ADD NEW PRODUCT" MODAL */}
       {showCreateModal && (
         <div
-          onClick={handleCloseAndResetForm}
+          onClick={handleBackdropClick}
           className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto"
         >
           <div
