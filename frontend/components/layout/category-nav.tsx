@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { fetchCategories } from "lib/api";
 
-const categoryBubbles = [
+const defaultCategories = [
   { name: "Mobiles", slug: "mobiles", icon: "📱", bg: "bg-blue-50 border-blue-200 text-blue-700" },
   { name: "Laptops", slug: "laptops", icon: "💻", bg: "bg-gray-100 border-gray-300 text-gray-800" },
   { name: "Electronics", slug: "electronics", icon: "🎧", bg: "bg-purple-50 border-purple-200 text-purple-700" },
@@ -13,20 +14,66 @@ const categoryBubbles = [
   { name: "Beauty", slug: "beauty", icon: "💄", bg: "bg-pink-50 border-pink-200 text-pink-700" },
   { name: "Home & Living", slug: "home", icon: "🏠", bg: "bg-teal-50 border-teal-200 text-teal-700" },
   { name: "Gaming", slug: "gaming", icon: "🎮", bg: "bg-indigo-50 border-indigo-200 text-indigo-700" },
-  { name: "More", slug: "more", icon: "•••", bg: "bg-gray-100 border-gray-200 text-gray-600" },
 ];
 
 export function CategoryNav() {
-  const [mounted, setMounted] = useState(false);
+  const [categories, setCategories] = useState(defaultCategories);
 
   useEffect(() => {
-    setMounted(true);
+    async function loadDynamicCategories() {
+      try {
+        const apiCats = await fetchCategories().catch(() => []);
+        let combined = [...defaultCategories];
+
+        if (Array.isArray(apiCats)) {
+          apiCats.forEach(c => {
+            const slug = c.slug || c.name.toLowerCase().replace(/\s+/g, "-");
+            if (!combined.some(item => item.slug === slug)) {
+              combined.push({
+                name: c.name,
+                slug: slug,
+                icon: "🛍️",
+                bg: "bg-emerald-50 border-emerald-200 text-emerald-700"
+              });
+            }
+          });
+        }
+
+        // Read admin custom products for new categories
+        if (typeof window !== "undefined") {
+          const storedCustom = localStorage.getItem("skipd_custom_products");
+          if (storedCustom) {
+            const parsed = JSON.parse(storedCustom);
+            if (Array.isArray(parsed)) {
+              parsed.forEach((p: any) => {
+                const catName = p.category?.name || p.category;
+                if (catName && typeof catName === "string") {
+                  const catSlug = p.category?.slug || catName.toLowerCase().replace(/\s+/g, "-");
+                  if (!combined.some(item => item.slug === catSlug)) {
+                    combined.push({
+                      name: catName,
+                      slug: catSlug,
+                      icon: "✨",
+                      bg: "bg-purple-50 border-purple-200 text-purple-700"
+                    });
+                  }
+                }
+              });
+            }
+          }
+        }
+
+        setCategories(combined);
+      } catch (e) {}
+    }
+
+    loadDynamicCategories();
   }, []);
 
   return (
     <nav className="bg-white border-b border-gray-200 py-4 px-4 overflow-x-auto no-scrollbar">
-      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 md:gap-8 min-w-max">
-        {categoryBubbles.map((cat) => (
+      <div className="max-w-7xl mx-auto flex items-center justify-start sm:justify-between gap-4 md:gap-8 min-w-max">
+        {categories.map((cat) => (
           <Link
             key={cat.slug}
             href={`/category/${cat.slug}`}
