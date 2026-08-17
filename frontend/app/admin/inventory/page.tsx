@@ -1146,24 +1146,16 @@ export default function AdminInventoryPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      const headers = "Product Title,Price,Stock Quantity,Category,Warehouse,Image URL,SKU,Compare At Price,Brand,Sub Category,Tags,Short Description,Description,Highlights,Box Contents,HSN Code,Meta Title,Meta Description";
-                      const r1 = '"Sony WH-1000XM5 Studio Headphones",24999,50,Electronics,Electronics FC Delhi,https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800,SONY-XM5-STUDIO,29999,Sony,Wireless Headphones,audio|tech|wireless,"Studio quality ANC headphones","Active noise cancellation with 40-hour battery life and spatial audio.","40hr Battery|Active ANC|Multipoint Pairing","Headphones|Carrying Case|Audio Cable|USB-C Cable",85183000,"Sony WH-1000XM5 ANC Headphones","Buy Sony WH-1000XM5 wireless studio headphones at best price."';
-                      const r2 = '"OnePlus Nord 6 5G (8GB+256GB)",44499,35,Mobiles,Mobiles FC Mumbai,https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800,ONEPLUS-NORD6-BLK,52999,OnePlus,Flagship Smartphones,mobiles|5g|oneplus,"165FPS gaming & 9000mAh battery","Snapdragon 8s Gen 4 processor with ultra fast 100W SUPERVOOC charging.","165FPS Gaming|9000mAh Battery|100W SUPERVOOC","Handset|100W Charger|Type-C Cable|SIM Ejector",85171200,"OnePlus Nord 6 5G Smartphone","Buy OnePlus Nord 6 5G flagship phone."';
-                      const r3 = '"Nike Air Force 1 07 Sneakers",7495,25,Footwear,Footwear FC Chennai,https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800,NIKE-AF1-WHITE,8995,Nike,Sneakers,shoes|sneakers|nike,"Classic white leather sneakers","Iconic basketball shoes with responsive Nike Air cushioning.","Real Leather|Air Cushioning|Rubber Sole","Sneakers Pair|Warranty Card",64039990,"Nike Air Force 1 07 Sneakers","Buy authentic Nike Air Force 1 sneakers."';
-
-                      const sampleCsv = `${headers}\n${r1}\n${r2}\n${r3}`;
-                      const blob = new Blob([sampleCsv], { type: "text/csv" });
-                      const url = URL.createObjectURL(blob);
                       const a = document.createElement("a");
-                      a.href = url;
-                      a.download = "skipd_full_spec_inventory_sample.csv";
+                      a.href = "/skipd_10_products_full_spec.csv";
+                      a.download = "skipd_10_products_full_spec.csv";
                       a.click();
-                      showToast("📥 Full-spec sample CSV downloaded with all 18 form step columns!");
+                      showToast("📥 10-Product Full Spec CSV (with all 18 form step columns) downloaded!");
                     }}
                     className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer"
                   >
                     <span>📥</span>
-                    <span>Download Full Spec Sample CSV</span>
+                    <span>Download 10-Product Full Spec CSV</span>
                   </button>
 
                   <button
