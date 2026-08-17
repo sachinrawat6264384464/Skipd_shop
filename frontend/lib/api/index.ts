@@ -639,25 +639,52 @@ export async function fetchProducts(query?: { category?: string; search?: string
 
   // Safe fallback catalog only if backend server is unreachable
   let customProducts: any[] = [];
+  let updatedProductsMap: Record<string, any> = {};
+  let deletedIdsSet = new Set<string>();
+
   if (typeof window !== "undefined") {
     try {
-      const stored = localStorage.getItem("skipd_custom_products");
-      if (stored) {
-        const parsed = JSON.parse(stored);
+      const storedCustom = localStorage.getItem("skipd_custom_products");
+      if (storedCustom) {
+        const parsed = JSON.parse(storedCustom);
         if (Array.isArray(parsed)) customProducts = parsed;
+      }
+
+      const storedUpdates = localStorage.getItem("skipd_updated_products");
+      if (storedUpdates) {
+        updatedProductsMap = JSON.parse(storedUpdates);
+      }
+
+      const storedDeletions = localStorage.getItem("skipd_deleted_product_ids");
+      if (storedDeletions) {
+        const parsed = JSON.parse(storedDeletions);
+        if (Array.isArray(parsed)) {
+          parsed.forEach((id: any) => deletedIdsSet.add(String(id)));
+        }
       }
     } catch {}
   }
 
   let combined = [...customProducts, ...MOCK_PRODUCTS];
-  // Remove duplicates by ID or Handle
+
+  // Remove duplicates & deleted items, apply updates
   const seenIds = new Set();
-  combined = combined.filter(p => {
-    const key = p.id || p.handle;
-    if (seenIds.has(key)) return false;
-    seenIds.add(key);
-    return true;
-  });
+  combined = combined
+    .filter(p => {
+      const pIdStr = String(p.id);
+      if (deletedIdsSet.has(pIdStr) || deletedIdsSet.has(p.handle)) return false;
+      const key = p.id || p.handle;
+      if (seenIds.has(key)) return false;
+      seenIds.add(key);
+      return true;
+    })
+    .map(p => {
+      const pIdStr = String(p.id);
+      if (updatedProductsMap[pIdStr]) {
+        return { ...p, ...updatedProductsMap[pIdStr] };
+      }
+      return p;
+    });
 
   if (query?.featured) combined = combined.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
@@ -1395,7 +1422,7 @@ export async function createAdminProduct(payload: any) {
   return createdObj;
 }
 
-export async function updateAdminProduct(id: number, payload: any) {
+export async function updateAdminProduct(id: number | string, payload: any) {
   try {
     const res = await fetch(`${API_BASE_URL}/products/admin/${id}`, {
       method: "PUT",
@@ -1406,10 +1433,30 @@ export async function updateAdminProduct(id: number, payload: any) {
   } catch (e) {
     console.warn("[API SDK] Update product offline");
   }
+
+  if (typeof window !== "undefined") {
+    try {
+      // 1. Update in skipd_custom_products if custom
+      const existingCustom = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
+      const updatedCustom = existingCustom.map((p: any) => (p.id === id || String(p.id) === String(id)) ? { ...p, ...payload } : p);
+      localStorage.setItem("skipd_custom_products", JSON.stringify(updatedCustom));
+
+      // 2. Store in skipd_updated_products map for all products
+      const existingUpdates = JSON.parse(localStorage.getItem("skipd_updated_products") || "{}");
+      existingUpdates[String(id)] = { ...(existingUpdates[String(id)] || {}), ...payload };
+      localStorage.setItem("skipd_updated_products", JSON.stringify(existingUpdates));
+    } catch {}
+  }
+
+  const idx = MOCK_PRODUCTS.findIndex(p => p.id === id || String(p.id) === String(id));
+  if (idx !== -1) {
+    MOCK_PRODUCTS[idx] = { ...MOCK_PRODUCTS[idx], ...payload };
+  }
+
   return { message: "Product updated successfully" };
 }
 
-export async function deleteAdminProduct(id: number) {
+export async function deleteAdminProduct(id: number | string) {
   try {
     const res = await fetch(`${API_BASE_URL}/products/admin/${id}`, { method: "DELETE" });
     if (res.ok) return await res.json();
@@ -1419,13 +1466,21 @@ export async function deleteAdminProduct(id: number) {
 
   if (typeof window !== "undefined") {
     try {
+      // 1. Remove from skipd_custom_products
       const existing = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
-      const updated = existing.filter((p: any) => p.id !== id);
+      const updated = existing.filter((p: any) => p.id !== id && String(p.id) !== String(id));
       localStorage.setItem("skipd_custom_products", JSON.stringify(updated));
+
+      // 2. Add to skipd_deleted_product_ids array
+      const existingDeletions = JSON.parse(localStorage.getItem("skipd_deleted_product_ids") || "[]");
+      if (!existingDeletions.includes(String(id))) {
+        existingDeletions.push(String(id));
+      }
+      localStorage.setItem("skipd_deleted_product_ids", JSON.stringify(existingDeletions));
     } catch {}
   }
 
-  const idx = MOCK_PRODUCTS.findIndex(p => p.id === id);
+  const idx = MOCK_PRODUCTS.findIndex(p => p.id === id || String(p.id) === String(id));
   if (idx !== -1) {
     MOCK_PRODUCTS.splice(idx, 1);
   }

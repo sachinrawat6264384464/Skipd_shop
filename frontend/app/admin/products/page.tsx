@@ -317,11 +317,13 @@ export default function AdminProductsPage() {
       images: editingProduct.images && editingProduct.images.length > 0 ? editingProduct.images : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]
     };
 
-    const res = await updateAdminProduct(editingProduct.id, payload);
+    const targetId = editingProduct.id;
+    const res = await updateAdminProduct(targetId, payload);
     if (res) {
-      showNotification(`✓ Product #${editingProduct.id} ("${editingProduct.title}") updated successfully!`);
+      setProducts(prev => prev.map(p => (p.id === targetId || String(p.id) === String(targetId)) ? { ...p, ...payload } : p));
+      showNotification(`✓ Product #${targetId} ("${editingProduct.title}") updated successfully!`);
       setEditingProduct(null);
-      loadProducts();
+      await loadProducts();
     } else {
       showNotification("Failed to update product", "error");
     }
@@ -329,11 +331,13 @@ export default function AdminProductsPage() {
 
   const confirmDeleteProduct = async () => {
     if (!deletingProductId) return;
-    const res = await deleteAdminProduct(deletingProductId);
+    const targetId = deletingProductId;
+    const res = await deleteAdminProduct(targetId);
     if (res) {
-      showNotification(`🗑️ Product #${deletingProductId} removed from database`);
+      setProducts(prev => prev.filter(p => p.id !== targetId && String(p.id) !== String(targetId)));
+      showNotification(`🗑️ Product #${targetId} removed from database catalog`);
       setDeletingProductId(null);
-      loadProducts();
+      await loadProducts();
     } else {
       showNotification("Failed to delete product", "error");
     }
