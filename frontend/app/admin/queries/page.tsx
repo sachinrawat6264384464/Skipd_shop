@@ -108,6 +108,34 @@ export default function AdminProductQueriesPage() {
           });
         }
       }
+
+      // Load Admin Notifications & Inquiries
+      const storedInquiries = localStorage.getItem("skipd_admin_inquiries");
+      if (storedInquiries) {
+        const parsedInquiries = JSON.parse(storedInquiries);
+        if (Array.isArray(parsedInquiries) && parsedInquiries.length > 0) {
+          const formattedInquiries = parsedInquiries.map((inq: any, i: number) => ({
+            id: `#INQ-${1000 + i}`,
+            customer: inq.customer_email ? inq.customer_email.split("@")[0] : "Customer",
+            email: inq.customer_email || "customer@skipd.in",
+            product: inq.title || "Store Order Inquiry",
+            price: inq.amount ? `₹${inq.amount.toLocaleString("en-IN")}` : "₹0",
+            img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100",
+            queryText: inq.message || "New customer inquiry message received.",
+            type: inq.type === "NEW_ORDER" ? "New Order" : "Inquiry",
+            status: "Pending",
+            priority: "High",
+            priorityColor: "text-emerald-500",
+            date: inq.date ? new Date(inq.date).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) : "Just now"
+          }));
+
+          setQueries(prev => {
+            const ids = new Set(prev.map(p => p.id));
+            const newItems = formattedInquiries.filter((f: any) => !ids.has(f.id));
+            return [...newItems, ...prev];
+          });
+        }
+      }
     } catch (e) {
       console.warn("Could not load return queries");
     }

@@ -150,8 +150,13 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         localStorage.setItem("skipd_user", JSON.stringify(userObj));
         window.dispatchEvent(new Event("skipd_auth_changed"));
 
+        try {
+          const { sendWelcomeEmail } = await import("lib/services/email-service");
+          sendWelcomeEmail(userObj.email, userObj.user_name || "User");
+        } catch (e) {}
+
         setLoading(false);
-        setSuccessMsg("🔥 Account created & saved in Firebase Auth! Welcome to SKIPD.");
+        setSuccessMsg(`🔥 Account created for ${userObj.user_name || "User"}! Welcome email sent to ${userObj.email}.`);
         setTimeout(() => finishLogin(), 1000);
       } catch (err: any) {
         setLoading(false);
@@ -223,6 +228,13 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       localStorage.setItem("skipd_token", idToken);
       localStorage.setItem("skipd_user", JSON.stringify(userObj));
       window.dispatchEvent(new Event("skipd_auth_changed"));
+
+      if (isRegisterView) {
+        try {
+          const { sendWelcomeEmail } = await import("lib/services/email-service");
+          sendWelcomeEmail(userObj.email, userObj.user_name || "User");
+        } catch (e) {}
+      }
 
       setLoading(false);
       setSuccessMsg(`🔥 Signed in as ${userObj.user_name} via Google Auth!`);

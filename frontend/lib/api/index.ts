@@ -1323,20 +1323,40 @@ export async function deleteAdminHomepageSection(id: number) {
 // ─────────────────────────────────────────────
 // 🔒 OTP AUTHENTICATION API SDK
 // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// 🔒 OTP AUTHENTICATION API SDK
+// ─────────────────────────────────────────────
 export async function requestOTP(emailOrPhone: string) {
+  const mockOtp = String(Math.floor(100000 + Math.random() * 900000));
+
   try {
     const res = await fetch(`${API_BASE_URL}/auth/request-otp`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email_or_phone: emailOrPhone })
     });
-    if (res.ok) return await res.json();
+    if (res.ok) {
+      const data = await res.json();
+      if (emailOrPhone.includes("@")) {
+        try {
+          const { sendForgotOTPNotification } = await import("lib/services/email-service");
+          sendForgotOTPNotification(emailOrPhone.trim(), data.otp_demo || mockOtp);
+        } catch (e) {}
+      }
+      return data;
+    }
   } catch (e) {
     console.warn("[API SDK] Request OTP endpoint offline, using fallback OTP system");
   }
 
-  // Fallback demo OTP
-  const mockOtp = String(Math.floor(100000 + Math.random() * 900000));
+  // Trigger email notification service for OTP
+  if (emailOrPhone.includes("@")) {
+    try {
+      const { sendForgotOTPNotification } = await import("lib/services/email-service");
+      sendForgotOTPNotification(emailOrPhone.trim(), mockOtp);
+    } catch (e) {}
+  }
+
   return {
     status: "success",
     message: `6-digit OTP sent to ${emailOrPhone}`,
@@ -1390,26 +1410,52 @@ export async function changePassword(email: string, newPassword: string) {
 }
 
 export async function checkEmailRegistered(email: string) {
+  const targetEmail = email.toLowerCase().trim();
+
   try {
     const res = await fetch(`${API_BASE_URL}/auth/check-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
+      body: JSON.stringify({ email: targetEmail })
     });
-    if (res.ok) return await res.json();
+    if (res.ok) {
+      const data = await res.json();
+      if (data && data.exists) return data;
+    }
   } catch (e) {
     console.warn("[API SDK] Check email endpoint offline");
   }
 
   // Strictly check against registered account list in fallback mode
-  const registeredEmails = [
+  let registeredEmails = [
     "sachin.rawat@email.com",
     "sachinrawat6264384464@gmail.com",
     "customer@skipd.in",
     "admin@skipd.in",
     "sachin.rawat@example.com"
   ];
-  const targetEmail = email.toLowerCase().trim();
+
+  if (typeof window !== "undefined") {
+    try {
+      const currentUser = localStorage.getItem("skipd_user");
+      if (currentUser) {
+        const pUser = JSON.parse(currentUser);
+        if (pUser.email) registeredEmails.push(pUser.email.toLowerCase().trim());
+      }
+
+      const allReg = localStorage.getItem("skipd_registered_users");
+      if (allReg) {
+        const pList = JSON.parse(allReg);
+        if (Array.isArray(pList)) {
+          pList.forEach((u: any) => {
+            const uEmail = typeof u === "string" ? u : u.email;
+            if (uEmail) registeredEmails.push(uEmail.toLowerCase().trim());
+          });
+        }
+      }
+    } catch (e) {}
+  }
+
   if (registeredEmails.includes(targetEmail)) {
     return { exists: true, email: targetEmail, message: "Registered Email Verified" };
   }

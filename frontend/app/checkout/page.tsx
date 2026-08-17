@@ -464,6 +464,18 @@ export default function CheckoutPage() {
       const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
       localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
+      // 📧 Send Order Confirmation & Detailed Invoice Bill Email
+      try {
+        const currentUser = localStorage.getItem("skipd_user");
+        const parsedUser = currentUser ? JSON.parse(currentUser) : null;
+        const targetEmail = parsedUser?.email || (selectedAddressObj as any)?.email || "customer@skipd.in";
+        const targetName = parsedUser?.user_name || selectedAddressObj?.name || "Valued Customer";
+
+        import("lib/services/email-service").then(({ sendOrderInvoiceEmail }) => {
+          sendOrderInvoiceEmail(targetEmail, targetName, newOrder);
+        });
+      } catch (e) {}
+
       // Clear User Cart or Buy Now Session Storage
       if (isBuyNowMode || sessionStorage.getItem("skipd_buy_now_item")) {
         sessionStorage.removeItem("skipd_buy_now_item");

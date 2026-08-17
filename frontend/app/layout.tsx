@@ -56,6 +56,7 @@ import { LanguageProvider } from "components/language/language-context";
 import { WishlistProvider } from "components/wishlist/wishlist-context";
 
 import { NavbarWrapper } from "components/layout/navbar/navbar-wrapper";
+import { EmailToastListener } from "components/email/email-toast-listener";
 
 export default async function RootLayout({
   children,
@@ -79,6 +80,7 @@ export default async function RootLayout({
                   {children}
                   <Toaster closeButton />
                   <WelcomeToast />
+                  <EmailToastListener />
                   <WhatsAppFloatingWidget />
                 </main>
               </CartProvider>

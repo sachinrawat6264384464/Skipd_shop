@@ -20,7 +20,7 @@ export default function CustomerRegisterPage() {
     e.preventDefault();
     setLoading(true);
 
-    setTimeout(() => {
+    setTimeout(async () => {
       const userObj = {
         user_name: fullName || "Sachin Rawat",
         email: emailOrPhone.includes("@") ? emailOrPhone : "sachin.rawat@email.com",
@@ -29,6 +29,11 @@ export default function CustomerRegisterPage() {
 
       localStorage.setItem("skipd_token", "jwt_token_demo_skipd_2026");
       localStorage.setItem("skipd_user", JSON.stringify(userObj));
+
+      try {
+        const { sendWelcomeEmail } = await import("lib/services/email-service");
+        sendWelcomeEmail(userObj.email, userObj.user_name);
+      } catch (e) {}
 
       setLoading(false);
       window.location.href = "/account?tab=profile";
