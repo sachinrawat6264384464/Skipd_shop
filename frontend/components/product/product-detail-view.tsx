@@ -762,7 +762,7 @@ const SUB_NAV_ITEMS = [
                 <p className="text-[10px] text-gray-500">Ships from and sold by SKIPD Official Retail.</p>
               </div>
 
-              {/* 🛒 Add to Cart (Yellow) & ⚡ Buy Now (Orange) Buttons */}
+              {/* 🛒 Add to Cart (White) & ⚡ Buy Now (Brand Emerald Logo Color) Buttons */}
               <div className="space-y-2 pt-2">
                 {product.stock_quantity === 0 ? (
                   <button
@@ -776,7 +776,7 @@ const SUB_NAV_ITEMS = [
                     <button
                       type="button"
                       onClick={handleAddToCart}
-                      className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3.5 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full bg-white border-2 border-gray-300 hover:bg-gray-50 text-gray-900 font-black text-xs py-3.5 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       {cartAddedToast ? "✓ Added to Cart!" : "🛒 Add to Cart"}
                     </button>
@@ -784,7 +784,7 @@ const SUB_NAV_ITEMS = [
                     <button
                       type="button"
                       onClick={handleBuyNow}
-                      className="w-full bg-orange-500 hover:bg-orange-600 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-orange-500/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-emerald-600/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       ⚡ Buy Now
                     </button>
@@ -951,7 +951,7 @@ const SUB_NAV_ITEMS = [
               <button
                 type="button"
                 onClick={handleBuyCombo}
-                className="w-full bg-amber-400 hover:bg-amber-500 text-gray-900 font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-amber-400/20 text-center block cursor-pointer uppercase tracking-wider"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-emerald-600/20 text-center block cursor-pointer uppercase tracking-wider"
               >
                 ⚡ Buy Combo
               </button>
