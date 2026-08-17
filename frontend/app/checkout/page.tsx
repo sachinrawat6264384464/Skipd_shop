@@ -367,6 +367,25 @@ export default function CheckoutPage() {
         const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
         localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
+        // Save Payment Transaction to skipd_payments for Admin Payments sync
+        try {
+          const newPaymentTxn = {
+            id: response.razorpay_payment_id ? `PAY-${response.razorpay_payment_id.slice(-6)}` : `PAY-${Math.floor(100000 + Math.random() * 900000)}`,
+            orderId: createdOrderNumber,
+            customerName: selectedAddressObj.name || user?.user_name || "Customer",
+            customerEmail: (selectedAddressObj as any)?.email || user?.email || "customer@skipd.in",
+            amount: finalPayable,
+            payment_method: "Razorpay Online UPI",
+            gateway: "Razorpay",
+            rzpPaymentId: response.razorpay_payment_id || `pay_MB${Math.floor(10000000 + Math.random() * 89999999)}`,
+            status: "SUCCESS",
+            date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+            time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+          };
+          const existingPayments = JSON.parse(localStorage.getItem("skipd_payments") || "[]");
+          localStorage.setItem("skipd_payments", JSON.stringify([newPaymentTxn, ...existingPayments]));
+        } catch (e) {}
+
         // ✉️ Trigger Order Confirmation & Detailed Invoice Email on Razorpay Payment Success!
         try {
           const currentUser = localStorage.getItem("skipd_user");

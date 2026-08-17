@@ -43,8 +43,11 @@ export default function AdminPaymentsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Modals & Action Toast State
+  // Modals, Selection & Action States
   const [selectedTxnForModal, setSelectedTxnForModal] = useState<any | null>(null);
+  const [selectedTxnIds, setSelectedTxnIds] = useState<string[]>([]);
+  const [deletingTxnId, setDeletingTxnId] = useState<string | null>(null);
+  const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
   // Dynamic Metrics State
@@ -58,6 +61,60 @@ export default function AdminPaymentsPage() {
 
   // Dynamic Payments Dataset (Fetched Live from PostgreSQL DB & Real Placed Orders)
   const [payments, setPayments] = useState<any[]>([]);
+
+  // Selection Checkbox Handlers
+  const toggleSelectAll = () => {
+    if (selectedTxnIds.length === paginatedPayments.length && paginatedPayments.length > 0) {
+      setSelectedTxnIds([]);
+    } else {
+      setSelectedTxnIds(paginatedPayments.map(p => p.id));
+    }
+  };
+
+  const toggleSelectTxn = (id: string) => {
+    if (selectedTxnIds.includes(id)) {
+      setSelectedTxnIds(selectedTxnIds.filter(item => item !== id));
+    } else {
+      setSelectedTxnIds([...selectedTxnIds, id]);
+    }
+  };
+
+  // Single Transaction Delete Handler
+  const handleDeleteTxn = (id: string) => {
+    const updated = payments.filter(p => p.id !== id);
+    setPayments(updated);
+    setSelectedTxnIds(selectedTxnIds.filter(item => item !== id));
+
+    if (typeof window !== "undefined") {
+      try {
+        const saved = JSON.parse(localStorage.getItem("skipd_payments") || "[]");
+        const filtered = saved.filter((item: any) => item.id !== id && item.orderId !== id);
+        localStorage.setItem("skipd_payments", JSON.stringify(filtered));
+      } catch (e) {}
+    }
+    showToast(`🗑️ Transaction ${id} deleted successfully!`);
+    setDeletingTxnId(null);
+  };
+
+  // Bulk Delete Selected Transactions Handler
+  const handleBulkDelete = () => {
+    if (selectedTxnIds.length === 0) return;
+    const count = selectedTxnIds.length;
+    const updated = payments.filter(p => !selectedTxnIds.includes(p.id));
+    setPayments(updated);
+
+    if (typeof window !== "undefined") {
+      try {
+        const saved = JSON.parse(localStorage.getItem("skipd_payments") || "[]");
+        const filtered = saved.filter((item: any) => !selectedTxnIds.includes(item.id));
+        localStorage.setItem("skipd_payments", JSON.stringify(filtered));
+      } catch (e) {}
+    }
+
+    setSelectedTxnIds([]);
+    setShowBulkDeleteConfirm(false);
+    showToast(`🗑️ Bulk Deleted ${count} transactions!`);
+  };
 
   // Dynamic Chart Datasets (Computed Live from PostgreSQL DB)
   const [methodChartStats, setMethodChartStats] = useState({
@@ -137,15 +194,26 @@ export default function AdminPaymentsPage() {
         } catch (e) {}
       }
 
+      // DEDUPLICATE STRICTLY BY orderId AND id
+      const uniqueTxnsMap = new Map();
+      rawTxns.forEach((t: any) => {
+        const primaryKey = t.id || t.orderId;
+        const altKey = t.orderId || t.id;
+        if (!uniqueTxnsMap.has(primaryKey) && !uniqueTxnsMap.has(altKey)) {
+          uniqueTxnsMap.set(primaryKey, t);
+        }
+      });
+      const deduplicatedRaw = Array.from(uniqueTxnsMap.values());
+
       const colors = ["bg-purple-600", "bg-emerald-600", "bg-amber-500", "bg-blue-600", "bg-[#8b5cf6]", "bg-rose-500"];
-      const formatted = rawTxns.map((t: any, idx: number) => ({
+      const formatted = deduplicatedRaw.map((t: any, idx: number) => ({
         id: t.id || `PAY-${99201 + idx}`,
         orderId: t.orderId || `#SKIPD-${25879 - idx}`,
         customerName: t.customerName || "Store Customer",
         customerEmail: t.customerEmail || "customer@skipd.in",
         avatarBg: colors[idx % colors.length] || "bg-emerald-600",
         paymentMethod: t.payment_method || "Razorpay UPI",
-        methodIcon: t.payment_method?.includes("UPI") ? "UPI" : t.payment_method?.includes("VISA") ? "VISA" : "PAY",
+        methodIcon: (t.payment_method || "").includes("UPI") ? "UPI" : (t.payment_method || "").includes("VISA") ? "VISA" : "PAY",
         gateway: t.gateway || "Razorpay",
         rzpPaymentId: t.rzpPaymentId || `pay_MB4291048${idx+1}`,
         amount: Number(t.amount || 0),
@@ -803,6 +871,14 @@ export default function AdminPaymentsPage() {
               <table className="w-full text-left text-xs text-gray-700">
                 <thead className="bg-gray-50 text-gray-400 font-extrabold uppercase text-[10px] border-b border-gray-100 tracking-wider">
                   <tr>
+                    <th className="px-4 py-4 text-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedTxnIds.length === paginatedPayments.length && paginatedPayments.length > 0}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                      />
+                    </th>
                     <th className="px-6 py-4">TXN ID</th>
                     <th className="px-6 py-4">ORDER ID</th>
                     <th className="px-6 py-4">CUSTOMER</th>
@@ -816,103 +892,115 @@ export default function AdminPaymentsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 font-medium">
-                  {paginatedPayments.map((p) => (
-                    <tr key={p.id} className="hover:bg-gray-50/80 transition group">
-                      
-                      {/* TXN ID */}
-                      <td className="px-6 py-4 font-black font-mono text-gray-900">
-                        {p.id}
-                      </td>
+                  {paginatedPayments.map((p) => {
+                    const isChecked = selectedTxnIds.includes(p.id);
 
-                      {/* ORDER ID */}
-                      <td className="px-6 py-4 font-mono font-black text-[#059669]">
-                        {p.orderId}
-                      </td>
+                    return (
+                      <tr key={p.id} className={`hover:bg-gray-50/80 transition group ${isChecked ? "bg-emerald-50/40" : ""}`}>
+                        <td className="px-4 py-4 text-center">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => toggleSelectTxn(p.id)}
+                            className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                          />
+                        </td>
 
-                      {/* CUSTOMER PROFILE */}
-                      <td className="px-6 py-4 flex items-center gap-3">
-                        <div className={`w-9 h-9 rounded-full ${p.avatarBg} text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs`}>
-                          {p.customerName.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="font-black text-gray-900 text-xs leading-tight">{p.customerName}</p>
-                          <p className="text-[10px] text-gray-400 font-mono mt-0.5">{p.customerEmail}</p>
-                        </div>
-                      </td>
+                        {/* TXN ID */}
+                        <td className="px-6 py-4 font-black font-mono text-gray-900">
+                          {p.id}
+                        </td>
 
-                      {/* PAYMENT METHOD */}
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-extrabold text-[11px] text-gray-800 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
-                            {p.methodIcon}
-                          </span>
-                          <span className="font-bold text-gray-800">{p.paymentMethod}</span>
-                        </div>
-                      </td>
+                        {/* ORDER ID */}
+                        <td className="px-6 py-4 font-mono font-black text-[#059669]">
+                          {p.orderId}
+                        </td>
 
-                      {/* GATEWAY */}
-                      <td className="px-6 py-4 font-bold text-gray-700 flex items-center gap-1.5">
-                        <span className="text-[#3b82f6]">◢</span>
-                        <span>{p.gateway}</span>
-                      </td>
+                        {/* CUSTOMER PROFILE */}
+                        <td className="px-6 py-4 flex items-center gap-3">
+                          <div className={`w-9 h-9 rounded-full ${p.avatarBg} text-white font-black text-xs flex items-center justify-center shrink-0 shadow-2xs`}>
+                            {p.customerName.charAt(0)}
+                          </div>
+                          <div>
+                            <p className="font-black text-gray-900 text-xs leading-tight">{p.customerName}</p>
+                            <p className="text-[10px] text-gray-400 font-mono mt-0.5">{p.customerEmail}</p>
+                          </div>
+                        </td>
 
-                      {/* RAZORPAY ID */}
-                      <td className="px-6 py-4 font-mono text-gray-400 text-[11px]">
-                        {p.rzpPaymentId}
-                      </td>
+                        {/* PAYMENT METHOD */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-2">
+                            <span className="font-extrabold text-[11px] text-gray-800 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
+                              {p.methodIcon}
+                            </span>
+                            <span className="font-bold text-gray-800">{p.paymentMethod}</span>
+                          </div>
+                        </td>
 
-                      {/* AMOUNT */}
-                      <td className="px-6 py-4 font-black text-gray-900 text-sm">
-                        ₹{p.amount.toLocaleString("en-IN")}
-                      </td>
+                        {/* GATEWAY */}
+                        <td className="px-6 py-4 font-bold text-gray-700 flex items-center gap-1.5">
+                          <span className="text-[#3b82f6]">◢</span>
+                          <span>{p.gateway}</span>
+                        </td>
 
-                      {/* STATUS BADGE */}
-                      <td className="px-6 py-4">
-                        {p.status === "SUCCESS" ? (
-                          <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-emerald-200">
-                            SUCCESS
-                          </span>
-                        ) : p.status === "REFUNDED" ? (
-                          <span className="bg-purple-100 text-purple-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-purple-200">
-                            REFUNDED
-                          </span>
-                        ) : (
-                          <span className="bg-red-100 text-red-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-red-200">
-                            FAILED
-                          </span>
-                        )}
-                      </td>
+                        {/* RAZORPAY ID */}
+                        <td className="px-6 py-4 font-mono text-gray-400 text-[11px]">
+                          {p.rzpPaymentId}
+                        </td>
 
-                      {/* DATE & TIME */}
-                      <td className="px-6 py-4">
-                        <div>
-                          <p className="font-bold text-gray-900 text-xs">{p.date}</p>
-                          <p className="text-[10px] text-gray-400 font-medium">{p.time}</p>
-                        </div>
-                      </td>
+                        {/* AMOUNT */}
+                        <td className="px-6 py-4 font-black text-gray-900 text-sm">
+                          ₹{p.amount.toLocaleString("en-IN")}
+                        </td>
 
-                      {/* ACTIONS */}
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => setSelectedTxnForModal(p)}
-                            title="View Transaction Details"
-                            className="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center transition cursor-pointer text-xs font-bold"
-                          >
-                            👁️
-                          </button>
-                          <button
-                            onClick={() => showToast(`Transaction ${p.id} options opened`)}
-                            title="Options"
-                            className="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center transition cursor-pointer text-xs font-bold"
-                          >
-                            ⋮
-                          </button>
-                        </div>
-                      </td>
+                        {/* STATUS BADGE */}
+                        <td className="px-6 py-4">
+                          {p.status === "SUCCESS" ? (
+                            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-emerald-200">
+                              SUCCESS
+                            </span>
+                          ) : p.status === "REFUNDED" ? (
+                            <span className="bg-purple-100 text-purple-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-purple-200">
+                              REFUNDED
+                            </span>
+                          ) : (
+                            <span className="bg-red-100 text-red-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-red-200">
+                              FAILED
+                            </span>
+                          )}
+                        </td>
 
-                    </tr>
-                  ))}
+                        {/* DATE & TIME */}
+                        <td className="px-6 py-4">
+                          <div>
+                            <p className="font-bold text-gray-900 text-xs">{p.date}</p>
+                            <p className="text-[10px] text-gray-400 font-medium">{p.time}</p>
+                          </div>
+                        </td>
+
+                        {/* ACTIONS */}
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setSelectedTxnForModal(p)}
+                              title="View Transaction Details"
+                              className="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center transition cursor-pointer text-xs font-bold"
+                            >
+                              👁️
+                            </button>
+                            <button
+                              onClick={() => setDeletingTxnId(p.id)}
+                              title="Delete Transaction"
+                              className="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center transition cursor-pointer text-xs font-bold"
+                            >
+                              🗑️
+                            </button>
+                          </div>
+                        </td>
+
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             )}
@@ -1043,6 +1131,94 @@ export default function AdminPaymentsPage() {
             >
               Close Details
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* 🏷️ FLOATING BULK SELECTION ACTION BAR */}
+      {selectedTxnIds.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white p-3.5 px-6 rounded-2xl shadow-2xl border border-gray-700 flex items-center gap-4 animate-bounce">
+          <span className="text-xs font-black text-emerald-400">
+            ✓ {selectedTxnIds.length} {selectedTxnIds.length === 1 ? "Transaction" : "Transactions"} Selected
+          </span>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowBulkDeleteConfirm(true)}
+              className="bg-red-600 hover:bg-red-700 text-white font-black text-xs px-4 py-2 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1.5"
+            >
+              <span>🗑️</span>
+              <span>Bulk Delete Selected</span>
+            </button>
+
+            <button
+              onClick={() => setSelectedTxnIds([])}
+              className="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold text-xs px-3 py-2 rounded-xl transition cursor-pointer"
+            >
+              Deselect All
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* 🗑️ SINGLE TRANSACTION DELETE MODAL */}
+      {deletingTxnId && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-sm w-full space-y-4 text-center shadow-2xl">
+            <div className="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-2xl font-black border border-red-200">
+              🗑️
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-gray-900">Delete Transaction {deletingTxnId}?</h3>
+              <p className="text-xs text-gray-500 mt-1 font-medium">
+                Are you sure you want to permanently delete this payment transaction record from database and history?
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setDeletingTxnId(null)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteTxn(deletingTxnId)}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black py-2.5 rounded-xl text-xs shadow-xs cursor-pointer"
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🗑️ BULK DELETE CONFIRMATION MODAL */}
+      {showBulkDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-sm w-full space-y-4 text-center shadow-2xl">
+            <div className="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-2xl font-black border border-red-200">
+              🗑️
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-gray-900">Bulk Delete {selectedTxnIds.length} Transactions?</h3>
+              <p className="text-xs text-gray-500 mt-1 font-medium">
+                Are you sure you want to permanently remove all selected payment transactions?
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setShowBulkDeleteConfirm(false)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black py-2.5 rounded-xl text-xs shadow-xs cursor-pointer"
+              >
+                Yes, Bulk Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
