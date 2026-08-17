@@ -361,12 +361,16 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200/60">
                       <BuyNowButton
                         mode="cart"
+                        productObj={product}
+                        productHandle={product.handle}
                         className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
                         🛒 Cart
                       </BuyNowButton>
                       <BuyNowButton
+                        mode="buy"
                         productHandle={product.handle}
+                        productObj={product}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs cursor-pointer"
                       >
                         ⚡ Buy Now

@@ -16,8 +16,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [showMessages, setShowMessages] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   
-  const [unreadNotifs, setUnreadNotifs] = useState(5);
-  const [unreadMsgs, setUnreadMsgs] = useState(3);
+  const [unreadNotifs, setUnreadNotifs] = useState(0);
+  const [unreadMsgs, setUnreadMsgs] = useState(0);
   
   const [globalQuery, setGlobalQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -74,19 +74,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const isActive = (path: string) => pathname === path;
 
-  // Search Mock database results
-  const searchResults = [
-    { type: "Order", title: "#SKIPD-25879 • Amit Sharma", href: "/admin/orders", desc: "₹29,999 - Delivered" },
-    { type: "Product", title: "OnePlus Nord 4 5G", href: "/admin/products", desc: "₹29,999 - Mobiles" },
-    { type: "Product", title: "boAt Rockerz 450 Pro", href: "/admin/products", desc: "₹1,799 - Electronics" },
-    { type: "Customer", title: "Priya Verma", href: "/admin/customers", desc: "priya.v@yahoo.com" },
-    { type: "Order", title: "#SKIPD-25878 • Priya Verma", href: "/admin/orders", desc: "₹3,598 - Processing" },
-    { type: "Product", title: "Nike Air Force 1 '07", href: "/admin/products", desc: "₹7,499 - Footwear" }
-  ].filter(item => 
-    !globalQuery.trim() || 
-    item.title.toLowerCase().includes(globalQuery.toLowerCase()) || 
-    item.desc.toLowerCase().includes(globalQuery.toLowerCase())
-  );
+  // Search Results
+  const searchResults: any[] = [];
 
   // Professional Admin Vector Icon helper
   const renderNavIcon = (path: string) => {
@@ -139,7 +128,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       group: "COMMERCE & CATALOG",
       links: [
-        { title: "Orders", href: "/admin/orders", badge: "28", badgeColor: "bg-indigo-600 text-white" },
+        { title: "Orders", href: "/admin/orders" },
         { title: "Products & Catalog", href: "/admin/products" },
         { title: "Inventory & Stock", href: "/admin/inventory" },
         { title: "Customers", href: "/admin/customers" },
@@ -150,11 +139,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     {
       group: "GROWTH & CONTENT",
       links: [
-        { title: "Marketing & Sales", href: "/admin/sales", badge: "Live", badgeColor: "bg-orange-500 text-white" },
+        { title: "Marketing & Sales", href: "/admin/sales" },
         { title: "Customer Engagement", href: "/admin/engagement" },
         { title: "Content & CMS", href: "/admin/homepage" },
         { title: "Support & Tickets", href: "/admin/tickets" },
-        { title: "Product Queries & Returns", href: "/admin/queries", badge: "New", badgeColor: "bg-emerald-500 text-white" },
+        { title: "Product Queries & Returns", href: "/admin/queries" },
       ]
     },
     {
@@ -253,11 +242,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <span className={active ? "text-white" : "text-slate-400"}>{renderNavIcon(link.href)}</span>
                         <span className="text-xs">{link.title}</span>
                       </div>
-                      {link.badge && (
-                        <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${link.badgeColor || "bg-indigo-600 text-white"}`}>
-                          {link.badge}
-                        </span>
-                      )}
                     </Link>
                   );
                 })}
@@ -362,62 +346,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex justify-between items-center border-b border-gray-100 pb-2">
                     <h4 className="font-black text-gray-900 text-xs">Notifications ({unreadNotifs})</h4>
-                    <button
-                      onClick={() => setUnreadNotifs(0)}
-                      className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 cursor-pointer"
-                    >
-                      Mark all as read
-                    </button>
                   </div>
 
-                  <div className="space-y-2 text-xs">
-                    <Link
-                      href="/admin/orders"
-                      onClick={() => {
-                        setShowNotifications(false);
-                        setUnreadNotifs(prev => Math.max(0, prev - 1));
-                      }}
-                      className="block p-2 bg-emerald-50 hover:bg-emerald-100/80 rounded-xl border border-emerald-100 transition cursor-pointer"
-                    >
-                      <p className="font-bold text-emerald-900 text-[11px]">🛒 New Order Received</p>
-                      <p className="text-[10px] text-emerald-700">Order #SKIPD-25879 for ₹29,999 placed by Amit Sharma</p>
-                    </Link>
-
-                    <Link
-                      href="/admin/inventory"
-                      onClick={() => {
-                        setShowNotifications(false);
-                        setUnreadNotifs(prev => Math.max(0, prev - 1));
-                      }}
-                      className="block p-2 bg-amber-50 hover:bg-amber-100/80 rounded-xl border border-amber-100 transition cursor-pointer"
-                    >
-                      <p className="font-bold text-amber-900 text-[11px]">⚠️ Low Stock Alert</p>
-                      <p className="text-[10px] text-amber-700">iPhone 15 Pro Max has only 8 units left in inventory</p>
-                    </Link>
-
-                    <Link
-                      href="/admin/queries"
-                      onClick={() => {
-                        setShowNotifications(false);
-                        setUnreadNotifs(prev => Math.max(0, prev - 1));
-                      }}
-                      className="block p-2 bg-blue-50 hover:bg-blue-100/80 rounded-xl border border-blue-100 transition cursor-pointer"
-                    >
-                      <p className="font-bold text-blue-900 text-[11px]">↺ Return Requested</p>
-                      <p className="text-[10px] text-blue-700">Order RET-90481 item return initiated by Ananya Roy</p>
-                    </Link>
-
-                    <Link
-                      href="/admin/sales"
-                      onClick={() => {
-                        setShowNotifications(false);
-                        setUnreadNotifs(prev => Math.max(0, prev - 1));
-                      }}
-                      className="block p-2 bg-purple-50 hover:bg-purple-100/80 rounded-xl border border-purple-100 transition cursor-pointer"
-                    >
-                      <p className="font-bold text-purple-900 text-[11px]">⚡ Flash Sale Active</p>
-                      <p className="text-[10px] text-purple-700">Weekend Sale is live with 42 items</p>
-                    </Link>
+                  <div className="p-6 text-center text-xs text-gray-400 font-bold">
+                    🔔 No new store notifications.
                   </div>
 
                   <Link
@@ -455,50 +387,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex justify-between items-center border-b border-gray-100 pb-2">
                     <h4 className="font-black text-gray-900 text-xs">Customer Messages ({unreadMsgs})</h4>
-                    <button
-                      onClick={() => setUnreadMsgs(0)}
-                      className="text-[10px] font-bold text-emerald-600 hover:text-emerald-800 cursor-pointer"
-                    >
-                      Clear
-                    </button>
                   </div>
 
-                  <div className="space-y-2 text-xs">
-                    <Link
-                      href="/admin/tickets"
-                      onClick={() => {
-                        setShowMessages(false);
-                        setUnreadMsgs(prev => Math.max(0, prev - 1));
-                      }}
-                      className="block p-2 hover:bg-emerald-50 rounded-xl transition border border-gray-100 cursor-pointer"
-                    >
-                      <p className="font-bold text-gray-900 text-[11px]">💬 Amit Sharma</p>
-                      <p className="text-[10px] text-gray-500 truncate">"When will my order SR-8849201 be delivered?"</p>
-                    </Link>
-
-                    <Link
-                      href="/admin/tickets"
-                      onClick={() => {
-                        setShowMessages(false);
-                        setUnreadMsgs(prev => Math.max(0, prev - 1));
-                      }}
-                      className="block p-2 hover:bg-emerald-50 rounded-xl transition border border-gray-100 cursor-pointer"
-                    >
-                      <p className="font-bold text-gray-900 text-[11px]">💬 Priya Verma</p>
-                      <p className="text-[10px] text-gray-500 truncate">"Can I change my delivery address for #SKIPD-25878?"</p>
-                    </Link>
-
-                    <Link
-                      href="/admin/tickets"
-                      onClick={() => {
-                        setShowMessages(false);
-                        setUnreadMsgs(prev => Math.max(0, prev - 1));
-                      }}
-                      className="block p-2 hover:bg-emerald-50 rounded-xl transition border border-gray-100 cursor-pointer"
-                    >
-                      <p className="font-bold text-gray-900 text-[11px]">💬 Rahul Singh</p>
-                      <p className="text-[10px] text-gray-500 truncate">"Invoice download assistance for Noise Watch"</p>
-                    </Link>
+                  <div className="p-6 text-center text-xs text-gray-400 font-bold">
+                    💬 No new customer messages.
                   </div>
 
                   <Link

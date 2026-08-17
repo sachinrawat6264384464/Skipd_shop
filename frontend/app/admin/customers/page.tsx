@@ -71,18 +71,7 @@ export default function AdminCustomersCRMPage() {
     try {
       // 1. Fetch Real Registered Users from PostgreSQL Database
       const apiCusts = await fetchAdminCustomers();
-      let rawCusts = apiCusts;
-
-      // Seed fallback if DB empty
-      if (!rawCusts || !Array.isArray(rawCusts) || rawCusts.length === 0) {
-        rawCusts = [
-          { id: 1, full_name: "Sachin Rawat", email: "customer@skipd.in", phone: "+91 98765 43210", orders_count: 14, total_spent: 54999, role: "CUSTOMER", created_at: "2025-05-19" },
-          { id: 2, full_name: "Priya Patel", email: "priya@yahoo.com", phone: "+91 98123 45678", orders_count: 12, total_spent: 42450, role: "CUSTOMER", created_at: "2025-05-18" },
-          { id: 3, full_name: "Rahul Sharma", email: "rahul@gmail.com", phone: "+91 98765 43210", orders_count: 3, total_spent: 8499, role: "CUSTOMER", created_at: "2025-05-15" },
-          { id: 4, full_name: "Sneha Gupta", email: "sneha.g@gmail.com", phone: "+91 96555 44332", orders_count: 8, total_spent: 18900, role: "CUSTOMER", created_at: "2025-05-12" },
-          { id: 5, full_name: "Amit Verma", email: "amit.verma@gmail.com", phone: "+91 97111 22334", orders_count: 5, total_spent: 11200, role: "CUSTOMER", created_at: "2025-05-10" }
-        ];
-      }
+      let rawCusts = Array.isArray(apiCusts) ? apiCusts : [];
 
       const formattedCusts = rawCusts.map((u: any, idx: number) => {
         const spent = Number(u.total_spent || 0);
@@ -94,12 +83,12 @@ export default function AdminCustomersCRMPage() {
           name: u.full_name || "Store Customer",
           email: u.email || `customer${idx}@skipd.in`,
           phone: u.phone || "+91 98765 43210",
-          ordersCount: u.orders_count || 1,
+          ordersCount: u.orders_count || 0,
           spent: spent,
           group: group,
           tier: tier,
           role: u.role || "CUSTOMER",
-          joined: u.created_at ? new Date(u.created_at).toLocaleDateString() : "May 19, 2025"
+          joined: u.created_at ? new Date(u.created_at).toLocaleDateString() : "Today"
         };
       });
 
@@ -127,8 +116,6 @@ export default function AdminCustomersCRMPage() {
 
       const calcAvgSpent = (list: any[]) => list.length > 0 ? Math.round(list.reduce((s: number, c: any) => s + c.spent, 0) / list.length) : 0;
 
-
-
       setCustomerGroups([
         { name: "VIP Platinum", count: platUsers.length, avgSpent: `₹${calcAvgSpent(platUsers).toLocaleString("en-IN")}`, badge: "bg-purple-100 text-purple-800" },
         { name: "VIP Gold", count: goldUsers.length, avgSpent: `₹${calcAvgSpent(goldUsers).toLocaleString("en-IN")}`, badge: "bg-amber-100 text-amber-800" },
@@ -141,17 +128,7 @@ export default function AdminCustomersCRMPage() {
       
       // 3. Fetch Real Reviews from PostgreSQL Database
       const apiReviews = await fetchAdminReviews();
-      let rawReviews = apiReviews;
-
-      if (!rawReviews || !Array.isArray(rawReviews) || rawReviews.length === 0) {
-        rawReviews = [
-          { id: 1, user_name: "Sachin Rawat", product_id: 1, rating: 5, comment: "Excellent product! Totally worth it. The quality is premium and battery backup is long lasting.", created_at: "2025-05-25" },
-          { id: 2, user_name: "Priya Patel", product_id: 2, rating: 4, comment: "Good sound quality and battery life. Happy with the fast delivery service.", created_at: "2025-05-24" },
-          { id: 3, user_name: "Rahul Sharma", product_id: 3, rating: 3, comment: "It's okay, but expected more for this price. Display bright outdoors though.", created_at: "2025-05-24" },
-          { id: 4, user_name: "Sneha Gupta", product_id: 4, rating: 5, comment: "Amazing product! Using daily and loving it. Super comfortable cushioning.", created_at: "2025-05-23" },
-          { id: 5, user_name: "Amit Verma", product_id: 5, rating: 2, comment: "Not satisfied with the product. Build quality is average and delayed shipping.", created_at: "2025-05-23" }
-        ];
-      }
+      let rawReviews = Array.isArray(apiReviews) ? apiReviews : [];
 
       const colors = ["bg-emerald-600", "bg-purple-600", "bg-amber-500", "bg-blue-600", "bg-rose-500"];
       const formattedRevs = rawReviews.map((r: any, idx: number) => {
@@ -475,10 +452,10 @@ export default function AdminCustomersCRMPage() {
               {/* Left Side: Rating Summary & Counters */}
               <div className="md:col-span-6 space-y-4 border-r border-gray-100 pr-0 md:pr-6">
                 <div className="flex items-center gap-4">
-                  <div className="text-5xl font-black text-gray-900 tracking-tight">4.6</div>
+                  <div className="text-5xl font-black text-gray-900 tracking-tight">{reviews.length > 0 ? (reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviews.length).toFixed(1) : "0.0"}</div>
                   <div>
                     <div className="flex items-center gap-1 text-amber-400 text-lg">
-                      {"⭐".repeat(5)}
+                      {"⭐".repeat(Math.round(reviews.length > 0 ? reviews.reduce((s, r) => s + Number(r.rating || 0), 0) / reviews.length : 0))}
                     </div>
                     <p className="text-xs font-bold text-gray-500 mt-0.5">Average Rating</p>
                   </div>
@@ -488,82 +465,56 @@ export default function AdminCustomersCRMPage() {
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">Total Reviews</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">↑ 24.6%</span>
+                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? "Live" : "0"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">5 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 5).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">68.6%</span>
+                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 5).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">4 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 4).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">20.5%</span>
+                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 4).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">3 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 3).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">7.7%</span>
+                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 3).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">2 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 2).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">2.2%</span>
+                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 2).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">1 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 1).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">1.0%</span>
+                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 1).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
                 </div>
               </div>
 
               {/* Right Side: Clean Star Progress Bars */}
               <div className="md:col-span-6 space-y-2.5 text-xs font-bold text-gray-600">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 shrink-0 text-right">5 ★</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
-                    <div className="bg-[#059669] h-full rounded-full" style={{ width: "68.6%" }} />
-                  </div>
-                  <span className="w-20 text-right text-[11px] text-gray-500">{reviews.filter(r => Math.round(r.rating) === 5).length} (68.6%)</span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="w-8 shrink-0 text-right">4 ★</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
-                    <div className="bg-[#059669] h-full rounded-full" style={{ width: "20.5%" }} />
-                  </div>
-                  <span className="w-20 text-right text-[11px] text-gray-500">{reviews.filter(r => Math.round(r.rating) === 4).length} (20.5%)</span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="w-8 shrink-0 text-right">3 ★</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
-                    <div className="bg-[#059669] h-full rounded-full" style={{ width: "7.7%" }} />
-                  </div>
-                  <span className="w-20 text-right text-[11px] text-gray-500">{reviews.filter(r => Math.round(r.rating) === 3).length} (7.7%)</span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="w-8 shrink-0 text-right">2 ★</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
-                    <div className="bg-[#059669] h-full rounded-full" style={{ width: "2.2%" }} />
-                  </div>
-                  <span className="w-20 text-right text-[11px] text-gray-500">{reviews.filter(r => Math.round(r.rating) === 2).length} (2.2%)</span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <span className="w-8 shrink-0 text-right">1 ★</span>
-                  <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
-                    <div className="bg-[#059669] h-full rounded-full" style={{ width: "1.0%" }} />
-                  </div>
-                  <span className="w-20 text-right text-[11px] text-gray-500">{reviews.filter(r => Math.round(r.rating) === 1).length} (1.0%)</span>
-                </div>
+                {[5, 4, 3, 2, 1].map((star) => {
+                  const cnt = reviews.filter(r => Math.round(r.rating) === star).length;
+                  const pct = reviews.length > 0 ? ((cnt / reviews.length) * 100).toFixed(1) : "0.0";
+                  return (
+                    <div key={star} className="flex items-center gap-3">
+                      <span className="w-8 shrink-0 text-right">{star} ★</span>
+                      <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
+                        <div className="bg-[#059669] h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+                      </div>
+                      <span className="w-20 text-right text-[11px] text-gray-500">{cnt} ({pct}%)</span>
+                    </div>
+                  );
+                })}
               </div>
 
             </div>

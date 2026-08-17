@@ -52,105 +52,29 @@ export default function AdminSalesPage() {
     setLoading(true);
     let raw: any[] = [];
 
-    // 1. Load from localStorage if available
+    // 1. Load from localStorage if available (filtering out old dummy items)
     if (typeof window !== "undefined") {
       try {
         const saved = localStorage.getItem("skipd_marketing_campaigns");
         if (saved !== null) {
-          raw = JSON.parse(saved);
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            raw = parsed.filter((c: any) => 
+              !c.title?.includes("Great Freedom Sale") && 
+              !c.title?.includes("SKIPD Admin Special") && 
+              !c.title?.includes("New User Welcome") && 
+              !c.title?.includes("Push – Weekend") && 
+              !c.title?.includes("Email Campaign")
+            );
+            localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(raw));
+          }
         }
       } catch (e) {}
     }
 
-    // 2. Initial seed dataset if first time
-    if (!raw || !Array.isArray(raw) || raw.length === 0) {
-      raw = [
-        {
-          id: 1,
-          icon: "⚡",
-          iconBg: "bg-red-50 text-red-500",
-          title: "Great Freedom Sale",
-          subtitle: "Live Now 🎉",
-          type: "Flash Sale",
-          typeBg: "bg-red-50 text-red-600 border-red-100",
-          discountOffer: "Up to 50% OFF",
-          startDate: "May 24, 2025 10:00 AM",
-          endDate: "May 26, 2025 11:59 PM",
-          status: "Active",
-          statusBg: "bg-emerald-100 text-emerald-800",
-          priority: "High",
-          priorityBg: "bg-red-50 text-red-600 border-red-200"
-        },
-        {
-          id: 2,
-          icon: "%",
-          iconBg: "bg-emerald-50 text-emerald-600 font-bold",
-          title: "SKIPD Admin Special",
-          subtitle: "Exclusive for Admins",
-          type: "Promo Code",
-          typeBg: "bg-blue-50 text-blue-600 border-blue-100",
-          discountOffer: "₹500 OFF",
-          startDate: "May 25, 2025 12:00 PM",
-          endDate: "May 25, 2025 11:59 PM",
-          status: "Scheduled",
-          statusBg: "bg-blue-100 text-blue-800",
-          priority: "Medium",
-          priorityBg: "bg-amber-50 text-amber-700 border-amber-200"
-        },
-        {
-          id: 3,
-          icon: "🎁",
-          iconBg: "bg-purple-50 text-purple-600",
-          title: "New User Welcome",
-          subtitle: "First Purchase Offer",
-          type: "Discount",
-          typeBg: "bg-emerald-50 text-emerald-700 border-emerald-100",
-          discountOffer: "10% OFF",
-          startDate: "May 24, 2025 09:00 AM",
-          endDate: "May 31, 2025 11:59 PM",
-          status: "Draft",
-          statusBg: "bg-gray-100 text-gray-700",
-          priority: "Low",
-          priorityBg: "bg-emerald-50 text-emerald-700 border-emerald-200"
-        },
-        {
-          id: 4,
-          icon: "🔔",
-          iconBg: "bg-blue-50 text-blue-600",
-          title: "Push – Weekend Blast",
-          subtitle: "Limited Time Offer",
-          type: "Push Notification",
-          typeBg: "bg-purple-50 text-purple-700 border-purple-100",
-          discountOffer: "Mega Deals",
-          startDate: "May 24, 2025 08:00 PM",
-          endDate: "May 24, 2025 10:00 PM",
-          status: "Active",
-          statusBg: "bg-emerald-100 text-emerald-800",
-          priority: "Medium",
-          priorityBg: "bg-amber-50 text-amber-700 border-amber-200"
-        },
-        {
-          id: 5,
-          icon: "✉️",
-          iconBg: "bg-emerald-50 text-emerald-600",
-          title: "Email Campaign – May",
-          subtitle: "Special Offers for You",
-          type: "Email",
-          typeBg: "bg-teal-50 text-teal-700 border-teal-100",
-          discountOffer: "Up to 30% OFF",
-          startDate: "May 23, 2025 09:00 AM",
-          endDate: "May 28, 2025 11:59 PM",
-          status: "Completed",
-          statusBg: "bg-emerald-100 text-emerald-800",
-          priority: "Low",
-          priorityBg: "bg-emerald-50 text-emerald-700 border-emerald-200"
-        }
-      ];
-      if (typeof window !== "undefined") {
-        try {
-          localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(raw));
-        } catch (e) {}
-      }
+    // 2. Initial seed dataset if first time (empty array by default)
+    if (!raw || !Array.isArray(raw)) {
+      raw = [];
     }
 
     try {
@@ -290,9 +214,9 @@ export default function AdminSalesPage() {
   // Compute Live Metrics
   const totalCount = campaigns.length;
   const activeCount = campaigns.filter(c => c.status === "Active").length;
-  const totalReachFormatted = (campaigns.length * 4.92).toFixed(1) + "K";
-  const totalSalesFormatted = `₹${(campaigns.length * 29664).toLocaleString("en-IN")}`;
-  const customersEngagedFormatted = (campaigns.length * 1348).toLocaleString("en-IN");
+  const totalReachFormatted = campaigns.length > 0 ? (campaigns.length * 4.92).toFixed(1) + "K" : "0";
+  const totalSalesFormatted = campaigns.length > 0 ? `₹${(campaigns.length * 29664).toLocaleString("en-IN")}` : "₹0";
+  const customersEngagedFormatted = campaigns.length > 0 ? (campaigns.length * 1348).toLocaleString("en-IN") : "0";
 
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
@@ -341,9 +265,9 @@ export default function AdminSalesPage() {
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Total Campaigns</p>
           </div>
           <div>
-            <p className="text-2xl font-black text-gray-900 tracking-tight">{totalCount || 12}</p>
+            <p className="text-2xl font-black text-gray-900 tracking-tight">{totalCount}</p>
             <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
-              <span>▲ 18%</span>
+              <span>{totalCount > 0 ? "▲ 18%" : "0"}</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
           </div>
@@ -358,9 +282,9 @@ export default function AdminSalesPage() {
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Active Campaigns</p>
           </div>
           <div>
-            <p className="text-2xl font-black text-gray-900 tracking-tight">{activeCount || 3}</p>
+            <p className="text-2xl font-black text-gray-900 tracking-tight">{activeCount}</p>
             <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
-              <span>▲ 50%</span>
+              <span>{activeCount > 0 ? "▲ 50%" : "0"}</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
           </div>

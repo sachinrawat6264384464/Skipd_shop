@@ -8,14 +8,15 @@ import Footer from "components/layout/footer";
 import { BuyNowButton } from "components/auth/buy-now-button";
 import { useAuth } from "components/auth/auth-provider";
 import { getUserCartKey } from "lib/utils";
+import { useWishlist } from "components/wishlist/wishlist-context";
 
 export default function GiftCardsPage() {
   const router = useRouter();
   const { requireAuth } = useAuth();
+  const { isInWishlist, toggleWishlist: ctxToggleWishlist } = useWishlist();
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [sortBy, setSortBy] = useState("bestselling");
   const [maxPrice, setMaxPrice] = useState(50000);
-  const [wishlistIds, setWishlistIds] = useState<number[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -95,13 +96,22 @@ export default function GiftCardsPage() {
     processedProducts.sort((a, b) => b.price - a.price);
   }
 
-  const toggleWishlist = (id: number, title: string) => {
-    if (wishlistIds.includes(id)) {
-      setWishlistIds((prev) => prev.filter((item) => item !== id));
-      showToast(`🖤 Removed "${title}" from Wishlist`);
+  const toggleWishlistProduct = (p: any) => {
+    const wasLiked = isInWishlist(p.id);
+    ctxToggleWishlist({
+      id: p.id,
+      handle: p.handle,
+      title: p.title,
+      price: p.price,
+      compare_at_price: p.compare_at_price,
+      image: p.image,
+      category: p.category,
+      rating: 4.5
+    });
+    if (wasLiked) {
+      showToast(`🖤 Removed "${p.title}" from Wishlist`);
     } else {
-      setWishlistIds((prev) => [...prev, id]);
-      showToast(`❤️ Added "${title}" to Wishlist!`);
+      showToast(`❤️ Added "${p.title}" to Wishlist!`);
     }
   };
 
@@ -528,7 +538,7 @@ export default function GiftCardsPage() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                   {processedProducts.map((p) => {
-                    const isWishlisted = wishlistIds.includes(p.id);
+                    const isWishlisted = isInWishlist(p.id);
 
                     return (
                       <div
@@ -540,7 +550,7 @@ export default function GiftCardsPage() {
                         </span>
 
                         <button
-                          onClick={() => toggleWishlist(p.id, p.title)}
+                          onClick={() => toggleWishlistProduct(p)}
                           className="absolute top-4 right-4 z-10 text-xs transition transform hover:scale-125 cursor-pointer"
                         >
                           {isWishlisted ? "❤️" : "🖤"}

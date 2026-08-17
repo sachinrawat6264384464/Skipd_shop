@@ -4,78 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 
 export default function AdminProductQueriesPage() {
-  const [queries, setQueries] = useState([
-    {
-      id: "#Q-12548",
-      customer: "Amit Sharma",
-      email: "amit.sharma@email.com",
-      product: "OnePlus Nord 4 5G",
-      price: "₹29,999",
-      img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100",
-      queryText: "Is this product water resistant?",
-      type: "Product Info",
-      status: "Pending",
-      priority: "Medium",
-      priorityColor: "text-amber-500",
-      date: "May 24, 2025 10:30 AM"
-    },
-    {
-      id: "#Q-12547",
-      customer: "Priya Verma",
-      email: "priya.verma@email.com",
-      product: "boAt Rockerz 450 Pro",
-      price: "₹1,799",
-      img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100",
-      queryText: "Does it support fast charging?",
-      type: "Product Info",
-      status: "Resolved",
-      priority: "Low",
-      priorityColor: "text-emerald-500",
-      date: "May 24, 2025 09:15 AM"
-    },
-    {
-      id: "#Q-12546",
-      customer: "Rahul Singh",
-      email: "rahul.singh@email.com",
-      product: "Noise ColorFit Pro 5",
-      price: "₹4,499",
-      img: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=100",
-      queryText: "Is the strap replaceable?",
-      type: "Product Info",
-      status: "Pending",
-      priority: "Medium",
-      priorityColor: "text-amber-500",
-      date: "May 23, 2025 07:45 PM"
-    },
-    {
-      id: "#Q-12545",
-      customer: "Sneha Patel",
-      email: "sneha.patel@email.com",
-      product: "Nike Air Force 1 '07",
-      price: "₹7,499",
-      img: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=100",
-      queryText: "What is the return policy?",
-      type: "Other",
-      status: "Resolved",
-      priority: "Low",
-      priorityColor: "text-emerald-500",
-      date: "May 23, 2025 05:20 PM"
-    },
-    {
-      id: "#Q-12544",
-      customer: "Vikram Joshi",
-      email: "vikram.joshi@email.com",
-      product: "MacBook Air M2",
-      price: "₹84,990",
-      img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100",
-      queryText: "Is there any student discount?",
-      type: "Other",
-      status: "Rejected",
-      priority: "High",
-      priorityColor: "text-red-500",
-      date: "May 23, 2025 03:10 PM"
-    }
-  ]);
+  const [queries, setQueries] = useState<any[]>([]);
 
   const [selectedStatus, setSelectedStatus] = useState("All Status");
   const [selectedType, setSelectedType] = useState("All Types");
@@ -178,7 +107,7 @@ export default function AdminProductQueriesPage() {
         </div>
       </div>
 
-      {/* 📊 4 Top Metric Cards (Exact Screenshot Match) */}
+      {/* 📊 4 Top Metric Cards (Dynamic from queries) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Total Queries */}
@@ -188,8 +117,8 @@ export default function AdminProductQueriesPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Total Queries</p>
-            <h3 className="text-xl font-black text-gray-900 mt-0.5">1,248</h3>
-            <p className="text-[10px] text-gray-400 font-medium mt-0.5">100% of all queries</p>
+            <h3 className="text-xl font-black text-gray-900 mt-0.5">{queries.length}</h3>
+            <p className="text-[10px] text-gray-400 font-medium mt-0.5">{queries.length > 0 ? "100% of all queries" : "0 queries"}</p>
           </div>
         </div>
 
@@ -200,8 +129,8 @@ export default function AdminProductQueriesPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Resolved</p>
-            <h3 className="text-xl font-black text-gray-900 mt-0.5">832</h3>
-            <p className="text-[10px] text-emerald-600 font-medium mt-0.5">66.7% of total</p>
+            <h3 className="text-xl font-black text-gray-900 mt-0.5">{queries.filter(q => q.status === "Resolved").length}</h3>
+            <p className="text-[10px] text-emerald-600 font-medium mt-0.5">{queries.length > 0 ? `${((queries.filter(q => q.status === "Resolved").length / queries.length) * 100).toFixed(1)}% of total` : "0.0%"}</p>
           </div>
         </div>
 
@@ -212,8 +141,8 @@ export default function AdminProductQueriesPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Pending</p>
-            <h3 className="text-xl font-black text-gray-900 mt-0.5">278</h3>
-            <p className="text-[10px] text-amber-600 font-medium mt-0.5">22.3% of total</p>
+            <h3 className="text-xl font-black text-gray-900 mt-0.5">{queries.filter(q => q.status === "Pending").length}</h3>
+            <p className="text-[10px] text-amber-600 font-medium mt-0.5">{queries.length > 0 ? `${((queries.filter(q => q.status === "Pending").length / queries.length) * 100).toFixed(1)}% of total` : "0.0%"}</p>
           </div>
         </div>
 
@@ -224,8 +153,8 @@ export default function AdminProductQueriesPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Rejected</p>
-            <h3 className="text-xl font-black text-gray-900 mt-0.5">138</h3>
-            <p className="text-[10px] text-rose-600 font-medium mt-0.5">11.0% of total</p>
+            <h3 className="text-xl font-black text-gray-900 mt-0.5">{queries.filter(q => q.status === "Rejected").length}</h3>
+            <p className="text-[10px] text-rose-600 font-medium mt-0.5">{queries.length > 0 ? `${((queries.filter(q => q.status === "Rejected").length / queries.length) * 100).toFixed(1)}% of total` : "0.0%"}</p>
           </div>
         </div>
 
@@ -392,19 +321,19 @@ export default function AdminProductQueriesPage() {
             <div className="space-y-2 text-[11px] font-bold text-gray-700 w-full">
               <div className="flex justify-between items-center">
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Product Info</span>
-                <span>842 (67.6%)</span>
+                <span>{queries.filter(q => q.type === "Product Info").length}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Order Related</span>
-                <span>198 (15.9%)</span>
+                <span>{queries.filter(q => q.type === "Order Related").length}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Return &amp; Refund</span>
-                <span>112 (9.0%)</span>
+                <span>{queries.filter(q => q.type === "Return & Refund").length}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-gray-400"></span> Other</span>
-                <span>96 (7.7%)</span>
+                <span>{queries.filter(q => q.type === "Other").length}</span>
               </div>
             </div>
           </div>
@@ -414,33 +343,22 @@ export default function AdminProductQueriesPage() {
         <div className="lg:col-span-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-black text-base text-gray-900">Top Products (by Queries)</h3>
-            <span className="text-xs text-gray-400 font-bold">View All</span>
           </div>
 
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition">
-              <div className="flex items-center gap-3">
-                <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100" alt="OnePlus" className="w-9 h-9 rounded-lg object-cover border border-gray-100" />
-                <h4 className="font-bold text-gray-900 text-xs">OnePlus Nord 4 5G</h4>
-              </div>
-              <span className="font-bold text-gray-500 text-xs">256 Queries</span>
-            </div>
-
-            <div className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition">
-              <div className="flex items-center gap-3">
-                <img src="https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=100" alt="Noise" className="w-9 h-9 rounded-lg object-cover border border-gray-100" />
-                <h4 className="font-bold text-gray-900 text-xs">Noise ColorFit Pro 5</h4>
-              </div>
-              <span className="font-bold text-gray-500 text-xs">185 Queries</span>
-            </div>
-
-            <div className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition">
-              <div className="flex items-center gap-3">
-                <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100" alt="MacBook" className="w-9 h-9 rounded-lg object-cover border border-gray-100" />
-                <h4 className="font-bold text-gray-900 text-xs">MacBook Air M2</h4>
-              </div>
-              <span className="font-bold text-gray-500 text-xs">148 Queries</span>
-            </div>
+            {queries.length === 0 ? (
+              <p className="text-center text-xs text-gray-400 font-bold py-4">No product queries logged yet.</p>
+            ) : (
+              queries.slice(0, 3).map((q, i) => (
+                <div key={i} className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition">
+                  <div className="flex items-center gap-3">
+                    <img src={q.img} alt={q.product} className="w-9 h-9 rounded-lg object-cover border border-gray-100" />
+                    <h4 className="font-bold text-gray-900 text-xs">{q.product}</h4>
+                  </div>
+                  <span className="font-bold text-gray-500 text-xs">1 Query</span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -448,33 +366,24 @@ export default function AdminProductQueriesPage() {
         <div className="lg:col-span-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-black text-base text-gray-900">Recent Activity</h3>
-            <span className="text-xs text-gray-400 font-bold">View All</span>
           </div>
 
           <div className="space-y-3 text-xs">
-            <div className="flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">✓</span>
-              <div>
-                <p className="font-bold text-gray-900">Query #Q-12547 resolved by admin</p>
-                <p className="text-[10px] text-gray-400">May 24, 2025 09:20 AM</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">⏳</span>
-              <div>
-                <p className="font-bold text-gray-900">Query #Q-12546 status changed to pending</p>
-                <p className="text-[10px] text-gray-400">May 23, 2025 07:50 PM</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-2.5">
-              <span className="w-5 h-5 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">✕</span>
-              <div>
-                <p className="font-bold text-gray-900">Query #Q-12544 rejected by admin</p>
-                <p className="text-[10px] text-gray-400">May 23, 2025 03:15 PM</p>
-              </div>
-            </div>
+            {queries.length === 0 ? (
+              <p className="text-center text-xs text-gray-400 font-bold py-4">No query activity recorded.</p>
+            ) : (
+              queries.slice(0, 3).map((q, i) => (
+                <div key={i} className="flex items-start gap-2.5">
+                  <span className={`w-5 h-5 rounded-full ${q.status === "Resolved" ? "bg-emerald-100 text-emerald-600" : "bg-amber-100 text-amber-600"} flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5`}>
+                    {q.status === "Resolved" ? "✓" : "⏳"}
+                  </span>
+                  <div>
+                    <p className="font-bold text-gray-900">Query {q.id} ({q.status})</p>
+                    <p className="text-[10px] text-gray-400">{q.date}</p>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

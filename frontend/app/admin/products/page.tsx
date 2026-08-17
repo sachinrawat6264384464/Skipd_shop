@@ -484,56 +484,13 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Sub-Tab Datasets with High-Res Brand Logo Images
-  const [categories, setCategories] = useState([
-    { id: 1, name: "Electronics", slug: "electronics", icon: "⚡", count: 12, status: "Active" },
-    { id: 2, name: "Mobiles & Tablets", slug: "mobiles", icon: "📱", count: 15, status: "Active" },
-    { id: 3, name: "Laptops & Computers", slug: "laptops", icon: "💻", count: 8, status: "Active" },
-    { id: 4, name: "Fashion & Apparel", slug: "fashion", icon: "👕", count: 10, status: "Active" },
-    { id: 5, name: "Footwear & Shoes", slug: "footwear", icon: "👟", count: 6, status: "Active" },
-    { id: 6, name: "Watches & Smartwear", slug: "watches", icon: "⌚", count: 7, status: "Active" },
-    { id: 7, name: "Home & Living", slug: "home", icon: "🏡", count: 9, status: "Active" }
-  ]);
-
-  const [subCategories, setSubCategories] = useState([
-    { id: 101, parent: "Mobiles & Tablets", name: "Flagship Smartphones", slug: "flagship-smartphones", count: 8 },
-    { id: 102, parent: "Mobiles & Tablets", name: "Budget Phones", slug: "budget-phones", count: 7 },
-    { id: 103, parent: "Electronics", name: "Wireless Headphones", slug: "wireless-headphones", count: 6 },
-    { id: 104, parent: "Electronics", name: "Smart Bluetooth Speakers", slug: "bluetooth-speakers", count: 6 }
-  ]);
-
-  const [brands, setBrands] = useState([
-    { id: 1, name: "Apple", logo: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200", website: "apple.com", count: 8, status: "Verified" },
-    { id: 2, name: "OnePlus", logo: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200", website: "oneplus.in", count: 6, status: "Verified" },
-    { id: 3, name: "Sony", logo: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200", website: "sony.co.in", count: 5, status: "Verified" },
-    { id: 4, name: "Nike", logo: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200", website: "nike.com", count: 4, status: "Verified" },
-    { id: 5, name: "boAt", logo: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=200", website: "boat-lifestyle.com", count: 7, status: "Verified" },
-    { id: 6, name: "Noise", logo: "https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=200", website: "gonoise.com", count: 5, status: "Verified" },
-    { id: 7, name: "Samsung", logo: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=200", website: "samsung.com", count: 7, status: "Verified" }
-  ]);
-
-  const [attributes, setAttributes] = useState([
-    { id: 1, name: "Color", type: "Visual Swatch", values: "Pitch Black, Glacier White, Deep Purple, Ocean Blue", count: 42 },
-    { id: 2, name: "RAM / Memory", type: "Radio Selector", values: "8GB, 12GB, 16GB", count: 28 },
-    { id: 3, name: "Storage Capacity", type: "Radio Selector", values: "128GB, 256GB, 512GB, 1TB", count: 34 },
-    { id: 4, name: "Shoe Size (UK)", type: "Dropdown", values: "UK 6, UK 7, UK 8, UK 9, UK 10, UK 11", count: 12 },
-    { id: 5, name: "Warranty Period", type: "Badge", values: "1 Year Official, 2 Years Extended", count: 42 }
-  ]);
-
-  const [variants, setVariants] = useState([
-    { id: "SKU-9901", product: "OnePlus Nord 4 5G", variant: "Pitch Black • 12GB + 256GB", priceExtra: "+₹2,000", stock: 45, status: "In Stock" },
-    { id: "SKU-9902", product: "OnePlus Nord 4 5G", variant: "Oasis Green • 8GB + 128GB", priceExtra: "Standard", stock: 55, status: "In Stock" },
-    { id: "SKU-9903", product: "Sony WH-1000XM5", variant: "Silver Matte Edition", priceExtra: "+₹1,000", stock: 12, status: "Low Stock" },
-    { id: "SKU-9904", product: "Nike Air Force 1 '07", variant: "Triple White • UK 9", priceExtra: "Standard", stock: 30, status: "In Stock" },
-    { id: "SKU-9905", product: "MacBook Air M2", variant: "Midnight • 16GB / 512GB", priceExtra: "+₹18,000", stock: 8, status: "Low Stock" }
-  ]);
-
-  const [reviews, setReviews] = useState([
-    { id: 1, product: "OnePlus Nord 4 5G", customer: "Amit Sharma", rating: 5, date: "May 25, 2025", comment: "Outstanding battery backup and premium metal body build. Super fast delivery!", status: "Approved" },
-    { id: 2, product: "boAt Rockerz 450 Pro", customer: "Priya Verma", rating: 5, date: "May 24, 2025", comment: "Bass is unbelievable for this price range. Very comfortable ear cushions.", status: "Approved" },
-    { id: 3, product: "Noise ColorFit Pro 5", customer: "Rahul Singh", rating: 4, date: "May 23, 2025", comment: "Great AMOLED display and smooth UI response. Heart rate tracking is accurate.", status: "Approved" },
-    { id: 4, product: "Nike Air Force 1 '07", customer: "Sneha Patel", rating: 5, date: "May 22, 2025", comment: "100% authentic original shoes! Looks stunning on feet.", status: "Approved" }
-  ]);
+  // Sub-Tab Datasets (100% Live from Database)
+  const [categories, setCategories] = useState<any[]>([]);
+  const [subCategories, setSubCategories] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
+  const [attributes, setAttributes] = useState<any[]>([]);
+  const [variants, setVariants] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   const tabs = [
     "Products",
@@ -573,7 +530,7 @@ export default function AdminProductsPage() {
     setLoading(true);
     try {
       const data = await fetchProducts();
-      setProducts(data);
+      setProducts(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Failed to load products:", e);
     } finally {
@@ -581,34 +538,13 @@ export default function AdminProductsPage() {
     }
   }
 
-  const DEFAULT_STORE_CATEGORIES = [
-    { id: 1, name: "Electronics", slug: "electronics", icon: "⚡", count: 12, status: "Active" },
-    { id: 2, name: "Mobiles & Tablets", slug: "mobiles", icon: "📱", count: 15, status: "Active" },
-    { id: 3, name: "Laptops & Computers", slug: "laptops", icon: "💻", count: 8, status: "Active" },
-    { id: 4, name: "Fashion & Apparel", slug: "fashion", icon: "👕", count: 10, status: "Active" },
-    { id: 5, name: "Footwear & Shoes", slug: "footwear", icon: "👟", count: 6, status: "Active" },
-    { id: 6, name: "Watches & Smartwear", slug: "watches", icon: "⌚", count: 7, status: "Active" },
-    { id: 7, name: "Home & Living", slug: "home", icon: "🏡", count: 9, status: "Active" }
-  ];
-
   async function loadCategories() {
     try {
       const data = await fetchAdminCategories();
-      if (data && Array.isArray(data) && data.length > 0) {
-        const fetchedSlugs = new Set(data.map((c: any) => c.slug));
-        const merged = [...data];
-        DEFAULT_STORE_CATEGORIES.forEach((def) => {
-          if (!fetchedSlugs.has(def.slug)) {
-            merged.push(def);
-          }
-        });
-        setCategories(merged);
-      } else {
-        setCategories(DEFAULT_STORE_CATEGORIES);
-      }
+      setCategories(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error("Failed to load categories:", e);
-      setCategories(DEFAULT_STORE_CATEGORIES);
+      setCategories([]);
     }
   }
 

@@ -433,178 +433,6 @@ const MOCK_PRODUCTS: Product[] = [
     images: ["https://images.unsplash.com/photo-1542838132-92c53300491e?w=800"],
     tags: ["artisan", "organic"],
     category: { name: "Artisan", slug: "artisan" }
-  },
-
-  // 🏥 PERSONAL SAFETY & CARE
-  {
-    id: 31,
-    title: "N95 Respirator Mask 10 Pcs Pack",
-    handle: "n95-mask-10pack",
-    description: "5-layer PM2.5 filtration mask with soft earloops and adjustable nose clip.",
-    price: 399,
-    compare_at_price: 699,
-    featured: true,
-    images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
-    tags: ["health", "safety"],
-    category: { name: "Health", slug: "health" }
-  },
-  {
-    id: 32,
-    title: "Dettol Hand Sanitizer 500ml Pump",
-    handle: "sanitizer-500ml",
-    description: "99.99% germ protection rinse-free sanitizer with moisturizers.",
-    price: 199,
-    compare_at_price: 299,
-    featured: true,
-    images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
-    tags: ["health", "safety"],
-    category: { name: "Health", slug: "health" }
-  },
-  {
-    id: 33,
-    title: "Nitrile Safety Gloves 100 Pcs Box",
-    handle: "nitrile-gloves-100",
-    description: "Powder-free medical grade disposable nitrile examination gloves.",
-    price: 349,
-    compare_at_price: 599,
-    featured: true,
-    images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
-    tags: ["health", "safety"],
-    category: { name: "Health", slug: "health" }
-  },
-  {
-    id: 34,
-    title: "First Aid Medical Kit Complete Box",
-    handle: "first-aid-kit",
-    description: "45 essential medical supplies emergency kit for home and travel.",
-    price: 449,
-    compare_at_price: 799,
-    featured: true,
-    images: ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
-    tags: ["health", "safety"],
-    category: { name: "Health", slug: "health" }
-  },
-
-  // 🛍️ DEALS / FREEDOM SALE OFFER PRODUCTS
-  {
-    id: 101,
-    title: "Saree Premium Silk",
-    handle: "saree-premium-silk",
-    description: "Exquisite hand-woven premium silk saree with intricate golden zari border. Ideal for weddings, festivities and special occasions. Pure silk with traditional Banarasi weaving craft.",
-    price: 299,
-    compare_at_price: 590,
-    featured: true,
-    images: [
-      "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800",
-      "https://images.unsplash.com/photo-1599841222-e3d3a6e7de04?w=800"
-    ],
-    tags: ["fashion", "saree", "silk", "ethnic"],
-    category: { name: "Fashion", slug: "fashion" }
-  },
-  {
-    id: 102,
-    title: "Cold Pressed Oil 1L",
-    handle: "cold-pressed-oil-1l",
-    description: "100% pure wood-pressed cold pressed oil, extracted without heat to retain all nutrients. Rich in Omega fatty acids and antioxidants. No chemicals, no preservatives — straight from the farm.",
-    price: 249,
-    compare_at_price: 499,
-    featured: true,
-    images: [
-      "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800",
-      "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=800"
-    ],
-    tags: ["organic", "oil", "kitchen", "health"],
-    category: { name: "Artisan", slug: "artisan" }
-  },
-  {
-    id: 103,
-    title: "Velvet Cushion Cover",
-    handle: "velvet-cushion-cover",
-    description: "Luxurious premium velvet cushion cover with hidden zipper. Super soft feel with vibrant color retention. Machine washable and wrinkle-resistant. Perfect for sofa, bed and home decor.",
-    price: 800,
-    compare_at_price: 1499,
-    featured: true,
-    images: [
-      "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=800",
-      "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800"
-    ],
-    tags: ["home", "decor", "cushion"],
-    category: { name: "Home & Living", slug: "home" }
-  },
-  {
-    id: 104,
-    title: "20000mAh Power Bank",
-    handle: "20000mah-power-bank",
-    description: "Ultra-capacity 20000mAh fast-charging power bank with 22.5W PD charging. Features dual USB-A and USB-C outputs with LED indicator. Airline-approved, compact design with built-in safety protections.",
-    price: 999,
-    compare_at_price: 1999,
-    featured: true,
-    images: [
-      "https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=800",
-      "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800"
-    ],
-    tags: ["electronics", "power bank", "charging"],
-    category: { name: "Electronics", slug: "electronics" }
-  },
-  {
-    id: 105,
-    title: "Nike Running Shoe",
-    handle: "nike-running-shoe",
-    description: "High-performance Nike running shoes with React foam midsole for maximum cushioning and energy return. Breathable Flyknit upper keeps feet cool. Rubber outsole provides traction on all surfaces.",
-    price: 700,
-    compare_at_price: 1299,
-    featured: true,
-    images: [
-      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
-      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800"
-    ],
-    tags: ["footwear", "nike", "sports", "running"],
-    category: { name: "Footwear", slug: "footwear" }
-  },
-  {
-    id: 106,
-    title: "Leather Jacket",
-    handle: "leather-jacket",
-    description: "Premium genuine leather biker jacket with quilted lining, side buckles and YKK zippers. Timeless design that gets better with age. Available in multiple sizes. Perfect for winters and style.",
-    price: 999,
-    compare_at_price: 3499,
-    featured: true,
-    images: [
-      "https://images.unsplash.com/photo-1544441893-675973e31985?w=800",
-      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800"
-    ],
-    tags: ["fashion", "jacket", "leather"],
-    category: { name: "Fashion", slug: "fashion" }
-  },
-  {
-    id: 107,
-    title: "FPV Toy Drone",
-    handle: "fpv-toy-drone",
-    description: "Feature-packed FPV toy drone with 4K HD camera, altitude hold, one-key return and gesture photo/video control. 25-min flight time, 300m range, foldable design for easy carry. Perfect for beginners and enthusiasts.",
-    price: 999,
-    compare_at_price: 2499,
-    featured: true,
-    images: [
-      "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=800",
-      "https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=800"
-    ],
-    tags: ["electronics", "drone", "gadget"],
-    category: { name: "Electronics", slug: "electronics" }
-  },
-  {
-    id: 108,
-    title: "Pro Headphones",
-    handle: "pro-headphones",
-    description: "Studio-grade over-ear headphones with 40mm dynamic drivers, active noise cancellation and 35-hour playtime. Foldable design with premium memory foam ear cups. Compatible with all devices via 3.5mm and Bluetooth 5.3.",
-    price: 950,
-    compare_at_price: 2499,
-    featured: true,
-    images: [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
-      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800"
-    ],
-    tags: ["electronics", "audio", "headphones"],
-    category: { name: "Electronics", slug: "electronics" }
   }
 ];
 
@@ -635,24 +463,25 @@ export async function fetchProducts(query?: { category?: string; search?: string
     console.warn("[API SDK Warning] FastAPI backend offline, using fallback catalog.", err);
   }
 
-  // Pure 100% live database products when backend API is connected
-  if (isBackendOk && backendProducts.length > 0) {
-    return backendProducts;
+  // Pure 100% live database products when backend is connected
+  if (isBackendOk) {
+    let list = backendProducts;
+    if (query?.featured) list = list.filter(p => p.featured);
+    if (query?.category && query.category !== "all") {
+      list = list.filter(p => p.category?.slug === query.category || (p as any).category_slug === query.category || p.tags?.includes(query.category!));
+    }
+    if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
+      list = list.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()) || p.category?.name?.toLowerCase().includes(query.search!.toLowerCase()));
+    }
+    return list;
   }
 
   // Safe fallback catalog only if backend server is unreachable
-  let customProducts: any[] = [];
   let updatedProductsMap: Record<string, any> = {};
   let deletedIdsSet = new Set<string>();
 
   if (typeof window !== "undefined") {
     try {
-      const storedCustom = localStorage.getItem("skipd_custom_products");
-      if (storedCustom) {
-        const parsed = JSON.parse(storedCustom);
-        if (Array.isArray(parsed)) customProducts = parsed;
-      }
-
       const storedUpdates = localStorage.getItem("skipd_updated_products");
       if (storedUpdates) {
         updatedProductsMap = JSON.parse(storedUpdates);
@@ -668,7 +497,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
     } catch {}
   }
 
-  let combined = [...customProducts, ...MOCK_PRODUCTS];
+  let combined = [...MOCK_PRODUCTS];
 
   // Remove duplicates & deleted items, apply updates
   const seenIds = new Set();
@@ -691,7 +520,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
 
   if (query?.featured) combined = combined.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
-    combined = combined.filter(p => p.category?.slug === query.category || p.category_slug === query.category || p.tags?.includes(query.category!));
+    combined = combined.filter(p => p.category?.slug === query.category || (p as any).category_slug === query.category || p.tags?.includes(query.category!));
   }
   if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
     combined = combined.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()) || p.category?.name?.toLowerCase().includes(query.search!.toLowerCase()));
@@ -701,6 +530,8 @@ export async function fetchProducts(query?: { category?: string; search?: string
 }
 
 export async function fetchProductByHandle(handle: string): Promise<Product | null> {
+  const cleanSearch = handle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
   try {
     const res = await fetch(`${API_BASE_URL}/products/${handle}`, {
       cache: "no-store"
@@ -715,11 +546,23 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
 
   // Search full product catalog (PostgreSQL DB + Custom Admin Products + Mock Catalog)
   const allProds = await fetchProducts();
-  const found = allProds.find(p => 
+  
+  // 1. Direct handle, ID or clean handle match
+  let found = allProds.find(p => 
     p.handle === handle || 
     String(p.id) === handle || 
-    p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") === handle
+    (p.handle && p.handle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === cleanSearch) ||
+    p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === cleanSearch
   );
+  if (found) return found;
+
+  // 2. Flexible match: title includes search or search contains main title keywords
+  found = allProds.find(p => {
+    const pSlug = (p.handle || p.title).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    if (!pSlug) return false;
+    return cleanSearch.includes(pSlug) || pSlug.includes(cleanSearch) ||
+           cleanSearch.split("-").filter(w => w.length > 2).slice(0, 3).every(w => pSlug.includes(w));
+  });
   if (found) return found;
 
   const mockFound = MOCK_PRODUCTS.find(p => p.handle === handle || String(p.id) === handle);

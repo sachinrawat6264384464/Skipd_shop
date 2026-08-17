@@ -62,9 +62,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     loadWishlist();
 
     window.addEventListener("skipd_auth_changed", loadWishlist);
+    window.addEventListener("skipd_wishlist_updated", loadWishlist);
+    window.addEventListener("skipd_wishlist_changed", loadWishlist);
     window.addEventListener("storage", loadWishlist);
     return () => {
       window.removeEventListener("skipd_auth_changed", loadWishlist);
+      window.removeEventListener("skipd_wishlist_updated", loadWishlist);
+      window.removeEventListener("skipd_wishlist_changed", loadWishlist);
       window.removeEventListener("storage", loadWishlist);
     };
   }, []);
@@ -73,6 +77,10 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     setWishlist(items);
     const key = getUserWishlistKey();
     localStorage.setItem(key, JSON.stringify(items));
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("skipd_wishlist_updated"));
+      window.dispatchEvent(new Event("skipd_wishlist_changed"));
+    }
   };
 
   const addToWishlist = (item: WishlistItem) => {

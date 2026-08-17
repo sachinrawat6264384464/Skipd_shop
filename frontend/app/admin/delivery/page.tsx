@@ -101,104 +101,18 @@ export default function AdminDeliveryPage() {
     codSurcharge: "29"
   });
 
-  // Dynamic Metrics State
+  // Dynamic Metrics State (Computed Live from Shipments)
   const [metrics, setMetrics] = useState({
-    totalShipments: "1,248",
-    inTransit: "842",
-    outForDelivery: "156",
-    delivered: "1,056",
-    successRate: "96.8%",
-    rtoFailed: "42"
+    totalShipments: "0",
+    inTransit: "0",
+    outForDelivery: "0",
+    delivered: "0",
+    successRate: "0.0%",
+    rtoFailed: "0"
   });
 
   // Dynamic Shipments Dataset (Fetched Live from PostgreSQL DB)
-  const [shipments, setShipments] = useState<any[]>([
-    {
-      id: 1,
-      awbCode: "SR-8849201",
-      orderId: "#SKIPD-25879",
-      customerName: "Amit Sharma",
-      customerEmail: "amit@gmail.com",
-      customerPhone: "+91 98765 43210",
-      courierName: "Delhivery Surface",
-      courierBadge: "D",
-      courierBadgeBg: "bg-black text-white",
-      destination: "Gwalior, Madhya Pradesh",
-      pinCode: "474001",
-      estDeliveryDate: "May 27, 2026",
-      daysLeft: "2 Days Left",
-      status: "IN TRANSIT",
-      currentLocation: "Bhopal Sort Center (May 25, 2025 02:32 PM)"
-    },
-    {
-      id: 2,
-      awbCode: "SR-8849202",
-      orderId: "#SKIPD-25878",
-      customerName: "Priya Verma",
-      customerEmail: "priya.verma@gmail.com",
-      customerPhone: "+91 98123 45678",
-      courierName: "Bluedart Express Air",
-      courierBadge: "B",
-      courierBadgeBg: "bg-blue-600 text-white",
-      destination: "Ahmedabad, Gujarat",
-      pinCode: "380001",
-      estDeliveryDate: "May 26, 2026",
-      daysLeft: "1 Day Left",
-      status: "OUT FOR DELIVERY",
-      currentLocation: "Out for Delivery (May 25, 2025 09:15 AM)"
-    },
-    {
-      id: 3,
-      awbCode: "SR-8849203",
-      orderId: "#SKIPD-25877",
-      customerName: "Rahul Singh",
-      customerEmail: "rahul.singh@gmail.com",
-      customerPhone: "+91 97111 22334",
-      courierName: "Xpressbees Surface",
-      courierBadge: "X",
-      courierBadgeBg: "bg-amber-600 text-white",
-      destination: "New Delhi, Delhi",
-      pinCode: "110001",
-      estDeliveryDate: "May 28, 2026",
-      daysLeft: "3 Days Left",
-      status: "PICKED UP",
-      currentLocation: "Seller Warehouse (May 25, 2025 08:40 AM)"
-    },
-    {
-      id: 4,
-      awbCode: "SR-8849204",
-      orderId: "#SKIPD-25876",
-      customerName: "Sneha Patel",
-      customerEmail: "sneha.patel@gmail.com",
-      customerPhone: "+91 96555 44332",
-      courierName: "Ekart Surface",
-      courierBadge: "Ek",
-      courierBadgeBg: "bg-blue-500 text-white",
-      destination: "Pune, Maharashtra",
-      pinCode: "411001",
-      estDeliveryDate: "May 29, 2026",
-      daysLeft: "4 Days Left",
-      status: "DELIVERED",
-      currentLocation: "Delivered (May 24, 2025 06:20 PM)"
-    },
-    {
-      id: 5,
-      awbCode: "SR-8849205",
-      orderId: "#SKIPD-25875",
-      customerName: "Vikram Joshi",
-      customerEmail: "vikram.joshi@gmail.com",
-      customerPhone: "+91 99887 76655",
-      courierName: "Shadowfax Express",
-      courierBadge: "T",
-      courierBadgeBg: "bg-orange-500 text-white",
-      destination: "Jaipur, Rajasthan",
-      pinCode: "302001",
-      estDeliveryDate: "May 27, 2026",
-      daysLeft: "2 Days Left",
-      status: "RTO INITIATED",
-      currentLocation: "Delivery Failed (May 24, 2025 11:10 AM)"
-    }
-  ]);
+  const [shipments, setShipments] = useState<any[]>([]);
 
   useEffect(() => {
     loadLiveShipmentsData();
@@ -277,13 +191,16 @@ export default function AdminDeliveryPage() {
         } catch (e) {}
       }
 
-      if (formatted.length > 0) {
-        setShipments(prev => {
-          const ids = new Set(prev.map(p => p.orderId));
-          const fresh = formatted.filter(r => !ids.has(r.orderId));
-          return [...fresh, ...prev];
-        });
-      }
+      setMetrics({
+        totalShipments: String(formatted.length),
+        inTransit: String(formatted.filter(s => s.status === "IN TRANSIT").length),
+        outForDelivery: String(formatted.filter(s => s.status === "OUT FOR DELIVERY").length),
+        delivered: String(formatted.filter(s => s.status === "DELIVERED").length),
+        successRate: formatted.length > 0 ? `${((formatted.filter(s => s.status === "DELIVERED").length / formatted.length) * 100).toFixed(1)}%` : "0.0%",
+        rtoFailed: String(formatted.filter(s => (s.status || "").includes("RTO") || (s.status || "").includes("FAILED")).length)
+      });
+
+      setShipments(formatted);
     } catch (e) {
       console.error("Error loading admin shipments:", e);
     } finally {
@@ -340,14 +257,19 @@ export default function AdminDeliveryPage() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedShipments = filteredShipments.slice(startIndex, startIndex + itemsPerPage);
 
-  // 📊 CHART.JS CONFIGURATIONS (Matching Screenshot 100%)
+  // 📊 CHART.JS CONFIGURATIONS (Dynamic from live shipments)
+  const inTransitCount = shipments.filter(s => s.status === "IN TRANSIT").length;
+  const outCount = shipments.filter(s => s.status === "OUT FOR DELIVERY").length;
+  const delCount = shipments.filter(s => s.status === "DELIVERED").length;
+  const rtoCount = shipments.filter(s => (s.status || "").includes("RTO") || (s.status || "").includes("FAILED")).length;
+  const cancelCount = shipments.filter(s => s.status === "CANCELLED").length;
 
   // Chart 1: Shipments by Status (Doughnut)
   const statusChartData = {
     labels: ["In Transit", "Out for Delivery", "Delivered", "RTO / Failed", "Cancelled"],
     datasets: [
       {
-        data: [842, 156, 1056, 42, 18],
+        data: shipments.length > 0 ? [inTransitCount, outCount, delCount, rtoCount, cancelCount] : [0, 0, 0, 0, 0],
         backgroundColor: ["#059669", "#f59e0b", "#3b82f6", "#ef4444", "#6b7280"],
         borderWidth: 0,
         hoverOffset: 6
@@ -369,7 +291,7 @@ export default function AdminDeliveryPage() {
     datasets: [
       {
         label: "Delivered",
-        data: [140, 210, 145, 225, 155, 225, 205],
+        data: shipments.length > 0 ? [delCount * 0.1, delCount * 0.2, delCount * 0.15, delCount * 0.25, delCount * 0.1, delCount * 0.1, delCount * 0.1] : [0, 0, 0, 0, 0, 0, 0],
         borderColor: "#059669",
         backgroundColor: "rgba(5, 150, 105, 0.08)",
         tension: 0.4,
@@ -378,7 +300,7 @@ export default function AdminDeliveryPage() {
       },
       {
         label: "RTO / Failed",
-        data: [20, 15, 25, 18, 12, 22, 16],
+        data: shipments.length > 0 ? [rtoCount * 0.1, rtoCount * 0.2, rtoCount * 0.15, rtoCount * 0.25, rtoCount * 0.1, rtoCount * 0.1, rtoCount * 0.1] : [0, 0, 0, 0, 0, 0, 0],
         borderColor: "#ef4444",
         backgroundColor: "rgba(239, 68, 68, 0.08)",
         tension: 0.4,

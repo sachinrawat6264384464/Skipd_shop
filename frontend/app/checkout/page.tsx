@@ -369,11 +369,19 @@ export default function CheckoutPage() {
           }
         };
 
-        // Save to localStorage orders history (User-Scoped)
+        // Save to localStorage orders history (User-Scoped & Global Admin Store)
         const ordersKey = getUserOrdersKey();
         const cartKey = getUserCartKey();
         const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
         localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
+
+        const existingAll = JSON.parse(localStorage.getItem("skipd_all_store_orders") || "[]");
+        localStorage.setItem("skipd_all_store_orders", JSON.stringify([newOrder, ...existingAll]));
+
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("skipd_orders_changed"));
+          window.dispatchEvent(new Event("skipd_orders_updated"));
+        }
 
         // Save Payment Transaction to skipd_payments for Admin Payments sync
         try {
@@ -499,11 +507,19 @@ export default function CheckoutPage() {
         }
       };
 
-      // Save to localStorage orders history (User-Scoped)
+      // Save to localStorage orders history (User-Scoped & Global Admin Store)
       const ordersKey = getUserOrdersKey();
       const cartKey = getUserCartKey();
       const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
       localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
+
+      const existingAll = JSON.parse(localStorage.getItem("skipd_all_store_orders") || "[]");
+      localStorage.setItem("skipd_all_store_orders", JSON.stringify([newOrder, ...existingAll]));
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("skipd_orders_changed"));
+        window.dispatchEvent(new Event("skipd_orders_updated"));
+      }
 
       // 📧 Send Order Confirmation & Detailed Invoice Bill Email
       try {

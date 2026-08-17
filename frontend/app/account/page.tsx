@@ -2457,10 +2457,21 @@ function AccountContent() {
                         <p className="font-black text-gray-900 text-sm">₹{item.price?.toLocaleString("en-IN") || "999"}</p>
                       </div>
                       <button
-                        onClick={() => showToast(`🎉 "${item.title}" moved to Cart!`)}
-                        className="w-full bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs py-2 rounded-xl text-center cursor-pointer shadow-xs"
+                        onClick={() => {
+                          const buyNowItem = [{
+                            id: item.id,
+                            handle: item.handle || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : String(item.id)),
+                            title: item.title,
+                            price: item.price || 999,
+                            quantity: 1,
+                            image: item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+                          }];
+                          sessionStorage.setItem("skipd_buy_now_item", JSON.stringify(buyNowItem));
+                          router.push("/checkout?buyNow=true");
+                        }}
+                        className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-2.5 rounded-xl text-center cursor-pointer shadow-xs transition active:scale-98"
                       >
-                        Move to Cart &rsaquo;
+                        ⚡ Buy Now &rsaquo;
                       </button>
                     </div>
                   ))}

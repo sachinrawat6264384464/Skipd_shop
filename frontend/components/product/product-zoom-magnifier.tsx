@@ -90,7 +90,7 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
 
       {/* 💡 Desktop Helper Caption */}
       <p className="hidden lg:flex text-[11px] font-bold text-gray-500 mt-2 items-center gap-1">
-        <span>🔍</span> पूरा व्यू देखने के लिए माउस ऊपर लाएं (Hover for Full HD Zoom)
+        <span>🔍</span> Roll over image to zoom in (Full HD Resolution)
       </p>
 
       {/* 📱 Mobile Helper Caption */}

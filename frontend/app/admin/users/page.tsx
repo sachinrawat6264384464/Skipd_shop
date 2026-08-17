@@ -46,46 +46,6 @@ const INITIAL_STAFF: StaffUser[] = [
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
     lastActive: "Just now (Online)",
     permissions: SIDEBAR_MODULES.map(m => m.id)
-  },
-  {
-    id: 2,
-    name: "Vikram Malhotra",
-    email: "vikram@skipd.com",
-    role: "Store Manager",
-    status: "Active",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
-    lastActive: "12 mins ago",
-    permissions: ["orders", "products", "inventory", "customers", "delivery"]
-  },
-  {
-    id: 3,
-    name: "Ananya Roy",
-    email: "ananya@skipd.com",
-    role: "Logistics Manager",
-    status: "Active",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100",
-    lastActive: "1 hour ago",
-    permissions: ["orders", "inventory", "delivery", "queries"]
-  },
-  {
-    id: 4,
-    name: "Rohan Sharma",
-    email: "rohan@skipd.com",
-    role: "Support Executive",
-    status: "Active",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100",
-    lastActive: "3 hours ago",
-    permissions: ["customers", "tickets", "queries"]
-  },
-  {
-    id: 5,
-    name: "Pooja Gupta",
-    email: "pooja@skipd.com",
-    role: "Marketing Specialist",
-    status: "Active",
-    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=100",
-    lastActive: "Yesterday",
-    permissions: ["analytics", "sales", "engagement", "homepage"]
   }
 ];
 

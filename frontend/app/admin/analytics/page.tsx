@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { fetchProducts, API_BASE_URL } from "lib/api";
+import { fetchProducts, fetchAdminOrders, API_BASE_URL } from "lib/api";
 
 export default function AdminAnalyticsPage() {
   const [activeTab, setActiveTab] = useState("Sales Analytics");
@@ -18,62 +18,100 @@ export default function AdminAnalyticsPage() {
   // Dynamic Real-Time Orders State
   const [realOrders, setRealOrders] = useState<any[]>([]);
 
-  useEffect(() => {
-    async function loadData() {
-      setLoading(true);
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      // 1. Fetch DB Products
+      const productsData = await fetchProducts();
+      setDbProducts(productsData || []);
+
+      // 2. Fetch DB Registered Customers from /api/v1/users/admin/all
       try {
-        // 1. Fetch DB Products
-        const productsData = await fetchProducts();
-        setDbProducts(productsData || []);
-
-        // 2. Fetch DB Registered Customers from /api/v1/users/admin/all
-        try {
-          const custRes = await fetch(`${API_BASE_URL}/users/admin/all`);
-          if (custRes.ok) {
-            const custData = await custRes.json();
-            if (Array.isArray(custData)) setDbCustomers(custData);
-          }
-        } catch (e) {
-          console.log("Customer fetch fallback to default registered customers");
+        const custRes = await fetch(`${API_BASE_URL}/users/admin/all`);
+        if (custRes.ok) {
+          const custData = await custRes.json();
+          if (Array.isArray(custData)) setDbCustomers(custData);
         }
-
-        // 3. Load dynamic orders from localStorage or default dataset matching live DB
-        const storedAll = localStorage.getItem("skipd_all_store_orders");
-        let parsedOrders: any[] = [];
-        if (storedAll) {
-          try {
-            parsedOrders = JSON.parse(storedAll);
-          } catch (e) {}
-        }
-
-        if (!parsedOrders || parsedOrders.length === 0) {
-          // Default initial store orders dataset matching live database
-          parsedOrders = [
-            { id: "#SKIPD-25879", date: "May 25, 2025", amount: 29999, payment: "UPI", status: "Delivered", customer: "Amit Sharma", email: "amit.sharma@example.com", state: "Maharashtra", itemsCount: 1, productTitle: "Sony WH-1000XM5 Studio Headphones" },
-            { id: "#SKIPD-25878", date: "May 25, 2025", amount: 3598, payment: "VISA", status: "Processing", customer: "Priya Verma", email: "priya.verma@gmail.com", state: "Gujarat", itemsCount: 2, productTitle: "boAt Rockerz 450 Pro Bluetooth Headphones" },
-            { id: "#SKIPD-25877", date: "May 24, 2025", amount: 4499, payment: "Mastercard", status: "Shipped", customer: "Rahul Singh", email: "rahul.singh@yahoo.com", state: "Delhi", itemsCount: 1, productTitle: "Noise ColorFit Pro 5 Smartwatch" },
-            { id: "#SKIPD-25876", date: "May 24, 2025", amount: 7499, payment: "UPI", status: "Delivered", customer: "Sneha Patel", email: "sneha.patel@hotmail.com", state: "Karnataka", itemsCount: 1, productTitle: "Nike Air Force 1 07 Sneakers" },
-            { id: "#SKIPD-25875", date: "May 23, 2025", amount: 84990, payment: "VISA", status: "Cancelled", customer: "Vikram Joshi", email: "vikram.j@gmail.com", state: "Maharashtra", itemsCount: 1, productTitle: "Apple MacBook Air M2 13.6-inch" },
-            { id: "#SKIPD-25874", date: "May 23, 2025", amount: 747, payment: "UPI", status: "Pending", customer: "Karan Mehta", email: "karan.m@gmail.com", state: "Maharashtra", itemsCount: 1, productTitle: "Minimalist Heavyweight Graphic Tee" },
-            { id: "#SKIPD-25873", date: "May 22, 2025", amount: 3200, payment: "UPI", status: "Returns", customer: "Ananya Roy", email: "ananya.roy@gmail.com", state: "West Bengal", itemsCount: 1, productTitle: "RC 4K Camera Pro Toy Drone" },
-            { id: "#SKIPD-25872", date: "May 22, 2025", amount: 999, payment: "VISA", status: "Refunds", customer: "Arjun Nair", email: "arjun.nair@gmail.com", state: "Kerala", itemsCount: 1, productTitle: "Minimalist Heavyweight Graphic Tee" },
-            { id: "#SKIPD-25871", date: "May 21, 2025", amount: 24990, payment: "UPI", status: "Delivered", customer: "Divya Sharma", email: "divya.s@gmail.com", state: "Uttar Pradesh", itemsCount: 1, productTitle: "Sony WH-1000XM5 Studio Headphones" },
-            { id: "#SKIPD-25870", date: "May 21, 2025", amount: 41900, payment: "Mastercard", status: "Shipped", customer: "Rohan Kapoor", email: "rohan.k@gmail.com", state: "Rajasthan", itemsCount: 1, productTitle: "Apple Watch Series 9 GPS 45mm" },
-            { id: "#SKIPD-25869", date: "May 21, 2025", amount: 89990, payment: "VISA", status: "Processing", customer: "Manish Kumar", email: "manish.k@gmail.com", state: "Bihar", itemsCount: 1, productTitle: "Apple MacBook Air M2 13.6-inch" },
-            { id: "#SKIPD-25868", date: "May 20, 2025", amount: 2499, payment: "UPI", status: "Delivered", customer: "Pooja Reddy", email: "pooja.reddy@gmail.com", state: "Telangana", itemsCount: 1, productTitle: "boAt Rockerz 450 Pro Bluetooth Headphones" },
-            { id: "#SKIPD-25867", date: "May 20, 2025", amount: 1998, payment: "UPI", status: "Delivered", customer: "Suresh Gupta", email: "suresh.g@gmail.com", state: "Maharashtra", itemsCount: 2, productTitle: "Minimalist Heavyweight Graphic Tee" },
-            { id: "#SKIPD-25866", date: "May 19, 2025", amount: 1499, payment: "VISA", status: "Pending", customer: "Kavita Rao", email: "kavita.rao@gmail.com", state: "AP", itemsCount: 1, productTitle: "boAt Rockerz 450 Pro Bluetooth Headphones" },
-            { id: "#SKIPD-25865", date: "May 19, 2025", amount: 3999, payment: "Mastercard", status: "Shipped", customer: "Nikhil Saxena", email: "nikhil.s@gmail.com", state: "MP", itemsCount: 1, productTitle: "RC 4K Camera Pro Toy Drone" }
-          ];
-        }
-        setRealOrders(parsedOrders);
       } catch (e) {
-        console.error("Failed to load analytics data:", e);
-      } finally {
-        setLoading(false);
+        console.log("Customer fetch fallback to default registered customers");
       }
+
+      // 3. Gather 100% of real placed store orders across Backend & LocalStorages
+      let allOrders: any[] = [];
+
+      // A. Fetch from API Backend
+      try {
+        const apiOrders = await fetchAdminOrders();
+        if (Array.isArray(apiOrders)) {
+          apiOrders.forEach((o: any) => {
+            allOrders.push({
+              id: String(o.order_number || `#SKIPD-${o.id}`),
+              date: o.created_at ? new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Today",
+              customer: String(o.user?.full_name || o.user_name || "Customer"),
+              email: String(o.user?.email || "customer@skipd.in"),
+              amount: Number(o.total_amount || o.total || 0),
+              payment: String(o.payment_method || "UPI"),
+              status: String(o.status || "Processing"),
+              itemsCount: Array.isArray(o.items) ? o.items.length : 1,
+              productTitle: typeof o.items === "string" ? o.items : (o.items?.[0]?.title || "Item")
+            });
+          });
+        }
+      } catch (e) {}
+
+      // B. Scan all user order localStorages
+      if (typeof window !== "undefined") {
+        try {
+          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
+          keys.forEach(k => {
+            const item = localStorage.getItem(k);
+            if (item) {
+              try {
+                const parsed = JSON.parse(item);
+                if (Array.isArray(parsed)) {
+                  parsed.forEach((ord: any) => {
+                    const ordId = String(ord.order_number || ord.id || "");
+                    if (ordId && !allOrders.some(o => o.id === ordId)) {
+                      allOrders.push({
+                        id: ordId,
+                        date: String(ord.date || "Today"),
+                        customer: String(ord.customer || ord.user_name || ord.shipping_address?.name || "Customer"),
+                        email: String(ord.email || ord.shipping_address?.email || "customer@skipd.in"),
+                        state: String(ord.state || ord.shipping_address?.state || "Maharashtra"),
+                        amount: Number(ord.total_amount || ord.total || ord.amount || 0),
+                        payment: String(ord.payment_method || ord.payment || "UPI"),
+                        status: String(ord.status || "Processing"),
+                        itemsCount: Array.isArray(ord.items) ? ord.items.length : 1,
+                        productTitle: typeof ord.items === "string" ? ord.items : (ord.items?.[0]?.title || ord.title || "Item")
+                      });
+                    }
+                  });
+                }
+              } catch (e) {}
+            }
+          });
+        } catch (e) {}
+      }
+
+      setRealOrders(allOrders);
+    } catch (e) {
+      console.error("Failed to load analytics data:", e);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
     loadData();
+
+    window.addEventListener("skipd_orders_changed", loadData);
+    window.addEventListener("skipd_orders_updated", loadData);
+    window.addEventListener("storage", loadData);
+    return () => {
+      window.removeEventListener("skipd_orders_changed", loadData);
+      window.removeEventListener("skipd_orders_updated", loadData);
+      window.removeEventListener("storage", loadData);
+    };
   }, []);
 
   const handleExportReport = () => {
@@ -160,37 +198,91 @@ export default function AdminAnalyticsPage() {
   });
   const maxDailySale = Math.max(...dailySales, 100000);
 
-  // Top products calculation with real sold counts
+  // 100% Dynamic Top Products calculation from live DB products & actual customer orders
   const productPerformanceList = useMemo(() => {
     const map: Record<string, { title: string; sold: number; revenue: number; price: number; img: string; category: string; handle: string }> = {};
 
-    dbProducts.forEach((p, idx) => {
+    dbProducts.forEach((p) => {
       const h = p.handle || `prod-${p.id}`;
       map[h] = {
         title: p.title,
-        sold: (idx % 3 + 1) * 12 + (idx * 5),
-        revenue: ((idx % 3 + 1) * 12 + (idx * 5)) * (p.price || 999),
-        price: p.price || 999,
+        sold: 0,
+        revenue: 0,
+        price: p.price || 0,
         img: p.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
         category: typeof p.category === "object" ? p.category?.name : (p.category || "General"),
-        handle: p.handle
+        handle: p.handle || h
       };
     });
 
-    // Blend in orders
+    // Blend in actual placed customer orders
     validOrders.forEach(o => {
       const pTitle = o.productTitle || "General Item";
-      const matched = Object.values(map).find(m => m.title.toLowerCase().includes(pTitle.toLowerCase()));
+      const matched = Object.values(map).find(m => m.title.toLowerCase().includes(pTitle.toLowerCase()) || pTitle.toLowerCase().includes(m.title.toLowerCase()));
       if (matched) {
         matched.sold += Number(o.itemsCount || 1);
         matched.revenue += Number(o.amount || 0);
       }
     });
 
-    return Object.values(map).sort((a, b) => b.revenue - a.revenue);
+    return Object.values(map).sort((a, b) => b.revenue - a.revenue || b.sold - a.sold);
   }, [dbProducts, validOrders]);
 
   const topProducts = productPerformanceList.slice(0, 5);
+
+  // 100% Dynamic Category Performance calculation from real database products & orders
+  const topCategories = useMemo(() => {
+    const catMap: Record<string, { name: string; revenue: number; color: string }> = {};
+    const colors = ["bg-emerald-500", "bg-blue-500", "bg-orange-500", "bg-purple-500", "bg-cyan-500"];
+
+    productPerformanceList.forEach(p => {
+      const cat = p.category || "General";
+      if (!catMap[cat]) {
+        const colorIdx = Object.keys(catMap).length % colors.length;
+        catMap[cat] = { name: cat, revenue: 0, color: colors[colorIdx] || "bg-emerald-500" };
+      }
+      catMap[cat].revenue += p.revenue;
+    });
+
+    const sorted = Object.values(catMap).sort((a, b) => b.revenue - a.revenue);
+    if (sorted.length === 0) {
+      return [
+        { name: "Electronics", revenue: 0, pct: 0, color: "bg-emerald-500" },
+        { name: "Fashion", revenue: 0, pct: 0, color: "bg-blue-500" },
+        { name: "Lifestyle", revenue: 0, pct: 0, color: "bg-orange-500" }
+      ];
+    }
+
+    return sorted.slice(0, 4).map(c => ({
+      ...c,
+      pct: totalGrossSales > 0 ? Math.round((c.revenue / totalGrossSales) * 100) : 0
+    }));
+  }, [productPerformanceList, totalGrossSales]);
+
+  // 100% Dynamic Sales by Location calculation from real customer orders
+  const locationSales = useMemo(() => {
+    const map: Record<string, number> = {};
+    validOrders.forEach(o => {
+      const state = o.state || "Maharashtra";
+      map[state] = (map[state] || 0) + Number(o.amount || 0);
+    });
+
+    const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]);
+    if (sorted.length === 0) {
+      return [
+        { name: "Maharashtra", amount: 0, pct: "0%" },
+        { name: "Delhi NCR", amount: 0, pct: "0%" },
+        { name: "Karnataka", amount: 0, pct: "0%" },
+        { name: "Uttar Pradesh", amount: 0, pct: "0%" }
+      ];
+    }
+
+    return sorted.slice(0, 5).map(([name, amount]) => ({
+      name,
+      amount,
+      pct: totalGrossSales > 0 ? `${Math.round((amount / totalGrossSales) * 100)}%` : "0%"
+    }));
+  }, [validOrders, totalGrossSales]);
 
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
@@ -509,33 +601,17 @@ export default function AdminAnalyticsPage() {
                 <h3 className="font-black text-base text-gray-900">Top Revenue Categories</h3>
               </div>
               <div className="space-y-4 text-xs">
-                <div>
-                  <div className="flex justify-between font-bold text-gray-900 mb-1.5">
-                    <span>1. Electronics &amp; Mobiles</span>
-                    <span className="text-emerald-600 font-black">₹14,50,000 (52%)</span>
+                {topCategories.map((cat, idx) => (
+                  <div key={idx}>
+                    <div className="flex justify-between font-bold text-gray-900 mb-1.5">
+                      <span>{idx + 1}. {cat.name}</span>
+                      <span className="text-emerald-600 font-black">₹{cat.revenue.toLocaleString("en-IN")} ({cat.pct}%)</span>
+                    </div>
+                    <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div className={`h-full ${cat.color} rounded-full transition-all duration-500`} style={{ width: `${Math.max(0, cat.pct)}%` }}></div>
+                    </div>
                   </div>
-                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: "52%" }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between font-bold text-gray-900 mb-1.5">
-                    <span>2. Apparel &amp; Fashion</span>
-                    <span className="text-blue-600 font-black">₹7,20,000 (26%)</span>
-                  </div>
-                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full" style={{ width: "26%" }}></div>
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between font-bold text-gray-900 mb-1.5">
-                    <span>3. Watches &amp; Lifestyle</span>
-                    <span className="text-orange-500 font-black">₹5,75,890 (22%)</span>
-                  </div>
-                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-orange-500 rounded-full" style={{ width: "22%" }}></div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
 
@@ -567,12 +643,13 @@ export default function AdminAnalyticsPage() {
                 <h3 className="font-black text-base text-gray-900">Sales by Location</h3>
                 <span className="text-xs font-bold text-gray-400">India Region</span>
               </div>
-              <div className="space-y-2 text-xs font-semibold">
-                <div className="flex justify-between"><span className="text-gray-700">Maharashtra</span><span className="font-bold text-gray-900">₹5.45L (20%)</span></div>
-                <div className="flex justify-between"><span className="text-gray-700">Karnataka</span><span className="font-bold text-gray-900">₹4.80L (18%)</span></div>
-                <div className="flex justify-between"><span className="text-gray-700">Uttar Pradesh</span><span className="font-bold text-gray-900">₹3.60L (13%)</span></div>
-                <div className="flex justify-between"><span className="text-gray-700">Delhi NCR</span><span className="font-bold text-gray-900">₹3.20L (12%)</span></div>
-                <div className="flex justify-between text-gray-400"><span>Others</span><span>₹7.45L (37%)</span></div>
+              <div className="space-y-2.5 text-xs font-semibold">
+                {locationSales.map((loc, idx) => (
+                  <div key={idx} className="flex justify-between items-center">
+                    <span className="text-gray-700 font-bold">{loc.name}</span>
+                    <span className="font-black text-gray-900">₹{loc.amount.toLocaleString("en-IN")} ({loc.pct})</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>

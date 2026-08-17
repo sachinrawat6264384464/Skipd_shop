@@ -246,6 +246,20 @@ export function SearchCatalogView({
     }
   };
 
+  const getValidCardHandle = (p: Product) => {
+    if (!p) return "oneplus-nord-6";
+    if (p.handle && typeof p.handle === "string" && p.handle !== "undefined" && p.handle.trim() !== "") {
+      return p.handle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+    if ((p as any).slug && typeof (p as any).slug === "string" && (p as any).slug !== "undefined") {
+      return (p as any).slug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+    if (p.title && typeof p.title === "string") {
+      return p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+    return String(p.id || "1");
+  };
+
   return (
     <div className="space-y-6 w-full">
       
@@ -397,10 +411,11 @@ export function SearchCatalogView({
               : 36;
             const isLiked = isInWishlist(product.id);
             const isOutOfStock = product.stock_quantity === 0;
+            const itemHandle = getValidCardHandle(product);
 
             return (
               <div
-                key={`${product.handle || product.id}-${idx}`}
+                key={`${itemHandle}-${idx}`}
                 className="group bg-white border border-gray-200/80 rounded-2xl overflow-hidden p-3 shadow-2xs hover:shadow-xl transition-all duration-300 relative space-y-3 flex flex-col justify-between"
               >
                 {/* Badges & Wishlist Heart */}
@@ -436,7 +451,7 @@ export function SearchCatalogView({
                 </div>
 
                 {/* Compact Product Image Box */}
-                <Link href={`/product/${product.handle}`} className="block relative h-44 sm:h-52 bg-gray-50/80 rounded-xl overflow-hidden p-3 border border-gray-100 flex items-center justify-center">
+                <Link href={`/product/${itemHandle}`} className="block relative h-44 sm:h-52 bg-gray-50/80 rounded-xl overflow-hidden p-3 border border-gray-100 flex items-center justify-center cursor-pointer">
                   <img
                     src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                     alt={product.title}
@@ -458,7 +473,7 @@ export function SearchCatalogView({
                 <div className="space-y-2 flex-1 flex flex-col justify-between w-full">
                   <div>
                     <h3 className="font-bold text-xs text-gray-900 group-hover:text-emerald-700 transition line-clamp-2 leading-snug">
-                      <Link href={`/product/${product.handle}`}>{product.title}</Link>
+                      <Link href={`/product/${itemHandle}`}>{product.title}</Link>
                     </h3>
                     <p className="text-[10px] text-amber-500 font-bold mt-1">
                       ★ 4.5 <span className="text-gray-400 font-medium">(2,356)</span>
@@ -487,12 +502,13 @@ export function SearchCatalogView({
                       <BuyNowButton
                         mode="cart"
                         productObj={product}
+                        productHandle={itemHandle}
                         className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
                         🛒 Add to Cart
                       </BuyNowButton>
                       <BuyNowButton
-                        productHandle={product.handle}
+                        productHandle={itemHandle}
                         productObj={product}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
@@ -514,14 +530,15 @@ export function SearchCatalogView({
               ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
               : 36;
             const isLiked = isInWishlist(product.id);
+            const itemHandle = getValidCardHandle(product);
 
             return (
               <div
-                key={`${product.handle || product.id}-${idx}`}
+                key={`${itemHandle}-${idx}`}
                 className="group bg-white border border-gray-200/80 rounded-3xl overflow-hidden p-4 shadow-2xs hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row items-center gap-6 relative"
               >
                 <div className="relative w-full md:w-52 h-52 shrink-0 bg-gray-50 rounded-2xl overflow-hidden p-3 border border-gray-100">
-                  <Link href={`/product/${product.handle}`} className="block w-full h-full relative">
+                  <Link href={`/product/${itemHandle}`} className="block w-full h-full relative cursor-pointer">
                     <img
                       src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                       alt={product.title}
@@ -549,7 +566,7 @@ export function SearchCatalogView({
                 <div className="flex-1 space-y-3 w-full flex flex-col justify-between">
                   <div className="space-y-1.5">
                     <h3 className="font-extrabold text-base text-gray-900 group-hover:text-emerald-700 transition leading-snug">
-                      <Link href={`/product/${product.handle}`}>{product.title}</Link>
+                      <Link href={`/product/${itemHandle}`}>{product.title}</Link>
                     </h3>
                     <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
                       {product.description || "High quality premium brand product with instant shipping and 1-year official warranty."}
@@ -571,12 +588,13 @@ export function SearchCatalogView({
                       <BuyNowButton
                         mode="cart"
                         productObj={product}
+                        productHandle={itemHandle}
                         className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
                       >
                         🛒 Add to Cart
                       </BuyNowButton>
                       <BuyNowButton
-                        productHandle={product.handle}
+                        productHandle={itemHandle}
                         productObj={product}
                         className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-2.5 px-5 rounded-xl transition text-center flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                       >

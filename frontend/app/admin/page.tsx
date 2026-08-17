@@ -343,33 +343,37 @@ export default function AdminDashboardPage() {
               <line x1="0" y1="150" x2="500" y2="150" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
               <text x="0" y="160" fill="#94a3b8" fontSize="10">₹0</text>
 
-              {/* Revenue Green Line */}
+              {/* Revenue Green Line (Flat M 0 150 L 500 150 if 0 revenue) */}
               <path
-                d="M 20 120 L 90 80 L 160 100 L 230 60 L 300 85 L 370 50 L 440 80 L 490 60"
+                d={metrics.total_revenue > 0 ? "M 20 120 L 90 80 L 160 100 L 230 60 L 300 85 L 370 50 L 440 80 L 490 60" : "M 0 150 L 500 150"}
                 fill="none"
                 stroke="#10b981"
                 strokeWidth="3"
                 strokeLinecap="round"
               />
 
-              {/* Orders Purple Line */}
+              {/* Orders Purple Line (Flat M 0 150 L 500 150 if 0 orders) */}
               <path
-                d="M 20 140 L 90 110 L 160 125 L 230 90 L 300 115 L 370 75 L 440 110 L 490 100"
+                d={metrics.total_orders > 0 ? "M 20 140 L 90 110 L 160 125 L 230 90 L 300 115 L 370 75 L 440 110 L 490 100" : "M 0 150 L 500 150"}
                 fill="none"
                 stroke="#8b5cf6"
                 strokeWidth="3"
                 strokeLinecap="round"
               />
 
-              <line x1="230" y1="20" x2="230" y2="160" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
-              <circle cx="230" cy="60" r="5" fill="#10b981" />
-              <circle cx="230" cy="90" r="5" fill="#8b5cf6" />
+              {metrics.total_revenue > 0 && (
+                <>
+                  <line x1="230" y1="20" x2="230" y2="160" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
+                  <circle cx="230" cy="60" r="5" fill="#10b981" />
+                  <circle cx="230" cy="90" r="5" fill="#8b5cf6" />
+                </>
+              )}
             </svg>
 
             <div className="absolute top-12 left-[40%] bg-white border border-gray-200 rounded-2xl p-3 shadow-xl text-[11px] space-y-1 font-bold z-10 pointer-events-none">
-              <p className="text-gray-400 font-medium">Peak Performance</p>
-              <p className="text-emerald-600">● Revenue: ₹{(245000 * multiplier).toLocaleString("en-IN")}</p>
-              <p className="text-purple-600">● Orders: {210 * multiplier}</p>
+              <p className="text-gray-400 font-medium">{metrics.total_orders > 0 ? "Peak Performance" : "Live Real-Time Data"}</p>
+              <p className="text-emerald-600">● Revenue: ₹{metrics.total_revenue.toLocaleString("en-IN")}</p>
+              <p className="text-purple-600">● Orders: {metrics.total_orders}</p>
             </div>
           </div>
 
@@ -391,10 +395,14 @@ export default function AdminDashboardPage() {
           <div className="relative flex items-center justify-center h-48">
             <svg className="w-40 h-40 transform -rotate-90" viewBox="0 0 100 100">
               <circle cx="50" cy="50" r="38" stroke="#f1f5f9" strokeWidth="14" fill="none" />
-              <circle cx="50" cy="50" r="38" stroke="#10b981" strokeWidth="14" fill="none" strokeDasharray="131 238" strokeDashoffset="0" />
-              <circle cx="50" cy="50" r="38" stroke="#3b82f6" strokeWidth="14" fill="none" strokeDasharray="55 238" strokeDashoffset="-131" />
-              <circle cx="50" cy="50" r="38" stroke="#f59e0b" strokeWidth="14" fill="none" strokeDasharray="33 238" strokeDashoffset="-186" />
-              <circle cx="50" cy="50" r="38" stroke="#8b5cf6" strokeWidth="14" fill="none" strokeDasharray="19 238" strokeDashoffset="-219" />
+              {metrics.total_orders > 0 && (
+                <>
+                  <circle cx="50" cy="50" r="38" stroke="#10b981" strokeWidth="14" fill="none" strokeDasharray="131 238" strokeDashoffset="0" />
+                  <circle cx="50" cy="50" r="38" stroke="#3b82f6" strokeWidth="14" fill="none" strokeDasharray="55 238" strokeDashoffset="-131" />
+                  <circle cx="50" cy="50" r="38" stroke="#f59e0b" strokeWidth="14" fill="none" strokeDasharray="33 238" strokeDashoffset="-186" />
+                  <circle cx="50" cy="50" r="38" stroke="#8b5cf6" strokeWidth="14" fill="none" strokeDasharray="19 238" strokeDashoffset="-219" />
+                </>
+              )}
             </svg>
             <div className="absolute text-center leading-tight">
               <p className="text-xl font-black text-gray-900">{metrics.total_orders.toLocaleString("en-IN")}</p>
@@ -408,7 +416,7 @@ export default function AdminDashboardPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                 <span className="text-gray-700">Delivered</span>
               </div>
-              <span className="font-bold text-gray-900">55%</span>
+              <span className="font-bold text-gray-900">{metrics.total_orders > 0 ? "55%" : "0%"}</span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -416,7 +424,7 @@ export default function AdminDashboardPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                 <span className="text-gray-700">Processing</span>
               </div>
-              <span className="font-bold text-gray-900">23%</span>
+              <span className="font-bold text-gray-900">{metrics.total_orders > 0 ? "23%" : "0%"}</span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -424,7 +432,7 @@ export default function AdminDashboardPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
                 <span className="text-gray-700">Shipped</span>
               </div>
-              <span className="font-bold text-gray-900">14%</span>
+              <span className="font-bold text-gray-900">{metrics.total_orders > 0 ? "14%" : "0%"}</span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -432,7 +440,7 @@ export default function AdminDashboardPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
                 <span className="text-gray-700">Cancelled</span>
               </div>
-              <span className="font-bold text-gray-900">8%</span>
+              <span className="font-bold text-gray-900">{metrics.total_orders > 0 ? "8%" : "0%"}</span>
             </div>
           </div>
         </div>
@@ -561,45 +569,49 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Store Overview Counts (3 Cols) */}
-        <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-3 text-xs">
-          <h3 className="font-black text-base text-gray-900 border-b border-gray-100 pb-2">Store Overview</h3>
-          
-          <div className="flex justify-between items-center py-1.5">
-            <span className="text-gray-600 flex items-center gap-2 font-medium">
-              <span className="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs">📁</span> Total Categories
-            </span>
-            <span className="font-black text-gray-900 text-sm">13</span>
-          </div>
+          {/* Store Overview Counts (3 Cols) */}
+          <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-3 text-xs">
+            <h3 className="font-black text-base text-gray-900 border-b border-gray-100 pb-2">Store Overview</h3>
+            
+            <div className="flex justify-between items-center py-1.5">
+              <span className="text-gray-600 flex items-center gap-2 font-medium">
+                <span className="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs">📁</span> Total Categories
+              </span>
+              <span className="font-black text-gray-900 text-sm">
+                {new Set(dbProducts.map(p => typeof p.category === "string" ? p.category : (p.category_slug || p.category?.slug || "general"))).size}
+              </span>
+            </div>
 
-          <div className="flex justify-between items-center py-1.5">
-            <span className="text-gray-600 flex items-center gap-2 font-medium">
-              <span className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">🏷️</span> Partner Brands
-            </span>
-            <span className="font-black text-gray-900 text-sm">56</span>
-          </div>
+            <div className="flex justify-between items-center py-1.5">
+              <span className="text-gray-600 flex items-center gap-2 font-medium">
+                <span className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">🏷️</span> Partner Brands
+              </span>
+              <span className="font-black text-gray-900 text-sm">
+                {new Set(dbProducts.map(p => p.brand || p.tags?.[0] || "SKIPD").filter(Boolean)).size}
+              </span>
+            </div>
 
-          <div className="flex justify-between items-center py-1.5">
-            <span className="text-gray-600 flex items-center gap-2 font-medium">
-              <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">📦</span> Database Products
-            </span>
-            <span className="font-black text-gray-900 text-sm">{dbProducts.length}</span>
-          </div>
+            <div className="flex justify-between items-center py-1.5">
+              <span className="text-gray-600 flex items-center gap-2 font-medium">
+                <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">📦</span> Database Products
+              </span>
+              <span className="font-black text-gray-900 text-sm">{dbProducts.length}</span>
+            </div>
 
-          <div className="flex justify-between items-center py-1.5">
-            <span className="text-gray-600 flex items-center gap-2 font-medium">
-              <span className="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">👥</span> Store Customers
-            </span>
-            <span className="font-black text-gray-900 text-sm">8,542</span>
-          </div>
+            <div className="flex justify-between items-center py-1.5">
+              <span className="text-gray-600 flex items-center gap-2 font-medium">
+                <span className="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">👥</span> Store Customers
+              </span>
+              <span className="font-black text-gray-900 text-sm">{metrics.total_customers.toLocaleString("en-IN")}</span>
+            </div>
 
-          <div className="flex justify-between items-center py-1.5">
-            <span className="text-gray-600 flex items-center gap-2 font-medium">
-              <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">✉️</span> Newsletter Subscribers
-            </span>
-            <span className="font-black text-gray-900 text-sm">4,320</span>
+            <div className="flex justify-between items-center py-1.5">
+              <span className="text-gray-600 flex items-center gap-2 font-medium">
+                <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">✉️</span> Registered DB Accounts
+              </span>
+              <span className="font-black text-gray-900 text-sm">{metrics.total_customers.toLocaleString("en-IN")}</span>
+            </div>
           </div>
-        </div>
 
       </div>
 

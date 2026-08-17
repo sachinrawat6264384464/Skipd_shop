@@ -227,14 +227,7 @@ export default function AdminPaymentsPage() {
         if (Array.isArray(apiTxns) && apiTxns.length > 0) {
           rawTxns = [...apiTxns];
         } else {
-          // Default seed dataset if first time loading
-          rawTxns = [
-            { id: "PAY-131418", orderId: "SKIPD-870032", customerName: "Store Customer", customerEmail: "customer@skipd.in", amount: 2999, payment_method: "Razorpay UPI", gateway: "Razorpay", rzpPaymentId: "pay_MB86924181", status: "SUCCESS", date: "May 25, 2025", time: "02:14 PM" },
-            { id: "PAY-144830", orderId: "SKIPD-362470", customerName: "Store Customer", customerEmail: "customer@skipd.in", amount: 2999, payment_method: "Razorpay UPI", gateway: "Razorpay", rzpPaymentId: "pay_MB73699239", status: "SUCCESS", date: "May 25, 2025", time: "02:14 PM" },
-            { id: "PAY-99201", orderId: "#SKIPD-25879", customerName: "Amit Sharma", customerEmail: "amit@gmail.com", amount: 2999, payment_method: "Razorpay UPI", gateway: "Razorpay", rzpPaymentId: "pay_MB42910481", status: "SUCCESS", date: "May 25, 2025", time: "02:14 PM" },
-            { id: "PAY-99202", orderId: "#SKIPD-25878", customerName: "Priya Verma", customerEmail: "priya@yahoo.com", amount: 1799, payment_method: "VISA Credit Card", gateway: "Razorpay", rzpPaymentId: "pay_MB42910482", status: "SUCCESS", date: "May 25, 2025", time: "12:15 PM" },
-            { id: "PAY-99203", orderId: "#SKIPD-25877", customerName: "Rahul Singh", customerEmail: "rahul@gmail.com", amount: 4499, payment_method: "Mastercard Debit", gateway: "Razorpay", rzpPaymentId: "pay_MB42910483", status: "SUCCESS", date: "May 24, 2025", time: "06:40 PM" }
-          ];
+          rawTxns = [];
         }
       }
 

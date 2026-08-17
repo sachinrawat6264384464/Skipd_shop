@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "components/auth/auth-provider";
 import { getUserCartKey, getCartStore, saveCartStore } from "lib/utils";
+import { BuyNowButton } from "components/auth/buy-now-button";
 import { ProductZoomMagnifier } from "./product-zoom-magnifier";
 import { toast } from "sonner";
 import { useWishlist } from "components/wishlist/wishlist-context";
@@ -27,6 +28,23 @@ interface ProductDetailViewProps {
   };
   relatedProducts: any[];
 }
+
+const FALLBACK_RECS = [
+  { id: 101, title: "boAt Rockerz 450 Pro Bluetooth Headphones", handle: "boat-rockerz-450-pro", price: 1499, compare_at_price: 3990, images: ["https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400"] },
+  { id: 102, title: "OnePlus Nord 6 5G (12GB+256GB)", handle: "oneplus-nord-6", price: 44499, compare_at_price: 52999, images: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400"] },
+  { id: 103, title: "Apple Watch Series 9 GPS 45mm Midnight", handle: "apple-watch-series-9", price: 41900, compare_at_price: 44900, images: ["https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400"] },
+  { id: 104, title: "Nike Air Force 1 07 Triple White Sneakers", handle: "nike-air-force-1", price: 7495, compare_at_price: 8995, images: ["https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400"] },
+  { id: 105, title: "Apple MacBook Air M2 13.6-inch Space Grey", handle: "apple-macbook-air-m2", price: 99990, compare_at_price: 114900, images: ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400"] },
+  { id: 106, title: "Noise ColorFit Pro 5 Smartwatch Jet Black", handle: "noise-colorfit-pro-5", price: 3499, compare_at_price: 5999, images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"] },
+  { id: 107, title: "RC 4K Camera Pro Toy Drone Quadcopter", handle: "rc-4k-camera-pro-toy-drone", price: 3999, compare_at_price: 7999, images: ["https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=400"] },
+  { id: 108, title: "Minimalist Heavyweight Graphic Tee 240 GSM", handle: "minimalist-graphic-tee", price: 1299, compare_at_price: 1999, images: ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400"] },
+  { id: 109, title: "Winter Heavy Fleece Trench Jacket Black", handle: "winter-trench-jacket", price: 3999, compare_at_price: 6999, images: ["https://images.unsplash.com/photo-1544441893-675973e31985?w=400"] },
+  { id: 110, title: "Sony WH-1000XM5 Studio Headphones", handle: "sony-wh-1000xm5", price: 24999, compare_at_price: 29999, images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"] },
+  { id: 111, title: "65W Fast Wall Adapter Charger", handle: "65w-fast-charger", price: 599, compare_at_price: 1299, images: ["https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400"] },
+  { id: 112, title: "GadgetBite Headphone Hard EVA Case Storage Bag", handle: "headphone-hard-case", price: 400, compare_at_price: 800, images: ["https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400"] },
+  { id: 113, title: "20000mAh Dual Port Power Bank", handle: "20000mah-power-bank", price: 999, compare_at_price: 1999, images: ["https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=400"] },
+  { id: 114, title: "Cold Pressed Organic Coconut Oil 1L", handle: "cold-pressed-coconut-oil", price: 249, compare_at_price: 499, images: ["https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400"] },
+];
 
 export function ProductDetailView({ product, relatedProducts }: ProductDetailViewProps) {
   const router = useRouter();
@@ -152,10 +170,14 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       image: selectedImage
     };
 
-    const idx = existing.findIndex((i: any) => i.id === product.id || i.handle === product.handle);
+    const idx = existing.findIndex((i: any) => {
+      if (i.id != null && product.id != null && String(i.id) === String(product.id)) return true;
+      if (i.handle && product.handle && i.handle !== "product" && i.handle === product.handle) return true;
+      return false;
+    });
     let updated;
     if (idx > -1) {
-      existing[idx].quantity += 1;
+      existing[idx].quantity = (existing[idx].quantity || 1) + 1;
       updated = [...existing];
     } else {
       updated = [...existing, itemToAdd];
@@ -259,6 +281,39 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       try {
         toast.success(`🛒 Added ${addon.title} to cart!`);
       } catch (e) {}
+    });
+  };
+
+  // Toggle SKIPD Protect Extended Warranty Plan Add-on
+  const handleToggleWarranty = () => {
+    requireAuth(() => {
+      const cartKey = getUserCartKey();
+      const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
+      const warrantyId = 9903;
+
+      if (warrantyAdded) {
+        const updated = existing.filter((item: any) => item.id !== warrantyId);
+        localStorage.setItem(cartKey, JSON.stringify(updated));
+        window.dispatchEvent(new Event("skipd_cart_updated"));
+        window.dispatchEvent(new Event("skipd_cart_changed"));
+        setWarrantyAdded(false);
+        try { toast.info("🛡️ SKIPD Protect Warranty removed from cart."); } catch (e) {}
+      } else {
+        const newItem = {
+          id: warrantyId,
+          handle: "skipd-protect-1yr-warranty",
+          title: `SKIPD Protect 1-Year Extended Warranty`,
+          price: 199,
+          quantity: 1,
+          image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=200"
+        };
+        const updated = [...existing, newItem];
+        localStorage.setItem(cartKey, JSON.stringify(updated));
+        window.dispatchEvent(new Event("skipd_cart_updated"));
+        window.dispatchEvent(new Event("skipd_cart_changed"));
+        setWarrantyAdded(true);
+        try { toast.success("🛡️ SKIPD Protect Warranty (₹199) added to cart!"); } catch (e) {}
+      }
     });
   };
 
@@ -386,6 +441,44 @@ const SUB_NAV_ITEMS = [
   const discountPercent = product.compare_at_price
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 16;
+
+  const getValidHandle = (item: any) => {
+    if (!item) return "oneplus-nord-6";
+    if (item.handle && typeof item.handle === "string" && item.handle !== "undefined" && item.handle.trim() !== "") {
+      return item.handle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+    if (item.slug && typeof item.slug === "string" && item.slug !== "undefined" && item.slug.trim() !== "") {
+      return item.slug.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+    if (item.title && typeof item.title === "string") {
+      return item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+    return String(item.id || "1");
+  };
+
+  // Combine passed relatedProducts with FALLBACK_RECS so recommendation sections are ALWAYS 100% full
+  const recsMap = new Map<string, any>();
+  const currHandle = getValidHandle(product);
+
+  (relatedProducts || []).forEach(p => {
+    if (p && String(p.id) !== String(product.id)) {
+      const h = getValidHandle(p);
+      if (h !== currHandle) {
+        recsMap.set(h, { ...p, handle: h });
+      }
+    }
+  });
+
+  FALLBACK_RECS.forEach(fb => {
+    const h = getValidHandle(fb);
+    if (h !== currHandle && !recsMap.has(h)) {
+      recsMap.set(h, { ...fb, handle: h });
+    }
+  });
+
+  const fullRecommendations = Array.from(recsMap.values());
+  const sponsoredList = fullRecommendations.slice(0, 7);
+  const customersAlsoViewedList = fullRecommendations.slice(7, 14);
 
   return (
     <div className="space-y-8 font-sans">
@@ -528,99 +621,122 @@ const SUB_NAV_ITEMS = [
               </div>
             </div>
 
-            {/* 🌟 Customer Ratings & Review Breakdown Card under Image Gallery */}
+            {/* ✨ Key Product Highlights & Delivery Pincode Checker Card under Image Gallery */}
             <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-4 text-xs">
               <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                <h3 className="font-black text-gray-900 text-sm">Customer Reviews &amp; Ratings</h3>
-                <span className="text-amber-500 font-bold text-xs">4.3 ★★★★☆</span>
+                <h3 className="font-black text-gray-900 text-sm">Product Highlights &amp; Specs</h3>
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                  VERIFIED ITEM
+                </span>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="w-12 font-bold text-gray-600">5 Star</span>
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "68%" }} />
-                  </div>
-                  <span className="w-8 text-right text-gray-500 font-semibold">68%</span>
+              {/* Highlights List */}
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-2.5 text-gray-700">
+                  <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center shrink-0">⚡</span>
+                  <span className="font-semibold text-[11px]">Express 2-Day Doorstep Delivery</span>
                 </div>
-
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="w-12 font-bold text-gray-600">4 Star</span>
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "18%" }} />
-                  </div>
-                  <span className="w-8 text-right text-gray-500 font-semibold">18%</span>
+                <div className="flex items-center gap-2.5 text-gray-700">
+                  <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center shrink-0">🛡️</span>
+                  <span className="font-semibold text-[11px]">100% Original Sourced from Official Brand</span>
                 </div>
-
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="w-12 font-bold text-gray-600">3 Star</span>
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "8%" }} />
-                  </div>
-                  <span className="w-8 text-right text-gray-500 font-semibold">8%</span>
+                <div className="flex items-center gap-2.5 text-gray-700">
+                  <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center shrink-0">🔄</span>
+                  <span className="font-semibold text-[11px]">7 Days Easy Doorstep Replacement</span>
                 </div>
-
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="w-12 font-bold text-gray-600">2 Star</span>
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "4%" }} />
-                  </div>
-                  <span className="w-8 text-right text-gray-500 font-semibold">4%</span>
-                </div>
-
-                <div className="flex items-center gap-2 text-[11px]">
-                  <span className="w-12 font-bold text-gray-600">1 Star</span>
-                  <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full" style={{ width: "2%" }} />
-                  </div>
-                  <span className="w-8 text-right text-gray-500 font-semibold">2%</span>
+                <div className="flex items-center gap-2.5 text-gray-700">
+                  <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center shrink-0">🏷️</span>
+                  <span className="font-semibold text-[11px]">Guaranteed Lowest Price &amp; Extra Coupons</span>
                 </div>
               </div>
 
-              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-between text-[11px]">
-                <span className="text-emerald-900 font-bold">🛡️ 100% Genuine Product &amp; Express Delivery</span>
-                <span className="text-emerald-700 font-extrabold">Verified</span>
+              {/* Delivery Pincode Quick Checker */}
+              <div className="pt-2 border-t border-gray-100 space-y-2">
+                <label className="font-extrabold text-[11px] text-gray-800 flex items-center gap-1">
+                  <span>📍</span> Check Delivery Availability
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    defaultValue="474001"
+                    placeholder="Enter 6-digit Pincode"
+                    className="flex-1 bg-gray-50 border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-900 focus:outline-none focus:border-emerald-500"
+                  />
+                  <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                    Check
+                  </button>
+                </div>
+                <p className="text-[10px] text-emerald-700 font-bold flex items-center gap-1 pt-0.5">
+                  <span>✓</span> Free Express Shipping Available for 474001
+                </p>
               </div>
             </div>
 
-            {/* 💬 Verified Customer Reviews Snippets Card under Ratings Breakdown */}
-            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-4 text-xs">
-              <h4 className="font-black text-gray-900 text-sm border-b border-gray-100 pb-2 flex items-center justify-between">
-                <span>Top Verified Customer Reviews</span>
-                <span className="text-[10px] text-emerald-700 font-bold">View All 1,732 &rsaquo;</span>
-              </h4>
+            {/* 🌟 SKIPD Assured Store Guarantee & Highlights Card */}
+            <div className="bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/40 border border-emerald-200/80 rounded-3xl p-5 shadow-sm space-y-4 text-xs">
               
-              <div className="space-y-3">
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">★★★★★</div>
-                    <span className="text-[10px] text-gray-400 font-medium">Aug 10, 2026</span>
+              {/* Header Badge */}
+              <div className="flex justify-between items-center border-b border-emerald-100 pb-3">
+                <div className="flex items-center gap-2">
+                  <span className="w-8 h-8 rounded-xl bg-emerald-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+                    ✓
+                  </span>
+                  <div>
+                    <h4 className="font-extrabold text-gray-900 text-xs tracking-tight">SKIPD Assured Promise</h4>
+                    <p className="text-[10px] text-emerald-700 font-bold">100% Genuine • Fast Delivery</p>
                   </div>
-                  <p className="font-bold text-gray-900">"Outstanding ANC &amp; sound clarity!"</p>
-                  <p className="text-gray-600 text-[11px] leading-snug">The bass response is punchy and active noise cancellation easily blocks out office noise. Battery lasts 4+ days!</p>
-                  <p className="text-[10px] text-emerald-700 font-bold pt-0.5">✓ Verified Purchase • Rohan M.</p>
+                </div>
+                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-200">
+                  VERIFIED
+                </span>
+              </div>
+
+              {/* 4 Trust Highlights Grid */}
+              <div className="space-y-2.5 pt-0.5">
+                <div className="flex items-start gap-3 bg-white/80 border border-emerald-100/80 p-2.5 rounded-2xl shadow-2xs">
+                  <span className="text-lg shrink-0">🚚</span>
+                  <div>
+                    <h5 className="font-bold text-gray-900 text-[11px]">Same-Day Dispatch &amp; Express Shipping</h5>
+                    <p className="text-[10px] text-gray-500 leading-snug">Shipped directly from verified hub with live SMS tracking.</p>
+                  </div>
                 </div>
 
-                <div className="space-y-1 border-t border-gray-100 pt-2.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">★★★★★</div>
-                    <span className="text-[10px] text-gray-400 font-medium">Aug 08, 2026</span>
+                <div className="flex items-start gap-3 bg-white/80 border border-emerald-100/80 p-2.5 rounded-2xl shadow-2xs">
+                  <span className="text-lg shrink-0">🛡️</span>
+                  <div>
+                    <h5 className="font-bold text-gray-900 text-[11px]">1-Year Brand Warranty</h5>
+                    <p className="text-[10px] text-gray-500 leading-snug">Guaranteed authentic product with manufacturer warranty.</p>
                   </div>
-                  <p className="font-bold text-gray-900">"Super comfortable memory foam earcups"</p>
-                  <p className="text-gray-600 text-[11px] leading-snug">Ear cushions are ultra-soft and lightweight. Perfect for long work &amp; gaming sessions without ear fatigue.</p>
-                  <p className="text-[10px] text-emerald-700 font-bold pt-0.5">✓ Verified Purchase • Neha P.</p>
                 </div>
 
-                <div className="space-y-1 border-t border-gray-100 pt-2.5">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-amber-500 font-bold text-xs">★★★★★</div>
-                    <span className="text-[10px] text-gray-400 font-medium">Aug 05, 2026</span>
+                <div className="flex items-start gap-3 bg-white/80 border border-emerald-100/80 p-2.5 rounded-2xl shadow-2xs">
+                  <span className="text-lg shrink-0">🔄</span>
+                  <div>
+                    <h5 className="font-bold text-gray-900 text-[11px]">7 Days Easy Return &amp; Exchange</h5>
+                    <p className="text-[10px] text-gray-500 leading-snug">No questions asked instant replacement or doorstep refund.</p>
                   </div>
-                  <p className="font-bold text-gray-900">"Sleek design &amp; instant Bluetooth 5.4 pairing"</p>
-                  <p className="text-gray-600 text-[11px] leading-snug">Connects immediately with both phone and laptop. Audio quality and mic clarity are top notch.</p>
-                  <p className="text-[10px] text-emerald-700 font-bold pt-0.5">✓ Verified Purchase • Amit K.</p>
+                </div>
+
+                <div className="flex items-start gap-3 bg-white/80 border border-emerald-100/80 p-2.5 rounded-2xl shadow-2xs">
+                  <span className="text-lg shrink-0">💳</span>
+                  <div>
+                    <h5 className="font-bold text-gray-900 text-[11px]">Pay on Delivery (COD Available)</h5>
+                    <p className="text-[10px] text-gray-500 leading-snug">Pay conveniently at your door via Cash, UPI QR or Cards.</p>
+                  </div>
                 </div>
               </div>
+
+              {/* Satisfaction Meter */}
+              <div className="bg-emerald-600 text-white rounded-2xl p-3 flex items-center justify-between text-[11px] shadow-sm">
+                <div>
+                  <p className="font-black text-xs">99.4% Customer Satisfaction</p>
+                  <p className="text-[10px] text-emerald-100 font-medium">Based on 12,450+ verified orders</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-amber-300 font-black text-sm">4.9 ★</span>
+                </div>
+              </div>
+
             </div>
 
           </div>
@@ -632,12 +748,12 @@ const SUB_NAV_ITEMS = [
               <h1 className="text-lg md:text-xl font-bold text-gray-900 leading-snug">
                 {product.title}
               </h1>
-              <p className="text-xs text-blue-600 font-semibold mt-1">Visit the SKIPD Official Store</p>
+              <p className="text-xs text-emerald-700 font-bold mt-1 hover:underline cursor-pointer">Visit the SKIPD Official Store</p>
 
               {/* Rating */}
               <div className="flex items-center gap-2 mt-2 text-xs">
                 <span className="text-amber-500 font-bold">4.3 ★★★★☆</span>
-                <span className="text-blue-600 font-medium hover:underline cursor-pointer">(1,732 ratings)</span>
+                <span className="text-emerald-700 font-bold hover:underline cursor-pointer">(1,732 ratings)</span>
                 <span className="text-gray-300">|</span>
                 <span className="text-gray-500 font-medium">3k+ purchased in last month</span>
               </div>
@@ -661,7 +777,7 @@ const SUB_NAV_ITEMS = [
               </div>
               <p className="text-[11px] text-gray-600">Inclusive of all taxes</p>
               <p className="text-xs font-semibold text-gray-800">
-                EMI starts at ₹1,564. No-cost EMI available. <span className="text-blue-600 cursor-pointer hover:underline">EMI Options ▾</span>
+                EMI starts at ₹1,564. No-cost EMI available. <span className="text-emerald-700 font-bold cursor-pointer hover:underline">EMI Options ▾</span>
               </p>
             </div>
 
@@ -672,12 +788,12 @@ const SUB_NAV_ITEMS = [
                 <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-3 space-y-1">
                   <h5 className="font-bold text-gray-900 text-[11px]">No Cost EMI</h5>
                   <p className="text-[10px] text-gray-600 leading-tight">Select Credit Cards, Bajaj Finserv EMI Card, Amazon Pay...</p>
-                  <span className="text-[10px] text-blue-600 font-bold hover:underline block pt-1">3 offers &rsaquo;</span>
+                  <span className="text-[10px] text-emerald-700 font-extrabold hover:underline block pt-1">3 offers &rsaquo;</span>
                 </div>
                 <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-3 space-y-1">
                   <h5 className="font-bold text-gray-900 text-[11px]">Bank Offers</h5>
                   <p className="text-[10px] text-gray-600 leading-tight">Up to ₹2,500.00 off on select Credit Cards, SBI Debit...</p>
-                  <span className="text-[10px] text-blue-600 font-bold hover:underline block pt-1">10 offers &rsaquo;</span>
+                  <span className="text-[10px] text-emerald-700 font-extrabold hover:underline block pt-1">10 offers &rsaquo;</span>
                 </div>
               </div>
 
@@ -798,44 +914,12 @@ const SUB_NAV_ITEMS = [
             <div className="bg-white border border-gray-300 rounded-3xl p-5 shadow-md space-y-4">
               
               {/* Prime Badge */}
-              <div className="bg-sky-50 border border-sky-200 rounded-2xl p-3 text-xs space-y-1">
-                <div className="flex items-center gap-1 font-black text-sky-700 text-sm">
+              <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-3 text-xs space-y-1">
+                <div className="flex items-center gap-1 font-black text-emerald-800 text-sm">
                   <span>prime</span>
                 </div>
                 <p className="text-[11px] text-gray-600 leading-tight">Enjoy unlimited free same-day/1-day delivery &amp; extra offers.</p>
-                <button className="text-[10px] font-bold text-sky-700 hover:underline cursor-pointer">Join Prime &rsaquo;&rsaquo;</button>
-              </div>
-
-              {/* Exchange Radio Selectors */}
-              <div className="space-y-2 border-t border-b border-gray-100 py-3 text-xs">
-                <label className="flex items-start gap-2.5 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="exchange"
-                    checked={exchangeOption === "with"}
-                    onChange={() => setExchangeOption("with")}
-                    className="mt-0.5 accent-amber-500"
-                  />
-                  <div>
-                    <span className="font-bold text-gray-900 block">With exchange</span>
-                    <span className="text-red-600 font-bold text-[11px]">Up to ₹28,000.00 off</span>
-                  </div>
-                </label>
-
-                <label className="flex items-start gap-2.5 cursor-pointer pt-2">
-                  <input
-                    type="radio"
-                    name="exchange"
-                    checked={exchangeOption === "without"}
-                    onChange={() => setExchangeOption("without")}
-                    className="mt-0.5 accent-amber-500"
-                  />
-                  <div>
-                    <span className="font-bold text-gray-900 block">Without exchange</span>
-                    <span className="text-gray-900 font-black">₹{product.price.toLocaleString("en-IN")}.00</span>
-                    <span className="text-gray-400 line-through text-[10px] ml-1">₹{(product.compare_at_price || product.price * 1.2).toLocaleString("en-IN")}</span>
-                  </div>
-                </label>
+                <button className="text-[10px] font-bold text-emerald-700 hover:underline cursor-pointer">Join Prime &rsaquo;&rsaquo;</button>
               </div>
 
               {/* Delivery Info */}
@@ -914,27 +998,36 @@ const SUB_NAV_ITEMS = [
             </div>
 
             {/* 2. 🛡️ SKIPD Protection Plan Card */}
-            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
+            <div className={`border rounded-3xl p-5 shadow-2xs space-y-3 text-xs transition-all duration-300 ${
+              warrantyAdded ? "bg-emerald-50/70 border-emerald-300 shadow-emerald-500/10" : "bg-white border-gray-200"
+            }`}>
               <div className="flex items-center justify-between">
-                <span className="font-extrabold text-gray-900">🛡️ SKIPD Protect Plan</span>
-                <span className="text-emerald-700 font-black">₹199</span>
+                <span className="font-extrabold text-gray-900 flex items-center gap-1.5">
+                  <span>🛡️</span> SKIPD Protect Plan
+                </span>
+                <span className="text-emerald-700 font-black text-sm">₹199</span>
               </div>
               <p className="text-gray-500 text-[11px] leading-tight">Add 1-Year Extended Warranty covering accidental damage &amp; battery replacement.</p>
               <button
                 type="button"
-                onClick={() => {
-                  requireAuth(() => {
-                    handleAddAddon(
-                      { id: 9903, title: "SKIPD Protect 1-Year Extended Warranty", price: 199, image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=200" },
-                      setWarrantyAdded
-                    );
-                  });
-                }}
-                className={`w-full font-extrabold py-2 rounded-xl text-[11px] transition cursor-pointer ${
-                  warrantyAdded ? "bg-emerald-600 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                onClick={handleToggleWarranty}
+                className={`w-full font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs ${
+                  warrantyAdded 
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20" 
+                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
                 }`}
               >
-                {warrantyAdded ? "✓ Warranty Plan Added" : "+ Add Warranty Coverage"}
+                {warrantyAdded ? (
+                  <>
+                    <span>✓</span>
+                    <span>Warranty Plan Added</span>
+                  </>
+                ) : (
+                  <>
+                    <span>+</span>
+                    <span>Add Warranty Coverage (₹199)</span>
+                  </>
+                )}
               </button>
             </div>
 
@@ -1016,23 +1109,6 @@ const SUB_NAV_ITEMS = [
                     {addon2Added ? "✓ Added" : "+ Add"}
                   </button>
                 </div>
-              </div>
-            </div>
-
-            {/* 6. 🔒 100% Encrypted & Bank-Grade Security Card */}
-            <div className="bg-white border border-gray-200 rounded-3xl p-4 shadow-2xs space-y-2 text-xs">
-              <div className="flex justify-between items-center text-[11px] font-bold text-gray-800">
-                <span>🔒 256-Bit Bank Encryption</span>
-                <span className="text-emerald-700 font-extrabold text-[10px]">Verified SSL</span>
-              </div>
-              <div className="flex items-center justify-around text-gray-500 text-[10px] font-bold border-t border-gray-100 pt-2">
-                <span>UPI / QR</span>
-                <span>•</span>
-                <span>Cards</span>
-                <span>•</span>
-                <span>NetBanking</span>
-                <span>•</span>
-                <span>COD</span>
               </div>
             </div>
 
@@ -1167,19 +1243,18 @@ const SUB_NAV_ITEMS = [
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {(relatedProducts.length > 0 ? relatedProducts.slice(0, 7) : []).map((sp, sIdx) => {
+            {sponsoredList.map((sp, sIdx) => {
               const spPrice = Number(sp.price || 0);
               const spCompare = Number(sp.compare_at_price || spPrice * 1.3);
               const discountPercent = spCompare > spPrice ? Math.round(((spCompare - spPrice) / spCompare) * 100) : 0;
               const spImg = sp.images && sp.images.length > 0 ? sp.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400";
 
               return (
-                <Link
+                <div
                   key={sIdx}
-                  href={`/product/${sp.handle}`}
-                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group cursor-pointer"
+                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group"
                 >
-                  <div className="space-y-2">
+                  <Link href={`/product/${sp.handle}`} className="space-y-2 block flex-1 cursor-pointer">
                     <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
                       <img src={spImg} alt={sp.title} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
                       {discountPercent > 0 && (
@@ -1189,16 +1264,35 @@ const SUB_NAV_ITEMS = [
                       )}
                     </div>
                     <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{sp.title}</h4>
-                    <p className="text-[10px] text-amber-500 font-bold">★ 4.8 (Verified)</p>
+                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.8</span> <span className="text-emerald-700 font-extrabold">✓ SKIPD Assured</span></p>
+                    <div>
+                      <p className="font-black text-sm text-gray-900">₹{spPrice.toLocaleString("en-IN")}.00</p>
+                      {spCompare > spPrice && (
+                        <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{spCompare.toLocaleString("en-IN")}.00</p>
+                      )}
+                    </div>
+                  </Link>
+
+                  {/* Dual Action Buttons */}
+                  <div className="grid grid-cols-2 gap-1 pt-2 border-t border-gray-200/80">
+                    <BuyNowButton
+                      mode="cart"
+                      productObj={sp}
+                      productHandle={sp.handle}
+                      className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-2xs cursor-pointer"
+                    >
+                      🛒 Cart
+                    </BuyNowButton>
+                    <BuyNowButton
+                      mode="buy"
+                      productObj={sp}
+                      productHandle={sp.handle}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-xs cursor-pointer"
+                    >
+                      ⚡ Buy Now
+                    </BuyNowButton>
                   </div>
-                  <div>
-                    <p className="font-black text-sm text-gray-900">₹{spPrice.toLocaleString("en-IN")}.00</p>
-                    {spCompare > spPrice && (
-                      <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{spCompare.toLocaleString("en-IN")}.00</p>
-                    )}
-                    <p className="text-[9px] text-emerald-700 font-medium pt-0.5">FREE Fast Delivery</p>
-                  </div>
-                </Link>
+                </div>
               );
             })}
           </div>
@@ -1214,19 +1308,18 @@ const SUB_NAV_ITEMS = [
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-            {(relatedProducts.length > 7 ? relatedProducts.slice(7, 14) : relatedProducts.slice(0, 7)).map((viewed, vIdx) => {
+            {customersAlsoViewedList.map((viewed, vIdx) => {
               const vPrice = Number(viewed.price || 0);
               const vCompare = Number(viewed.compare_at_price || vPrice * 1.25);
               const vDiscount = vCompare > vPrice ? Math.round(((vCompare - vPrice) / vCompare) * 100) : 0;
               const vImg = viewed.images && viewed.images.length > 0 ? viewed.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400";
 
               return (
-                <Link
+                <div
                   key={vIdx}
-                  href={`/product/${viewed.handle}`}
-                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-3 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group cursor-pointer"
+                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group"
                 >
-                  <div className="space-y-2">
+                  <Link href={`/product/${viewed.handle}`} className="space-y-2 block flex-1 cursor-pointer">
                     <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
                       <img src={vImg} alt={viewed.title} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
                       {vDiscount > 0 && (
@@ -1236,16 +1329,35 @@ const SUB_NAV_ITEMS = [
                       )}
                     </div>
                     <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{viewed.title}</h4>
-                    <p className="text-[10px] text-amber-500 font-bold">★ 4.7 (Top Rated)</p>
+                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.7</span> <span className="text-emerald-700 font-extrabold">✓ Verified Quality</span></p>
+                    <div>
+                      <p className="font-black text-sm text-gray-900">₹{vPrice.toLocaleString("en-IN")}.00</p>
+                      {vCompare > vPrice && (
+                        <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{vCompare.toLocaleString("en-IN")}.00</p>
+                      )}
+                    </div>
+                  </Link>
+
+                  {/* Dual Action Buttons */}
+                  <div className="grid grid-cols-2 gap-1 pt-2 border-t border-gray-200/80">
+                    <BuyNowButton
+                      mode="cart"
+                      productObj={viewed}
+                      productHandle={viewed.handle}
+                      className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-2xs cursor-pointer"
+                    >
+                      🛒 Cart
+                    </BuyNowButton>
+                    <BuyNowButton
+                      mode="buy"
+                      productObj={viewed}
+                      productHandle={viewed.handle}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-xs cursor-pointer"
+                    >
+                      ⚡ Buy Now
+                    </BuyNowButton>
                   </div>
-                  <div>
-                    <p className="font-black text-sm text-gray-900">₹{vPrice.toLocaleString("en-IN")}.00</p>
-                    {vCompare > vPrice && (
-                      <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{vCompare.toLocaleString("en-IN")}.00</p>
-                    )}
-                    <p className="text-[9px] text-emerald-700 font-medium pt-0.5">In Stock - Shipped from DB</p>
-                  </div>
-                </Link>
+                </div>
               );
             })}
           </div>

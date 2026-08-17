@@ -25,14 +25,9 @@ export default function ProductPage(props: {
         const prod = await fetchProductByHandle(handle);
         if (prod) {
           setProduct(prod);
-          const [catProds, allProds] = await Promise.all([
-            fetchProducts({ category: prod.category?.slug || "tech" }).catch(() => []),
-            fetchProducts().catch(() => [])
-          ]);
-          const map = new Map();
-          catProds.forEach(p => map.set(p.id, p));
-          allProds.forEach(p => map.set(p.id, p));
-          setRelatedProducts(Array.from(map.values()).filter(p => p.handle !== prod.handle));
+          const allProds = await fetchProducts().catch(() => []);
+          const filtered = allProds.filter(p => p.handle !== prod.handle && String(p.id) !== String(prod.id));
+          setRelatedProducts(filtered);
         }
       } catch (e) {
         console.error("Failed to load product detail:", e);
