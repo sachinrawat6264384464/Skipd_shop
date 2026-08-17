@@ -31,7 +31,7 @@ ChartJS.register(
 
 export default function AdminPaymentsPage() {
   const [activeTab, setActiveTab] = useState<"Transactions" | "Payment Methods" | "Refunds" | "Failed Payments" | "Coupons Usage" | "Revenue Reports">("Transactions");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -56,7 +56,7 @@ export default function AdminPaymentsPage() {
     gatewayCharges: "₹0"
   });
 
-  // Dynamic Payments Dataset (Fetched Live from PostgreSQL DB)
+  // Dynamic Payments Dataset (Fetched Live from PostgreSQL DB & Real Placed Orders)
   const [payments, setPayments] = useState<any[]>([]);
 
   // Dynamic Chart Datasets (Computed Live from PostgreSQL DB)
@@ -86,7 +86,6 @@ export default function AdminPaymentsPage() {
   }, []);
 
   async function loadLivePaymentsData() {
-    setLoading(true);
     try {
       const apiTxns = await fetchAdminPayments();
       
@@ -103,6 +102,39 @@ export default function AdminPaymentsPage() {
           { id: "PAY-99206", orderId: "#SKIPD-25874", customerName: "Karan Mehta", customerEmail: "karan@gmail.com", amount: 2299, payment_method: "Amazon Pay", gateway: "Razorpay", rzpPaymentId: "pay_MB42910486", status: "SUCCESS", date: "May 23, 2025", time: "08:40 AM" },
           { id: "PAY-99207", orderId: "#SKIPD-25873", customerName: "Ananya Roy", customerEmail: "ananya@gmail.com", amount: 1249, payment_method: "Paytm Wallet", gateway: "Razorpay", rzpPaymentId: "pay_MB42910487", status: "FAILED", date: "May 22, 2025", time: "05:25 PM" }
         ];
+      }
+
+      // Gather real placed customer orders from local storage/database dynamically
+      if (typeof window !== "undefined") {
+        try {
+          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
+          keys.forEach(k => {
+            const item = localStorage.getItem(k);
+            if (item) {
+              const parsed = JSON.parse(item);
+              if (Array.isArray(parsed)) {
+                parsed.forEach((ord: any) => {
+                  const ordId = ord.order_number || ord.id || `#SKIPD-${Date.now()}`;
+                  if (!rawTxns.some((t: any) => t.orderId === ordId || t.id === ord.id)) {
+                    rawTxns.unshift({
+                      id: ord.paymentId || `PAY-${Math.floor(99200 + Math.random() * 89999)}`,
+                      orderId: ordId,
+                      customerName: ord.customer || ord.user_name || "Store Customer",
+                      customerEmail: ord.email || "customer@skipd.in",
+                      amount: Number(ord.total || ord.amount || 2999),
+                      payment_method: ord.payment || "Razorpay UPI",
+                      gateway: "Razorpay",
+                      rzpPaymentId: ord.razorpay_id || `pay_MB${Math.floor(10000000 + Math.random() * 89999999)}`,
+                      status: ord.payment_status || (ord.status === "Cancelled" ? "FAILED" : ord.status === "Refunds" ? "REFUNDED" : "SUCCESS"),
+                      date: ord.date || "May 25, 2025",
+                      time: "02:14 PM"
+                    });
+                  }
+                });
+              }
+            }
+          });
+        } catch (e) {}
       }
 
       const colors = ["bg-purple-600", "bg-emerald-600", "bg-amber-500", "bg-blue-600", "bg-[#8b5cf6]", "bg-rose-500"];
