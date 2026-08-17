@@ -1027,23 +1027,6 @@ export default function CheckoutPage() {
                       </a>
                     </div>
                   </div>
-
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="or enter UPI ID (e.g. 6264384464@ybl)"
-                      value={upiId}
-                      onChange={(e) => setUpiId(e.target.value)}
-                      className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 text-xs font-semibold focus:outline-none focus:border-emerald-500"
-                    />
-                    <button
-                      onClick={handleFinalOrderSubmit}
-                      disabled={processingPayment}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-6 py-2.5 rounded-2xl transition cursor-pointer shadow-xs"
-                    >
-                      Verify &amp; Pay
-                    </button>
-                  </div>
                 </div>
               );
             })()}
