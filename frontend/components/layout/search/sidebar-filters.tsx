@@ -32,7 +32,7 @@ export function CatalogSidebarFilters() {
     router.push(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
   };
 
-  const categories = [
+  const defaultCategories = [
     { name: "All Categories", icon: "☷", slug: "all" },
     { name: "Mobiles", icon: "📱", slug: "mobiles" },
     { name: "Electronics", icon: "🎧", slug: "electronics" },
@@ -46,6 +46,32 @@ export function CatalogSidebarFilters() {
     { name: "Artisan", icon: "🌾", slug: "artisan" },
     { name: "Health", icon: "🏥", slug: "health" },
   ];
+
+  const [categories, setCategories] = useState(defaultCategories);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("skipd_custom_categories");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            const formattedCustom = parsed.map((c: any) => ({
+              name: typeof c === "string" ? c : c.name || c.title || "Category",
+              icon: typeof c === "object" && c.icon ? c.icon : "📁",
+              slug: typeof c === "string" 
+                ? c.toLowerCase().replace(/[^a-z0-9]/g, "-") 
+                : (c.slug || (c.name || "category").toLowerCase().replace(/[^a-z0-9]/g, "-"))
+            }));
+
+            const existingSlugs = new Set(defaultCategories.map(d => d.slug));
+            const newToAdd = formattedCustom.filter((c: any) => c.slug && !existingSlugs.has(c.slug));
+            setCategories([...defaultCategories, ...newToAdd]);
+          }
+        }
+      } catch (err) {}
+    }
+  }, []);
 
   const colorPalette = [
     { name: "Black", hex: "#000000" },

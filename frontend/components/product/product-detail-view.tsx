@@ -38,7 +38,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
   // States for Add-on Items and Toast
   const [addon1Added, setAddon1Added] = useState(true);
-  const [addon2Added, setAddon2Added] = useState(false);
+  const [addon2Added, setAddon2Added] = useState(true);
   const [cartAddedToast, setCartAddedToast] = useState(false);
 
   // Dynamic Color Variants parsing
@@ -77,21 +77,45 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
   const [selectedColor, setSelectedColor] = useState(parsedColorList[0]?.name || "Default");
 
   // Dynamic Bullet Points (ABOUT THIS ITEM)
-  const rawHighlights = (product as any).highlights || (product as any).features || (product as any).about_item;
+  const rawHighlights = (product as any).highlights || (product as any).features || (product as any).about_item || (product as any).bullet_points;
   let parsedHighlights: string[] = [];
+
   if (Array.isArray(rawHighlights) && rawHighlights.length > 0) {
-    parsedHighlights = rawHighlights.filter(Boolean);
+    parsedHighlights = rawHighlights.filter(Boolean).map(String);
   } else if (typeof rawHighlights === "string" && rawHighlights.trim().length > 0) {
-    parsedHighlights = rawHighlights.split("\n").map(s => s.replace(/^[•\-\*]\s*/, "").trim()).filter(Boolean);
+    try {
+      const jsonParsed = JSON.parse(rawHighlights);
+      if (Array.isArray(jsonParsed)) {
+        parsedHighlights = jsonParsed.filter(Boolean).map(String);
+      } else {
+        parsedHighlights = rawHighlights.split(/[\n,]/).map(s => s.replace(/^[•\-\*]\s*/, "").trim()).filter(Boolean);
+      }
+    } catch (e) {
+      parsedHighlights = rawHighlights.split(/[\n,]/).map(s => s.replace(/^[•\-\*]\s*/, "").trim()).filter(Boolean);
+    }
   } else if (product.description) {
-    parsedHighlights = product.description.split(".").map(s => s.trim()).filter(s => s.length > 8).slice(0, 5);
+    parsedHighlights = product.description.split(".").map(s => s.trim()).filter(s => s.length > 8).slice(0, 6);
   }
 
   // Dynamic Box Contents (WHAT IS IN THE BOX)
-  const rawBoxContents = (product as any).box_contents || (product as any).in_box;
+  const rawBoxContents = (product as any).box_contents || (product as any).box_items || (product as any).in_box;
   let parsedBoxContents: { icon: string; title: string; image?: string }[] = [];
+
+  let boxItemsList: any[] = [];
   if (Array.isArray(rawBoxContents) && rawBoxContents.length > 0) {
-    parsedBoxContents = rawBoxContents.filter(Boolean).map((item: any) => {
+    boxItemsList = rawBoxContents;
+  } else if (typeof rawBoxContents === "string" && rawBoxContents.trim().length > 0) {
+    try {
+      const jsonP = JSON.parse(rawBoxContents);
+      if (Array.isArray(jsonP)) boxItemsList = jsonP;
+      else boxItemsList = rawBoxContents.split(",").map(s => s.trim());
+    } catch (e) {
+      boxItemsList = rawBoxContents.split(",").map(s => s.trim());
+    }
+  }
+
+  if (boxItemsList.length > 0) {
+    parsedBoxContents = boxItemsList.filter(Boolean).map((item: any) => {
       if (typeof item === "object" && item !== null) {
         const title = item.title || item.name || "Item";
         const image = item.image || item.img || item.image_url;
@@ -104,14 +128,6 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
         return { icon, title, image };
       }
       const name = String(item);
-      const icon = name.toLowerCase().includes("cable") || name.toLowerCase().includes("charger") ? "🔌" :
-                   name.toLowerCase().includes("manual") || name.toLowerCase().includes("card") ? "📖" :
-                   name.toLowerCase().includes("case") || name.toLowerCase().includes("bag") ? "💼" :
-                   name.toLowerCase().includes("phone") || name.toLowerCase().includes("device") || name.toLowerCase().includes("unit") || name.toLowerCase().includes("headphone") ? "🎧" : "📦";
-      return { icon, title: name };
-    });
-  } else if (typeof rawBoxContents === "string" && rawBoxContents.trim().length > 0) {
-    parsedBoxContents = rawBoxContents.split(",").map(s => s.trim()).filter(Boolean).map(name => {
       const icon = name.toLowerCase().includes("cable") || name.toLowerCase().includes("charger") ? "🔌" :
                    name.toLowerCase().includes("manual") || name.toLowerCase().includes("card") ? "📖" :
                    name.toLowerCase().includes("case") || name.toLowerCase().includes("bag") ? "💼" :
