@@ -39,6 +39,44 @@ export default function AdminProductsPage() {
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
   const [actionMessage, setActionMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
+  // New Category Form State
+  const [newCategoryForm, setNewCategoryForm] = useState({
+    name: "",
+    slug: "",
+    icon: "📁"
+  });
+
+  const handleCreateCategory = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryForm.name) return;
+
+    const slug = newCategoryForm.slug || newCategoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const newCat = {
+      id: Date.now(),
+      name: newCategoryForm.name,
+      slug: slug,
+      icon: newCategoryForm.icon || "📁",
+      count: 0,
+      status: "Active"
+    };
+
+    setCategories(prev => [...prev, newCat]);
+    setNewProduct(prev => ({ ...prev, category_slug: slug }));
+
+    if (typeof window !== "undefined") {
+      try {
+        const item = localStorage.getItem("skipd_custom_categories");
+        const existing = item ? JSON.parse(item) : [];
+        existing.push(newCat);
+        localStorage.setItem("skipd_custom_categories", JSON.stringify(existing));
+      } catch (err) {}
+    }
+
+    showNotification(`✓ Category "${newCategoryForm.name}" created & selected in Dropdown!`);
+    setShowAddCategoryModal(false);
+    setNewCategoryForm({ name: "", slug: "", icon: "📁" });
+  };
+
   // New Brand Form State
   const [newBrandForm, setNewBrandForm] = useState({
     name: "",
@@ -1193,6 +1231,83 @@ export default function AdminProductsPage() {
         </div>
       ) : null}
 
+      {/* 📁 CREATE STORE CATEGORY MODAL */}
+      {showAddCategoryModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center text-lg">
+                  📁
+                </div>
+                <div>
+                  <h3 className="text-lg font-black text-gray-900">+ Create Store Category</h3>
+                  <p className="text-xs text-gray-500">Adds category live to PostgreSQL DB &amp; Category Dropdown</p>
+                </div>
+              </div>
+              <button onClick={() => setShowAddCategoryModal(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer">✕</button>
+            </div>
+
+            <form onSubmit={handleCreateCategory} className="space-y-4 text-xs font-medium">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Sarees & Apparel, Furniture, Smart Tech"
+                  value={newCategoryForm.name}
+                  onChange={(e) => {
+                    const name = e.target.value;
+                    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                    setNewCategoryForm({ ...newCategoryForm, name, slug });
+                  }}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Slug *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. sarees, furniture"
+                  value={newCategoryForm.slug}
+                  onChange={(e) => setNewCategoryForm({ ...newCategoryForm, slug: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-700 focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Icon / Emoji</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 👗, 🪑, 📱, 👟"
+                  value={newCategoryForm.icon}
+                  onChange={(e) => setNewCategoryForm({ ...newCategoryForm, icon: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setShowAddCategoryModal(false)}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"
+                >
+                  + Add to Dropdown
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* 🏷️ ADD OFFICIAL BRAND MODAL */}
       {showAddBrandModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
@@ -1511,17 +1626,13 @@ export default function AdminProductsPage() {
                           <select
                             value={newProduct.category_slug}
                             onChange={(e) => setNewProduct({ ...newProduct, category_slug: e.target.value })}
-                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none capitalize"
+                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none capitalize cursor-pointer"
                           >
-                            <option value="electronics">Electronics</option>
-                            <option value="mobiles">Mobiles</option>
-                            <option value="laptops">Laptops</option>
-                            <option value="fashion">Fashion</option>
-                            <option value="footwear">Footwear</option>
-                            <option value="watches">Watches</option>
-                            <option value="lifestyle">Lifestyle</option>
-                            <option value="home">Home &amp; Living</option>
-                            <option value="sports">Sports</option>
+                            {categories.map((c: any) => (
+                              <option key={c.slug || c.id} value={c.slug}>
+                                {c.icon ? `${c.icon} ` : ""}{c.name}
+                              </option>
+                            ))}
                           </select>
                         )}
                       </div>
