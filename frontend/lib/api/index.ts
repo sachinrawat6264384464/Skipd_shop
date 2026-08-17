@@ -1054,14 +1054,14 @@ export async function fetchActiveSales() {
       hero_bg_color: "#f97316",
       status: "ACTIVE",
       products: [
-        { id: 1, product_id: 1, title: "Saree Premium Silk", handle: "saree-silk", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400", sale_price: 299, original_price: 599, shipping_type: "Easy Ship", weight_range: "<500gm", savings: 300 },
-        { id: 2, product_id: 2, title: "Cold Pressed Oil 1L", handle: "cold-pressed-oil", image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400", sale_price: 249, original_price: 499, shipping_type: "Easy Ship", weight_range: "1kg-2kg", savings: 250 },
-        { id: 3, product_id: 3, title: "Velvet Cushion Cover", handle: "cushion-cover", image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400", sale_price: 800, original_price: 1500, shipping_type: "FC", weight_range: "<500gm", savings: 700 },
-        { id: 4, product_id: 4, title: "20000mAh Power Bank", handle: "power-bank", image: "https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=400", sale_price: 999, original_price: 1999, shipping_type: "Easy Ship", weight_range: "500gm-1kg", savings: 1000 },
-        { id: 5, product_id: 5, title: "Casual Sneakers Shoe", handle: "casual-sneakers", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400", sale_price: 700, original_price: 1400, shipping_type: "Easy Ship", weight_range: "500gm-1kg", savings: 700 },
-        { id: 6, product_id: 6, title: "Winter Trench Jacket", handle: "winter-jacket", image: "https://images.unsplash.com/photo-1544441893-675973e31985?w=400", sale_price: 999, original_price: 1999, shipping_type: "FC", weight_range: "1kg-2kg", savings: 1000 },
-        { id: 7, product_id: 7, title: "RC Camera Toy Drone", handle: "toy-drone", image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=400", sale_price: 999, original_price: 2499, shipping_type: "Easy Ship", weight_range: "500gm-1kg", savings: 1500 },
-        { id: 8, product_id: 8, title: "Active ANC Headphone", handle: "active-anc-headphones", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400", sale_price: 950, original_price: 4999, shipping_type: "FC", weight_range: "500gm-1kg", savings: 4049 }
+        { id: 101, product_id: 101, title: "Saree Premium Silk", handle: "saree-premium-silk", image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=400", sale_price: 299, original_price: 599, shipping_type: "Easy Ship", weight_range: "<500gm", savings: 300 },
+        { id: 102, product_id: 102, title: "Cold Pressed Oil 1L", handle: "cold-pressed-oil-1l", image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400", sale_price: 249, original_price: 499, shipping_type: "Easy Ship", weight_range: "1kg-2kg", savings: 250 },
+        { id: 103, product_id: 103, title: "Velvet Cushion Cover", handle: "velvet-cushion-cover", image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400", sale_price: 800, original_price: 1500, shipping_type: "FC", weight_range: "<500gm", savings: 700 },
+        { id: 104, product_id: 104, title: "20000mAh Power Bank", handle: "20000mah-power-bank", image: "https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=400", sale_price: 999, original_price: 1999, shipping_type: "Easy Ship", weight_range: "500gm-1kg", savings: 1000 },
+        { id: 105, product_id: 105, title: "Nike Running Shoe", handle: "nike-running-shoe", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400", sale_price: 700, original_price: 1400, shipping_type: "Easy Ship", weight_range: "500gm-1kg", savings: 700 },
+        { id: 106, product_id: 106, title: "Leather Jacket", handle: "leather-jacket", image: "https://images.unsplash.com/photo-1544441893-675973e31985?w=400", sale_price: 999, original_price: 1999, shipping_type: "FC", weight_range: "1kg-2kg", savings: 1000 },
+        { id: 107, product_id: 107, title: "FPV Toy Drone", handle: "fpv-toy-drone", image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=400", sale_price: 999, original_price: 2499, shipping_type: "Easy Ship", weight_range: "500gm-1kg", savings: 1500 },
+        { id: 108, product_id: 108, title: "Pro Headphones", handle: "pro-headphones", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400", sale_price: 950, original_price: 4999, shipping_type: "FC", weight_range: "500gm-1kg", savings: 4049 }
       ]
     }
   ];
