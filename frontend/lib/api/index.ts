@@ -13,6 +13,9 @@ export interface Product {
   images: string[];
   tags: string[];
   stock_quantity?: number;  // 0 = Out of Stock
+  highlights?: string[];
+  box_contents?: string[];
+  colors?: string[] | { name: string; price: number; mrp?: number }[];
   category?: {
     name: string;
     slug: string;

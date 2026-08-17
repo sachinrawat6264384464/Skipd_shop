@@ -26,7 +26,7 @@ export default function AdminProductsPage() {
 
   // Modals State
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [createStep, setCreateStep] = useState<"basic" | "pricing" | "images" | "variants" | "seo">("basic");
+  const [createStep, setCreateStep] = useState<"basic" | "pricing" | "images" | "variants" | "highlights" | "seo">("basic");
   const [customTaxonomyMode, setCustomTaxonomyMode] = useState(false);
 
   // Sub-Tab Creation Modals
@@ -99,7 +99,9 @@ export default function AdminProductsPage() {
     meta_desc: "",
     handle: "",
     hsn_code: "85183000",
-    country: "India"
+    country: "India",
+    highlights: ["", "", "", ""],
+    box_contents: "Main Unit, Charging Cable, User Manual, Warranty Card"
   });
 
   // Calculate live discount percentage OFF & total savings
@@ -251,7 +253,9 @@ export default function AdminProductsPage() {
         ...(newProduct.gallery_images.filter(Boolean))
       ],
       tags: newProduct.tags ? newProduct.tags.split(",").map(t => t.trim()) : ["bestseller"],
-      colors: newProduct.variant_color ? newProduct.variant_color.split(",").map(c => c.trim()) : ["Default Black"]
+      colors: newProduct.variant_color ? newProduct.variant_color.split(",").map(c => c.trim()) : ["Default"],
+      highlights: (newProduct.highlights || []).filter(Boolean),
+      box_contents: newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : []
     };
 
     const res = await createAdminProduct(payload);
@@ -1319,6 +1323,15 @@ export default function AdminProductsPage() {
               </button>
               <button
                 type="button"
+                onClick={() => setCreateStep("highlights")}
+                className={`pb-2 transition cursor-pointer whitespace-nowrap border-b-2 ${
+                  createStep === "highlights" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
+                }`}
+              >
+                Highlights &amp; Box Contents
+              </button>
+              <button
+                type="button"
                 onClick={() => setCreateStep("seo")}
                 className={`pb-2 transition cursor-pointer whitespace-nowrap border-b-2 ${
                   createStep === "seo" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
@@ -1715,6 +1728,103 @@ export default function AdminProductsPage() {
                       checked={newProduct.has_variants}
                       onChange={(e) => setNewProduct({ ...newProduct, has_variants: e.target.checked })}
                       className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* STEP 5: HIGHLIGHTS & BOX CONTENTS */}
+              {createStep === "highlights" && (
+                <div className="space-y-6">
+                  <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-4">
+                    <div className="flex items-center gap-2 text-emerald-800 font-black text-sm border-b border-gray-200 pb-2">
+                      <span>✨</span>
+                      <span>Product Highlights &amp; Bullet Points ("About This Item")</span>
+                    </div>
+
+                    <p className="text-[11px] text-gray-500">
+                      Add custom key bullet points that appear in "About this item" section on the product page.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="font-bold text-gray-700 block mb-1">Highlight #1</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 50mm Drivers: Deep bass response"
+                          value={newProduct.highlights?.[0] || ""}
+                          onChange={(e) => {
+                            const newH = [...(newProduct.highlights || ["", "", "", ""])];
+                            newH[0] = e.target.value;
+                            setNewProduct({ ...newProduct, highlights: newH });
+                          }}
+                          className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="font-bold text-gray-700 block mb-1">Highlight #2</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Battery Life: 100 Hours Playback"
+                          value={newProduct.highlights?.[1] || ""}
+                          onChange={(e) => {
+                            const newH = [...(newProduct.highlights || ["", "", "", ""])];
+                            newH[1] = e.target.value;
+                            setNewProduct({ ...newProduct, highlights: newH });
+                          }}
+                          className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="font-bold text-gray-700 block mb-1">Highlight #3</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Connectivity: Bluetooth v5.4 & AUX"
+                          value={newProduct.highlights?.[2] || ""}
+                          onChange={(e) => {
+                            const newH = [...(newProduct.highlights || ["", "", "", ""])];
+                            newH[2] = e.target.value;
+                            setNewProduct({ ...newProduct, highlights: newH });
+                          }}
+                          className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="font-bold text-gray-700 block mb-1">Highlight #4</label>
+                        <input
+                          type="text"
+                          placeholder="e.g. Noise Cancellation: Dual AI-ENC mic"
+                          value={newProduct.highlights?.[3] || ""}
+                          onChange={(e) => {
+                            const newH = [...(newProduct.highlights || ["", "", "", ""])];
+                            newH[3] = e.target.value;
+                            setNewProduct({ ...newProduct, highlights: newH });
+                          }}
+                          className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-4">
+                    <div className="flex items-center gap-2 text-emerald-800 font-black text-sm border-b border-gray-200 pb-2">
+                      <span>📦</span>
+                      <span>What is in the Box</span>
+                    </div>
+
+                    <p className="text-[11px] text-gray-500">
+                      Comma-separated list of items included inside the package.
+                    </p>
+
+                    <input
+                      type="text"
+                      placeholder="e.g. Main Unit, Charging Cable, User Manual, Warranty Card"
+                      value={newProduct.box_contents || ""}
+                      onChange={(e) => setNewProduct({ ...newProduct, box_contents: e.target.value })}
+                      className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs focus:border-emerald-500 focus:outline-none"
                     />
                   </div>
                 </div>

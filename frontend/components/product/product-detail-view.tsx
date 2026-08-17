@@ -70,16 +70,49 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
   if (parsedColorList.length === 0) {
     parsedColorList = [
-      { name: "Black Manas", price: product.price, mrp: product.compare_at_price || Math.round(product.price * 1.25) },
-      { name: "Blue Psyche", price: product.price, mrp: product.compare_at_price || Math.round(product.price * 1.25) },
-      { name: "Solid Black", price: Math.round(product.price * 1.1), mrp: Math.round(product.price * 1.35) },
-      { name: "Army Green", price: Math.round(product.price * 1.1), mrp: Math.round(product.price * 1.35) },
-      { name: "Camo Green", price: Math.round(product.price * 0.95), mrp: Math.round(product.price * 1.2) },
-      { name: "Olive Green", price: product.price, mrp: product.compare_at_price || Math.round(product.price * 1.25) }
+      { name: "Default Edition", price: product.price, mrp: product.compare_at_price || Math.round(product.price * 1.25) }
     ];
   }
 
   const [selectedColor, setSelectedColor] = useState(parsedColorList[0]?.name || "Default");
+
+  // Dynamic Bullet Points (ABOUT THIS ITEM)
+  const rawHighlights = (product as any).highlights || (product as any).features || (product as any).about_item;
+  let parsedHighlights: string[] = [];
+  if (Array.isArray(rawHighlights) && rawHighlights.length > 0) {
+    parsedHighlights = rawHighlights.filter(Boolean);
+  } else if (typeof rawHighlights === "string" && rawHighlights.trim().length > 0) {
+    parsedHighlights = rawHighlights.split("\n").map(s => s.replace(/^[•\-\*]\s*/, "").trim()).filter(Boolean);
+  } else if (product.description) {
+    parsedHighlights = product.description.split(".").map(s => s.trim()).filter(s => s.length > 8).slice(0, 5);
+  }
+
+  // Dynamic Box Contents (WHAT IS IN THE BOX)
+  const rawBoxContents = (product as any).box_contents || (product as any).in_box;
+  let parsedBoxContents: { icon: string; title: string }[] = [];
+  if (Array.isArray(rawBoxContents) && rawBoxContents.length > 0) {
+    parsedBoxContents = rawBoxContents.filter(Boolean).map((item: any) => {
+      const name = typeof item === "string" ? item : (item.title || item.name || "Item");
+      const icon = name.toLowerCase().includes("cable") || name.toLowerCase().includes("charger") ? "🔌" :
+                   name.toLowerCase().includes("manual") || name.toLowerCase().includes("card") ? "📖" :
+                   name.toLowerCase().includes("case") || name.toLowerCase().includes("bag") ? "💼" :
+                   name.toLowerCase().includes("phone") || name.toLowerCase().includes("device") || name.toLowerCase().includes("unit") ? "📱" : "📦";
+      return { icon, title: name };
+    });
+  } else if (typeof rawBoxContents === "string" && rawBoxContents.trim().length > 0) {
+    parsedBoxContents = rawBoxContents.split(",").map(s => s.trim()).filter(Boolean).map(name => {
+      const icon = name.toLowerCase().includes("cable") || name.toLowerCase().includes("charger") ? "🔌" :
+                   name.toLowerCase().includes("manual") || name.toLowerCase().includes("card") ? "📖" :
+                   name.toLowerCase().includes("case") || name.toLowerCase().includes("bag") ? "💼" :
+                   name.toLowerCase().includes("phone") || name.toLowerCase().includes("device") || name.toLowerCase().includes("unit") ? "📱" : "📦";
+      return { icon, title: name };
+    });
+  } else {
+    parsedBoxContents = [
+      { icon: "📦", title: "Main Product Unit" },
+      { icon: "📖", title: "User Guide & Warranty" }
+    ];
+  }
 
   // Add to Cart handler (Requires Login)
   const handleAddToCart = (e?: React.MouseEvent) => {
@@ -657,39 +690,42 @@ const SUB_NAV_ITEMS = [
             </div>
 
             {/* 📋 About This Item Specs Bullet Points */}
-            <div className="space-y-2 pt-2 border-t border-gray-100">
-              <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">About this item</h4>
-              <ul className="text-xs text-gray-700 space-y-1.5 list-disc list-inside leading-relaxed font-medium">
-                <li><span className="font-bold text-gray-900">Customizable Earcups:</span> Match your vibe every day with customizable magnetic earcups.</li>
-                <li><span className="font-bold text-gray-900">50mm Drivers:</span> Feel every beat with punchy audio &amp; signature deep bass response.</li>
-                <li><span className="font-bold text-gray-900">Up to 100 Hours Playback:</span> Power through long playlists with massive 100H battery life.</li>
-                <li><span className="font-bold text-gray-900">Bluetooth v5.4 &amp; AUX:</span> Seamless wireless connection plus included 3.5mm AUX cable.</li>
-                <li><span className="font-bold text-gray-900">Dual Pairing &amp; AI-ENC:</span> Connect phone and laptop simultaneously with crystal-clear calls.</li>
-              </ul>
-            </div>
+            {parsedHighlights.length > 0 && (
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">About this item</h4>
+                <ul className="text-xs text-gray-700 space-y-1.5 list-disc list-inside leading-relaxed font-medium">
+                  {parsedHighlights.map((hl, idx) => {
+                    const parts = hl.split(":");
+                    return (
+                      <li key={idx}>
+                        {parts.length > 1 ? (
+                          <>
+                            <span className="font-bold text-gray-900">{parts[0]}:</span> {parts.slice(1).join(":")}
+                          </>
+                        ) : (
+                          <span>{hl}</span>
+                        )}
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            )}
 
             {/* 📦 Box Contents Section */}
-            <div className="space-y-2 pt-3 border-t border-gray-100">
-              <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">📦 What is in the box</h4>
-              <div className="grid grid-cols-4 gap-2 text-center text-[11px] font-semibold text-gray-700">
-                <div className="p-2 bg-gray-50 rounded-xl border border-gray-200">
-                  <span className="text-lg block">🎧</span>
-                  <span>Headphones</span>
-                </div>
-                <div className="p-2 bg-gray-50 rounded-xl border border-gray-200">
-                  <span className="text-lg block">🔌</span>
-                  <span>Charging Cable</span>
-                </div>
-                <div className="p-2 bg-gray-50 rounded-xl border border-gray-200">
-                  <span className="text-lg block">🔊</span>
-                  <span>AUX Cable</span>
-                </div>
-                <div className="p-2 bg-gray-50 rounded-xl border border-gray-200">
-                  <span className="text-lg block">📖</span>
-                  <span>User Manual</span>
+            {parsedBoxContents.length > 0 && (
+              <div className="space-y-2 pt-3 border-t border-gray-100">
+                <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">📦 What is in the box</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[11px] font-semibold text-gray-700">
+                  {parsedBoxContents.map((boxItem, idx) => (
+                    <div key={idx} className="p-2 bg-gray-50 rounded-xl border border-gray-200">
+                      <span className="text-lg block">{boxItem.icon}</span>
+                      <span className="truncate block">{boxItem.title}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            )}
 
             {/* 🏆 Brand Trust Card */}
             <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-3 space-y-1 text-xs">
