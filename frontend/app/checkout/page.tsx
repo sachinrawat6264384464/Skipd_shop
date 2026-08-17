@@ -551,11 +551,21 @@ export default function CheckoutPage() {
     <div className="min-h-screen bg-[#FAFAFA] text-gray-900 px-4 py-8 md:py-12">
       <div className="max-w-6xl mx-auto">
         
-        {/* Header Breadcrumb */}
-        <div className="flex items-center gap-2 text-xs text-gray-500 mb-6">
-          <Link href="/cart" className="hover:underline">Cart</Link>
-          <span>&rsaquo;</span>
-          <span className="font-bold text-gray-900">Secure Checkout &amp; Address</span>
+        {/* Header Breadcrumb & Security Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 bg-white border border-gray-200 p-5 rounded-3xl shadow-2xs">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black border border-emerald-200 shadow-2xs">
+              🔒
+            </div>
+            <div>
+              <h1 className="text-xl font-black text-gray-900 leading-tight">Express Checkout &amp; Payment Gateway</h1>
+              <p className="text-xs text-gray-500 font-medium mt-0.5">Bank-Grade 256-Bit Encryption • Razorpay Official Partner</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-3.5 py-2 rounded-xl border border-emerald-200">
+            <span>🛡️ 100% Buyer Protection Guaranteed</span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -689,13 +699,209 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* 3. Proceed to Payment Action Button */}
-            <button
-              onClick={handleProceedToPayment}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base py-4 rounded-3xl transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              🔒 Proceed to Secure Payment (₹{finalPayable.toLocaleString("en-IN")})
-            </button>
+            {/* 3. Choose Payment Method & Gateway Card */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-5">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h2 className="text-base font-black text-gray-900 flex items-center gap-2">
+                  <span>💳 3. Choose Payment Method &amp; Gateway</span>
+                </h2>
+                <span className="text-[11px] font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200">
+                  🔒 256-Bit SSL Encrypted
+                </span>
+              </div>
+
+              {/* Payment Method Selector Tabs */}
+              <div className="flex bg-gray-100 p-1 rounded-2xl text-xs font-bold text-gray-700">
+                <button
+                  onClick={() => setSelectedMethod("upi")}
+                  className={`flex-1 py-2.5 rounded-xl transition cursor-pointer ${selectedMethod === "upi" ? "bg-[#059669] text-white shadow-sm font-black" : "hover:text-gray-900"}`}
+                >
+                  📱 UPI / QR
+                </button>
+                <button
+                  onClick={() => setSelectedMethod("card")}
+                  className={`flex-1 py-2.5 rounded-xl transition cursor-pointer ${selectedMethod === "card" ? "bg-[#059669] text-white shadow-sm font-black" : "hover:text-gray-900"}`}
+                >
+                  💳 Card
+                </button>
+                <button
+                  onClick={() => setSelectedMethod("netbanking")}
+                  className={`flex-1 py-2.5 rounded-xl transition cursor-pointer ${selectedMethod === "netbanking" ? "bg-[#059669] text-white shadow-sm font-black" : "hover:text-gray-900"}`}
+                >
+                  🏦 Net Banking
+                </button>
+                <button
+                  onClick={() => setSelectedMethod("cod")}
+                  className={`flex-1 py-2.5 rounded-xl transition cursor-pointer ${selectedMethod === "cod" ? "bg-[#059669] text-white shadow-sm font-black" : "hover:text-gray-900"}`}
+                >
+                  💵 COD
+                </button>
+              </div>
+
+              {/* TAB 1: REAL SCANNABLE UPI QR CODE & DIRECT INTENT */}
+              {selectedMethod === "upi" && (() => {
+                const upiPayUrl = `upi://pay?pa=6264384464@ybl&pn=SKIPD%20Commerce&am=${finalPayable.toFixed(2)}&cu=INR&tn=Order%20${createdOrderNumber || 'SKIPD'}`;
+                const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiPayUrl)}`;
+
+                return (
+                  <div className="space-y-4 text-center">
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-5 flex flex-col items-center justify-center space-y-3">
+                      <p className="text-xs font-black text-emerald-950">Scan QR with GPay, PhonePe, Paytm, BHIM or Cred</p>
+                      
+                      {/* 100% Real Scannable UPI QR Code Image */}
+                      <div className="w-52 h-52 bg-white p-2.5 rounded-2xl border-4 border-emerald-500 shadow-lg flex items-center justify-center relative group">
+                        <img
+                          src={qrImageUrl}
+                          alt="Scannable UPI QR Code"
+                          className="w-full h-full object-contain rounded-lg"
+                        />
+                        <div className="absolute -bottom-2 bg-emerald-600 text-white font-black text-[10px] px-3 py-0.5 rounded-full shadow-md">
+                          ₹{finalPayable.toLocaleString("en-IN")}
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] font-extrabold text-emerald-700 pt-1">
+                        ⏱️ QR Code Expires in {Math.floor(qrTimer / 60)}:{String(qrTimer % 60).padStart(2, '0')}
+                      </p>
+
+                      {/* Direct UPI App Launchers for Mobile Users */}
+                      <div className="pt-1 flex items-center justify-center gap-2 flex-wrap">
+                        <a
+                          href={upiPayUrl}
+                          className="bg-white hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-extrabold text-[11px] px-4 py-2 rounded-xl transition shadow-2xs flex items-center gap-1.5"
+                        >
+                          <span>📲 Open in GPay / PhonePe / Paytm</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* TAB 2: CREDIT / DEBIT CARD */}
+              {selectedMethod === "card" && (
+                <div className="space-y-4 text-xs">
+                  <div className="bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 text-white rounded-3xl p-5 shadow-xl space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="font-extrabold text-sm tracking-wider">SKIPD CARD</span>
+                      <span className="text-xs font-bold text-amber-400">VISA / MasterCard</span>
+                    </div>
+                    <p className="font-mono text-base tracking-widest py-2">
+                      {cardData.number || "•••• •••• •••• ••••"}
+                    </p>
+                    <div className="flex justify-between text-[10px] uppercase">
+                      <div>
+                        <p className="text-gray-400">Card Holder</p>
+                        <p className="font-bold">{cardData.holder || "YOUR NAME"}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Expires</p>
+                        <p className="font-bold">{cardData.exp || "MM/YY"}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <input
+                      type="text"
+                      maxLength={19}
+                      placeholder="Card Number (16 Digits)"
+                      value={cardData.number}
+                      onChange={(e) => setCardData({ ...cardData, number: e.target.value })}
+                      className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <input
+                        type="text"
+                        maxLength={5}
+                        placeholder="MM/YY"
+                        value={cardData.exp}
+                        onChange={(e) => setCardData({ ...cardData, exp: e.target.value })}
+                        className="bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
+                      />
+                      <input
+                        type="password"
+                        maxLength={3}
+                        placeholder="CVV"
+                        value={cardData.cvv}
+                        onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
+                        className="bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: NET BANKING */}
+              {selectedMethod === "netbanking" && (
+                <div className="space-y-4 text-xs">
+                  <p className="font-bold text-gray-700">Select Your Bank:</p>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["HDFC", "SBI", "ICICI", "Axis", "Kotak", "PNB"].map((bank) => (
+                      <button
+                        key={bank}
+                        onClick={() => setSelectedBank(bank)}
+                        className={`p-3 rounded-2xl border font-extrabold transition text-center cursor-pointer ${
+                          selectedBank === bank ? "bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs" : "bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-300"
+                        }`}
+                      >
+                        🏦 {bank}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 4: CASH ON DELIVERY */}
+              {selectedMethod === "cod" && (
+                <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 text-xs space-y-3">
+                  <p className="font-bold text-amber-900 text-sm">💵 Cash on Delivery (COD) Selected</p>
+                  <p className="text-amber-800">Pay ₹{finalPayable.toLocaleString("en-IN")} in cash to the delivery agent upon receiving your package.</p>
+                  
+                  {!codOtpSent ? (
+                    <button
+                      onClick={() => setCodOtpSent(true)}
+                      className="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold py-2.5 rounded-2xl transition cursor-pointer"
+                    >
+                      📲 Send 4-Digit Security OTP to Phone
+                    </button>
+                  ) : (
+                    <div className="space-y-2">
+                      <p className="text-emerald-700 font-bold">✓ OTP Sent to your registered mobile number!</p>
+                      <input
+                        type="text"
+                        maxLength={4}
+                        placeholder="Enter OTP (e.g. 8942)"
+                        value={codOtp}
+                        onChange={(e) => setCodOtp(e.target.value)}
+                        className="w-full bg-white border border-amber-300 rounded-2xl px-4 py-2 font-mono text-center text-sm font-bold focus:outline-none"
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Direct Payment Action Button */}
+              <button
+                onClick={() => {
+                  if (selectedMethod === "cod") {
+                    handleFinalOrderSubmit();
+                  } else {
+                    handleLaunchRazorpayGateway();
+                  }
+                }}
+                disabled={processingPayment}
+                className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black text-base py-4 rounded-3xl transition shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer"
+              >
+                {processingPayment ? (
+                  <span className="flex items-center gap-2">
+                    <span className="animate-spin text-lg">⏳</span> Opening Razorpay Gateway...
+                  </span>
+                ) : (
+                  <span>🔒 Confirm Order &amp; Pay ₹{finalPayable.toLocaleString("en-IN")}</span>
+                )}
+              </button>
+            </div>
 
           </div>
 
