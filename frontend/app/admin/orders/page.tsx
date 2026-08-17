@@ -585,7 +585,7 @@ export default function AdminOrdersPage() {
           const active = activeTab === tab;
           const count = tab === "All Orders" 
             ? orders.length 
-            : orders.filter(o => o.status.toLowerCase() === tab.toLowerCase()).length;
+            : orders.filter(o => (o?.status || "").toLowerCase() === tab.toLowerCase()).length;
 
           return (
             <button
