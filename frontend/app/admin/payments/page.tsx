@@ -79,35 +79,106 @@ export default function AdminPaymentsPage() {
     }
   };
 
-  // Single Transaction Delete Handler
+  // Recalculate Dashboard Top Cards & Chart Stats 100% Dynamically from Current Payments List
+  const recalculateDashboard = (paymentsList: any[]) => {
+    const totalSum = paymentsList.reduce((sum: number, p: any) => sum + (p.status === "SUCCESS" ? p.amount : 0), 0);
+    const succCount = paymentsList.filter((p: any) => p.status === "SUCCESS").length;
+    const refCount = paymentsList.filter((p: any) => p.status === "REFUNDED").length;
+    const failCount = paymentsList.filter((p: any) => p.status === "FAILED").length;
+    const charges = Math.round(totalSum * 0.018); // 1.8% gateway charges
+
+    setMetrics({
+      totalAmount: `₹${totalSum.toLocaleString("en-IN")}`,
+      successfulPayments: succCount.toLocaleString("en-IN"),
+      refundsProcessed: refCount.toLocaleString("en-IN"),
+      failedPayments: failCount.toLocaleString("en-IN"),
+      gatewayCharges: `₹${charges.toLocaleString("en-IN")}`
+    });
+
+    // Compute Payment Methods Distribution dynamically
+    let upiSum = 0, cardSum = 0, nbSum = 0, walletSum = 0, otherSum = 0;
+    paymentsList.forEach((p: any) => {
+      if (p.status === "SUCCESS") {
+        const m = (p.paymentMethod || "").toLowerCase();
+        if (m.includes("upi")) upiSum += p.amount;
+        else if (m.includes("card") || m.includes("visa") || m.includes("mastercard")) cardSum += p.amount;
+        else if (m.includes("banking") || m.includes("net")) nbSum += p.amount;
+        else if (m.includes("wallet") || m.includes("amazon") || m.includes("paytm")) walletSum += p.amount;
+        else otherSum += p.amount;
+      }
+    });
+
+    setMethodChartStats({
+      upi: upiSum,
+      card: cardSum,
+      netbanking: nbSum,
+      wallet: walletSum,
+      others: otherSum,
+      total: upiSum + cardSum + nbSum + walletSum + otherSum
+    });
+
+    // Compute Gateway Performance dynamically
+    const rzp = paymentsList.filter((p: any) => (p.gateway || "").toLowerCase().includes("razor")).length;
+    const cashfree = paymentsList.filter((p: any) => (p.gateway || "").toLowerCase().includes("cashfree")).length;
+    const otherGw = paymentsList.length - rzp - cashfree;
+    const rate = paymentsList.length > 0 ? ((succCount / paymentsList.length) * 100).toFixed(1) + "%" : "0.0%";
+
+    setGatewayChartStats({
+      razorpayCount: rzp,
+      cashfreeCount: cashfree,
+      otherCount: otherGw,
+      successRate: rate
+    });
+
+    // Compute Daily Trend dynamically
+    const trendMap: { [key: string]: number } = {};
+    paymentsList.forEach((p: any) => {
+      if (p.status === "SUCCESS") {
+        trendMap[p.date] = (trendMap[p.date] || 0) + p.amount;
+      }
+    });
+
+    const dates = Object.keys(trendMap);
+    if (dates.length > 0) {
+      setDailyTrendStats({
+        labels: dates,
+        data: dates.map(d => trendMap[d] || 0)
+      });
+    } else {
+      setDailyTrendStats({
+        labels: ["May 19", "May 20", "May 21", "May 22", "May 23", "May 24", "May 25"],
+        data: [0, 0, 0, 0, 0, 0, 0]
+      });
+    }
+  };
+
+  // Single Transaction Delete Handler (Recalculates Dashboard Live)
   const handleDeleteTxn = (id: string) => {
-    const updated = payments.filter(p => p.id !== id);
+    const updated = payments.filter(p => p.id !== id && p.orderId !== id);
     setPayments(updated);
+    recalculateDashboard(updated);
     setSelectedTxnIds(selectedTxnIds.filter(item => item !== id));
 
     if (typeof window !== "undefined") {
       try {
-        const saved = JSON.parse(localStorage.getItem("skipd_payments") || "[]");
-        const filtered = saved.filter((item: any) => item.id !== id && item.orderId !== id);
-        localStorage.setItem("skipd_payments", JSON.stringify(filtered));
+        localStorage.setItem("skipd_payments", JSON.stringify(updated));
       } catch (e) {}
     }
     showToast(`🗑️ Transaction ${id} deleted successfully!`);
     setDeletingTxnId(null);
   };
 
-  // Bulk Delete Selected Transactions Handler
+  // Bulk Delete Selected Transactions Handler (Recalculates Dashboard Live)
   const handleBulkDelete = () => {
     if (selectedTxnIds.length === 0) return;
     const count = selectedTxnIds.length;
-    const updated = payments.filter(p => !selectedTxnIds.includes(p.id));
+    const updated = payments.filter(p => !selectedTxnIds.includes(p.id) && !selectedTxnIds.includes(p.orderId));
     setPayments(updated);
+    recalculateDashboard(updated);
 
     if (typeof window !== "undefined") {
       try {
-        const saved = JSON.parse(localStorage.getItem("skipd_payments") || "[]");
-        const filtered = saved.filter((item: any) => !selectedTxnIds.includes(item.id));
-        localStorage.setItem("skipd_payments", JSON.stringify(filtered));
+        localStorage.setItem("skipd_payments", JSON.stringify(updated));
       } catch (e) {}
     }
 
@@ -144,54 +215,27 @@ export default function AdminPaymentsPage() {
 
   async function loadLivePaymentsData() {
     try {
-      const apiTxns = await fetchAdminPayments();
-      
-      let rawTxns = apiTxns;
-      
-      // Fallback seed dataset matching database structure if offline
-      if (!rawTxns || !Array.isArray(rawTxns) || rawTxns.length === 0) {
-        rawTxns = [
-          { id: "PAY-99201", orderId: "#SKIPD-25879", customerName: "Amit Sharma", customerEmail: "amit@gmail.com", amount: 2999, payment_method: "Razorpay UPI", gateway: "Razorpay", rzpPaymentId: "pay_MB42910481", status: "SUCCESS", date: "May 25, 2025", time: "02:14 PM" },
-          { id: "PAY-99202", orderId: "#SKIPD-25878", customerName: "Priya Verma", customerEmail: "priya@yahoo.com", amount: 1799, payment_method: "VISA Credit Card", gateway: "Razorpay", rzpPaymentId: "pay_MB42910482", status: "SUCCESS", date: "May 25, 2025", time: "12:15 PM" },
-          { id: "PAY-99203", orderId: "#SKIPD-25877", customerName: "Rahul Singh", customerEmail: "rahul@gmail.com", amount: 4499, payment_method: "Mastercard Debit", gateway: "Razorpay", rzpPaymentId: "pay_MB42910483", status: "SUCCESS", date: "May 24, 2025", time: "06:40 PM" },
-          { id: "PAY-99204", orderId: "#SKIPD-25876", customerName: "Sneha Patel", customerEmail: "sneha@gmail.com", amount: 3199, payment_method: "Razorpay UPI", gateway: "Razorpay", rzpPaymentId: "pay_MB42910484", status: "SUCCESS", date: "May 24, 2025", time: "11:05 AM" },
-          { id: "PAY-99205", orderId: "#SKIPD-25875", customerName: "Vikram Joshi", customerEmail: "vikram@gmail.com", amount: 7499, payment_method: "Razorpay NetBanking", gateway: "Razorpay", rzpPaymentId: "pay_MB42910485", status: "REFUNDED", date: "May 23, 2025", time: "09:20 AM" },
-          { id: "PAY-99206", orderId: "#SKIPD-25874", customerName: "Karan Mehta", customerEmail: "karan@gmail.com", amount: 2299, payment_method: "Amazon Pay", gateway: "Razorpay", rzpPaymentId: "pay_MB42910486", status: "SUCCESS", date: "May 23, 2025", time: "08:40 AM" },
-          { id: "PAY-99207", orderId: "#SKIPD-25873", customerName: "Ananya Roy", customerEmail: "ananya@gmail.com", amount: 1249, payment_method: "Paytm Wallet", gateway: "Razorpay", rzpPaymentId: "pay_MB42910487", status: "FAILED", date: "May 22, 2025", time: "05:25 PM" }
-        ];
-      }
+      let rawTxns: any[] = [];
+      const hasUserSavedKey = typeof window !== "undefined" && localStorage.getItem("skipd_payments") !== null;
 
-      // Gather real placed customer orders from local storage/database dynamically
-      if (typeof window !== "undefined") {
+      if (hasUserSavedKey) {
         try {
-          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
-          keys.forEach(k => {
-            const item = localStorage.getItem(k);
-            if (item) {
-              const parsed = JSON.parse(item);
-              if (Array.isArray(parsed)) {
-                parsed.forEach((ord: any) => {
-                  const ordId = ord.order_number || ord.id || `#SKIPD-${Date.now()}`;
-                  if (!rawTxns.some((t: any) => t.orderId === ordId || t.id === ord.id)) {
-                    rawTxns.unshift({
-                      id: String(ord.paymentId || `PAY-${Math.floor(99200 + Math.random() * 89999)}`),
-                      orderId: String(ordId),
-                      customerName: String(ord.customer || ord.user_name || "Store Customer"),
-                      customerEmail: String(ord.email || "customer@skipd.in"),
-                      amount: Number(ord.total || ord.amount || 2999),
-                      payment_method: String(ord.payment || "Razorpay UPI"),
-                      gateway: "Razorpay",
-                      rzpPaymentId: String(ord.razorpay_id || `pay_MB${Math.floor(10000000 + Math.random() * 89999999)}`),
-                      status: String(ord.payment_status || (ord.status === "Cancelled" ? "FAILED" : ord.status === "Refunds" ? "REFUNDED" : "SUCCESS")),
-                      date: String(ord.date || "May 25, 2025"),
-                      time: "02:14 PM"
-                    });
-                  }
-                });
-              }
-            }
-          });
+          rawTxns = JSON.parse(localStorage.getItem("skipd_payments") || "[]");
         } catch (e) {}
+      } else {
+        const apiTxns = await fetchAdminPayments();
+        if (Array.isArray(apiTxns) && apiTxns.length > 0) {
+          rawTxns = [...apiTxns];
+        } else {
+          // Default seed dataset if first time loading
+          rawTxns = [
+            { id: "PAY-131418", orderId: "SKIPD-870032", customerName: "Store Customer", customerEmail: "customer@skipd.in", amount: 2999, payment_method: "Razorpay UPI", gateway: "Razorpay", rzpPaymentId: "pay_MB86924181", status: "SUCCESS", date: "May 25, 2025", time: "02:14 PM" },
+            { id: "PAY-144830", orderId: "SKIPD-362470", customerName: "Store Customer", customerEmail: "customer@skipd.in", amount: 2999, payment_method: "Razorpay UPI", gateway: "Razorpay", rzpPaymentId: "pay_MB73699239", status: "SUCCESS", date: "May 25, 2025", time: "02:14 PM" },
+            { id: "PAY-99201", orderId: "#SKIPD-25879", customerName: "Amit Sharma", customerEmail: "amit@gmail.com", amount: 2999, payment_method: "Razorpay UPI", gateway: "Razorpay", rzpPaymentId: "pay_MB42910481", status: "SUCCESS", date: "May 25, 2025", time: "02:14 PM" },
+            { id: "PAY-99202", orderId: "#SKIPD-25878", customerName: "Priya Verma", customerEmail: "priya@yahoo.com", amount: 1799, payment_method: "VISA Credit Card", gateway: "Razorpay", rzpPaymentId: "pay_MB42910482", status: "SUCCESS", date: "May 25, 2025", time: "12:15 PM" },
+            { id: "PAY-99203", orderId: "#SKIPD-25877", customerName: "Rahul Singh", customerEmail: "rahul@gmail.com", amount: 4499, payment_method: "Mastercard Debit", gateway: "Razorpay", rzpPaymentId: "pay_MB42910483", status: "SUCCESS", date: "May 24, 2025", time: "06:40 PM" }
+          ];
+        }
       }
 
       // DEDUPLICATE STRICTLY BY orderId AND id
@@ -223,72 +267,7 @@ export default function AdminPaymentsPage() {
       }));
 
       setPayments(formatted);
-
-      // Compute Live Metrics from PostgreSQL Records
-      const totalSum = formatted.reduce((sum: number, p: any) => sum + (p.status === "SUCCESS" ? p.amount : 0), 0);
-      const succCount = formatted.filter((p: any) => p.status === "SUCCESS").length;
-      const refCount = formatted.filter((p: any) => p.status === "REFUNDED").length;
-      const failCount = formatted.filter((p: any) => p.status === "FAILED").length;
-      const charges = Math.round(totalSum * 0.018); // 1.8% gateway charges
-
-      setMetrics({
-        totalAmount: `₹${totalSum.toLocaleString("en-IN")}`,
-        successfulPayments: succCount.toLocaleString("en-IN"),
-        refundsProcessed: refCount.toLocaleString("en-IN"),
-        failedPayments: failCount.toLocaleString("en-IN"),
-        gatewayCharges: `₹${charges.toLocaleString("en-IN")}`
-      });
-
-      // Compute Payment Methods Distribution dynamically
-      let upiSum = 0, cardSum = 0, nbSum = 0, walletSum = 0, otherSum = 0;
-      formatted.forEach((p: any) => {
-        if (p.status === "SUCCESS") {
-          const m = p.paymentMethod.toLowerCase();
-          if (m.includes("upi")) upiSum += p.amount;
-          else if (m.includes("card") || m.includes("visa") || m.includes("mastercard")) cardSum += p.amount;
-          else if (m.includes("banking") || m.includes("net")) nbSum += p.amount;
-          else if (m.includes("wallet") || m.includes("amazon") || m.includes("paytm")) walletSum += p.amount;
-          else otherSum += p.amount;
-        }
-      });
-
-      setMethodChartStats({
-        upi: upiSum,
-        card: cardSum,
-        netbanking: nbSum,
-        wallet: walletSum,
-        others: otherSum,
-        total: upiSum + cardSum + nbSum + walletSum + otherSum
-      });
-
-      // Compute Gateway Performance dynamically
-      const rzp = formatted.filter((p: any) => p.gateway.toLowerCase().includes("razor")).length;
-      const cashfree = formatted.filter((p: any) => p.gateway.toLowerCase().includes("cashfree")).length;
-      const otherGw = formatted.length - rzp - cashfree;
-      const rate = formatted.length > 0 ? ((succCount / formatted.length) * 100).toFixed(1) + "%" : "0.0%";
-
-      setGatewayChartStats({
-        razorpayCount: rzp,
-        cashfreeCount: cashfree,
-        otherCount: otherGw,
-        successRate: rate
-      });
-
-      // Compute Daily Trend dynamically
-      const trendMap: { [key: string]: number } = {};
-      formatted.forEach((p: any) => {
-        if (p.status === "SUCCESS") {
-          trendMap[p.date] = (trendMap[p.date] || 0) + p.amount;
-        }
-      });
-
-      const dates = Object.keys(trendMap);
-      if (dates.length > 0) {
-        setDailyTrendStats({
-          labels: dates,
-          data: dates.map(d => trendMap[d] || 0)
-        });
-      }
+      recalculateDashboard(formatted);
 
     } catch (e) {
       console.error("Error loading admin payments:", e);
