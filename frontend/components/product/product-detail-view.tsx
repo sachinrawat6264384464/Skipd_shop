@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "components/auth/auth-provider";
 import { getUserCartKey } from "lib/utils";
 import { ProductZoomMagnifier } from "./product-zoom-magnifier";
+import { toast } from "sonner";
 
 interface ProductDetailViewProps {
   product: {
@@ -160,7 +161,15 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
         updated = [...existing, itemToAdd];
       }
       localStorage.setItem(cartKey, JSON.stringify(updated));
+      window.dispatchEvent(new Event("skipd_cart_updated"));
       window.dispatchEvent(new Event("skipd_cart_changed"));
+
+      try {
+        toast.success(`🛒 Added ${itemToAdd.title} to your cart!`, {
+          description: "Click cart icon in navbar to review or checkout.",
+          duration: 3000
+        });
+      } catch (err) {}
 
       setCartAddedToast(true);
       setTimeout(() => setCartAddedToast(false), 3000);
@@ -222,6 +231,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       }
 
       localStorage.setItem(cartKey, JSON.stringify([...existing, ...comboItems]));
+      window.dispatchEvent(new Event("skipd_cart_updated"));
       window.dispatchEvent(new Event("skipd_cart_changed"));
       router.push("/checkout");
     });
@@ -246,8 +256,12 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
       const updated = [...existing, newItem];
       localStorage.setItem(cartKey, JSON.stringify(updated));
+      window.dispatchEvent(new Event("skipd_cart_updated"));
       window.dispatchEvent(new Event("skipd_cart_changed"));
       setAddedState(true);
+      try {
+        toast.success(`🛒 Added ${addon.title} to cart!`);
+      } catch (e) {}
     });
   };
 

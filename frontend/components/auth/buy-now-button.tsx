@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "./auth-provider";
 import { getUserCartKey } from "lib/utils";
+import { toast } from "sonner";
 
 interface BuyNowButtonProps {
   productHandle?: string;
@@ -64,8 +65,17 @@ export function BuyNowButton({
         }
 
         localStorage.setItem(cartKey, JSON.stringify(updated));
+        window.dispatchEvent(new Event("skipd_cart_updated"));
         window.dispatchEvent(new Event("skipd_cart_changed"));
         setAdded(true);
+
+        try {
+          toast.success(`🛒 Added ${itemToAdd.title} to your cart!`, {
+            description: "Click cart icon in navbar to review or checkout.",
+            duration: 3000
+          });
+        } catch (err) {}
+
         setTimeout(() => setAdded(false), 2500);
       }
     });
