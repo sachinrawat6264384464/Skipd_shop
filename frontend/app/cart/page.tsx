@@ -126,21 +126,130 @@ export default function CartItemsPage() {
     <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8 w-full">
         
-        {/* Header */}
-        <div className="flex justify-between items-center border-b border-gray-200 pb-4">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-black text-gray-900">Cart Items</h1>
-            <p className="text-xs font-bold text-emerald-700 mt-1">{selectedItems.length} Items in your cart</p>
+        {/* 🚀 CART UPPER HERO BANNER & SHOWCASE SECTION */}
+        <div className="space-y-4">
+          {/* Breadcrumb Navigation */}
+          <div className="text-xs text-gray-500 font-semibold flex items-center gap-2">
+            <Link href="/" className="hover:underline text-gray-600">Home</Link>
+            <span>&rsaquo;</span>
+            <Link href="/search" className="hover:underline text-gray-600">Store Catalog</Link>
+            <span>&rsaquo;</span>
+            <span className="text-gray-900 font-bold">Shopping Cart &amp; Order Summary</span>
           </div>
-          {/* 🗑️ Remove All Button: Only visible when user IS LOGGED IN */}
-          {items.length > 0 && isLoggedIn && (
-            <button
-              onClick={clearAll}
-              className="text-xs font-bold text-red-600 hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              🗑️ Remove all
-            </button>
-          )}
+
+          {/* Premium Hero Banner */}
+          <div className="relative w-full rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#047857] text-white p-6 sm:p-8 border border-gray-800">
+            {/* Background Decorative Blur Orbs */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+            <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-teal-400/10 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+              
+              {/* Left Column: Title & Cart Status Badges */}
+              <div className="space-y-3 max-w-xl">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="bg-emerald-500/90 backdrop-blur-md text-white font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-emerald-300/40 shadow-sm">
+                    🛒 SHOPPING CART SHOWCASE
+                  </span>
+                  {selectedItems.length > 0 && (
+                    <span className="bg-amber-500/90 backdrop-blur-md text-white font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-amber-300/40 shadow-sm">
+                      ⚡ {selectedItems.length} ITEMS SELECTED
+                    </span>
+                  )}
+                </div>
+
+                <h1 className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+                  Your Cart &amp; Saved Order Summary
+                </h1>
+
+                <p className="text-xs sm:text-sm text-gray-300 font-medium leading-relaxed">
+                  Review your items, apply promotional discount coupons, and enjoy express doorstep delivery with 100% buyer protection.
+                </p>
+
+                {/* Free Shipping Progress Indicator */}
+                {selectedItems.length > 0 && (
+                  <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3 max-w-md space-y-1.5 shadow-sm">
+                    <div className="flex justify-between items-center text-xs font-extrabold">
+                      <span className="text-emerald-300 flex items-center gap-1">
+                        <span>🚚</span> Free Express Delivery Status
+                      </span>
+                      <span className="text-white">UNLOCKED 🎉</span>
+                    </div>
+                    <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
+                      <div className="bg-gradient-to-r from-emerald-400 to-teal-300 h-full w-full rounded-full transition-all duration-500" />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Visual Mini Carousel of Cart Item Thumbnails */}
+              {normalizedItems.length > 0 && (
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-4 sm:p-5 w-full lg:w-auto shrink-0 space-y-3 shadow-lg">
+                  <div className="flex justify-between items-center text-xs border-b border-white/15 pb-2">
+                    <span className="font-extrabold text-gray-200 uppercase tracking-wider text-[11px]">
+                      Items in Cart ({normalizedItems.length})
+                    </span>
+                    {isLoggedIn && (
+                      <button
+                        onClick={clearAll}
+                        className="text-[11px] font-bold text-red-300 hover:text-red-100 underline transition cursor-pointer"
+                      >
+                        Clear All
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Horizontal Scroll Mini Gallery of Cart Product Images */}
+                  <div className="flex items-center gap-2.5 overflow-x-auto max-w-xs sm:max-w-sm pb-1 no-scrollbar">
+                    {normalizedItems.map((cartImgItem, idx) => (
+                      <div
+                        key={idx}
+                        className="relative w-14 h-14 bg-white/90 rounded-2xl p-1 shrink-0 shadow-md border border-white/40 group/thumb cursor-pointer transition hover:scale-105"
+                        title={cartImgItem.title}
+                      >
+                        <img
+                          src={cartImgItem.image}
+                          alt={cartImgItem.title}
+                          className="w-full h-full object-contain rounded-xl"
+                        />
+                        <span className="absolute -top-1.5 -right-1.5 bg-emerald-600 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900 shadow-sm">
+                          {cartImgItem.quantity}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Quick Totals Ribbon */}
+                  <div className="flex justify-between items-center text-xs pt-1 border-t border-white/15">
+                    <span className="text-gray-300 font-medium">Subtotal Payable:</span>
+                    <span className="text-base font-black text-emerald-300">₹{finalTotal.toLocaleString("en-IN")}</span>
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Bottom Perks Banner Row */}
+            <div className="mt-6 pt-4 border-t border-white/15 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-gray-300 font-semibold">
+              <div className="flex items-center gap-2">
+                <span className="text-base">⚡</span>
+                <span>Express 2-Day Delivery</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-base">🛡️</span>
+                <span>100% Authentic &amp; Warranty</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-base">🏷️</span>
+                <span>Best Price Guaranteed</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-base">🔄</span>
+                <span>7-Day Easy Returns</span>
+              </div>
+            </div>
+
+          </div>
         </div>
 
         {items.length === 0 ? (
