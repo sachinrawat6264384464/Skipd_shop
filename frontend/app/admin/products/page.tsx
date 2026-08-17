@@ -100,8 +100,14 @@ export default function AdminProductsPage() {
     handle: "",
     hsn_code: "85183000",
     country: "India",
-    highlights: ["", "", "", ""],
-    box_contents: "Main Unit, Charging Cable, User Manual, Warranty Card"
+    highlights: ["50mm Drivers: Deep bass response", "Battery Life: 100 Hours Playback", "Connectivity: Bluetooth v5.4 & AUX", "Noise Cancellation: Dual AI-ENC mic"],
+    box_items: [
+      { title: "Headphones", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200" },
+      { title: "Charging Cable", image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200" },
+      { title: "AUX Cable", image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=200" },
+      { title: "User Manual", image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200" }
+    ],
+    box_contents: ""
   });
 
   // Calculate live discount percentage OFF & total savings
@@ -253,9 +259,10 @@ export default function AdminProductsPage() {
         ...(newProduct.gallery_images.filter(Boolean))
       ],
       tags: newProduct.tags ? newProduct.tags.split(",").map(t => t.trim()) : ["bestseller"],
-      colors: newProduct.variant_color ? newProduct.variant_color.split(",").map(c => c.trim()) : ["Default"],
       highlights: (newProduct.highlights || []).filter(Boolean),
-      box_contents: newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : []
+      box_contents: newProduct.box_items && newProduct.box_items.length > 0 
+        ? newProduct.box_items.filter(b => b.title.trim().length > 0)
+        : (newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : [])
     };
 
     const res = await createAdminProduct(payload);
@@ -1736,96 +1743,188 @@ export default function AdminProductsPage() {
               {/* STEP 5: HIGHLIGHTS & BOX CONTENTS */}
               {createStep === "highlights" && (
                 <div className="space-y-6">
+                  {/* 1. Dynamic Bullet Points Highlights with "+ Add One More Highlight" Button */}
                   <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-4">
-                    <div className="flex items-center gap-2 text-emerald-800 font-black text-sm border-b border-gray-200 pb-2">
-                      <span>✨</span>
-                      <span>Product Highlights &amp; Bullet Points ("About This Item")</span>
+                    <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                      <div className="flex items-center gap-2 text-emerald-800 font-black text-sm">
+                        <span>✨</span>
+                        <span>Product Highlights &amp; Bullet Points ("About This Item")</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setNewProduct({
+                          ...newProduct,
+                          highlights: [...(newProduct.highlights || []), ""]
+                        })}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                      >
+                        <span>+ Add One More Highlight</span>
+                      </button>
                     </div>
 
                     <p className="text-[11px] text-gray-500">
-                      Add custom key bullet points that appear in "About this item" section on the product page.
+                      Add custom key bullet points that appear in "About this item" section on the product detail page.
                     </p>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="font-bold text-gray-700 block mb-1">Highlight #1</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. 50mm Drivers: Deep bass response"
-                          value={newProduct.highlights?.[0] || ""}
-                          onChange={(e) => {
-                            const newH = [...(newProduct.highlights || ["", "", "", ""])];
-                            newH[0] = e.target.value;
-                            setNewProduct({ ...newProduct, highlights: newH });
-                          }}
-                          className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="font-bold text-gray-700 block mb-1">Highlight #2</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. Battery Life: 100 Hours Playback"
-                          value={newProduct.highlights?.[1] || ""}
-                          onChange={(e) => {
-                            const newH = [...(newProduct.highlights || ["", "", "", ""])];
-                            newH[1] = e.target.value;
-                            setNewProduct({ ...newProduct, highlights: newH });
-                          }}
-                          className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="font-bold text-gray-700 block mb-1">Highlight #3</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. Connectivity: Bluetooth v5.4 & AUX"
-                          value={newProduct.highlights?.[2] || ""}
-                          onChange={(e) => {
-                            const newH = [...(newProduct.highlights || ["", "", "", ""])];
-                            newH[2] = e.target.value;
-                            setNewProduct({ ...newProduct, highlights: newH });
-                          }}
-                          className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="font-bold text-gray-700 block mb-1">Highlight #4</label>
-                        <input
-                          type="text"
-                          placeholder="e.g. Noise Cancellation: Dual AI-ENC mic"
-                          value={newProduct.highlights?.[3] || ""}
-                          onChange={(e) => {
-                            const newH = [...(newProduct.highlights || ["", "", "", ""])];
-                            newH[3] = e.target.value;
-                            setNewProduct({ ...newProduct, highlights: newH });
-                          }}
-                          className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none"
-                        />
-                      </div>
+                      {(newProduct.highlights || ["", "", "", ""]).map((hl, idx) => (
+                        <div key={idx} className="relative space-y-1 bg-white p-3 rounded-2xl border border-gray-200 shadow-2xs">
+                          <div className="flex justify-between items-center text-[11px]">
+                            <label className="font-bold text-gray-700">Highlight #{idx + 1}</label>
+                            {idx >= 2 && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const updated = (newProduct.highlights || []).filter((_, i) => i !== idx);
+                                  setNewProduct({ ...newProduct, highlights: updated });
+                                }}
+                                className="text-red-500 hover:text-red-700 font-bold text-[10px]"
+                              >
+                                🗑️ Remove
+                              </button>
+                            )}
+                          </div>
+                          <input
+                            type="text"
+                            placeholder={`e.g. Highlight point #${idx + 1}`}
+                            value={hl}
+                            onChange={(e) => {
+                              const newH = [...(newProduct.highlights || [])];
+                              newH[idx] = e.target.value;
+                              setNewProduct({ ...newProduct, highlights: newH });
+                            }}
+                            className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:bg-white focus:outline-none"
+                          />
+                        </div>
+                      ))}
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setNewProduct({
+                        ...newProduct,
+                        highlights: [...(newProduct.highlights || []), ""]
+                      })}
+                      className="w-full bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-800 font-extrabold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                    >
+                      <span>➕ Click to Add One More Highlight</span>
+                    </button>
                   </div>
 
+                  {/* 2. What is in the Box Items with Image Upload / Preview Cards */}
                   <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-4">
-                    <div className="flex items-center gap-2 text-emerald-800 font-black text-sm border-b border-gray-200 pb-2">
-                      <span>📦</span>
-                      <span>What is in the Box</span>
+                    <div className="flex items-center justify-between border-b border-gray-200 pb-2">
+                      <div className="flex items-center gap-2 text-indigo-900 font-black text-sm">
+                        <span>📦</span>
+                        <span>What is in the Box (Items &amp; Custom Images)</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setNewProduct({
+                          ...newProduct,
+                          box_items: [...(newProduct.box_items || []), { title: "", image: "" }]
+                        })}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                      >
+                        <span>+ Add Box Item</span>
+                      </button>
                     </div>
 
                     <p className="text-[11px] text-gray-500">
-                      Comma-separated list of items included inside the package.
+                      Add package items with their custom image or icon. These display in attractive rounded cards under "WHAT IS IN THE BOX" on the storefront.
                     </p>
 
-                    <input
-                      type="text"
-                      placeholder="e.g. Main Unit, Charging Cable, User Manual, Warranty Card"
-                      value={newProduct.box_contents || ""}
-                      onChange={(e) => setNewProduct({ ...newProduct, box_contents: e.target.value })}
-                      className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs focus:border-emerald-500 focus:outline-none"
-                    />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {(newProduct.box_items || []).map((bItem, idx) => (
+                        <div key={idx} className="bg-white border border-gray-200 rounded-2xl p-3.5 space-y-2.5 shadow-2xs relative">
+                          <div className="flex justify-between items-center">
+                            <span className="font-extrabold text-xs text-indigo-900">Box Item #{idx + 1}</span>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updated = (newProduct.box_items || []).filter((_, i) => i !== idx);
+                                setNewProduct({ ...newProduct, box_items: updated });
+                              }}
+                              className="text-red-500 hover:text-red-700 font-bold text-[10px]"
+                            >
+                              🗑️ Remove
+                            </button>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-200 overflow-hidden shrink-0 flex items-center justify-center">
+                              {bItem.image ? (
+                                <img src={bItem.image} alt={bItem.title} className="w-full h-full object-contain p-1" />
+                              ) : (
+                                <span className="text-xl">📦</span>
+                              )}
+                            </div>
+
+                            <div className="flex-1 space-y-1.5 min-w-0">
+                              <input
+                                type="text"
+                                placeholder="Item Title (e.g. Charging Cable)"
+                                value={bItem.title}
+                                onChange={(e) => {
+                                  const updated = [...(newProduct.box_items || [])];
+                                  updated[idx] = { title: e.target.value, image: updated[idx]?.image || "" };
+                                  setNewProduct({ ...newProduct, box_items: updated });
+                                }}
+                                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-2.5 py-1.5 text-xs font-bold focus:border-indigo-500 focus:bg-white focus:outline-none"
+                              />
+
+                              <input
+                                type="text"
+                                placeholder="Image URL (e.g. https://... or select preset)"
+                                value={bItem.image || ""}
+                                onChange={(e) => {
+                                  const updated = [...(newProduct.box_items || [])];
+                                  updated[idx] = { title: updated[idx]?.title || "", image: e.target.value };
+                                  setNewProduct({ ...newProduct, box_items: updated });
+                                }}
+                                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-2.5 py-1 text-[11px] focus:border-indigo-500 focus:bg-white focus:outline-none"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Preset Icon Quick Selectors */}
+                          <div className="flex items-center gap-1.5 overflow-x-auto pt-1 scrollbar-hide">
+                            <span className="text-[10px] text-gray-400 font-bold shrink-0">Presets:</span>
+                            {[
+                              { label: "🎧 Headphones", url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200" },
+                              { label: "🔌 Cable", url: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200" },
+                              { label: "🔊 AUX", url: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=200" },
+                              { label: "📖 Manual", url: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=200" }
+                            ].map((pr, pIdx) => (
+                              <button
+                                key={pIdx}
+                                type="button"
+                                onClick={() => {
+                                  const updated = [...(newProduct.box_items || [])];
+                                  const presetName = pr.label.split(" ")[1] || pr.label;
+                                  updated[idx] = { title: updated[idx]?.title || presetName, image: pr.url };
+                                  setNewProduct({ ...newProduct, box_items: updated });
+                                }}
+                                className="text-[9px] bg-gray-100 hover:bg-indigo-50 hover:text-indigo-800 text-gray-600 font-bold px-2 py-0.5 rounded-lg shrink-0 border border-gray-200 transition cursor-pointer"
+                              >
+                                {pr.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setNewProduct({
+                        ...newProduct,
+                        box_items: [...(newProduct.box_items || []), { title: "", image: "" }]
+                      })}
+                      className="w-full bg-white border border-indigo-300 hover:bg-indigo-50 text-indigo-800 font-extrabold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                    >
+                      <span>📦 Click to Add Another Box Item</span>
+                    </button>
                   </div>
                 </div>
               )}

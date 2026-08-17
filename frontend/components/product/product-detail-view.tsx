@@ -89,14 +89,25 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
   // Dynamic Box Contents (WHAT IS IN THE BOX)
   const rawBoxContents = (product as any).box_contents || (product as any).in_box;
-  let parsedBoxContents: { icon: string; title: string }[] = [];
+  let parsedBoxContents: { icon: string; title: string; image?: string }[] = [];
   if (Array.isArray(rawBoxContents) && rawBoxContents.length > 0) {
     parsedBoxContents = rawBoxContents.filter(Boolean).map((item: any) => {
-      const name = typeof item === "string" ? item : (item.title || item.name || "Item");
+      if (typeof item === "object" && item !== null) {
+        const title = item.title || item.name || "Item";
+        const image = item.image || item.img || item.image_url;
+        const icon = item.icon || (
+          title.toLowerCase().includes("cable") || title.toLowerCase().includes("charger") ? "🔌" :
+          title.toLowerCase().includes("manual") || title.toLowerCase().includes("card") ? "📖" :
+          title.toLowerCase().includes("case") || title.toLowerCase().includes("bag") ? "💼" :
+          title.toLowerCase().includes("phone") || title.toLowerCase().includes("device") || title.toLowerCase().includes("unit") || title.toLowerCase().includes("headphone") ? "🎧" : "📦"
+        );
+        return { icon, title, image };
+      }
+      const name = String(item);
       const icon = name.toLowerCase().includes("cable") || name.toLowerCase().includes("charger") ? "🔌" :
                    name.toLowerCase().includes("manual") || name.toLowerCase().includes("card") ? "📖" :
                    name.toLowerCase().includes("case") || name.toLowerCase().includes("bag") ? "💼" :
-                   name.toLowerCase().includes("phone") || name.toLowerCase().includes("device") || name.toLowerCase().includes("unit") ? "📱" : "📦";
+                   name.toLowerCase().includes("phone") || name.toLowerCase().includes("device") || name.toLowerCase().includes("unit") || name.toLowerCase().includes("headphone") ? "🎧" : "📦";
       return { icon, title: name };
     });
   } else if (typeof rawBoxContents === "string" && rawBoxContents.trim().length > 0) {
@@ -104,14 +115,9 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       const icon = name.toLowerCase().includes("cable") || name.toLowerCase().includes("charger") ? "🔌" :
                    name.toLowerCase().includes("manual") || name.toLowerCase().includes("card") ? "📖" :
                    name.toLowerCase().includes("case") || name.toLowerCase().includes("bag") ? "💼" :
-                   name.toLowerCase().includes("phone") || name.toLowerCase().includes("device") || name.toLowerCase().includes("unit") ? "📱" : "📦";
+                   name.toLowerCase().includes("phone") || name.toLowerCase().includes("device") || name.toLowerCase().includes("unit") || name.toLowerCase().includes("headphone") ? "🎧" : "📦";
       return { icon, title: name };
     });
-  } else {
-    parsedBoxContents = [
-      { icon: "📦", title: "Main Product Unit" },
-      { icon: "📖", title: "User Guide & Warranty" }
-    ];
   }
 
   // Add to Cart handler (Requires Login)
@@ -715,12 +721,16 @@ const SUB_NAV_ITEMS = [
             {/* 📦 Box Contents Section */}
             {parsedBoxContents.length > 0 && (
               <div className="space-y-2 pt-3 border-t border-gray-100">
-                <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">📦 What is in the box</h4>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center text-[11px] font-semibold text-gray-700">
+                <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">📦 WHAT IS IN THE BOX</h4>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-[11px] font-semibold text-gray-700">
                   {parsedBoxContents.map((boxItem, idx) => (
-                    <div key={idx} className="p-2 bg-gray-50 rounded-xl border border-gray-200">
-                      <span className="text-lg block">{boxItem.icon}</span>
-                      <span className="truncate block">{boxItem.title}</span>
+                    <div key={idx} className="p-3 bg-white rounded-2xl border border-gray-200/90 shadow-2xs hover:border-emerald-300 transition flex flex-col items-center justify-center gap-1.5 min-h-[90px]">
+                      {boxItem.image ? (
+                        <img src={boxItem.image} alt={boxItem.title} className="w-10 h-10 object-contain rounded-lg p-0.5" />
+                      ) : (
+                        <span className="text-2xl block">{boxItem.icon}</span>
+                      )}
+                      <span className="truncate w-full font-bold text-gray-800">{boxItem.title}</span>
                     </div>
                   ))}
                 </div>
