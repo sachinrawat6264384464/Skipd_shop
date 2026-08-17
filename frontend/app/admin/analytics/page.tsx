@@ -77,7 +77,45 @@ export default function AdminAnalyticsPage() {
   }, []);
 
   const handleExportReport = () => {
-    setExportMsg("📥 Exporting Live Business Intelligence Analytics Report (CSV/PDF)...");
+    setExportMsg("📥 Downloading Live Business Intelligence Analytics Report (CSV)...");
+
+    // Construct CSV Sections
+    let csvContent = "BUSINESS INTELLIGENCE & ANALYTICS EXECUTIVE REPORT\n";
+    csvContent += `Generated On,${new Date().toLocaleString()}\n`;
+    csvContent += `Timeframe,${timeframe.toUpperCase()} (${interval.toUpperCase()})\n\n`;
+
+    // 1. KPI Summary
+    csvContent += "=== KPI SUMMARY METRICS ===\n";
+    csvContent += "Metric Name,Value\n";
+    csvContent += `Total Gross Sales,INR ${totalGrossSales.toLocaleString("en-IN")}.00\n`;
+    csvContent += `Total Orders Count,${totalOrdersCount}\n`;
+    csvContent += `Total Products Sold,${totalProductsSold} Units\n`;
+    csvContent += `Total Customers,${uniqueCustomersCount}\n`;
+    csvContent += `Average Order Value (AOV),INR ${averageOrderValue.toLocaleString("en-IN")}.00\n`;
+    csvContent += `Store Conversion Rate,${conversionRate}\n\n`;
+
+    // 2. Product Performance & Revenue Ledger
+    csvContent += "=== PRODUCT SALES & REVENUE LEDGER ===\n";
+    csvContent += "Rank,Product Title,Category,Unit Price (INR),Units Sold,Gross Revenue (INR),Est. Net Profit (INR)\n";
+    productPerformanceList.forEach((item, idx) => {
+      csvContent += `${idx + 1},"${item.title.replace(/"/g, '""')}","${item.category}",${item.price},${item.sold},${item.revenue},${Math.round(item.revenue * 0.28)}\n`;
+    });
+    csvContent += "\n";
+
+    // 3. Orders Master Log
+    csvContent += "=== STORE ORDERS MASTER LOG ===\n";
+    csvContent += "Order ID,Date,Customer Name,Email,State,Amount (INR),Payment Method,Status\n";
+    realOrders.forEach((o) => {
+      csvContent += `"${o.id}","${o.date}","${(o.customer || "Buyer").replace(/"/g, '""')}","${o.email || "n/a"}","${o.state || "India"}",${o.amount},"${o.payment}","${o.status}"\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `skipd_business_analytics_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+
     setTimeout(() => setExportMsg(null), 3500);
   };
 

