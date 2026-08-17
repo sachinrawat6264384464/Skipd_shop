@@ -37,7 +37,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
   const [openSubNav, setOpenSubNav] = useState<string | null>(null);
 
   // States for Add-on Items and Toast
-  const [addon1Added, setAddon1Added] = useState(false);
+  const [addon1Added, setAddon1Added] = useState(true);
   const [addon2Added, setAddon2Added] = useState(false);
   const [cartAddedToast, setCartAddedToast] = useState(false);
 
@@ -168,11 +168,12 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     });
   };
 
-  // Buy Combo handler ("Add Both to Cart" -> "Buy Combo") (Requires Login)
+  // Buy Combo handler ("Buy Combo" dynamically adds selected items) (Requires Login)
   const handleBuyCombo = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
     requireAuth(() => {
       const cartKey = getUserCartKey();
+      const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
       const mainItem = {
         id: product.id,
         handle: product.handle,
@@ -181,16 +182,30 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
         quantity: 1,
         image: selectedImage
       };
-      const comboItem = {
-        id: product.id + 9901,
-        handle: "gadgetbite-eva-hard-case",
-        title: "GadgetBite Headphone Carrying Hard EVA Case Storage Bag (Black)",
-        price: 400,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400"
-      };
 
-      localStorage.setItem(cartKey, JSON.stringify([mainItem, comboItem]));
+      const comboItems = [mainItem];
+      if (addon1Added) {
+        comboItems.push({
+          id: product.id + 9901,
+          handle: "gadgetbite-eva-hard-case",
+          title: "GadgetBite Headphone Carrying Hard EVA Case Storage Bag (Black)",
+          price: 400,
+          quantity: 1,
+          image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400"
+        });
+      }
+      if (addon2Added) {
+        comboItems.push({
+          id: product.id + 9902,
+          handle: "fast-wall-adapter-65w",
+          title: "65W Fast Wall Adapter Charger (PD 3.0 Dual Port)",
+          price: 599,
+          quantity: 1,
+          image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400"
+        });
+      }
+
+      localStorage.setItem(cartKey, JSON.stringify([...existing, ...comboItems]));
       window.dispatchEvent(new Event("skipd_cart_changed"));
       router.push("/checkout");
     });
@@ -906,7 +921,13 @@ const SUB_NAV_ITEMS = [
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleAddAddon({ id: 9901, title: "EVA Hard Storage Case", price: 400, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400" }, setAddon1Added)}
+                    onClick={() => {
+                      const next = !addon1Added;
+                      setAddon1Added(next);
+                      if (next) {
+                        handleAddAddon({ id: 9901, title: "EVA Hard Storage Case", price: 400, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400" }, () => {});
+                      }
+                    }}
                     className={`font-extrabold text-[10px] px-3 py-1.5 rounded-xl transition cursor-pointer ${
                       addon1Added ? "bg-emerald-600 text-white" : "bg-gray-900 hover:bg-black text-white"
                     }`}
@@ -923,7 +944,13 @@ const SUB_NAV_ITEMS = [
                   </div>
                   <button
                     type="button"
-                    onClick={() => handleAddAddon({ id: 9902, title: "65W Fast Wall Adapter", price: 599, image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" }, setAddon2Added)}
+                    onClick={() => {
+                      const next = !addon2Added;
+                      setAddon2Added(next);
+                      if (next) {
+                        handleAddAddon({ id: 9902, title: "65W Fast Wall Adapter", price: 599, image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" }, () => {});
+                      }
+                    }}
                     className={`font-extrabold text-[10px] px-3 py-1.5 rounded-xl transition cursor-pointer ${
                       addon2Added ? "bg-emerald-600 text-white" : "bg-gray-900 hover:bg-black text-white"
                     }`}
@@ -971,37 +998,101 @@ const SUB_NAV_ITEMS = [
             {/* Items Bundle Breakdown */}
             <div className="flex flex-wrap items-center gap-4 flex-1">
               {/* Item 1: Main Product */}
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 w-56 space-y-2 text-xs relative">
+              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 w-56 space-y-2 text-xs relative shadow-2xs">
                 <span className="absolute top-3 right-3 text-emerald-600 font-bold text-sm">✓</span>
-                <img src={selectedImage} alt={product.title} className="w-24 h-24 object-contain mx-auto rounded-lg" />
+                <img src={selectedImage} alt={product.title} className="w-20 h-20 object-contain mx-auto rounded-lg" />
                 <p className="font-bold text-gray-900 line-clamp-2 leading-tight">This item: {product.title}</p>
                 <p className="font-black text-gray-900">₹{product.price.toLocaleString("en-IN")}.00</p>
               </div>
 
-              <span className="text-2xl font-black text-gray-400">+</span>
+              {/* Item 2: EVA Storage Case (Addon 1) */}
+              {addon1Added && (
+                <>
+                  <span className="text-2xl font-black text-gray-400">+</span>
+                  <div
+                    onClick={() => setAddon1Added(false)}
+                    className="bg-gray-50 border border-emerald-300 rounded-2xl p-4 w-60 space-y-2 text-xs relative cursor-pointer hover:bg-emerald-50/50 transition shadow-2xs group"
+                    title="Click to remove from combo"
+                  >
+                    <span className="absolute top-3 right-3 text-emerald-600 font-bold text-sm">✓</span>
+                    <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400" alt="EVA Case" className="w-20 h-20 object-contain mx-auto rounded-lg" />
+                    <p className="font-bold text-gray-900 line-clamp-2 leading-tight">GadgetBite Headphone Carrying Hard EVA Case</p>
+                    <div className="flex justify-between items-center pt-1">
+                      <p className="font-black text-gray-900">₹400.00</p>
+                      <span className="text-[10px] text-red-600 font-bold group-hover:underline">Remove ✕</span>
+                    </div>
+                  </div>
+                </>
+              )}
 
-              {/* Item 2: GadgetBite Carrying EVA Case */}
-              <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 w-64 space-y-2 text-xs relative">
-                <span className="absolute top-3 right-3 text-emerald-600 font-bold text-sm">✓</span>
-                <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400" alt="GadgetBite EVA Storage Case" className="w-24 h-24 object-contain mx-auto rounded-lg" />
-                <p className="font-bold text-gray-900 line-clamp-2 leading-tight">GadgetBite Headphone Carrying Hard EVA Case Storage Bag (Black)</p>
-                <p className="font-black text-gray-900">₹400.00</p>
-              </div>
+              {/* Item 3: 65W Fast Charger (Addon 2) */}
+              {addon2Added && (
+                <>
+                  <span className="text-2xl font-black text-gray-400">+</span>
+                  <div
+                    onClick={() => setAddon2Added(false)}
+                    className="bg-gray-50 border border-emerald-300 rounded-2xl p-4 w-60 space-y-2 text-xs relative cursor-pointer hover:bg-emerald-50/50 transition shadow-2xs group"
+                    title="Click to remove from combo"
+                  >
+                    <span className="absolute top-3 right-3 text-emerald-600 font-bold text-sm">✓</span>
+                    <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" alt="Fast Charger" className="w-20 h-20 object-contain mx-auto rounded-lg" />
+                    <p className="font-bold text-gray-900 line-clamp-2 leading-tight">65W Fast Wall Adapter Charger</p>
+                    <div className="flex justify-between items-center pt-1">
+                      <p className="font-black text-gray-900">₹599.00</p>
+                      <span className="text-[10px] text-red-600 font-bold group-hover:underline">Remove ✕</span>
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Quick Add buttons if an addon is unselected */}
+              {(!addon1Added || !addon2Added) && (
+                <div className="flex flex-col gap-2 pl-2">
+                  {!addon1Added && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddon1Added(true);
+                        handleAddAddon({ id: 9901, title: "EVA Hard Storage Case", price: 400, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400" }, () => {});
+                      }}
+                      className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold text-xs px-3 py-2 rounded-xl border border-emerald-200 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <span>+ Add EVA Storage Case (₹400)</span>
+                    </button>
+                  )}
+                  {!addon2Added && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAddon2Added(true);
+                        handleAddAddon({ id: 9902, title: "65W Fast Wall Adapter", price: 599, image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" }, () => {});
+                      }}
+                      className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold text-xs px-3 py-2 rounded-xl border border-emerald-200 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                    >
+                      <span>+ Add 65W Charger (₹599)</span>
+                    </button>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Bundle Checkout Box */}
             <div className="bg-amber-50/80 border border-amber-200 rounded-3xl p-5 text-center space-y-3 shrink-0 w-full lg:w-72 shadow-2xs">
-              <span className="text-xs text-gray-600 font-bold block">Total Price:</span>
-              <span className="text-2xl font-black text-gray-900 block">₹{(product.price + 400).toLocaleString("en-IN")}.00</span>
+              <span className="text-xs text-gray-600 font-bold block">Total Combo Price:</span>
+              <span className="text-2xl font-black text-gray-900 block">
+                ₹{(product.price + (addon1Added ? 400 : 0) + (addon2Added ? 599 : 0)).toLocaleString("en-IN")}.00
+              </span>
 
               <button
                 type="button"
                 onClick={handleBuyCombo}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-emerald-600/20 text-center block cursor-pointer uppercase tracking-wider"
               >
-                ⚡ Buy Combo
+                ⚡ Buy Combo ({1 + (addon1Added ? 1 : 0) + (addon2Added ? 1 : 0)} Items)
               </button>
-              <p className="text-[10px] text-gray-500">Includes Main Product + Hard Storage Case</p>
+              <p className="text-[10px] text-gray-500 font-medium">
+                Includes {product.title} {addon1Added ? "+ Hard Storage Case" : ""} {addon2Added ? "+ 65W Charger" : ""}
+              </p>
             </div>
 
           </div>
