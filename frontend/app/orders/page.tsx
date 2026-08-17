@@ -6,6 +6,8 @@ import Image from "next/image";
 import Footer from "components/layout/footer";
 import { fetchUserOrders, fetchProducts, UserOrder, Product, requestReturn } from "lib/api";
 
+import { getUserOrdersKey } from "lib/utils";
+
 import { LoginModal } from "components/auth/login-modal";
 
 export default function OrdersDashboardPage() {
@@ -34,35 +36,33 @@ export default function OrdersDashboardPage() {
         }
       } catch (e) {}
 
-      // Gather real placed orders from local storage dynamically
+      // 🔒 Gather real placed orders STRICTLY for the currently logged-in user!
       if (typeof window !== "undefined") {
         try {
-          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
-          keys.forEach(k => {
-            const item = localStorage.getItem(k);
-            if (item) {
-              try {
-                const parsed = JSON.parse(item);
-                if (Array.isArray(parsed)) {
-                  parsed.forEach(ord => {
-                    if (!orders.some(o => o.id === ord.id || o.order_number === ord.order_number)) {
-                      orders.unshift({
-                        id: String(ord.id || ord.order_number || `ORD-${Date.now()}`),
-                        order_number: String(ord.order_number || ord.id || `#SKIPD-${Date.now()}`),
-                        date: String(ord.date || "Just now"),
-                        total: Number(ord.total || ord.amount || 2999),
-                        status: String(ord.status || "PROCESSING").toUpperCase() as any,
-                        title: typeof ord.title === "string" ? ord.title : (typeof ord.items === "string" ? ord.items : "Store Product (x1)"),
-                        image: typeof ord.image === "string" ? ord.image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
-                        awb: String(ord.awb || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
-                        deliveryText: ord.status === "DELIVERED" ? "Delivered" : "Arriving Soon"
-                      });
-                    }
-                  });
-                }
-              } catch (e) {}
-            }
-          });
+          const userOrdersKey = getUserOrdersKey();
+          const item = localStorage.getItem(userOrdersKey);
+          if (item) {
+            try {
+              const parsed = JSON.parse(item);
+              if (Array.isArray(parsed)) {
+                parsed.forEach(ord => {
+                  if (!orders.some(o => o.id === ord.id || o.order_number === ord.order_number)) {
+                    orders.unshift({
+                      id: String(ord.id || ord.order_number || `ORD-${Date.now()}`),
+                      order_number: String(ord.order_number || ord.id || `#SKIPD-${Date.now()}`),
+                      date: String(ord.date || "Just now"),
+                      total: Number(ord.total || ord.amount || 2999),
+                      status: String(ord.status || "PROCESSING").toUpperCase() as any,
+                      title: typeof ord.title === "string" ? ord.title : (typeof ord.items === "string" ? ord.items : "Store Product (x1)"),
+                      image: typeof ord.image === "string" ? ord.image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
+                      awb: String(ord.awb || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
+                      deliveryText: ord.status === "DELIVERED" ? "Delivered" : "Arriving Soon"
+                    });
+                  }
+                });
+              }
+            } catch (e) {}
+          }
         } catch (e) {}
       }
 

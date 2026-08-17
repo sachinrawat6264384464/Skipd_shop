@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { BuyNowButton } from "components/auth/buy-now-button";
 import { Product } from "lib/api";
+import { getUserCartKey, getUserOrdersKey, getUserWishlistKey } from "lib/utils";
 
 export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
@@ -59,68 +60,64 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
 
         setProducts(combined);
 
-        // Load "Pick up where you left off" items from user cart / placed orders
+        // 🔒 Load "Pick up where you left off" items STRICTLY for the currently logged-in customer!
         let userInteracted: any[] = [];
         
-        // 1. Check cart items
-        const cartKeys = Object.keys(localStorage).filter(k => k.startsWith("skipd_cart_") || k === "cart");
-        cartKeys.forEach(k => {
-          const item = localStorage.getItem(k);
-          if (item) {
-            try {
-              const parsed = JSON.parse(item);
-              const items = parsed.lines || parsed.items || (Array.isArray(parsed) ? parsed : []);
-              items.forEach((it: any) => {
-                const prod = it.merchandise?.product || it.product || it;
-                if (prod && prod.title && !userInteracted.some(u => u.label === prod.title)) {
+        // 1. Read logged-in user's cart items
+        const cartKey = getUserCartKey();
+        const storedCart = localStorage.getItem(cartKey);
+        if (storedCart) {
+          try {
+            const parsed = JSON.parse(storedCart);
+            const items = Array.isArray(parsed) ? parsed : (parsed.lines || parsed.items || []);
+            items.forEach((it: any) => {
+              const prod = it.merchandise?.product || it.product || it;
+              if (prod && prod.title && !userInteracted.some(u => u.label === prod.title)) {
+                userInteracted.push({
+                  img: prod.images?.[0] || prod.featuredImage?.url || prod.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
+                  label: prod.title,
+                  price: `₹${(prod.price || prod.priceRange?.minVariantPrice?.amount || 1799).toLocaleString("en-IN")}`,
+                  mrp: prod.compare_at_price ? `₹${prod.compare_at_price.toLocaleString("en-IN")}` : undefined,
+                  href: `/product/${prod.handle || "product"}`
+                });
+              }
+            });
+          } catch (e) {}
+        }
+
+        // 2. Read logged-in user's placed orders
+        const ordersKey = getUserOrdersKey();
+        const storedOrders = localStorage.getItem(ordersKey);
+        if (storedOrders) {
+          try {
+            const parsed = JSON.parse(storedOrders);
+            if (Array.isArray(parsed)) {
+              parsed.forEach((ord: any) => {
+                const title = typeof ord.title === "string" ? ord.title : (typeof ord.items === "string" ? ord.items : "Store Product");
+                if (!userInteracted.some(u => u.label === title)) {
                   userInteracted.push({
-                    img: prod.images?.[0] || prod.featuredImage?.url || prod.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
-                    label: prod.title,
-                    price: `₹${(prod.price || prod.priceRange?.minVariantPrice?.amount || 1799).toLocaleString("en-IN")}`,
-                    mrp: prod.compare_at_price ? `₹${prod.compare_at_price.toLocaleString("en-IN")}` : undefined,
-                    href: `/product/${prod.handle}`
+                    img: typeof ord.image === "string" ? ord.image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
+                    label: title,
+                    price: `₹${(ord.total || 2999).toLocaleString("en-IN")}`,
+                    href: "/orders"
                   });
                 }
               });
-            } catch (e) {}
-          }
-        });
+            }
+          } catch (e) {}
+        }
 
-        // 2. Check placed orders
-        const orderKeys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
-        orderKeys.forEach(k => {
-          const item = localStorage.getItem(k);
-          if (item) {
-            try {
-              const parsed = JSON.parse(item);
-              if (Array.isArray(parsed)) {
-                parsed.forEach((ord: any) => {
-                  const title = typeof ord.title === "string" ? ord.title : "Store Product";
-                  if (!userInteracted.some(u => u.label === title)) {
-                    userInteracted.push({
-                      img: typeof ord.image === "string" ? ord.image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
-                      label: title,
-                      price: `₹${(ord.total || 2999).toLocaleString("en-IN")}`,
-                      href: "/orders"
-                    });
-                  }
-                });
-              }
-            } catch (e) {}
-          }
-        });
-
-        // Fallback default items if user hasn't added to cart/ordered yet
+        // Fallback default catalog products if logged in user hasn't added items yet
         if (userInteracted.length < 4) {
-          const defaults = [
-            { img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300", label: "boAt Rockerz 550", price: "₹1,799", mrp: "₹4,990", href: "/search" },
-            { img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300", label: "Sony WH-1000XM5", price: "₹24,990", mrp: "₹34,990", href: "/search" },
-            { img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300", label: "JBL Tune 770NC", price: "₹6,499", mrp: "₹9,999", href: "/search" },
-            { img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300", label: "Noise Buds VS104", price: "₹1,499", mrp: "₹2,999", href: "/search" },
-          ];
-          defaults.forEach(d => {
-            if (!userInteracted.some(u => u.label === d.label)) {
-              userInteracted.push(d);
+          combined.slice(0, 4).forEach(p => {
+            if (!userInteracted.some(u => u.label === p.title)) {
+              userInteracted.push({
+                img: p.images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
+                label: p.title,
+                price: `₹${p.price.toLocaleString("en-IN")}`,
+                mrp: p.compare_at_price ? `₹${p.compare_at_price.toLocaleString("en-IN")}` : undefined,
+                href: `/product/${p.handle}`
+              });
             }
           });
         }
