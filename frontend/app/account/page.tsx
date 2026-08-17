@@ -546,8 +546,28 @@ function AccountContent() {
         if (Array.isArray(raw) && raw.length > 0) {
           const normalized: any[] = [];
           raw.forEach((ord: any) => {
-            const orderTimestamp = ord.orderTimestamp || (ord.createdAt ? new Date(ord.createdAt).getTime() : Date.now());
-            const orderId = ord.id || ord.orderNumber || `#SKIPD-${Math.floor(10000 + Math.random() * 90000)}`;
+            let orderTimestamp = ord.orderTimestamp;
+            if (!orderTimestamp) {
+              if (ord.created_at && !isNaN(new Date(ord.created_at).getTime())) {
+                orderTimestamp = new Date(ord.created_at).getTime();
+              } else if (ord.date && !isNaN(new Date(ord.date).getTime())) {
+                orderTimestamp = new Date(ord.date).getTime();
+              } else {
+                const orderIdKey = ord.id || ord.order_number || ord.orderNumber || "temp";
+                const savedTs = typeof window !== "undefined" ? localStorage.getItem(`skipd_order_ts_${orderIdKey}`) : null;
+                if (savedTs && !isNaN(Number(savedTs))) {
+                  orderTimestamp = Number(savedTs);
+                } else {
+                  orderTimestamp = Date.now();
+                  if (typeof window !== "undefined") {
+                    localStorage.setItem(`skipd_order_ts_${orderIdKey}`, String(orderTimestamp));
+                  }
+                }
+              }
+            }
+
+            const orderId = ord.id || ord.order_number || ord.orderNumber || `#SKIPD-${Math.floor(10000 + Math.random() * 90000)}`;
+            const isExpired = Date.now() - orderTimestamp > 24 * 3600 * 1000;
 
             if (ord.items && Array.isArray(ord.items) && ord.items.length > 0) {
               ord.items.forEach((item: any, idx: number) => {
@@ -562,9 +582,9 @@ function AccountContent() {
                   image: item.featuredImage?.url || item.image || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
                   orderTimestamp: orderTimestamp,
                   status: ord.status || "DELIVERED",
-                  returnStatus: item.returnStatus || ord.returnStatus || (Date.now() - orderTimestamp > 24 * 3600 * 1000 ? "EXPIRED" : "ELIGIBLE"),
+                  returnStatus: isExpired ? "EXPIRED" : (item.returnStatus || ord.returnStatus || "ELIGIBLE"),
                   queryId: item.queryId || ord.queryId,
-                  expiredText: Date.now() - orderTimestamp > 24 * 3600 * 1000 ? "Expired 24h Policy Window" : null
+                  expiredText: isExpired ? "24h Refund Window Expired" : null
                 });
               });
             } else {
@@ -579,9 +599,9 @@ function AccountContent() {
                 image: ord.image || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300",
                 orderTimestamp: orderTimestamp,
                 status: ord.status || "DELIVERED",
-                returnStatus: ord.returnStatus || (Date.now() - orderTimestamp > 24 * 3600 * 1000 ? "EXPIRED" : "ELIGIBLE"),
+                returnStatus: isExpired ? "EXPIRED" : (ord.returnStatus || "ELIGIBLE"),
                 queryId: ord.queryId,
-                expiredText: Date.now() - orderTimestamp > 24 * 3600 * 1000 ? "Expired 24h Policy Window" : null
+                expiredText: isExpired ? "24h Refund Window Expired" : null
               });
             }
           });
@@ -1303,7 +1323,13 @@ function AccountContent() {
                             </div>
                             <p className="font-bold text-gray-800 truncate">{firstItem?.title}</p>
                             <div className="flex justify-between text-[10px] text-gray-500 pt-0.5">
-                              <span>{new Date(ord.created_at).toLocaleDateString("en-IN")}</span>
+                              <span>
+                                {(() => {
+                                  if (!ord.created_at) return "Today";
+                                  const d = new Date(ord.created_at);
+                                  return !isNaN(d.getTime()) ? d.toLocaleDateString("en-IN") : String(ord.created_at);
+                                })()}
+                              </span>
                               <span className="font-black text-gray-900">₹{ord.total_amount.toLocaleString("en-IN")}</span>
                             </div>
                           </div>
