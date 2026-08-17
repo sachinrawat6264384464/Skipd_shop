@@ -24,6 +24,9 @@ export default function AdminInventoryPage() {
   const [adjustQtyInput, setAdjustQtyInput] = useState<number>(0);
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [importTab, setImportTab] = useState<"data" | "images">("data");
+  const [bulkImages, setBulkImages] = useState<{ name: string; url: string; file: File }[]>([]);
+  const [imageUploading, setImageUploading] = useState(false);
   const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [notification, setNotification] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
@@ -41,7 +44,7 @@ export default function AdminInventoryPage() {
   // Selected Checkboxes State
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
-  // CSV/JSON File Import Handler
+  // CSV/JSON File Import Handler — now includes image_url column (col index 5)
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -64,21 +67,30 @@ export default function AdminInventoryPage() {
               const cols = lineStr.split(",").map(c => c.trim().replace(/^"|"$/g, ""));
               if (cols.length >= 2) {
                 const title = cols[0] || `Imported Item ${i}`;
-                const priceStr = cols[1] || "999";
-                const price = parseFloat(priceStr) || 999;
-                const stockStr = cols[2] || "20";
-                const stock = parseInt(stockStr) || 20;
+                const price = parseFloat(cols[1] ?? "999") || 999;
+                const stock = parseInt(cols[2] ?? "20") || 20;
                 const cat = cols[3] || "General";
                 const warehouse = cols[4] || "Central FC";
+                const imageUrl = cols[5] || "";
+
+                // Try to match with bulk-uploaded images by filename/title
+                const matchedImg = bulkImages.find(img =>
+                  img.name.toLowerCase().replace(/\.[^.]+$/, "").includes(title.toLowerCase().slice(0, 8)) ||
+                  title.toLowerCase().includes(img.name.toLowerCase().replace(/\.[^.]+$/, "").slice(0, 6))
+                );
 
                 importedItems.push({
                   id: Date.now() + i,
-                  title: title,
-                  price: price,
+                  title,
+                  price,
                   stock_quantity: stock,
                   category: cat,
-                  warehouse: warehouse,
-                  images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"]
+                  warehouse,
+                  images: [
+                    matchedImg?.url ||
+                    imageUrl ||
+                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
+                  ]
                 });
               }
             }
@@ -108,7 +120,8 @@ export default function AdminInventoryPage() {
           }));
 
           setProducts(prev => [...formattedImported, ...prev]);
-          showToast(`✓ Successfully imported ${importedItems.length} products from ${file.name}!`);
+          showToast(`✓ Successfully imported ${importedItems.length} products from ${file.name}! ${bulkImages.length > 0 ? `(${bulkImages.length} images matched)` : ""}`);
+          setBulkImages([]);
           setShowImportModal(false);
         } else {
           showToast("⚠️ Could not parse valid rows from file.", "error");
@@ -118,6 +131,28 @@ export default function AdminInventoryPage() {
       }
     };
     reader.readAsText(file);
+  };
+
+  // Bulk Image Upload Handler — converts files to base64 preview URLs
+  const handleBulkImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setImageUploading(true);
+    let loaded = 0;
+    const newImgs: { name: string; url: string; file: File }[] = [];
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        newImgs.push({ name: file.name, url: ev.target?.result as string, file });
+        loaded++;
+        if (loaded === files.length) {
+          setBulkImages(prev => [...prev, ...newImgs]);
+          setImageUploading(false);
+          showToast(`📸 ${files.length} image(s) uploaded! They will be matched to products automatically.`);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
   // Add New Product Submission Handler
@@ -991,73 +1026,221 @@ export default function AdminInventoryPage() {
         </div>
       )}
 
-      {/* 📤 WORKING IMPORT INVENTORY FILE MODAL */}
+      {/* 📤 IMPORT INVENTORY MODAL — with CSV Data + Bulk Image Upload tabs */}
       {showImportModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-xl w-full space-y-4 shadow-2xl max-h-[92vh] overflow-y-auto">
+            
+            {/* Header */}
             <div className="flex justify-between items-center border-b pb-3">
               <div>
-                <h3 className="font-black text-gray-900 text-base">📤 Import Inventory File</h3>
-                <p className="text-[10px] text-gray-400 font-medium">Bulk import products via CSV, Excel, JSON, or TXT format</p>
+                <h3 className="font-black text-gray-900 text-base">📤 Import Inventory</h3>
+                <p className="text-[10px] text-gray-400 font-medium">Bulk import product data + images for your catalog</p>
               </div>
-              <button onClick={() => setShowImportModal(false)} className="text-gray-400 hover:text-black font-bold text-lg">✕</button>
-            </div>
-
-            {/* File Drag and Drop Box */}
-            <div className="border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/40 p-8 rounded-2xl text-center space-y-3 transition relative group cursor-pointer">
-              <input
-                type="file"
-                accept=".csv, .json, .txt, .xlsx, .xls"
-                onChange={handleFileUpload}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-              />
-              <div className="w-12 h-12 bg-white rounded-2xl border border-emerald-200 flex items-center justify-center mx-auto text-2xl shadow-xs group-hover:scale-110 transition">
-                📄
-              </div>
-              <div>
-                <p className="text-xs font-black text-gray-900">Click or Drag &amp; Drop Inventory Sheet</p>
-                <p className="text-[10px] text-gray-500 mt-0.5">Supports CSV, Excel (.xlsx/.xls), JSON, TXT files</p>
-              </div>
-              <span className="inline-block bg-[#059669] text-white font-black text-[10px] px-3.5 py-1.5 rounded-xl shadow-2xs">
-                Browse File from Computer
-              </span>
-            </div>
-
-            {/* CSV Format Spec */}
-            <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl text-[10px] text-gray-600 space-y-1">
-              <p className="font-bold text-gray-900">Recommended CSV Columns Format:</p>
-              <p className="font-mono text-emerald-700 bg-white p-1.5 rounded border border-gray-200 truncate">
-                Product Title, Price, Stock Quantity, Category, Warehouse
-              </p>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-2.5 pt-2">
               <button
-                type="button"
-                onClick={() => {
-                  const sampleCsv = "Product Title,Price,Stock Quantity,Category,Warehouse\nWireless Noise Cancelling Earbuds,3999,50,Electronics,Electronics FC Delhi\nLeather Smart Watch Strap,1299,100,Watches,Watches FC Bangalore\nSlim Fit Casual Denim Jacket,2999,30,Fashion,Fashion FC Kolkata";
-                  const blob = new Blob([sampleCsv], { type: "text/csv" });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = "skipd_inventory_sample.csv";
-                  a.click();
-                  showToast("📥 Sample Inventory CSV downloaded!");
-                }}
-                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer"
+                onClick={() => { setShowImportModal(false); setBulkImages([]); setImportTab("data"); }}
+                className="text-gray-400 hover:text-black font-bold text-lg cursor-pointer"
+              >✕</button>
+            </div>
+
+            {/* Tab Switcher */}
+            <div className="flex gap-1 bg-gray-100 p-1 rounded-2xl">
+              <button
+                onClick={() => setImportTab("data")}
+                className={`flex-1 py-2 text-xs font-black rounded-xl transition cursor-pointer ${
+                  importTab === "data"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-800"
+                }`}
               >
-                <span>📥</span>
-                <span>Download Sample CSV</span>
+                📄 Data File (CSV / JSON)
               </button>
-
               <button
-                onClick={() => setShowImportModal(false)}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-4 py-2.5 rounded-xl text-xs"
+                onClick={() => setImportTab("images")}
+                className={`flex-1 py-2 text-xs font-black rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 ${
+                  importTab === "images"
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-500 hover:text-gray-800"
+                }`}
               >
-                Close
+                🖼️ Product Images
+                {bulkImages.length > 0 && (
+                  <span className="bg-emerald-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+                    {bulkImages.length}
+                  </span>
+                )}
               </button>
             </div>
+
+            {/* ── TAB 1: Data File ── */}
+            {importTab === "data" && (
+              <div className="space-y-4">
+                {/* Drag & Drop Zone */}
+                <div className="border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/40 p-8 rounded-2xl text-center space-y-3 transition relative group cursor-pointer">
+                  <input
+                    type="file"
+                    accept=".csv,.json,.txt,.xlsx,.xls"
+                    onChange={handleFileUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="w-12 h-12 bg-white rounded-2xl border border-emerald-200 flex items-center justify-center mx-auto text-2xl shadow-xs group-hover:scale-110 transition">
+                    📄
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-gray-900">Click or Drag &amp; Drop Inventory Sheet</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">Supports CSV, Excel (.xlsx/.xls), JSON, TXT files</p>
+                  </div>
+                  <span className="inline-block bg-[#059669] text-white font-black text-[10px] px-3.5 py-1.5 rounded-xl shadow-2xs">
+                    Browse File from Computer
+                  </span>
+                </div>
+
+                {/* CSV Format Info — now includes Image URL column */}
+                <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl text-[10px] text-gray-600 space-y-2">
+                  <p className="font-bold text-gray-900">📋 Recommended CSV Columns:</p>
+                  <p className="font-mono text-emerald-700 bg-white p-2 rounded-lg border border-gray-200 whitespace-pre-wrap break-all leading-relaxed">
+                    Product Title, Price, Stock Qty, Category, Warehouse, Image URL
+                  </p>
+                  <p className="text-gray-400 leading-relaxed">
+                    💡 <strong>Image URL</strong> column is optional. If left blank, images from the
+                    &quot;Product Images&quot; tab will be auto-matched by product name.
+                  </p>
+                </div>
+
+                {/* Bulk Image Count Badge */}
+                {bulkImages.length > 0 && (
+                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-xs">
+                    <span className="text-lg">📸</span>
+                    <div>
+                      <p className="font-black text-emerald-800">{bulkImages.length} product images ready</p>
+                      <p className="text-[10px] text-emerald-600">Will be auto-matched to products when you import the CSV.</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer Buttons */}
+                <div className="flex gap-2.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const sampleCsv = "Product Title,Price,Stock Quantity,Category,Warehouse,Image URL\nWireless Noise Cancelling Earbuds,3999,50,Electronics,Electronics FC Delhi,https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400\nLeather Smart Watch Strap,1299,100,Watches,Watches FC Bangalore,https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400\nSlim Fit Casual Denim Jacket,2999,30,Fashion,Fashion FC Kolkata,https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400";
+                      const blob = new Blob([sampleCsv], { type: "text/csv" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = "skipd_inventory_sample.csv";
+                      a.click();
+                      showToast("📥 Sample CSV (with Image URL column) downloaded!");
+                    }}
+                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer"
+                  >
+                    <span>📥</span>
+                    <span>Download Sample CSV</span>
+                  </button>
+
+                  <button
+                    onClick={() => { setShowImportModal(false); setBulkImages([]); }}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-4 py-2.5 rounded-xl text-xs cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ── TAB 2: Bulk Image Upload ── */}
+            {importTab === "images" && (
+              <div className="space-y-4">
+                {/* Image Drop Zone */}
+                <div className="border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/40 p-8 rounded-2xl text-center space-y-3 transition relative group cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleBulkImageUpload}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  />
+                  <div className="w-14 h-14 bg-white rounded-2xl border border-blue-200 flex items-center justify-center mx-auto text-3xl shadow-xs group-hover:scale-110 transition">
+                    🖼️
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-gray-900">Click or Drag &amp; Drop Product Images</p>
+                    <p className="text-[10px] text-gray-500 mt-0.5">Supports JPG, PNG, WEBP — multiple files at once</p>
+                  </div>
+                  {imageUploading ? (
+                    <div className="flex items-center justify-center gap-2 text-xs font-bold text-blue-600">
+                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                      Uploading images...
+                    </div>
+                  ) : (
+                    <span className="inline-block bg-blue-600 text-white font-black text-[10px] px-3.5 py-1.5 rounded-xl shadow-2xs">
+                      Select Images from Computer
+                    </span>
+                  )}
+                </div>
+
+                {/* Info box */}
+                <div className="bg-blue-50 border border-blue-200 p-3 rounded-xl text-[10px] text-blue-700 space-y-1">
+                  <p className="font-black text-blue-900">💡 How image matching works:</p>
+                  <ul className="list-disc list-inside space-y-0.5 text-[10px] leading-relaxed">
+                    <li>Upload images here first, then import your CSV.</li>
+                    <li>Image filename is matched to product title automatically.</li>
+                    <li>E.g. <code className="bg-white px-1 rounded border">headphone.jpg</code> → matched to product with &quot;headphone&quot; in title.</li>
+                    <li>You can also add Image URLs directly in the CSV (col 6).</li>
+                  </ul>
+                </div>
+
+                {/* Uploaded Images Preview Grid */}
+                {bulkImages.length > 0 && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <p className="text-xs font-black text-gray-900">📸 {bulkImages.length} Image(s) Ready</p>
+                      <button
+                        onClick={() => setBulkImages([])}
+                        className="text-[10px] font-bold text-red-500 hover:underline cursor-pointer"
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-52 overflow-y-auto pr-1">
+                      {bulkImages.map((img, idx) => (
+                        <div key={idx} className="relative group">
+                          <img
+                            src={img.url}
+                            alt={img.name}
+                            className="w-full aspect-square object-cover rounded-xl border border-gray-200 bg-gray-50"
+                          />
+                          <div className="absolute inset-0 bg-black/40 rounded-xl opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                            <button
+                              onClick={() => setBulkImages(prev => prev.filter((_, i) => i !== idx))}
+                              className="w-6 h-6 bg-red-600 text-white rounded-full text-xs font-black flex items-center justify-center cursor-pointer"
+                            >✕</button>
+                          </div>
+                          <p className="text-[8px] text-gray-400 truncate mt-0.5 font-mono">{img.name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer */}
+                <div className="flex gap-2.5 pt-2">
+                  <button
+                    onClick={() => setImportTab("data")}
+                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs cursor-pointer flex items-center justify-center gap-1.5"
+                  >
+                    <span>→</span>
+                    <span>Go to CSV Import</span>
+                  </button>
+                  <button
+                    onClick={() => { setShowImportModal(false); setBulkImages([]); }}
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-4 py-2.5 rounded-xl text-xs cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
 
           </div>
         </div>
