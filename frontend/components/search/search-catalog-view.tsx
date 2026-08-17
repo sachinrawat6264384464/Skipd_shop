@@ -36,8 +36,58 @@ export function SearchCatalogView({
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("bestselling");
   const [wishlist, setWishlist] = useState<number[]>([]);
+  const [liveProducts, setLiveProducts] = useState<Product[]>(products);
 
   const displayTitle = collectionTitle || "All Categories & Catalog";
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        let custom: any[] = [];
+        const storedCustom = localStorage.getItem("skipd_custom_products");
+        if (storedCustom) {
+          const parsed = JSON.parse(storedCustom);
+          if (Array.isArray(parsed)) custom = parsed;
+        }
+
+        let updatesMap: Record<string, any> = {};
+        const storedUpdates = localStorage.getItem("skipd_updated_products");
+        if (storedUpdates) {
+          updatesMap = JSON.parse(storedUpdates);
+        }
+
+        let deletedSet = new Set<string>();
+        const storedDeletions = localStorage.getItem("skipd_deleted_product_ids");
+        if (storedDeletions) {
+          const parsed = JSON.parse(storedDeletions);
+          if (Array.isArray(parsed)) {
+            parsed.forEach((id: any) => deletedSet.add(String(id)));
+          }
+        }
+
+        let combined = [...custom, ...products];
+        const seen = new Set();
+        combined = combined
+          .filter(p => {
+            const pIdStr = String(p.id);
+            if (deletedSet.has(pIdStr) || deletedSet.has(p.handle)) return false;
+            const key = p.id || p.handle;
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          })
+          .map(p => {
+            const pIdStr = String(p.id);
+            if (updatesMap[pIdStr]) {
+              return { ...p, ...updatesMap[pIdStr] };
+            }
+            return p;
+          });
+
+        setLiveProducts(combined);
+      } catch (e) {}
+    }
+  }, [products]);
 
   const toggleWishlist = (id: number) => {
     setWishlist((prev) =>
@@ -47,7 +97,7 @@ export function SearchCatalogView({
 
   // 🔍 Filter & Sort logic driven by URL params
   const sortedProducts = useMemo(() => {
-    return products
+    return liveProducts
       .filter((product) => {
         // Price filter
         if (product.price > maxPriceParam) return false;
@@ -67,7 +117,7 @@ export function SearchCatalogView({
         if (sortBy === "price-high") return b.price - a.price;
         return a.id - b.id;
       });
-  }, [products, maxPriceParam, expressParam, discountParam, sortBy]);
+  }, [liveProducts, maxPriceParam, expressParam, discountParam, sortBy]);
 
   // Dynamic Pagination Math
   const totalItems = sortedProducts.length;
