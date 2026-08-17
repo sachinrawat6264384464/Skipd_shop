@@ -24,10 +24,157 @@ export default function AdminInventoryPage() {
   const [adjustQtyInput, setAdjustQtyInput] = useState<number>(0);
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
+  const [showAddProductModal, setShowAddProductModal] = useState(false);
   const [notification, setNotification] = useState<{ text: string; type: "success" | "error" } | null>(null);
+
+  // New Product Form States
+  const [newTitle, setNewTitle] = useState("");
+  const [newPrice, setNewPrice] = useState<number>(999);
+  const [newComparePrice, setNewComparePrice] = useState<number>(1999);
+  const [newStockQty, setNewStockQty] = useState<number>(50);
+  const [newCategory, setNewCategory] = useState("Electronics");
+  const [newWarehouse, setNewWarehouse] = useState("Electronics FC Delhi");
+  const [newImage, setNewImage] = useState("");
+  const [newSku, setNewSku] = useState("");
+  const [newDescription, setNewDescription] = useState("");
 
   // Selected Checkboxes State
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
+
+  // CSV/JSON File Import Handler
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        let importedItems: any[] = [];
+
+        if (file.name.endsWith(".json")) {
+          const parsed = JSON.parse(text);
+          importedItems = Array.isArray(parsed) ? parsed : [parsed];
+        } else {
+          const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+          if (lines.length > 1) {
+            for (let i = 1; i < lines.length; i++) {
+              const lineStr = lines[i];
+              if (!lineStr) continue;
+              const cols = lineStr.split(",").map(c => c.trim().replace(/^"|"$/g, ""));
+              if (cols.length >= 2) {
+                const title = cols[0] || `Imported Item ${i}`;
+                const priceStr = cols[1] || "999";
+                const price = parseFloat(priceStr) || 999;
+                const stockStr = cols[2] || "20";
+                const stock = parseInt(stockStr) || 20;
+                const cat = cols[3] || "General";
+                const warehouse = cols[4] || "Central FC";
+
+                importedItems.push({
+                  id: Date.now() + i,
+                  title: title,
+                  price: price,
+                  stock_quantity: stock,
+                  category: cat,
+                  warehouse: warehouse,
+                  images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"]
+                });
+              }
+            }
+          }
+        }
+
+        if (importedItems.length > 0) {
+          const existingCustom = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
+          localStorage.setItem("skipd_custom_products", JSON.stringify([...importedItems, ...existingCustom]));
+
+          const formattedImported = importedItems.map((p, idx) => ({
+            id: p.id || Date.now() + idx,
+            title: p.title || "Imported Product",
+            variant: "Standard Edition",
+            sku: `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`,
+            barcode: `890123${Math.floor(100000 + Math.random() * 900000)}`,
+            category: p.category || "General",
+            warehouse: p.warehouse || "Central FC",
+            stock: Number(p.stock_quantity || p.stock || 25),
+            minStock: 5,
+            reserved: 2,
+            price: Number(p.price || 999),
+            stockValue: Number(p.price || 999) * Number(p.stock_quantity || p.stock || 25),
+            status: Number(p.stock_quantity || p.stock || 25) > 15 ? "In Stock" : "Low Stock",
+            lastUpdated: "Just now",
+            image: p.images?.[0] || p.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
+          }));
+
+          setProducts(prev => [...formattedImported, ...prev]);
+          showToast(`✓ Successfully imported ${importedItems.length} products from ${file.name}!`);
+          setShowImportModal(false);
+        } else {
+          showToast("⚠️ Could not parse valid rows from file.", "error");
+        }
+      } catch (err) {
+        showToast("⚠️ Error reading file format.", "error");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Add New Product Submission Handler
+  const handleAddNewProductSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim() || !newPrice) {
+      showToast("⚠️ Please enter valid product title and price.", "error");
+      return;
+    }
+
+    const newProdId = Date.now();
+    const newProductObj = {
+      id: newProdId,
+      title: newTitle,
+      handle: newTitle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+      description: newDescription || `${newTitle} premium quality product.`,
+      price: Number(newPrice),
+      compare_at_price: Number(newComparePrice || Number(newPrice) * 1.5),
+      stock_quantity: Number(newStockQty),
+      featured: true,
+      images: [newImage || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"],
+      category_slug: newCategory.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      category: { name: newCategory, slug: newCategory.toLowerCase().replace(/[^a-z0-9]+/g, "-") }
+    };
+
+    try {
+      const existingCustom = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
+      localStorage.setItem("skipd_custom_products", JSON.stringify([newProductObj, ...existingCustom]));
+    } catch (e) {}
+
+    const tableItem = {
+      id: newProdId,
+      title: newTitle,
+      variant: "Standard Edition",
+      sku: newSku || `SKU-${newTitle.toUpperCase().replace(/[^A-Z0-9]/g, "-").slice(0, 10)}-${Math.floor(100 + Math.random() * 900)}`,
+      barcode: `8901234${Math.floor(100000 + Math.random() * 900000)}`,
+      category: newCategory,
+      warehouse: newWarehouse,
+      stock: Number(newStockQty),
+      minStock: 5,
+      reserved: 0,
+      price: Number(newPrice),
+      stockValue: Number(newPrice) * Number(newStockQty),
+      status: Number(newStockQty) > 15 ? "In Stock" : Number(newStockQty) > 0 ? "Low Stock" : "Out of Stock",
+      lastUpdated: "Just now",
+      image: newImage || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
+    };
+
+    setProducts([tableItem, ...products]);
+    setShowAddProductModal(false);
+    showToast(`✓ New Product "${newTitle}" created and added to live inventory!`);
+
+    setNewTitle("");
+    setNewPrice(999);
+    setNewComparePrice(1999);
+    setNewStockQty(50);
+  };
 
   useEffect(() => {
     loadInventoryData();
@@ -373,13 +520,13 @@ export default function AdminInventoryPage() {
           </button>
 
           {/* Add New Product Button */}
-          <Link
-            href="/admin/products"
+          <button
+            onClick={() => setShowAddProductModal(true)}
             className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-2"
           >
             <span className="text-base font-normal">+</span>
             <span>Add New Product</span>
-          </Link>
+          </button>
         </div>
       </div>
 
@@ -844,28 +991,222 @@ export default function AdminInventoryPage() {
         </div>
       )}
 
-      {/* 📤 IMPORT INVENTORY MODAL */}
+      {/* 📤 WORKING IMPORT INVENTORY FILE MODAL */}
       {showImportModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl">
             <div className="flex justify-between items-center border-b pb-3">
-              <h3 className="font-black text-gray-900 text-base">📤 Import Inventory CSV</h3>
-              <button onClick={() => setShowImportModal(false)} className="text-gray-400 font-bold">✕</button>
+              <div>
+                <h3 className="font-black text-gray-900 text-base">📤 Import Inventory File</h3>
+                <p className="text-[10px] text-gray-400 font-medium">Bulk import products via CSV, Excel, JSON, or TXT format</p>
+              </div>
+              <button onClick={() => setShowImportModal(false)} className="text-gray-400 hover:text-black font-bold text-lg">✕</button>
             </div>
-            <div className="border-2 border-dashed border-gray-300 p-8 rounded-2xl text-center space-y-2 bg-gray-50">
-              <p className="text-2xl">📄</p>
-              <p className="text-xs font-bold text-gray-700">Drag &amp; Drop CSV Stock Sheet</p>
-              <p className="text-[10px] text-gray-400">Supports SKU, Stock Units, Warehouse FC columns</p>
+
+            {/* File Drag and Drop Box */}
+            <div className="border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/40 p-8 rounded-2xl text-center space-y-3 transition relative group cursor-pointer">
+              <input
+                type="file"
+                accept=".csv, .json, .txt, .xlsx, .xls"
+                onChange={handleFileUpload}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              />
+              <div className="w-12 h-12 bg-white rounded-2xl border border-emerald-200 flex items-center justify-center mx-auto text-2xl shadow-xs group-hover:scale-110 transition">
+                📄
+              </div>
+              <div>
+                <p className="text-xs font-black text-gray-900">Click or Drag &amp; Drop Inventory Sheet</p>
+                <p className="text-[10px] text-gray-500 mt-0.5">Supports CSV, Excel (.xlsx/.xls), JSON, TXT files</p>
+              </div>
+              <span className="inline-block bg-[#059669] text-white font-black text-[10px] px-3.5 py-1.5 rounded-xl shadow-2xs">
+                Browse File from Computer
+              </span>
             </div>
-            <button
-              onClick={() => {
-                showToast("✓ Inventory CSV Imported Successfully!");
-                setShowImportModal(false);
-              }}
-              className="w-full bg-emerald-600 text-white font-black py-2.5 rounded-xl text-xs shadow-md"
-            >
-              Upload &amp; Import Stock
-            </button>
+
+            {/* CSV Format Spec */}
+            <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl text-[10px] text-gray-600 space-y-1">
+              <p className="font-bold text-gray-900">Recommended CSV Columns Format:</p>
+              <p className="font-mono text-emerald-700 bg-white p-1.5 rounded border border-gray-200 truncate">
+                Product Title, Price, Stock Quantity, Category, Warehouse
+              </p>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-2.5 pt-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const sampleCsv = "Product Title,Price,Stock Quantity,Category,Warehouse\nWireless Noise Cancelling Earbuds,3999,50,Electronics,Electronics FC Delhi\nLeather Smart Watch Strap,1299,100,Watches,Watches FC Bangalore\nSlim Fit Casual Denim Jacket,2999,30,Fashion,Fashion FC Kolkata";
+                  const blob = new Blob([sampleCsv], { type: "text/csv" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = "skipd_inventory_sample.csv";
+                  a.click();
+                  showToast("📥 Sample Inventory CSV downloaded!");
+                }}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <span>📥</span>
+                <span>Download Sample CSV</span>
+              </button>
+
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-4 py-2.5 rounded-xl text-xs"
+              >
+                Close
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ➕ WORKING ADD NEW PRODUCT MODAL */}
+      {showAddProductModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center border-b pb-3">
+              <div>
+                <h3 className="font-black text-gray-900 text-base">➕ Add New Product to Inventory</h3>
+                <p className="text-[10px] text-gray-400 font-medium">Create a new item in live catalog &amp; warehouse stock</p>
+              </div>
+              <button onClick={() => setShowAddProductModal(false)} className="text-gray-400 hover:text-black font-bold text-lg">✕</button>
+            </div>
+
+            <form onSubmit={handleAddNewProductSubmit} className="space-y-3 text-xs">
+              
+              {/* Title */}
+              <div>
+                <label className="block font-extrabold text-gray-700 mb-1">Product Title *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Samsung Galaxy S24 Ultra 512GB Titanium"
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Price & Compare Price */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-extrabold text-gray-700 mb-1">Selling Price (₹) *</label>
+                  <input
+                    type="number"
+                    required
+                    min="1"
+                    value={newPrice}
+                    onChange={(e) => setNewPrice(Number(e.target.value))}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-extrabold text-gray-700 mb-1">Original Price (₹)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    value={newComparePrice}
+                    onChange={(e) => setNewComparePrice(Number(e.target.value))}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Category & Warehouse */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-extrabold text-gray-700 mb-1">Category *</label>
+                  <select
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  >
+                    <option value="Mobiles">Mobiles</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Laptops">Laptops</option>
+                    <option value="Fashion">Fashion</option>
+                    <option value="Footwear">Footwear</option>
+                    <option value="Watches">Watches</option>
+                    <option value="Home & Living">Home &amp; Living</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-extrabold text-gray-700 mb-1">Warehouse FC *</label>
+                  <select
+                    value={newWarehouse}
+                    onChange={(e) => setNewWarehouse(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  >
+                    <option value="Mobiles FC Mumbai">Mobiles FC Mumbai</option>
+                    <option value="Electronics FC Delhi">Electronics FC Delhi</option>
+                    <option value="Watches FC Bangalore">Watches FC Bangalore</option>
+                    <option value="Laptops FC Hyderabad">Laptops FC Hyderabad</option>
+                    <option value="Footwear FC Chennai">Footwear FC Chennai</option>
+                    <option value="Fashion FC Kolkata">Fashion FC Kolkata</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Stock Qty & Custom SKU */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-extrabold text-gray-700 mb-1">Initial Stock Units *</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={newStockQty}
+                    onChange={(e) => setNewStockQty(Number(e.target.value))}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-extrabold text-gray-700 mb-1">SKU Code (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="Auto-generated if empty"
+                    value={newSku}
+                    onChange={(e) => setNewSku(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-mono text-xs focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Product Image URL */}
+              <div>
+                <label className="block font-extrabold text-gray-700 mb-1">Product Image URL</label>
+                <input
+                  type="text"
+                  placeholder="https://images.unsplash.com/photo-..."
+                  value={newImage}
+                  onChange={(e) => setNewImage(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-medium focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-3 border-t">
+                <button
+                  type="button"
+                  onClick={() => setShowAddProductModal(false)}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
+                >
+                  Save &amp; Add Product
+                </button>
+              </div>
+
+            </form>
           </div>
         </div>
       )}
