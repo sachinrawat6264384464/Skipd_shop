@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fetchAdminShipments } from "lib/api";
+import { fetchAdminShipments, updateOrderStatusGlobal } from "lib/api";
 
 // Import Chart.js & react-chartjs-2
 import {
@@ -833,6 +833,20 @@ export default function AdminDeliveryPage() {
                       {/* ACTIONS */}
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          {s.status !== "DELIVERED" && (
+                            <button
+                              onClick={() => {
+                                setShipments(shipments.map(item => item.id === s.id ? { ...item, status: "DELIVERED" } : item));
+                                updateOrderStatusGlobal(s.orderId || s.awbCode, "DELIVERED");
+                                showToast(`Order ${s.orderId} marked as DELIVERED!`);
+                              }}
+                              className="bg-[#059669] hover:bg-[#047857] text-white text-[10px] font-black px-3 py-1.5 rounded-xl transition shadow-xs flex items-center gap-1 cursor-pointer shrink-0"
+                              title="Mark as Delivered"
+                            >
+                              <span>✓</span>
+                              <span>Mark Delivered</span>
+                            </button>
+                          )}
                           <button
                             onClick={() => setSelectedShipmentForModal(s)}
                             title="View AWB Tracking Details"

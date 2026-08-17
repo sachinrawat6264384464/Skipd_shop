@@ -425,6 +425,7 @@ function AccountContent() {
   const trackableOrders = userOrders.map((o: any) => ({
     order_number: o.order_number || (o.id ? `SKIPD-${o.id}` : "SKIPD-984201"),
     created_at: o.date || o.created_at || "Today",
+    delivered_at: o.delivered_at,
     total_amount: Number(o.total || o.total_amount || 0),
     payment_method: o.payment_method || "Razorpay / Prepaid Online",
     status: (o.status || "IN_TRANSIT").toUpperCase(),
@@ -456,41 +457,62 @@ function AccountContent() {
     o => (o.order_number || "").toLowerCase() === (selectedTrackOrderId || "").toLowerCase()
   ) || (trackableOrders.length > 0 ? trackableOrders[0] : null);
 
-  const getTimelineForStatus = (status: string): TimelineStep[] => {
-    const isDelivered = status === "DELIVERED";
-    const isInTransit = status === "IN_TRANSIT" || isDelivered;
-    const isPacked = status === "PACKED" || isInTransit || isDelivered;
+  const getTimelineForStatus = (status: string, createdAt?: string, deliveredAt?: string): TimelineStep[] => {
+    const s = (status || "").toUpperCase();
+    const isDelivered = s === "DELIVERED";
+    const isOutForDelivery = s === "OUT_FOR_DELIVERY" || s === "OUT FOR DELIVERY" || isDelivered;
+    const isInTransit = s === "IN_TRANSIT" || s === "IN TRANSIT" || s === "SHIPPED" || isOutForDelivery || isDelivered;
+    const isPacked = s === "PACKED" || s === "PROCESSING" || isInTransit || isDelivered;
+
+    // Base Date Calculation
+    let orderDate = new Date();
+    if (createdAt && createdAt !== "Today") {
+      const parsed = new Date(createdAt);
+      if (!isNaN(parsed.getTime())) orderDate = parsed;
+    }
+
+    const formatDate = (d: Date) => {
+      return d.toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" }) + " at " + d.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true });
+    };
+
+    const placedTimeStr = formatDate(orderDate);
+    const packedTimeStr = formatDate(new Date(orderDate.getTime() + 2 * 60 * 60 * 1000));
+    const transitTimeStr = formatDate(new Date(orderDate.getTime() + 6 * 60 * 60 * 1000));
+    const outTimeStr = formatDate(new Date(orderDate.getTime() + 24 * 60 * 60 * 1000));
+    const estDelivTimeStr = formatDate(new Date(orderDate.getTime() + 48 * 60 * 60 * 1000));
+    const actualDelivStr = deliveredAt ? formatDate(new Date(deliveredAt)) : formatDate(new Date());
 
     return [
       {
         status: "Order Confirmed & Placed",
         location: "SKIPD Fulfillment Hub, Mumbai",
-        timestamp: "Today, 10:30 AM",
+        timestamp: `${placedTimeStr} • Confirmed ✓`,
         completed: true
       },
       {
         status: "Order Packed & Quality Checked",
         location: "Central Warehouse, Line 4",
-        timestamp: "Today, 12:45 PM",
+        timestamp: isPacked ? `${packedTimeStr} • Packed ✓` : `Expected ${packedTimeStr}`,
         completed: isPacked
       },
       {
         status: "In Transit — Dispatched via Express",
-        location: "Logistics Hub (AWB: SR-894201)",
-        timestamp: isPacked ? "Today, 03:15 PM" : "Pending",
-        completed: isInTransit
+        location: "Logistics Hub (Express Air Cargo)",
+        timestamp: isInTransit ? `${transitTimeStr} • Dispatched ✓` : `Expected ${transitTimeStr}`,
+        completed: isInTransit,
+        active: isInTransit && !isOutForDelivery
       },
       {
         status: "Out for Delivery",
-        location: "Assigned to Executive (Vikram Sharma)",
-        timestamp: isDelivered ? "Yesterday, 04:00 PM" : (isInTransit ? "Expected by 06:00 PM" : "Pending"),
-        completed: isDelivered,
-        active: isInTransit && !isDelivered
+        location: "Assigned Executive: Vikram Sharma (Vehicle MP-07-EV-4210)",
+        timestamp: isOutForDelivery ? `${outTimeStr} • Out for Delivery 🚚` : `Expected ${outTimeStr}`,
+        completed: isOutForDelivery,
+        active: isOutForDelivery && !isDelivered
       },
       {
         status: "Delivered to Customer",
-        location: "Destination Address",
-        timestamp: isDelivered ? "Yesterday, 05:12 PM" : "Expected Aug 15",
+        location: "Destination Customer Address",
+        timestamp: isDelivered ? `${actualDelivStr} • Order Completed & Delivered ✓` : `Expected Delivery by ${estDelivTimeStr}`,
         completed: isDelivered
       }
     ];
@@ -1431,7 +1453,7 @@ function AccountContent() {
                         <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">Live Status Progress</h3>
 
                         <div className="space-y-6 relative pl-6 border-l-2 border-emerald-500 my-4 text-xs">
-                          {getTimelineForStatus(currentTrackOrder?.status || "IN_TRANSIT").map((step, idx) => (
+                          {getTimelineForStatus(currentTrackOrder?.status || "IN_TRANSIT", currentTrackOrder?.created_at, currentTrackOrder?.delivered_at).map((step, idx) => (
                             <div key={idx} className="relative pl-4">
                               <div
                                 className={`absolute -left-[31px] top-0 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black ${
