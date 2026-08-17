@@ -422,21 +422,28 @@ function AccountContent() {
   const [trackingInput, setTrackingInput] = useState<string>("");
   const [trackingSearchError, setTrackingSearchError] = useState("");
 
-  const trackableOrders = userOrders.map((o) => ({
-    order_number: o.order_number,
-    created_at: o.date,
-    total_amount: o.total,
-    payment_method: "Razorpay / Prepaid Online",
-    status: o.status === "DELIVERED" ? "DELIVERED" : "IN_TRANSIT",
-    items: [
-      {
-        title: o.title,
-        price: o.total,
-        quantity: 1,
-        image: o.image
-      }
-    ],
-    shipping_address: {
+  const trackableOrders = userOrders.map((o: any) => ({
+    order_number: o.order_number || (o.id ? `SKIPD-${o.id}` : "SKIPD-984201"),
+    created_at: o.date || o.created_at || "Today",
+    total_amount: Number(o.total || o.total_amount || 0),
+    payment_method: o.payment_method || "Razorpay / Prepaid Online",
+    status: (o.status || "IN_TRANSIT").toUpperCase(),
+    items: Array.isArray(o.items) && o.items.length > 0
+      ? o.items.map((it: any) => ({
+          title: it.title || it.product_name || o.title || "Ordered Item",
+          price: Number(it.price || it.unit_price || o.total || o.total_amount || 0),
+          quantity: Number(it.quantity || 1),
+          image: it.image || it.product_image || o.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+        }))
+      : [
+          {
+            title: o.title || "Ordered Item",
+            price: Number(o.total || o.total_amount || 0),
+            quantity: 1,
+            image: o.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+          }
+        ],
+    shipping_address: o.shipping_address || {
       name: user?.user_name || "Customer",
       street: "Registered Shipping Address",
       city: "Destination City",
@@ -1330,7 +1337,7 @@ function AccountContent() {
                                   return !isNaN(d.getTime()) ? d.toLocaleDateString("en-IN") : String(ord.created_at);
                                 })()}
                               </span>
-                              <span className="font-black text-gray-900">₹{ord.total_amount.toLocaleString("en-IN")}</span>
+                              <span className="font-black text-gray-900">₹{(ord.total_amount || 0).toLocaleString("en-IN")}</span>
                             </div>
                           </div>
                         </div>
@@ -1424,7 +1431,7 @@ function AccountContent() {
                         <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">Live Status Progress</h3>
 
                         <div className="space-y-6 relative pl-6 border-l-2 border-emerald-500 my-4 text-xs">
-                          {getTimelineForStatus(currentTrackOrder.status).map((step, idx) => (
+                          {getTimelineForStatus(currentTrackOrder?.status || "IN_TRANSIT").map((step, idx) => (
                             <div key={idx} className="relative pl-4">
                               <div
                                 className={`absolute -left-[31px] top-0 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black ${
@@ -1457,10 +1464,10 @@ function AccountContent() {
 
                         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2">
                           <p className="font-black text-gray-900 text-xs uppercase tracking-wider">🛍️ Items in this Package</p>
-                          {currentTrackOrder.items.map((item, idx) => (
+                          {(currentTrackOrder.items || []).map((item: any, idx: number) => (
                             <div key={idx} className="flex justify-between items-center text-xs">
                               <span className="font-bold text-gray-800 truncate max-w-[180px]">{item.title}</span>
-                              <span className="font-black text-gray-900">Qty {item.quantity} • ₹{item.price.toLocaleString("en-IN")}</span>
+                              <span className="font-black text-gray-900">Qty {item.quantity || 1} • ₹{(item.price || 0).toLocaleString("en-IN")}</span>
                             </div>
                           ))}
                         </div>
