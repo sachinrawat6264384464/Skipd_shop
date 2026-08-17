@@ -383,7 +383,7 @@ export default function AdminOrdersPage() {
         const apiOrders = await fetchAdminOrders();
         if (apiOrders && Array.isArray(apiOrders) && apiOrders.length > 0) {
           const formatted = apiOrders.map((o: any) => ({
-            id: o.order_number || `#SKIPD-${o.id}`,
+            id: String(o.order_number || `#SKIPD-${o.id}`),
             date: (() => {
               if (!o.created_at) return "May 25, 2025 10:30 AM";
               const d = new Date(o.created_at);
@@ -391,16 +391,25 @@ export default function AdminOrdersPage() {
                 ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
                 : String(o.created_at);
             })(),
-            customer: o.user?.full_name || o.user_name || "Customer",
-            phone: o.user?.phone || "+91 98765 43210",
-            email: o.user?.email || "customer@skipd.in",
-            address: o.shipping_address ? `${o.shipping_address.city}, ${o.shipping_address.state} (${o.shipping_address.pincode})` : "India",
-            items: o.items && o.items.length > 0 ? `${o.items[0].product_title || 'Purchased Item'} (x${o.items[0].quantity || 1})` : "Store Item (x1)",
-            img: o.items?.[0]?.product_image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-            amount: o.total_amount || o.total || 2999,
-            payment: o.payment_method || "UPI",
-            awb: o.tracking_number || `SR-${Math.floor(100000 + Math.random() * 900000)}`,
-            status: o.status || "Processing"
+            customer: String(o.user?.full_name || o.user_name || "Customer"),
+            phone: String(o.user?.phone || "+91 98765 43210"),
+            email: String(o.user?.email || "customer@skipd.in"),
+            address: o.shipping_address ? `${o.shipping_address.city || ''}, ${o.shipping_address.state || ''} (${o.shipping_address.pincode || ''})` : "India",
+            items: (() => {
+              if (typeof o.items === "string") return o.items;
+              if (Array.isArray(o.items) && o.items.length > 0) {
+                const first = o.items[0];
+                return typeof first === "string"
+                  ? first
+                  : `${first?.product_title || first?.title || first?.name || 'Purchased Item'} (x${first?.quantity || 1})`;
+              }
+              return "Store Item (x1)";
+            })(),
+            img: typeof o.items?.[0]?.product_image === "string" ? o.items[0].product_image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
+            amount: Number(o.total_amount || o.total || 2999),
+            payment: String(o.payment_method || "UPI"),
+            awb: String(o.tracking_number || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
+            status: String(o.status || "Processing")
           }));
 
           setOrders(prev => {
@@ -427,18 +436,31 @@ export default function AdminOrdersPage() {
                   parsed.forEach(ord => {
                     if (!realPlaced.some(o => o.id === ord.id || o.id === ord.order_number)) {
                       realPlaced.push({
-                        id: ord.order_number || ord.id || `#SKIPD-${Date.now()}`,
-                        date: ord.date || "Just now",
-                        customer: ord.customer || "Store Customer",
-                        phone: ord.phone || "+91 98765 43210",
-                        email: ord.email || "customer@skipd.in",
-                        address: ord.address || "Deliver to Customer Address",
-                        items: ord.title || ord.items || "Store Product",
-                        img: ord.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-                        amount: Number(ord.total) || 2999,
-                        payment: ord.payment || "UPI",
-                        awb: ord.awb || `SR-${Math.floor(100000 + Math.random() * 900000)}`,
-                        status: ord.status || "Processing"
+                        id: String(ord.order_number || ord.id || `#SKIPD-${Date.now()}`),
+                        date: String(ord.date || "Just now"),
+                        customer: String(ord.customer || ord.user_name || "Store Customer"),
+                        phone: String(ord.phone || "+91 98765 43210"),
+                        email: String(ord.email || "customer@skipd.in"),
+                        address: String(ord.address || "Deliver to Customer Address"),
+                        items: (() => {
+                          if (typeof ord.items === "string") return ord.items;
+                          if (typeof ord.title === "string") return ord.title;
+                          if (Array.isArray(ord.items) && ord.items.length > 0) {
+                            const first = ord.items[0];
+                            return typeof first === "string" 
+                              ? first 
+                              : `${first?.product_title || first?.title || first?.name || 'Store Item'} (x${first?.quantity || 1})`;
+                          }
+                          if (typeof ord.items === "object" && ord.items !== null) {
+                            return `${ord.items.product_title || ord.items.title || ord.items.name || 'Store Item'} (x${ord.items.quantity || 1})`;
+                          }
+                          return "Store Product (x1)";
+                        })(),
+                        img: typeof ord.image === "string" ? ord.image : (typeof ord.img === "string" ? ord.img : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"),
+                        amount: Number(ord.total || ord.amount || 2999),
+                        payment: String(ord.payment || "UPI"),
+                        awb: String(ord.awb || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
+                        status: String(ord.status || "Processing")
                       });
                     }
                   });
@@ -827,11 +849,11 @@ export default function AdminOrdersPage() {
                         <div className="flex items-center gap-2.5">
                           <img
                             src={ord.img}
-                            alt={ord.items}
+                            alt={typeof ord.items === "string" ? ord.items : "Product Image"}
                             className="w-10 h-10 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0 group-hover:scale-105 transition"
                           />
                           <span className="font-bold text-gray-900 text-xs truncate max-w-[180px]">
-                            {ord.items}
+                            {typeof ord.items === "string" ? ord.items : "Store Product (x1)"}
                           </span>
                         </div>
                       </td>

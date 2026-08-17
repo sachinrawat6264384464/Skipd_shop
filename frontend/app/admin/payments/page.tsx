@@ -117,16 +117,16 @@ export default function AdminPaymentsPage() {
                   const ordId = ord.order_number || ord.id || `#SKIPD-${Date.now()}`;
                   if (!rawTxns.some((t: any) => t.orderId === ordId || t.id === ord.id)) {
                     rawTxns.unshift({
-                      id: ord.paymentId || `PAY-${Math.floor(99200 + Math.random() * 89999)}`,
-                      orderId: ordId,
-                      customerName: ord.customer || ord.user_name || "Store Customer",
-                      customerEmail: ord.email || "customer@skipd.in",
+                      id: String(ord.paymentId || `PAY-${Math.floor(99200 + Math.random() * 89999)}`),
+                      orderId: String(ordId),
+                      customerName: String(ord.customer || ord.user_name || "Store Customer"),
+                      customerEmail: String(ord.email || "customer@skipd.in"),
                       amount: Number(ord.total || ord.amount || 2999),
-                      payment_method: ord.payment || "Razorpay UPI",
+                      payment_method: String(ord.payment || "Razorpay UPI"),
                       gateway: "Razorpay",
-                      rzpPaymentId: ord.razorpay_id || `pay_MB${Math.floor(10000000 + Math.random() * 89999999)}`,
-                      status: ord.payment_status || (ord.status === "Cancelled" ? "FAILED" : ord.status === "Refunds" ? "REFUNDED" : "SUCCESS"),
-                      date: ord.date || "May 25, 2025",
+                      rzpPaymentId: String(ord.razorpay_id || `pay_MB${Math.floor(10000000 + Math.random() * 89999999)}`),
+                      status: String(ord.payment_status || (ord.status === "Cancelled" ? "FAILED" : ord.status === "Refunds" ? "REFUNDED" : "SUCCESS")),
+                      date: String(ord.date || "May 25, 2025"),
                       time: "02:14 PM"
                     });
                   }
