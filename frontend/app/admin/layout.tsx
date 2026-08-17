@@ -358,25 +358,53 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <div className="p-2 bg-emerald-50 rounded-xl border border-emerald-100">
+                    <Link
+                      href="/admin/orders"
+                      onClick={() => {
+                        setShowNotifications(false);
+                        setUnreadNotifs(prev => Math.max(0, prev - 1));
+                      }}
+                      className="block p-2 bg-emerald-50 hover:bg-emerald-100/80 rounded-xl border border-emerald-100 transition cursor-pointer"
+                    >
                       <p className="font-bold text-emerald-900 text-[11px]">🛒 New Order Received</p>
                       <p className="text-[10px] text-emerald-700">Order #SKIPD-25879 for ₹29,999 placed by Amit Sharma</p>
-                    </div>
+                    </Link>
 
-                    <div className="p-2 bg-amber-50 rounded-xl border border-amber-100">
+                    <Link
+                      href="/admin/inventory"
+                      onClick={() => {
+                        setShowNotifications(false);
+                        setUnreadNotifs(prev => Math.max(0, prev - 1));
+                      }}
+                      className="block p-2 bg-amber-50 hover:bg-amber-100/80 rounded-xl border border-amber-100 transition cursor-pointer"
+                    >
                       <p className="font-bold text-amber-900 text-[11px]">⚠️ Low Stock Alert</p>
                       <p className="text-[10px] text-amber-700">iPhone 15 Pro Max has only 8 units left in inventory</p>
-                    </div>
+                    </Link>
 
-                    <div className="p-2 bg-blue-50 rounded-xl border border-blue-100">
+                    <Link
+                      href="/admin/queries"
+                      onClick={() => {
+                        setShowNotifications(false);
+                        setUnreadNotifs(prev => Math.max(0, prev - 1));
+                      }}
+                      className="block p-2 bg-blue-50 hover:bg-blue-100/80 rounded-xl border border-blue-100 transition cursor-pointer"
+                    >
                       <p className="font-bold text-blue-900 text-[11px]">↺ Return Requested</p>
                       <p className="text-[10px] text-blue-700">Order RET-90481 item return initiated by Ananya Roy</p>
-                    </div>
+                    </Link>
 
-                    <div className="p-2 bg-purple-50 rounded-xl border border-purple-100">
+                    <Link
+                      href="/admin/sales"
+                      onClick={() => {
+                        setShowNotifications(false);
+                        setUnreadNotifs(prev => Math.max(0, prev - 1));
+                      }}
+                      className="block p-2 bg-purple-50 hover:bg-purple-100/80 rounded-xl border border-purple-100 transition cursor-pointer"
+                    >
                       <p className="font-bold text-purple-900 text-[11px]">⚡ Flash Sale Active</p>
                       <p className="text-[10px] text-purple-700">Weekend Sale is live with 42 items</p>
-                    </div>
+                    </Link>
                   </div>
 
                   <Link
@@ -423,20 +451,41 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </div>
 
                   <div className="space-y-2 text-xs">
-                    <div className="p-2 hover:bg-gray-50 rounded-xl transition border border-gray-100 cursor-pointer">
+                    <Link
+                      href="/admin/tickets"
+                      onClick={() => {
+                        setShowMessages(false);
+                        setUnreadMsgs(prev => Math.max(0, prev - 1));
+                      }}
+                      className="block p-2 hover:bg-emerald-50 rounded-xl transition border border-gray-100 cursor-pointer"
+                    >
                       <p className="font-bold text-gray-900 text-[11px]">💬 Amit Sharma</p>
                       <p className="text-[10px] text-gray-500 truncate">"When will my order SR-8849201 be delivered?"</p>
-                    </div>
+                    </Link>
 
-                    <div className="p-2 hover:bg-gray-50 rounded-xl transition border border-gray-100 cursor-pointer">
+                    <Link
+                      href="/admin/tickets"
+                      onClick={() => {
+                        setShowMessages(false);
+                        setUnreadMsgs(prev => Math.max(0, prev - 1));
+                      }}
+                      className="block p-2 hover:bg-emerald-50 rounded-xl transition border border-gray-100 cursor-pointer"
+                    >
                       <p className="font-bold text-gray-900 text-[11px]">💬 Priya Verma</p>
                       <p className="text-[10px] text-gray-500 truncate">"Can I change my delivery address for #SKIPD-25878?"</p>
-                    </div>
+                    </Link>
 
-                    <div className="p-2 hover:bg-gray-50 rounded-xl transition border border-gray-100 cursor-pointer">
+                    <Link
+                      href="/admin/tickets"
+                      onClick={() => {
+                        setShowMessages(false);
+                        setUnreadMsgs(prev => Math.max(0, prev - 1));
+                      }}
+                      className="block p-2 hover:bg-emerald-50 rounded-xl transition border border-gray-100 cursor-pointer"
+                    >
                       <p className="font-bold text-gray-900 text-[11px]">💬 Rahul Singh</p>
                       <p className="text-[10px] text-gray-500 truncate">"Invoice download assistance for Noise Watch"</p>
-                    </div>
+                    </Link>
                   </div>
 
                   <Link

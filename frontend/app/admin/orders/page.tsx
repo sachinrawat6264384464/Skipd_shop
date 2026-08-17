@@ -385,7 +385,13 @@ export default function AdminOrdersPage() {
         if (apiOrders && Array.isArray(apiOrders) && apiOrders.length > 0) {
           const formatted = apiOrders.map((o: any) => ({
             id: o.order_number || `#SKIPD-${o.id}`,
-            date: o.created_at ? new Date(o.created_at).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "May 25, 2025 10:30 AM",
+            date: (() => {
+              if (!o.created_at) return "May 25, 2025 10:30 AM";
+              const d = new Date(o.created_at);
+              return !isNaN(d.getTime())
+                ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                : String(o.created_at);
+            })(),
             customer: o.user?.full_name || o.user_name || "Customer",
             phone: o.user?.phone || "+91 98765 43210",
             email: o.user?.email || "customer@skipd.in",
@@ -408,47 +414,49 @@ export default function AdminOrdersPage() {
         console.warn("FastAPI Orders API offline, reading live user store orders.");
       }
 
-      // Gather real placed orders from all user session localStorages
-      try {
-        let realPlaced: any[] = [];
-        const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
-        keys.forEach(k => {
-          const item = localStorage.getItem(k);
-          if (item) {
-            try {
-              const parsed = JSON.parse(item);
-              if (Array.isArray(parsed)) {
-                parsed.forEach(ord => {
-                  if (!realPlaced.some(o => o.id === ord.id || o.id === ord.order_number)) {
-                    realPlaced.push({
-                      id: ord.order_number || ord.id || `#SKIPD-${Date.now()}`,
-                      date: ord.date || "Just now",
-                      customer: ord.customer || "Store Customer",
-                      phone: ord.phone || "+91 98765 43210",
-                      email: ord.email || "customer@skipd.in",
-                      address: ord.address || "Deliver to Customer Address",
-                      items: ord.title || ord.items || "Store Product",
-                      img: ord.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-                      amount: Number(ord.total) || 2999,
-                      payment: ord.payment || "UPI",
-                      awb: ord.awb || `SR-${Math.floor(100000 + Math.random() * 900000)}`,
-                      status: ord.status || "Processing"
-                    });
-                  }
-                });
-              }
-            } catch (e) {}
-          }
-        });
-
-        if (realPlaced.length > 0) {
-          setOrders(prev => {
-            const ids = new Set(prev.map(p => p.id));
-            const fresh = realPlaced.filter(r => !ids.has(r.id));
-            return [...fresh, ...prev];
+      // Gather real placed orders from all user session localStorages (Window safe)
+      if (typeof window !== "undefined") {
+        try {
+          let realPlaced: any[] = [];
+          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
+          keys.forEach(k => {
+            const item = localStorage.getItem(k);
+            if (item) {
+              try {
+                const parsed = JSON.parse(item);
+                if (Array.isArray(parsed)) {
+                  parsed.forEach(ord => {
+                    if (!realPlaced.some(o => o.id === ord.id || o.id === ord.order_number)) {
+                      realPlaced.push({
+                        id: ord.order_number || ord.id || `#SKIPD-${Date.now()}`,
+                        date: ord.date || "Just now",
+                        customer: ord.customer || "Store Customer",
+                        phone: ord.phone || "+91 98765 43210",
+                        email: ord.email || "customer@skipd.in",
+                        address: ord.address || "Deliver to Customer Address",
+                        items: ord.title || ord.items || "Store Product",
+                        img: ord.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
+                        amount: Number(ord.total) || 2999,
+                        payment: ord.payment || "UPI",
+                        awb: ord.awb || `SR-${Math.floor(100000 + Math.random() * 900000)}`,
+                        status: ord.status || "Processing"
+                      });
+                    }
+                  });
+                }
+              } catch (e) {}
+            }
           });
-        }
-      } catch (e) {}
+
+          if (realPlaced.length > 0) {
+            setOrders(prev => {
+              const ids = new Set(prev.map(p => p.id));
+              const fresh = realPlaced.filter(r => !ids.has(r.id));
+              return [...fresh, ...prev];
+            });
+          }
+        } catch (e) {}
+      }
 
       setLoading(false);
     }
