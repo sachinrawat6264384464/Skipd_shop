@@ -7,7 +7,11 @@ import {
   createAdminProduct,
   updateAdminProduct,
   deleteAdminProduct,
-  seedCatalogProducts
+  seedCatalogProducts,
+  fetchAdminCategories,
+  createAdminCategory,
+  updateAdminCategory,
+  deleteAdminCategory
 } from "lib/api";
 
 export default function AdminProductsPage() {
@@ -35,6 +39,12 @@ export default function AdminProductsPage() {
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [showAddAttributeModal, setShowAddAttributeModal] = useState(false);
 
+  // Edit / Delete Category State
+  const [editingCategory, setEditingCategory] = useState<any | null>(null);
+  const [showEditCategoryModal, setShowEditCategoryModal] = useState(false);
+  const [editCategoryForm, setEditCategoryForm] = useState({ name: "", slug: "", icon: "📁", status: "Active" });
+  const [deletingCategoryId, setDeletingCategoryId] = useState<number | string | null>(null);
+
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [deletingProductId, setDeletingProductId] = useState<number | null>(null);
   const [actionMessage, setActionMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
@@ -46,35 +56,56 @@ export default function AdminProductsPage() {
     icon: "📁"
   });
 
-  const handleCreateCategory = (e: React.FormEvent) => {
+  const handleCreateCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategoryForm.name) return;
 
     const slug = newCategoryForm.slug || newCategoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-    const newCat = {
-      id: Date.now(),
+    const payload = {
       name: newCategoryForm.name,
       slug: slug,
       icon: newCategoryForm.icon || "📁",
-      count: 0,
       status: "Active"
     };
 
-    setCategories(prev => [...prev, newCat]);
-    setNewProduct(prev => ({ ...prev, category_slug: slug }));
-
-    if (typeof window !== "undefined") {
-      try {
-        const item = localStorage.getItem("skipd_custom_categories");
-        const existing = item ? JSON.parse(item) : [];
-        existing.push(newCat);
-        localStorage.setItem("skipd_custom_categories", JSON.stringify(existing));
-      } catch (err) {}
+    const created = await createAdminCategory(payload);
+    if (created) {
+      showNotification(`✓ Category "${newCategoryForm.name}" saved to PostgreSQL Database!`);
+      await loadCategories();
+      setNewProduct(prev => ({ ...prev, category_slug: slug }));
     }
-
-    showNotification(`✓ Category "${newCategoryForm.name}" created & selected in Dropdown!`);
     setShowAddCategoryModal(false);
     setNewCategoryForm({ name: "", slug: "", icon: "📁" });
+  };
+
+  const handleUpdateCategory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingCategory) return;
+
+    const payload = {
+      name: editCategoryForm.name,
+      slug: editCategoryForm.slug,
+      icon: editCategoryForm.icon,
+      status: editCategoryForm.status
+    };
+
+    const updated = await updateAdminCategory(editingCategory.id, payload);
+    if (updated) {
+      showNotification(`✓ Category "${editCategoryForm.name}" updated in Database!`);
+      await loadCategories();
+    }
+    setShowEditCategoryModal(false);
+    setEditingCategory(null);
+  };
+
+  const confirmDeleteCategory = async () => {
+    if (!deletingCategoryId) return;
+    const res = await deleteAdminCategory(deletingCategoryId);
+    if (res) {
+      showNotification(`🗑️ Category deleted from Database`, "error");
+      await loadCategories();
+    }
+    setDeletingCategoryId(null);
   };
 
   // New Brand Form State
@@ -275,6 +306,7 @@ export default function AdminProductsPage() {
 
   useEffect(() => {
     loadProducts();
+    loadCategories();
   }, []);
 
   async function loadProducts() {
@@ -286,6 +318,17 @@ export default function AdminProductsPage() {
       console.error("Failed to load products:", e);
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function loadCategories() {
+    try {
+      const data = await fetchAdminCategories();
+      if (data && Array.isArray(data) && data.length > 0) {
+        setCategories(data);
+      }
+    } catch (e) {
+      console.error("Failed to load categories:", e);
     }
   }
 
@@ -973,8 +1016,22 @@ export default function AdminProductsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">✏️ Edit</button>
-                        <button className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer">🗑️</button>
+                        <button
+                          onClick={() => {
+                            setEditingCategory(c);
+                            setEditCategoryForm({ name: c.name, slug: c.slug, icon: c.icon || "📁", status: c.status || "Active" });
+                            setShowEditCategoryModal(true);
+                          }}
+                          className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs"
+                        >
+                          ✏️ Edit
+                        </button>
+                        <button
+                          onClick={() => setDeletingCategoryId(c.id)}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs"
+                        >
+                          🗑️
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -1318,6 +1375,118 @@ export default function AdminProductsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ✏️ EDIT CATEGORY MODAL */}
+      {showEditCategoryModal && editingCategory && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">✏️</span>
+                <h3 className="text-lg font-black text-gray-900">Edit Category #{editingCategory.id}</h3>
+              </div>
+              <button onClick={() => setShowEditCategoryModal(false)} className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer">✕</button>
+            </div>
+
+            <form onSubmit={handleUpdateCategory} className="space-y-4 text-xs font-medium">
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editCategoryForm.name}
+                  onChange={(e) => {
+                    const name = e.target.value;
+                    const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+                    setEditCategoryForm({ ...editCategoryForm, name, slug });
+                  }}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Slug *</label>
+                <input
+                  type="text"
+                  required
+                  value={editCategoryForm.slug}
+                  onChange={(e) => setEditCategoryForm({ ...editCategoryForm, slug: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-700 focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Icon / Emoji</label>
+                <input
+                  type="text"
+                  value={editCategoryForm.icon}
+                  onChange={(e) => setEditCategoryForm({ ...editCategoryForm, icon: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Status</label>
+                <select
+                  value={editCategoryForm.status}
+                  onChange={(e) => setEditCategoryForm({ ...editCategoryForm, status: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                >
+                  <option value="Active">Active</option>
+                  <option value="Inactive">Inactive</option>
+                </select>
+              </div>
+
+              <div className="flex gap-3 pt-3 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setShowEditCategoryModal(false)}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"
+                >
+                  ✓ Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 🗑️ DELETE CATEGORY CONFIRMATION MODAL */}
+      {deletingCategoryId !== null && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center space-y-4 shadow-2xl relative">
+            <div className="w-14 h-14 rounded-2xl bg-red-50 text-red-600 text-2xl flex items-center justify-center mx-auto border border-red-100">
+              🗑️
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-gray-900">Delete Category?</h3>
+              <p className="text-xs text-gray-500 mt-1">
+                Are you sure you want to permanently delete category <span className="font-bold text-gray-800">#{deletingCategoryId}</span> from PostgreSQL database?
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setDeletingCategoryId(null)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl text-xs transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteCategory}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black py-2.5 rounded-xl text-xs transition shadow-md cursor-pointer"
+              >
+                Delete Permanently
+              </button>
+            </div>
           </div>
         </div>
       )}

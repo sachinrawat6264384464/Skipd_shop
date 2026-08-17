@@ -48,6 +48,8 @@ class Category(Base):
     slug = Column(String(100), unique=True, index=True, nullable=False)
     description = Column(Text, nullable=True)
     image_url = Column(String(500), nullable=True)
+    icon = Column(String(50), default="📁")
+    status = Column(String(50), default="Active")
 
     products = relationship("Product", back_populates="category")
 
