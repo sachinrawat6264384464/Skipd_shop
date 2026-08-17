@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 
 export interface HeroSlide {
@@ -15,9 +15,9 @@ export interface HeroSlide {
   secondaryButtonHref: string;
   imageUrl: string;
   badgeText: string;
-  bgGradient: string; // e.g. "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"
-  tagColor: string; // e.g. "bg-emerald-100 text-emerald-800 border-emerald-300"
-  btnColor: string; // e.g. "bg-emerald-600 hover:bg-emerald-700 text-white"
+  bgGradient: string;
+  tagColor: string;
+  btnColor: string;
 }
 
 const DEFAULT_SLIDES: HeroSlide[] = [
@@ -71,10 +71,17 @@ const DEFAULT_SLIDES: HeroSlide[] = [
   }
 ];
 
+const AUTO_SLIDE_INTERVAL = 3500; // 3.5 seconds per slide
+
 export function HeroSlider() {
   const [slides, setSlides] = useState<HeroSlide[]>(DEFAULT_SLIDES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const progressRef = useRef<HTMLDivElement | null>(null);
+  const [progressWidth, setProgressWidth] = useState(0);
+  const progressAnimRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Load dynamic slides from localStorage (admin panel updates)
   const loadSlides = () => {
@@ -98,42 +105,96 @@ export function HeroSlider() {
     return () => window.removeEventListener("skipd_banners_updated", handleUpdate);
   }, []);
 
-  // Auto-slide every 2 seconds (2000ms) right to left, paused on hover
+  // Progress bar animation
+  const startProgress = useCallback(() => {
+    setProgressWidth(0);
+    if (progressAnimRef.current) clearInterval(progressAnimRef.current);
+    const step = 100 / (AUTO_SLIDE_INTERVAL / 50); // update every 50ms
+    progressAnimRef.current = setInterval(() => {
+      setProgressWidth(prev => {
+        if (prev >= 100) {
+          if (progressAnimRef.current) clearInterval(progressAnimRef.current);
+          return 100;
+        }
+        return prev + step;
+      });
+    }, 50);
+  }, []);
+
+  const stopProgress = useCallback(() => {
+    if (progressAnimRef.current) clearInterval(progressAnimRef.current);
+  }, []);
+
+  // Go to next slide with smooth clockwise loop
+  const goToNext = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentIndex(prev => (prev + 1) % slides.length);
+    setTimeout(() => setIsAnimating(false), 550);
+  }, [isAnimating, slides.length]);
+
+  const goToPrev = useCallback(() => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentIndex(prev => (prev - 1 + slides.length) % slides.length);
+    setTimeout(() => setIsAnimating(false), 550);
+  }, [isAnimating, slides.length]);
+
+  const goToSlide = useCallback((index: number) => {
+    if (isAnimating || index === currentIndex) return;
+    setIsAnimating(true);
+    setCurrentIndex(index);
+    setTimeout(() => setIsAnimating(false), 550);
+  }, [isAnimating, currentIndex]);
+
+  // Auto-slide loop — clockwise (left→right direction, loops back to 0 from last)
   useEffect(() => {
-    if (isHovered || slides.length <= 1) return;
+    if (slides.length <= 1) return;
 
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % slides.length);
-    }, 2000); // 2 seconds
+    const startAutoSlide = () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      startProgress();
+      intervalRef.current = setInterval(() => {
+        goToNext();
+        startProgress();
+      }, AUTO_SLIDE_INTERVAL);
+    };
 
-    return () => clearInterval(interval);
-  }, [isHovered, slides.length]);
+    if (!isHovered) {
+      startAutoSlide();
+    } else {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      stopProgress();
+    }
 
-  const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + slides.length) % slides.length);
-  };
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+      stopProgress();
+    };
+  }, [isHovered, slides.length, goToNext, startProgress, stopProgress]);
 
   if (!slides || slides.length === 0) return null;
 
   return (
     <div
-      className="relative w-full overflow-hidden group"
+      className="relative w-full overflow-hidden group rounded-3xl"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Slides Container - Smooth horizontal slide (Right to Left) */}
+      {/* Slides Container — infinite clockwise loop via translateX */}
       <div
-        className="flex transition-transform duration-500 ease-in-out w-full"
-        style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+        className="flex w-full"
+        style={{
+          transform: `translateX(-${currentIndex * 100}%)`,
+          transition: isAnimating ? "transform 0.55s cubic-bezier(0.45, 0, 0.25, 1)" : "none",
+          willChange: "transform"
+        }}
       >
         {slides.map((slide, idx) => (
           <div key={slide.id || idx} className="w-full shrink-0">
-            <div className={`bg-gradient-to-r ${slide.bgGradient || "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"} border rounded-3xl p-4 sm:p-8 md:p-12 shadow-xs flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 relative overflow-hidden min-h-[280px]`}>
-
+            <div
+              className={`bg-gradient-to-r ${slide.bgGradient || "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"} border flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 relative overflow-hidden min-h-[280px] p-4 sm:p-8 md:p-12`}
+            >
               {/* Text Content */}
               <div className="space-y-3 sm:space-y-4 max-w-xl z-10 w-full">
                 <span className={`inline-block border font-extrabold text-[10px] uppercase px-3 py-1 rounded-full tracking-wider ${slide.tagColor || "bg-emerald-100 text-emerald-800 border-emerald-300"}`}>
@@ -167,12 +228,12 @@ export function HeroSlider() {
                 </div>
               </div>
 
-              {/* Right Image Container */}
-              <div className="relative w-full md:w-96 h-44 sm:h-64 md:h-72 rounded-2xl overflow-hidden shadow-lg border border-emerald-100 shrink-0">
+              {/* Right Image */}
+              <div className="relative w-full md:w-96 h-44 sm:h-64 md:h-72 rounded-2xl overflow-hidden shadow-lg border border-white/60 shrink-0">
                 <img
                   src={slide.imageUrl}
                   alt={slide.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 {slide.badgeText && (
                   <div className="absolute top-3 right-3 bg-red-600 text-white font-black text-xs px-3 py-1.5 rounded-full shadow-md animate-pulse">
@@ -180,25 +241,24 @@ export function HeroSlider() {
                   </div>
                 )}
               </div>
-
             </div>
           </div>
         ))}
       </div>
 
-      {/* Manual Slide Navigation Arrows (visible on hover) */}
+      {/* ← → Manual Navigation Arrows */}
       {slides.length > 1 && (
         <>
           <button
-            onClick={prevSlide}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-900 font-black text-lg shadow-lg backdrop-blur-xs opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center cursor-pointer z-20"
+            onClick={goToPrev}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-900 font-black text-lg shadow-lg backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center cursor-pointer z-20 border border-gray-200/80 hover:scale-110"
             title="Previous Slide"
           >
             ‹
           </button>
           <button
-            onClick={nextSlide}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/80 hover:bg-white text-gray-900 font-black text-lg shadow-lg backdrop-blur-xs opacity-0 group-hover:opacity-100 transition duration-200 flex items-center justify-center cursor-pointer z-20"
+            onClick={goToNext}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-900 font-black text-lg shadow-lg backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center cursor-pointer z-20 border border-gray-200/80 hover:scale-110"
             title="Next Slide"
           >
             ›
@@ -206,19 +266,39 @@ export function HeroSlider() {
         </>
       )}
 
-      {/* Slide Indicators (Dots) */}
+      {/* Bottom Dots + Progress Bar */}
       {slides.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20 bg-white/60 backdrop-blur-xs px-3 py-1.5 rounded-full shadow-xs">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentIndex(i)}
-              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                currentIndex === i ? "w-6 bg-emerald-600" : "w-2 bg-gray-400 hover:bg-gray-600"
-              }`}
-              title={`Go to slide ${i + 1}`}
-            />
-          ))}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
+          {/* Progress Thin Bar */}
+          {!isHovered && (
+            <div className="w-32 h-0.5 bg-white/40 rounded-full overflow-hidden backdrop-blur-xs">
+              <div
+                className="h-full bg-white rounded-full transition-none"
+                style={{ width: `${progressWidth}%` }}
+              />
+            </div>
+          )}
+
+          {/* Dot Indicators */}
+          <div className="flex items-center gap-2 bg-white/60 backdrop-blur-xs px-3 py-1.5 rounded-full shadow-xs">
+            {slides.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => goToSlide(i)}
+                className={`h-2 rounded-full transition-all duration-400 cursor-pointer ${
+                  currentIndex === i ? "w-6 bg-emerald-600 shadow-xs" : "w-2 bg-gray-400 hover:bg-gray-600"
+                }`}
+                title={`Go to slide ${i + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Slide Counter Badge (top right) */}
+      {slides.length > 1 && (
+        <div className="absolute top-3 right-3 z-20 bg-black/30 text-white font-bold text-[10px] px-2.5 py-1 rounded-full backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200">
+          {currentIndex + 1} / {slides.length}
         </div>
       )}
     </div>
