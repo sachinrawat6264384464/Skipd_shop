@@ -44,7 +44,7 @@ export default function AdminInventoryPage() {
   // Selected Checkboxes State
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
-  // CSV/JSON File Import Handler — now includes image_url column (col index 5)
+  // CSV/JSON File Import Handler — supports all 6 steps of Add Product form
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -72,6 +72,18 @@ export default function AdminInventoryPage() {
                 const cat = cols[3] || "General";
                 const warehouse = cols[4] || "Central FC";
                 const imageUrl = cols[5] || "";
+                const sku = cols[6] || `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`;
+                const compareAtPrice = cols[7] ? parseFloat(cols[7]) : price * 1.4;
+                const brand = cols[8] || "";
+                const subcategory = cols[9] || "";
+                const tags = cols[10] ? cols[10].split("|").map(t => t.trim()) : ["bestseller"];
+                const shortDesc = cols[11] || "";
+                const fullDesc = cols[12] || shortDesc || `${title} premium quality catalog item.`;
+                const highlights = cols[13] ? cols[13].split("|").map(h => h.trim()) : [];
+                const boxContents = cols[14] ? cols[14].split("|").map(b => b.trim()) : [];
+                const hsnCode = cols[15] || "85183000";
+                const metaTitle = cols[16] || title;
+                const metaDesc = cols[17] || shortDesc || fullDesc;
 
                 // Try to match with bulk-uploaded images by filename/title
                 const matchedImg = bulkImages.find(img =>
@@ -82,10 +94,22 @@ export default function AdminInventoryPage() {
                 importedItems.push({
                   id: Date.now() + i,
                   title,
+                  sku,
                   price,
+                  compare_at_price: compareAtPrice,
                   stock_quantity: stock,
                   category: cat,
+                  subcategory,
+                  brand,
                   warehouse,
+                  tags,
+                  short_description: shortDesc,
+                  description: fullDesc,
+                  highlights,
+                  box_contents: boxContents,
+                  hsn_code: hsnCode,
+                  meta_title: metaTitle,
+                  meta_desc: metaDesc,
                   images: [
                     matchedImg?.url ||
                     imageUrl ||
@@ -104,8 +128,8 @@ export default function AdminInventoryPage() {
           const formattedImported = importedItems.map((p, idx) => ({
             id: p.id || Date.now() + idx,
             title: p.title || "Imported Product",
-            variant: "Standard Edition",
-            sku: `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`,
+            variant: p.subcategory || "Standard Edition",
+            sku: p.sku || `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`,
             barcode: `890123${Math.floor(100000 + Math.random() * 900000)}`,
             category: p.category || "General",
             warehouse: p.warehouse || "Central FC",
@@ -120,7 +144,7 @@ export default function AdminInventoryPage() {
           }));
 
           setProducts(prev => [...formattedImported, ...prev]);
-          showToast(`✓ Successfully imported ${importedItems.length} products from ${file.name}! ${bulkImages.length > 0 ? `(${bulkImages.length} images matched)` : ""}`);
+          showToast(`✓ Successfully imported ${importedItems.length} products with full specs from ${file.name}! ${bulkImages.length > 0 ? `(${bulkImages.length} images matched)` : ""}`);
           setBulkImages([]);
           setShowImportModal(false);
         } else {
@@ -1095,15 +1119,14 @@ export default function AdminInventoryPage() {
                   </span>
                 </div>
 
-                {/* CSV Format Info — now includes Image URL column */}
+                {/* CSV Format Info — supports all 6 steps of Add Product form */}
                 <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl text-[10px] text-gray-600 space-y-2">
-                  <p className="font-bold text-gray-900">📋 Recommended CSV Columns:</p>
-                  <p className="font-mono text-emerald-700 bg-white p-2 rounded-lg border border-gray-200 whitespace-pre-wrap break-all leading-relaxed">
-                    Product Title, Price, Stock Qty, Category, Warehouse, Image URL
+                  <p className="font-bold text-gray-900">📋 Comprehensive CSV Columns Format (All 6 Form Steps Supported):</p>
+                  <p className="font-mono text-emerald-700 bg-white p-2 rounded-lg border border-gray-200 whitespace-pre-wrap break-all leading-relaxed text-[9px]">
+                    Product Title, Price, Stock Qty, Category, Warehouse, Image URL, SKU, Compare At Price, Brand, Sub Category, Tags, Short Description, Description, Highlights, Box Contents, HSN Code, Meta Title, Meta Description
                   </p>
                   <p className="text-gray-400 leading-relaxed">
-                    💡 <strong>Image URL</strong> column is optional. If left blank, images from the
-                    &quot;Product Images&quot; tab will be auto-matched by product name.
+                    💡 Mandatory columns: <strong>Product Title, Price</strong>. All other columns are optional and auto-fill defaults. Separator for Tags, Highlights, and Box Contents is <code className="bg-white px-1 border rounded">|</code>.
                   </p>
                 </div>
 
@@ -1123,19 +1146,24 @@ export default function AdminInventoryPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      const sampleCsv = "Product Title,Price,Stock Quantity,Category,Warehouse,Image URL\nWireless Noise Cancelling Earbuds,3999,50,Electronics,Electronics FC Delhi,https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400\nLeather Smart Watch Strap,1299,100,Watches,Watches FC Bangalore,https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400\nSlim Fit Casual Denim Jacket,2999,30,Fashion,Fashion FC Kolkata,https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400";
+                      const headers = "Product Title,Price,Stock Quantity,Category,Warehouse,Image URL,SKU,Compare At Price,Brand,Sub Category,Tags,Short Description,Description,Highlights,Box Contents,HSN Code,Meta Title,Meta Description";
+                      const r1 = '"Sony WH-1000XM5 Studio Headphones",24999,50,Electronics,Electronics FC Delhi,https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800,SONY-XM5-STUDIO,29999,Sony,Wireless Headphones,audio|tech|wireless,"Studio quality ANC headphones","Active noise cancellation with 40-hour battery life and spatial audio.","40hr Battery|Active ANC|Multipoint Pairing","Headphones|Carrying Case|Audio Cable|USB-C Cable",85183000,"Sony WH-1000XM5 ANC Headphones","Buy Sony WH-1000XM5 wireless studio headphones at best price."';
+                      const r2 = '"OnePlus Nord 6 5G (8GB+256GB)",44499,35,Mobiles,Mobiles FC Mumbai,https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800,ONEPLUS-NORD6-BLK,52999,OnePlus,Flagship Smartphones,mobiles|5g|oneplus,"165FPS gaming & 9000mAh battery","Snapdragon 8s Gen 4 processor with ultra fast 100W SUPERVOOC charging.","165FPS Gaming|9000mAh Battery|100W SUPERVOOC","Handset|100W Charger|Type-C Cable|SIM Ejector",85171200,"OnePlus Nord 6 5G Smartphone","Buy OnePlus Nord 6 5G flagship phone."';
+                      const r3 = '"Nike Air Force 1 07 Sneakers",7495,25,Footwear,Footwear FC Chennai,https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800,NIKE-AF1-WHITE,8995,Nike,Sneakers,shoes|sneakers|nike,"Classic white leather sneakers","Iconic basketball shoes with responsive Nike Air cushioning.","Real Leather|Air Cushioning|Rubber Sole","Sneakers Pair|Warranty Card",64039990,"Nike Air Force 1 07 Sneakers","Buy authentic Nike Air Force 1 sneakers."';
+
+                      const sampleCsv = `${headers}\n${r1}\n${r2}\n${r3}`;
                       const blob = new Blob([sampleCsv], { type: "text/csv" });
                       const url = URL.createObjectURL(blob);
                       const a = document.createElement("a");
                       a.href = url;
-                      a.download = "skipd_inventory_sample.csv";
+                      a.download = "skipd_full_spec_inventory_sample.csv";
                       a.click();
-                      showToast("📥 Sample CSV (with Image URL column) downloaded!");
+                      showToast("📥 Full-spec sample CSV downloaded with all 18 form step columns!");
                     }}
                     className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer"
                   >
                     <span>📥</span>
-                    <span>Download Sample CSV</span>
+                    <span>Download Full Spec Sample CSV</span>
                   </button>
 
                   <button
