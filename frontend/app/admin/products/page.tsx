@@ -581,14 +581,34 @@ export default function AdminProductsPage() {
     }
   }
 
+  const DEFAULT_STORE_CATEGORIES = [
+    { id: 1, name: "Electronics", slug: "electronics", icon: "⚡", count: 12, status: "Active" },
+    { id: 2, name: "Mobiles & Tablets", slug: "mobiles", icon: "📱", count: 15, status: "Active" },
+    { id: 3, name: "Laptops & Computers", slug: "laptops", icon: "💻", count: 8, status: "Active" },
+    { id: 4, name: "Fashion & Apparel", slug: "fashion", icon: "👕", count: 10, status: "Active" },
+    { id: 5, name: "Footwear & Shoes", slug: "footwear", icon: "👟", count: 6, status: "Active" },
+    { id: 6, name: "Watches & Smartwear", slug: "watches", icon: "⌚", count: 7, status: "Active" },
+    { id: 7, name: "Home & Living", slug: "home", icon: "🏡", count: 9, status: "Active" }
+  ];
+
   async function loadCategories() {
     try {
       const data = await fetchAdminCategories();
       if (data && Array.isArray(data) && data.length > 0) {
-        setCategories(data);
+        const fetchedSlugs = new Set(data.map((c: any) => c.slug));
+        const merged = [...data];
+        DEFAULT_STORE_CATEGORIES.forEach((def) => {
+          if (!fetchedSlugs.has(def.slug)) {
+            merged.push(def);
+          }
+        });
+        setCategories(merged);
+      } else {
+        setCategories(DEFAULT_STORE_CATEGORIES);
       }
     } catch (e) {
       console.error("Failed to load categories:", e);
+      setCategories(DEFAULT_STORE_CATEGORIES);
     }
   }
 

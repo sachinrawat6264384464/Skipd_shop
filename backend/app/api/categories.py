@@ -8,9 +8,43 @@ from app.schemas.schemas import CategorySchema, CategoryCreate, CategoryUpdate
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
+DEFAULT_CATEGORIES_DATA = [
+    {"name": "Electronics", "slug": "electronics", "icon": "⚡", "description": "Gadgets, audio, power banks and electronics accessories"},
+    {"name": "Mobiles & Tablets", "slug": "mobiles", "icon": "📱", "description": "Smartphones, flagship phones, and tablets"},
+    {"name": "Laptops & Computers", "slug": "laptops", "icon": "💻", "description": "Laptops, MacBooks, PC accessories"},
+    {"name": "Fashion & Apparel", "slug": "fashion", "icon": "👕", "description": "Ethnic wear, graphic tees, jackets and clothing"},
+    {"name": "Footwear & Shoes", "slug": "footwear", "icon": "👟", "description": "Sneakers, formal shoes and footwear"},
+    {"name": "Watches & Smartwear", "slug": "watches", "icon": "⌚", "description": "Smartwatches, analog chronographs and wearables"},
+    {"name": "Home & Living", "slug": "home", "icon": "🏡", "description": "Cushion covers, home decor and kitchen items"}
+]
+
+async def ensure_default_categories(db: AsyncSession):
+    """Ensure all 7 primary store categories exist in PostgreSQL database."""
+    try:
+        existing_res = await db.execute(select(Category))
+        existing_cats = existing_res.scalars().all()
+        existing_slugs = {c.slug for c in existing_cats}
+        
+        added = False
+        for item in DEFAULT_CATEGORIES_DATA:
+            if item["slug"] not in existing_slugs:
+                db.add(Category(
+                    name=item["name"],
+                    slug=item["slug"],
+                    icon=item["icon"],
+                    description=item["description"],
+                    status="Active"
+                ))
+                added = True
+        if added:
+            await db.commit()
+    except Exception as e:
+        print(f"[Categories API Warning] Auto-seed error: {e}")
+
 @router.get("", response_model=List[CategorySchema])
 async def list_categories(db: AsyncSession = Depends(get_db)):
     """Fetch all product categories from PostgreSQL DB."""
+    await ensure_default_categories(db)
     result = await db.execute(select(Category).order_by(Category.id.asc()))
     categories = result.scalars().all()
     return categories
@@ -18,7 +52,8 @@ async def list_categories(db: AsyncSession = Depends(get_db)):
 @router.get("/admin/all")
 async def list_categories_admin(db: AsyncSession = Depends(get_db)):
     """Fetch all product categories with associated products count for Admin panel."""
-    result = await db.execute(select(Category).order_by(Category.id.desc()))
+    await ensure_default_categories(db)
+    result = await db.execute(select(Category).order_by(Category.id.asc()))
     categories = result.scalars().all()
     
     output = []
