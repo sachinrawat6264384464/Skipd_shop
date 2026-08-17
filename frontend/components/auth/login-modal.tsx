@@ -223,15 +223,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       const fbUser = result.user;
       const userEmail = fbUser.email || "";
 
-      if (!isRegisterView) {
-        // 🔒 Strictly check if account is registered in Database for Login
-        const check = await checkEmailRegistered(userEmail);
-        if (check && check.exists === false) {
-          setLoading(false);
-          setError(`⚠️ No account found for "${userEmail}". Please click "Create an account" below to register first.`);
-          return;
-        }
-      }
+      // Google Sign-In seamlessly authenticates & auto-syncs customer to PostgreSQL database
 
       const idToken = await fbUser.getIdToken();
 
