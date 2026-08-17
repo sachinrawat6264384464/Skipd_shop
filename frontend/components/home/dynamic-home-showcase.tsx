@@ -138,7 +138,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
     products.forEach(p => {
       const catObj = p.category;
       let catName = typeof catObj === "object" ? catObj?.name : catObj;
-      if (!catName && p.tags && p.tags.length > 0) {
+      if (!catName && p.tags && p.tags.length > 0 && p.tags[0]) {
         catName = p.tags[0].charAt(0).toUpperCase() + p.tags[0].slice(1);
       }
       if (!catName) catName = "Featured Catalog";
