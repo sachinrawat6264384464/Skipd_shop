@@ -162,7 +162,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       links: [
         { title: "Users & Roles", href: "/admin/users" },
         { title: "Store Settings", href: "/admin/settings" },
-        { title: "System & Logs", href: "/admin/logs" },
       ]
     }
   ];
