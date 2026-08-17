@@ -139,10 +139,106 @@ export default function GiftCardsPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8 w-full">
         
-        {/* 🎁 Page Header Title */}
-        <div>
-          <h1 className="text-2xl md:text-3xl font-black text-gray-900">Gift Cards for Every Occasion</h1>
-          <p className="text-xs text-gray-500 font-medium mt-1">Easy to buy, easy to send. Let them choose what they love.</p>
+        {/* 🎁 STUNNING HERO SECTION BANNER */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-emerald-950 to-teal-900 text-white p-8 md:p-12 shadow-2xl border border-emerald-500/20">
+          
+          {/* Ambient Background Glow Orbs */}
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            
+            {/* Left Content */}
+            <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] md:text-xs font-black uppercase px-3.5 py-1.5 rounded-full tracking-wider shadow-inner">
+                <span>🎁</span>
+                <span>INSTANT DIGITAL GIFT CARDS &amp; STORE CREDIT</span>
+              </div>
+
+              <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                Give the Gift of <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-300 bg-clip-text text-transparent">Endless Choice</span> &amp; Joy
+              </h1>
+
+              <p className="text-xs md:text-sm text-gray-300 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
+                Send instant e-gift cards via Email or SMS. Let your loved ones choose from over 10,000+ top brands, sarees, electronics &amp; artisan items with instant redemption &amp; zero expiry fees.
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center justify-center lg:justify-start gap-3 pt-2">
+                <button
+                  onClick={() => {
+                    setSelectedCategory("Electronics");
+                    showToast("🎁 Selected E-Gift Voucher options below!");
+                  }}
+                  className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs md:text-sm px-6 py-3.5 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-emerald-500/25 cursor-pointer flex items-center gap-2"
+                >
+                  <span>✨</span>
+                  <span>Send a Gift Voucher Now</span>
+                </button>
+
+                <button
+                  onClick={() => router.push("/account?tab=gift-cards")}
+                  className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-black text-xs md:text-sm px-6 py-3.5 rounded-2xl transition-all duration-200 backdrop-blur-md cursor-pointer flex items-center gap-2"
+                >
+                  <span>💳</span>
+                  <span>Redeem / Check Balance</span>
+                </button>
+              </div>
+
+              {/* Trust Badge Indicators */}
+              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-[11px] font-bold text-gray-300 border-t border-white/10">
+                <div className="flex items-center gap-1.5 text-emerald-400">
+                  <span>⚡</span>
+                  <span className="text-gray-200">100% Instant Delivery</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-amber-400">
+                  <span>🛡️</span>
+                  <span className="text-gray-200">Zero Expiry Fees</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-teal-400">
+                  <span>🌟</span>
+                  <span className="text-gray-200">50,000+ Happy Gifters</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Card Graphic Showcase */}
+            <div className="lg:col-span-5 flex justify-center">
+              <div className="relative w-full max-w-sm aspect-[1.58/1] bg-gradient-to-tr from-slate-900 via-emerald-950 to-teal-900 rounded-3xl p-6 border border-emerald-400/30 shadow-2xl flex flex-col justify-between overflow-hidden group hover:scale-105 transition-all duration-500 cursor-pointer">
+                
+                {/* Metallic Shine Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -rotate-45 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-1000"></div>
+
+                <div className="flex justify-between items-start relative z-10">
+                  <div>
+                    <span className="text-[10px] font-black tracking-widest text-emerald-400 uppercase">SKIPD VIP GIFT VAULT</span>
+                    <h3 className="text-lg font-black text-white tracking-wider font-mono">₹5,000 STORE VOUCHER</h3>
+                  </div>
+                  <div className="w-10 h-8 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center font-bold text-amber-300 text-xs shadow-inner">
+                    VIP
+                  </div>
+                </div>
+
+                {/* EMV Chip Graphic */}
+                <div className="w-11 h-8 rounded-md bg-gradient-to-r from-amber-200 via-yellow-400 to-amber-300 border border-amber-500/50 shadow-md relative z-10 my-2"></div>
+
+                <div className="flex justify-between items-end relative z-10 font-mono">
+                  <div>
+                    <p className="text-[9px] text-gray-400 uppercase tracking-widest">GIFT CODE</p>
+                    <p className="text-xs font-black text-emerald-300 tracking-wider">SKIPD-GIFT-8942-2026</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[9px] text-gray-400 uppercase tracking-widest">VALID FOR</p>
+                    <p className="text-xs font-black text-white">ALL PRODUCTS</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
         </div>
 
         {/* 🃏 4 Gift Card Type Cards */}
