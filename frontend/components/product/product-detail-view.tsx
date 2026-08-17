@@ -9,6 +9,7 @@ import { useAuth } from "components/auth/auth-provider";
 import { getUserCartKey } from "lib/utils";
 import { ProductZoomMagnifier } from "./product-zoom-magnifier";
 import { toast } from "sonner";
+import { useWishlist } from "components/wishlist/wishlist-context";
 
 interface ProductDetailViewProps {
   product: {
@@ -30,6 +31,7 @@ interface ProductDetailViewProps {
 export function ProductDetailView({ product, relatedProducts }: ProductDetailViewProps) {
   const router = useRouter();
   const { requireAuth } = useAuth();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const [warrantyAdded, setWarrantyAdded] = useState(false);
   const [selectedImage, setSelectedImage] = useState(
     product.images[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"
@@ -882,6 +884,37 @@ const SUB_NAV_ITEMS = [
                   </>
                 )}
               </div>
+
+              {/* ❤️ Add to Wishlist Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  const item = {
+                    id: product.id,
+                    handle: product.handle,
+                    title: product.title,
+                    price: product.price,
+                    compare_at_price: product.compare_at_price,
+                    image: product.images?.[0] || selectedImage,
+                    category: product.category?.name || "Store",
+                    rating: 4.5
+                  };
+                  const wasLiked = isInWishlist(product.id);
+                  toggleWishlist(item);
+                  if (wasLiked) {
+                    toast("💔 Removed from Wishlist", { description: product.title });
+                  } else {
+                    toast.success("❤️ Added to Wishlist!", { description: product.title });
+                  }
+                }}
+                className={`w-full font-black text-xs py-3 rounded-2xl transition border flex items-center justify-center gap-1.5 cursor-pointer ${
+                  isInWishlist(product.id)
+                    ? "bg-red-50 border-red-300 text-red-600 hover:bg-red-100"
+                    : "bg-white border-gray-200 text-gray-700 hover:bg-rose-50 hover:border-rose-300 hover:text-rose-600"
+                }`}
+              >
+                {isInWishlist(product.id) ? "❤️ In Your Wishlist" : "🤍 Add to Wishlist"}
+              </button>
 
             </div>
 

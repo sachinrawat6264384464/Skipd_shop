@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { BuyNowButton } from "components/auth/buy-now-button";
+import { useWishlist } from "components/wishlist/wishlist-context";
+import { toast } from "sonner";
 
 interface Product {
   id: number;
@@ -104,7 +106,7 @@ export function SearchCatalogView({
   const [pageSize, setPageSize] = useState(12);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [sortBy, setSortBy] = useState("bestselling");
-  const [wishlist, setWishlist] = useState<number[]>([]);
+  const { isInWishlist, toggleWishlist: ctxToggleWishlist } = useWishlist();
   const [liveProducts, setLiveProducts] = useState<Product[]>(products);
   const [activeSlide, setActiveSlide] = useState(0);
 
@@ -178,10 +180,24 @@ export function SearchCatalogView({
     }
   }, [products]);
 
-  const toggleWishlist = (id: number) => {
-    setWishlist((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
-    );
+  const toggleWishlist = (product: Product) => {
+    const item = {
+      id: product.id,
+      handle: product.handle,
+      title: product.title,
+      price: product.price,
+      compare_at_price: product.compare_at_price,
+      image: product.images?.[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800",
+      category: typeof product.category === "object" ? product.category?.name : (product.category || "Store"),
+      rating: 4.5
+    };
+    const wasLiked = isInWishlist(product.id);
+    ctxToggleWishlist(item);
+    if (wasLiked) {
+      toast("💔 Removed from Wishlist", { description: product.title });
+    } else {
+      toast.success("❤️ Added to Wishlist!", { description: product.title });
+    }
   };
 
   // 🔍 Filter & Sort logic driven by URL params
@@ -379,7 +395,7 @@ export function SearchCatalogView({
             const discountPercent = product.compare_at_price
               ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
               : 36;
-            const isLiked = wishlist.includes(product.id);
+            const isLiked = isInWishlist(product.id);
             const isOutOfStock = product.stock_quantity === 0;
 
             return (
@@ -409,7 +425,7 @@ export function SearchCatalogView({
                   </div>
 
                   <button
-                    onClick={() => toggleWishlist(product.id)}
+                    onClick={() => toggleWishlist(product)}
                     className={`w-7 h-7 rounded-full border transition flex items-center justify-center text-xs shadow-2xs cursor-pointer ${
                       isLiked ? "bg-red-50 border-red-200 text-red-500" : "bg-white/80 border-gray-200 text-gray-400 hover:text-red-500"
                     }`}
@@ -497,7 +513,7 @@ export function SearchCatalogView({
             const discountPercent = product.compare_at_price
               ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
               : 36;
-            const isLiked = wishlist.includes(product.id);
+            const isLiked = isInWishlist(product.id);
 
             return (
               <div
@@ -520,7 +536,7 @@ export function SearchCatalogView({
                   </div>
 
                   <button
-                    onClick={() => toggleWishlist(product.id)}
+                    onClick={() => toggleWishlist(product)}
                     className={`absolute top-3 right-3 w-8 h-8 rounded-full border transition flex items-center justify-center text-xs shadow-xs cursor-pointer z-10 ${
                       isLiked ? "bg-red-50 border-red-200 text-red-500" : "bg-white/90 border-gray-200 text-gray-400 hover:text-red-500"
                     }`}

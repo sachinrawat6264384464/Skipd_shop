@@ -5,11 +5,34 @@ import Link from "next/link";
 import Image from "next/image";
 import { BuyNowButton } from "components/auth/buy-now-button";
 import { Product } from "lib/api";
-import { getUserCartKey, getUserOrdersKey, getUserWishlistKey } from "lib/utils";
+import { getUserCartKey, getUserOrdersKey } from "lib/utils";
+import { useWishlist } from "components/wishlist/wishlist-context";
+import { toast } from "sonner";
 
 export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [pickUpItems, setPickUpItems] = useState<any[]>([]);
+  const { isInWishlist, toggleWishlist: ctxToggleWishlist } = useWishlist();
+
+  const handleToggleWishlist = (product: Product) => {
+    const item = {
+      id: product.id,
+      handle: product.handle,
+      title: product.title,
+      price: product.price,
+      compare_at_price: product.compare_at_price,
+      image: product.images?.[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800",
+      category: typeof product.category === "object" ? (product.category as any)?.name : (product.category || "Store"),
+      rating: 4.5
+    };
+    const wasLiked = isInWishlist(product.id);
+    ctxToggleWishlist(item);
+    if (wasLiked) {
+      toast("💔 Removed from Wishlist", { description: product.title });
+    } else {
+      toast.success("❤️ Added to Wishlist!", { description: product.title });
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -295,10 +318,23 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     className="group bg-gray-50/80 border border-gray-200/80 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3"
                   >
                     {offPercent > 0 && (
-                      <span className="absolute top-6 left-6 z-10 bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
+                      <span className="absolute top-2 left-2 z-10 bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
                         -{offPercent}%
                       </span>
                     )}
+
+                    {/* Wishlist Heart Button */}
+                    <button
+                      onClick={() => handleToggleWishlist(product)}
+                      className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full border flex items-center justify-center text-xs shadow transition cursor-pointer ${
+                        isInWishlist(product.id)
+                          ? "bg-red-50 border-red-200 text-red-500"
+                          : "bg-white/80 border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200"
+                      }`}
+                      title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                    >
+                      {isInWishlist(product.id) ? "❤️" : "🖤"}
+                    </button>
 
                     <Link href={`/product/${product.handle}`} className="block relative aspect-square bg-white rounded-xl overflow-hidden p-4 border border-gray-200/60">
                       <Image
