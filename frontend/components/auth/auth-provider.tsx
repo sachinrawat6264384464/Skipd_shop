@@ -47,12 +47,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(userData);
     localStorage.setItem("skipd_token", "jwt_token_demo_skipd_2026");
     localStorage.setItem("skipd_user", JSON.stringify(userData));
+    window.dispatchEvent(new Event("skipd_auth_changed"));
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem("skipd_token");
     localStorage.removeItem("skipd_user");
+    sessionStorage.removeItem("skipd_buy_now_item");
+    window.dispatchEvent(new Event("skipd_auth_changed"));
     window.location.href = "/";
   };
 

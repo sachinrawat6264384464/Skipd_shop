@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useAuth } from "components/auth/auth-provider";
 import Link from "next/link";
-import { getUserCartKey, getUserOrdersKey, getUserAddressesKey } from "lib/utils";
+import { getUserCartKey, getUserOrdersKey, getUserAddressesKey, getUserGiftBalanceKey } from "lib/utils";
 
 interface Address {
   id: string;
@@ -28,10 +29,13 @@ interface CartItem {
 }
 
 export default function CheckoutPage() {
+  const router = useRouter();
   const { user, requireAuth } = useAuth();
 
   // Cart State
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isBuyNowMode, setIsBuyNowMode] = useState(false);
+  const [fullCartCount, setFullCartCount] = useState(0);
   
   // Addresses State (Dynamically synchronized with User Profile in LocalStorage & PostgreSQL)
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -114,6 +118,29 @@ export default function CheckoutPage() {
 
     // Load Cart Items from Local / Session Storage
     const loadCart = () => {
+      // 1. Check if Buy Now single-item session storage exists
+      const buyNowStored = sessionStorage.getItem("skipd_buy_now_item");
+      if (buyNowStored) {
+        try {
+          const buyNowItems = JSON.parse(buyNowStored);
+          if (Array.isArray(buyNowItems) && buyNowItems.length > 0) {
+            setIsBuyNowMode(true);
+            setCartItems(buyNowItems);
+
+            // Calculate items in general cart for "Switch to Full Cart" button
+            const cartKey = getUserCartKey();
+            const storedGen = localStorage.getItem(cartKey);
+            if (storedGen) {
+              const genItems = JSON.parse(storedGen);
+              if (Array.isArray(genItems)) setFullCartCount(genItems.length);
+            }
+            return;
+          }
+        } catch (e) {}
+      }
+
+      // 2. Default: Load full general cart from LocalStorage
+      setIsBuyNowMode(false);
       const cartKey = getUserCartKey();
       const stored = localStorage.getItem(cartKey);
       if (stored) {
@@ -125,21 +152,45 @@ export default function CheckoutPage() {
           }
         } catch (e) {}
       }
-      // Fallback Demo Item if cart empty
-      setCartItems([
-        {
-          id: 1,
-          handle: "active-anc-headphones",
-          title: "boAt Rockerz Plus 550 ANC Headphones",
-          price: 1799,
-          quantity: 1,
-          image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-        }
-      ]);
+      // Set empty cart if no items added
+      setCartItems([]);
     };
 
     loadCart();
   }, []);
+
+  // Handlers to Remove and Modify Items directly on Checkout Order Summary
+  const handleRemoveCheckoutItem = (indexToRemove: number) => {
+    const updated = cartItems.filter((_, idx) => idx !== indexToRemove);
+    setCartItems(updated);
+    if (isBuyNowMode) {
+      sessionStorage.setItem("skipd_buy_now_item", JSON.stringify(updated));
+    } else {
+      const cartKey = getUserCartKey();
+      localStorage.setItem(cartKey, JSON.stringify(updated));
+      window.dispatchEvent(new Event("skipd_cart_changed"));
+      window.dispatchEvent(new Event("skipd_cart_updated"));
+    }
+  };
+
+  const handleUpdateCheckoutQty = (indexToUpdate: number, delta: number) => {
+    const updated = cartItems.map((item, idx) => {
+      if (idx === indexToUpdate) {
+        const newQty = Math.max(1, (item.quantity || 1) + delta);
+        return { ...item, quantity: newQty };
+      }
+      return item;
+    });
+    setCartItems(updated);
+    if (isBuyNowMode) {
+      sessionStorage.setItem("skipd_buy_now_item", JSON.stringify(updated));
+    } else {
+      const cartKey = getUserCartKey();
+      localStorage.setItem(cartKey, JSON.stringify(updated));
+      window.dispatchEvent(new Event("skipd_cart_changed"));
+      window.dispatchEvent(new Event("skipd_cart_updated"));
+    }
+  };
 
   // UPI Timer interval
   useEffect(() => {
@@ -218,6 +269,11 @@ export default function CheckoutPage() {
 
   // Proceed to Payment Trigger
   const handleProceedToPayment = () => {
+    if (cartItems.length === 0) {
+      alert("Your checkout cart is empty! Please add products before proceeding to payment.");
+      router.push("/deals");
+      return;
+    }
     if (addresses.length === 0) {
       alert("Please add a delivery address before proceeding to payment!");
       setShowAddAddrModal(true);
@@ -311,21 +367,27 @@ export default function CheckoutPage() {
         const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
         localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
-        // Credit Gift Card Balance if buying Gift Cards
+        // Credit Gift Card Balance if buying Gift Cards (Scoped per user)
         cartItems.forEach((item: any) => {
           if (item.isGiftCard || item.giftAmount || (item.title && item.title.toLowerCase().includes("gift"))) {
             const amount = Number(item.giftAmount || item.price || 0);
             if (amount > 0) {
-              const currentBal = Number(localStorage.getItem("skipd_gift_balance") || "2500");
+              const giftBalKey = getUserGiftBalanceKey();
+              const currentBal = Number(localStorage.getItem(giftBalKey) || "0");
               const updatedBal = currentBal + amount;
-              localStorage.setItem("skipd_gift_balance", updatedBal.toString());
+              localStorage.setItem(giftBalKey, updatedBal.toString());
               window.dispatchEvent(new Event("skipd_gift_balance_changed"));
             }
           }
         });
 
-        // Clear User Cart
-        localStorage.setItem(cartKey, JSON.stringify([]));
+        // Clear User Cart or Buy Now Session Storage
+        if (isBuyNowMode || sessionStorage.getItem("skipd_buy_now_item")) {
+          sessionStorage.removeItem("skipd_buy_now_item");
+        } else {
+          localStorage.setItem(cartKey, JSON.stringify([]));
+          window.dispatchEvent(new Event("skipd_cart_changed"));
+        }
 
         // Set completed order data & show success modal
         setCompletedOrderData(newOrder);
@@ -402,14 +464,43 @@ export default function CheckoutPage() {
       const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
       localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
-      // Clear User Cart
-      localStorage.setItem(cartKey, JSON.stringify([]));
+      // Clear User Cart or Buy Now Session Storage
+      if (isBuyNowMode || sessionStorage.getItem("skipd_buy_now_item")) {
+        sessionStorage.removeItem("skipd_buy_now_item");
+      } else {
+        localStorage.setItem(cartKey, JSON.stringify([]));
+        window.dispatchEvent(new Event("skipd_cart_changed"));
+      }
 
       // Set completed order data & show success modal
       setCompletedOrderData(newOrder);
       setShowSuccessModal(true);
     }, 1200);
   };
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-[#FAFAFA] text-gray-900 px-4 py-16 flex items-center justify-center font-sans">
+        <div className="max-w-md w-full bg-white border border-gray-200 p-8 rounded-3xl text-center space-y-4 shadow-2xs">
+          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100">
+            🛒
+          </div>
+          <h2 className="text-2xl font-black text-gray-900">Your Checkout Cart is Empty</h2>
+          <p className="text-xs text-gray-500 font-medium leading-relaxed">
+            You haven't added any products to your checkout cart yet. Explore our Great Freedom Sale and deals to select products!
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/deals"
+              className="inline-block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-emerald-600/20 uppercase tracking-wider text-center"
+            >
+              ⚡ Explore Freedom Sale &amp; Deals
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] text-gray-900 px-4 py-8 md:py-12">
@@ -565,26 +656,96 @@ export default function CheckoutPage() {
 
           {/* RIGHT 5-COL: Order Summary Breakdown */}
           <div className="lg:col-span-5 bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-6 sticky top-24">
+            
+            {/* Express Direct Checkout Indicator */}
+            {isBuyNowMode && (
+              <div className="bg-emerald-50/80 border border-emerald-200/90 rounded-2xl p-3.5 space-y-1 shadow-2xs">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-extrabold text-emerald-900 flex items-center gap-1.5">
+                    <span>⚡</span> Express Checkout ({cartItems.length} Item Only)
+                  </span>
+                  {fullCartCount > 0 && (
+                    <button
+                      onClick={() => {
+                        sessionStorage.removeItem("skipd_buy_now_item");
+                        setIsBuyNowMode(false);
+                        const cartKey = getUserCartKey();
+                        const storedGen = localStorage.getItem(cartKey);
+                        if (storedGen) setCartItems(JSON.parse(storedGen));
+                      }}
+                      className="text-emerald-700 hover:text-emerald-900 font-extrabold underline cursor-pointer text-[11px]"
+                    >
+                      Switch to Full Cart ({fullCartCount} items) &rarr;
+                    </button>
+                  )}
+                </div>
+                <p className="text-[11px] text-emerald-700 font-medium">
+                  Direct purchase for this selected item only. General cart items are saved.
+                </p>
+              </div>
+            )}
+
             <h2 className="text-base font-black text-gray-900 border-b border-gray-100 pb-3">
               📦 Order Summary ({cartItems.length} items)
             </h2>
 
             {/* Cart Items Preview List */}
-            <div className="space-y-3 max-h-64 overflow-y-auto pr-1 no-scrollbar">
-              {cartItems.map((item, idx) => (
-                <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-100 text-xs">
-                  <img
-                    src={item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"}
-                    alt={item.title || item.name}
-                    className="w-12 h-12 object-contain bg-white rounded-xl p-1 border border-gray-200 shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-900 truncate">{item.title || item.name}</p>
-                    <p className="text-gray-500 font-semibold">Qty: {item.quantity}</p>
-                  </div>
-                  <span className="font-black text-gray-900">₹{(item.price * item.quantity).toLocaleString("en-IN")}</span>
+            <div className="space-y-3 max-h-80 overflow-y-auto pr-1 no-scrollbar">
+              {cartItems.length === 0 ? (
+                <div className="p-6 text-center bg-gray-50 border border-dashed border-gray-200 rounded-2xl space-y-3">
+                  <p className="text-3xl">🛒</p>
+                  <p className="font-bold text-xs text-gray-900">Your Checkout Cart is Empty</p>
+                  <p className="text-[11px] text-gray-500">Items removed will remain available in store catalog.</p>
+                  <Link href="/deals" className="inline-block bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs">
+                    Explore Store &rarr;
+                  </Link>
                 </div>
-              ))}
+              ) : (
+                cartItems.map((item, idx) => (
+                  <div key={idx} className="flex items-center gap-3 bg-gray-50 p-3 rounded-2xl border border-gray-200 text-xs relative group shadow-2xs">
+                    <img
+                      src={item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"}
+                      alt={item.title || item.name}
+                      className="w-12 h-12 object-contain bg-white rounded-xl p-1 border border-gray-200 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-gray-900 truncate leading-snug">{item.title || item.name}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+                          <button
+                            onClick={() => handleUpdateCheckoutQty(idx, -1)}
+                            className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 font-black text-gray-700 cursor-pointer text-[11px]"
+                            title="Decrease Qty"
+                          >
+                            -
+                          </button>
+                          <span className="px-2 py-0.5 font-bold text-gray-900 text-[11px]">{item.quantity}</span>
+                          <button
+                            onClick={() => handleUpdateCheckoutQty(idx, 1)}
+                            className="px-2 py-0.5 bg-gray-100 hover:bg-gray-200 font-black text-gray-700 cursor-pointer text-[11px]"
+                            title="Increase Qty"
+                          >
+                            +
+                          </button>
+                        </div>
+                        <span className="text-[10px] text-gray-400 font-medium">₹{item.price} each</span>
+                      </div>
+                    </div>
+
+                    <div className="text-right shrink-0 flex flex-col items-end gap-1">
+                      <button
+                        onClick={() => handleRemoveCheckoutItem(idx)}
+                        className="text-red-500 hover:text-red-700 font-bold text-xs p-1 rounded-md hover:bg-red-50 transition cursor-pointer flex items-center gap-0.5"
+                        title="Remove item from checkout"
+                      >
+                        <span>✕</span>
+                        <span className="text-[10px] hidden sm:inline">Remove</span>
+                      </button>
+                      <span className="font-black text-gray-900">₹{(item.price * item.quantity).toLocaleString("en-IN")}</span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
 
             {/* Pricing Ledger */}

@@ -113,3 +113,51 @@ export function getUserAddressesKey(): string {
   } catch (e) {}
   return "skipd_addresses_guest";
 }
+
+// 🔒 5. User Gift Card Balance Storage Key (Scoped per User Account)
+export function getUserGiftBalanceKey(): string {
+  if (typeof window === "undefined") return "skipd_gift_balance_guest";
+  try {
+    const userStr = localStorage.getItem("skipd_user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const identifier = user.email || user.phone || user.user_name;
+      if (identifier) {
+        return `skipd_gift_balance_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+      }
+    }
+  } catch (e) {}
+  return "skipd_gift_balance_guest";
+}
+
+// 🔒 6. User Wallet Balance Storage Key (Scoped per User Account)
+export function getUserWalletBalanceKey(): string {
+  if (typeof window === "undefined") return "skipd_wallet_balance_guest";
+  try {
+    const userStr = localStorage.getItem("skipd_user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const identifier = user.email || user.phone || user.user_name;
+      if (identifier) {
+        return `skipd_wallet_balance_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+      }
+    }
+  } catch (e) {}
+  return "skipd_wallet_balance_guest";
+}
+
+// 🔒 7. User Saved Cards Storage Key (Scoped per User Account)
+export function getUserSavedCardsKey(): string {
+  if (typeof window === "undefined") return "skipd_saved_cards_guest";
+  try {
+    const userStr = localStorage.getItem("skipd_user");
+    if (userStr) {
+      const user = JSON.parse(userStr);
+      const identifier = user.email || user.phone || user.user_name;
+      if (identifier) {
+        return `skipd_saved_cards_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+      }
+    }
+  } catch (e) {}
+  return "skipd_saved_cards_guest";
+}

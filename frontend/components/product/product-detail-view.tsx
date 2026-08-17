@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useAuth } from "components/auth/auth-provider";
 import { getUserCartKey } from "lib/utils";
 import { ProductZoomMagnifier } from "./product-zoom-magnifier";
 
@@ -27,6 +28,8 @@ interface ProductDetailViewProps {
 
 export function ProductDetailView({ product, relatedProducts }: ProductDetailViewProps) {
   const router = useRouter();
+  const { requireAuth } = useAuth();
+  const [warrantyAdded, setWarrantyAdded] = useState(false);
   const [selectedImage, setSelectedImage] = useState(
     product.images[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"
   );
@@ -78,88 +81,104 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
   const [selectedColor, setSelectedColor] = useState(parsedColorList[0]?.name || "Default");
 
-  // Add to Cart handler
+  // Add to Cart handler (Requires Login)
   const handleAddToCart = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
-    const cartKey = getUserCartKey();
-    const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
-    const itemToAdd = {
-      id: product.id,
-      handle: product.handle,
-      title: `${product.title} (${selectedColor})`,
-      price: product.price,
-      quantity: 1,
-      image: selectedImage
-    };
+    requireAuth(() => {
+      const cartKey = getUserCartKey();
+      const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
+      const itemToAdd = {
+        id: product.id,
+        handle: product.handle,
+        title: `${product.title} (${selectedColor})`,
+        price: product.price,
+        quantity: 1,
+        image: selectedImage
+      };
 
-    const idx = existing.findIndex((i: any) => i.id === product.id || i.handle === product.handle);
-    let updated;
-    if (idx > -1) {
-      existing[idx].quantity += 1;
-      updated = [...existing];
-    } else {
-      updated = [...existing, itemToAdd];
-    }
-    localStorage.setItem(cartKey, JSON.stringify(updated));
-    window.dispatchEvent(new Event("skipd_cart_changed"));
+      const idx = existing.findIndex((i: any) => i.id === product.id || i.handle === product.handle);
+      let updated;
+      if (idx > -1) {
+        existing[idx].quantity += 1;
+        updated = [...existing];
+      } else {
+        updated = [...existing, itemToAdd];
+      }
+      localStorage.setItem(cartKey, JSON.stringify(updated));
+      window.dispatchEvent(new Event("skipd_cart_changed"));
 
-    setCartAddedToast(true);
-    setTimeout(() => setCartAddedToast(false), 3000);
+      setCartAddedToast(true);
+      setTimeout(() => setCartAddedToast(false), 3000);
+    });
   };
 
-  // Buy Now handler
+  // Buy Now handler (Requires Login)
   const handleBuyNow = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
-    handleAddToCart();
-    router.push("/checkout");
+    requireAuth(() => {
+      const mainItem = {
+        id: product.id,
+        handle: product.handle,
+        title: `${product.title} (${selectedColor})`,
+        price: product.price,
+        quantity: 1,
+        image: selectedImage
+      };
+      sessionStorage.setItem("skipd_buy_now_item", JSON.stringify([mainItem]));
+      router.push("/checkout?buyNow=true");
+    });
   };
 
-  // Buy Combo handler ("Add Both to Cart" -> "Buy Combo")
+  // Buy Combo handler ("Add Both to Cart" -> "Buy Combo") (Requires Login)
   const handleBuyCombo = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
-    const cartKey = getUserCartKey();
-    const mainItem = {
-      id: product.id,
-      handle: product.handle,
-      title: `${product.title} (${selectedColor})`,
-      price: product.price,
-      quantity: 1,
-      image: selectedImage
-    };
-    const comboItem = {
-      id: product.id + 9901,
-      handle: "gadgetbite-eva-hard-case",
-      title: "GadgetBite Headphone Carrying Hard EVA Case Storage Bag (Black)",
-      price: 400,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400"
-    };
+    requireAuth(() => {
+      const cartKey = getUserCartKey();
+      const mainItem = {
+        id: product.id,
+        handle: product.handle,
+        title: `${product.title} (${selectedColor})`,
+        price: product.price,
+        quantity: 1,
+        image: selectedImage
+      };
+      const comboItem = {
+        id: product.id + 9901,
+        handle: "gadgetbite-eva-hard-case",
+        title: "GadgetBite Headphone Carrying Hard EVA Case Storage Bag (Black)",
+        price: 400,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400"
+      };
 
-    localStorage.setItem(cartKey, JSON.stringify([mainItem, comboItem]));
-    window.dispatchEvent(new Event("skipd_cart_changed"));
-    router.push("/checkout");
+      localStorage.setItem(cartKey, JSON.stringify([mainItem, comboItem]));
+      window.dispatchEvent(new Event("skipd_cart_changed"));
+      router.push("/checkout");
+    });
   };
 
-  // Add Add-on Item handler
+  // Add Add-on Item handler (Requires Login)
   const handleAddAddon = (
     addon: { id: number; title: string; price: number; image: string },
     setAddedState: (v: boolean) => void
   ) => {
-    const cartKey = getUserCartKey();
-    const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
-    const newItem = {
-      id: addon.id,
-      handle: addon.title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
-      title: addon.title,
-      price: addon.price,
-      quantity: 1,
-      image: addon.image
-    };
+    requireAuth(() => {
+      const cartKey = getUserCartKey();
+      const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
+      const newItem = {
+        id: addon.id,
+        handle: addon.title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+        title: addon.title,
+        price: addon.price,
+        quantity: 1,
+        image: addon.image
+      };
 
-    const updated = [...existing, newItem];
-    localStorage.setItem(cartKey, JSON.stringify(updated));
-    window.dispatchEvent(new Event("skipd_cart_changed"));
-    setAddedState(true);
+      const updated = [...existing, newItem];
+      localStorage.setItem(cartKey, JSON.stringify(updated));
+      window.dispatchEvent(new Event("skipd_cart_changed"));
+      setAddedState(true);
+    });
   };
 
 const SUB_NAV_ITEMS = [
@@ -782,8 +801,21 @@ const SUB_NAV_ITEMS = [
                 <span className="text-emerald-700 font-black">₹199</span>
               </div>
               <p className="text-gray-500 text-[11px] leading-tight">Add 1-Year Extended Warranty covering accidental damage &amp; battery replacement.</p>
-              <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-900 font-extrabold py-2 rounded-xl text-[11px] transition cursor-pointer">
-                + Add Warranty Coverage
+              <button
+                type="button"
+                onClick={() => {
+                  requireAuth(() => {
+                    handleAddAddon(
+                      { id: 9903, title: "SKIPD Protect 1-Year Extended Warranty", price: 199, image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=200" },
+                      setWarrantyAdded
+                    );
+                  });
+                }}
+                className={`w-full font-extrabold py-2 rounded-xl text-[11px] transition cursor-pointer ${
+                  warrantyAdded ? "bg-emerald-600 text-white" : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                }`}
+              >
+                {warrantyAdded ? "✓ Warranty Plan Added" : "+ Add Warranty Coverage"}
               </button>
             </div>
 

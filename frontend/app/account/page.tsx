@@ -6,7 +6,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 
 import { LoginModal } from "components/auth/login-modal";
 import { useWishlist } from "components/wishlist/wishlist-context";
-import { getUserAddressesKey, getUserOrdersKey, getUserCartKey } from "lib/utils";
+import {
+  getUserAddressesKey,
+  getUserOrdersKey,
+  getUserCartKey,
+  getUserGiftBalanceKey,
+  getUserWalletBalanceKey,
+  getUserSavedCardsKey
+} from "lib/utils";
 import { fetchUserOrders, UserOrder } from "lib/api";
 
 interface TimelineStep {
@@ -82,43 +89,12 @@ function AccountContent() {
           setSelectedTrackOrderId(data[0].order_number);
         }
       } else {
-        const demoOrders: UserOrder[] = [
-          {
-            id: "SKIPD-984201",
-            order_number: "SKIPD-984201",
-            date: "Aug 17, 2026",
-            total: 1799,
-            status: "IN_TRANSIT",
-            title: "boAt Rockerz Plus 550 ANC Headphones",
-            image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-          },
-          {
-            id: "SKIPD-984102",
-            order_number: "SKIPD-984102",
-            date: "Aug 15, 2026",
-            total: 4999,
-            status: "DELIVERED",
-            title: "Smart Digital Air Fryer 5.5L Rapid Air",
-            image: "https://images.unsplash.com/photo-1584568694244-14fbdf83bd30?w=400"
-          }
-        ];
-        setUserOrders(demoOrders);
-        setSelectedTrackOrderId("SKIPD-984201");
+        setUserOrders([]);
+        setSelectedTrackOrderId("");
       }
     } catch (e) {
-      const demoOrders: UserOrder[] = [
-        {
-          id: "SKIPD-984201",
-          order_number: "SKIPD-984201",
-          date: "Aug 17, 2026",
-          total: 1799,
-          status: "IN_TRANSIT",
-          title: "boAt Rockerz Plus 550 ANC Headphones",
-          image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-        }
-      ];
-      setUserOrders(demoOrders);
-      setSelectedTrackOrderId("SKIPD-984201");
+      setUserOrders([]);
+      setSelectedTrackOrderId("");
     } finally {
       setLoadingOrders(false);
     }
@@ -205,20 +181,27 @@ function AccountContent() {
   const [newCardExp, setNewCardExp] = useState("");
   const [newCardType, setNewCardType] = useState("VISA Debit Card");
 
-  // Synchronize balances and cards with localStorage & events
+  // Synchronize balances and cards with localStorage & events (Scoped strictly per user account)
   const syncWalletAndCards = () => {
     if (typeof window === "undefined") return;
-    const storedGift = localStorage.getItem("skipd_gift_balance");
-    if (storedGift) setGiftCardBalance(Number(storedGift));
+    const giftKey = getUserGiftBalanceKey();
+    const storedGift = localStorage.getItem(giftKey);
+    setGiftCardBalance(storedGift !== null ? Number(storedGift) : 0);
 
-    const storedWallet = localStorage.getItem("skipd_wallet_balance");
-    if (storedWallet) setWalletBalance(Number(storedWallet));
+    const walletKey = getUserWalletBalanceKey();
+    const storedWallet = localStorage.getItem(walletKey);
+    setWalletBalance(storedWallet !== null ? Number(storedWallet) : 0);
 
-    const storedCards = localStorage.getItem("skipd_saved_cards");
-    if (storedCards) {
+    const cardsKey = getUserSavedCardsKey();
+    const storedCards = localStorage.getItem(cardsKey);
+    if (storedCards !== null) {
       try {
         setSavedCards(JSON.parse(storedCards));
-      } catch (e) {}
+      } catch (e) {
+        setSavedCards([]);
+      }
+    } else {
+      setSavedCards([]);
     }
   };
 
@@ -227,10 +210,12 @@ function AccountContent() {
     window.addEventListener("skipd_gift_balance_changed", syncWalletAndCards);
     window.addEventListener("skipd_wallet_balance_changed", syncWalletAndCards);
     window.addEventListener("skipd_saved_cards_changed", syncWalletAndCards);
+    window.addEventListener("skipd_auth_changed", syncWalletAndCards);
     return () => {
       window.removeEventListener("skipd_gift_balance_changed", syncWalletAndCards);
       window.removeEventListener("skipd_wallet_balance_changed", syncWalletAndCards);
       window.removeEventListener("skipd_saved_cards_changed", syncWalletAndCards);
+      window.removeEventListener("skipd_auth_changed", syncWalletAndCards);
     };
   }, []);
 
@@ -243,10 +228,11 @@ function AccountContent() {
     if (upper.includes("1000")) addedAmount = 1000;
     if (upper.includes("2500")) addedAmount = 2500;
 
-    const currentBal = Number(localStorage.getItem("skipd_gift_balance") || "2500");
+    const giftKey = getUserGiftBalanceKey();
+    const currentBal = Number(localStorage.getItem(giftKey) || "0");
     const newBal = currentBal + addedAmount;
     setGiftCardBalance(newBal);
-    localStorage.setItem("skipd_gift_balance", newBal.toString());
+    localStorage.setItem(giftKey, newBal.toString());
     window.dispatchEvent(new Event("skipd_gift_balance_changed"));
 
     showToast(`🎉 Gift Card "${upper}" redeemed! ₹${addedAmount.toLocaleString("en-IN")} added to Gift Balance.`);
@@ -266,15 +252,11 @@ function AccountContent() {
       giftAmount: card.amount
     };
 
-    const cartKey = getUserCartKey();
-    const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
-    const updated = [...existing, giftCardItem];
-    localStorage.setItem(cartKey, JSON.stringify(updated));
-    window.dispatchEvent(new Event("skipd_cart_changed"));
+    sessionStorage.setItem("skipd_buy_now_item", JSON.stringify([giftCardItem]));
 
-    showToast(`🎉 Gift Card ₹${card.amount} added! Redirecting to checkout...`);
+    showToast(`🎉 Gift Card ₹${card.amount} selected! Redirecting to checkout...`);
     setTimeout(() => {
-      router.push("/checkout");
+      router.push("/checkout?buyNow=true");
     }, 600);
   };
 
@@ -283,10 +265,11 @@ function AccountContent() {
     const amountNum = Number(addWalletAmount);
     if (isNaN(amountNum) || amountNum <= 0) return;
 
-    const currentWallet = Number(localStorage.getItem("skipd_wallet_balance") || "1250");
+    const walletKey = getUserWalletBalanceKey();
+    const currentWallet = Number(localStorage.getItem(walletKey) || "0");
     const newWallet = currentWallet + amountNum;
     setWalletBalance(newWallet);
-    localStorage.setItem("skipd_wallet_balance", newWallet.toString());
+    localStorage.setItem(walletKey, newWallet.toString());
     window.dispatchEvent(new Event("skipd_wallet_balance_changed"));
 
     showToast(`💳 ₹${amountNum.toLocaleString("en-IN")} added to SKIPD Pay Wallet! New Balance: ₹${newWallet.toLocaleString("en-IN")}`);
@@ -309,7 +292,8 @@ function AccountContent() {
 
     const updated = [...savedCards, newCardObj];
     setSavedCards(updated);
-    localStorage.setItem("skipd_saved_cards", JSON.stringify(updated));
+    const cardsKey = getUserSavedCardsKey();
+    localStorage.setItem(cardsKey, JSON.stringify(updated));
     window.dispatchEvent(new Event("skipd_saved_cards_changed"));
 
     showToast(`💳 ${newCardBank} card ending in ${last4} saved successfully!`);
@@ -322,7 +306,8 @@ function AccountContent() {
   const handleRemoveCard = (cardId: number) => {
     const updated = savedCards.filter((c) => c.id !== cardId);
     setSavedCards(updated);
-    localStorage.setItem("skipd_saved_cards", JSON.stringify(updated));
+    const cardsKey = getUserSavedCardsKey();
+    localStorage.setItem(cardsKey, JSON.stringify(updated));
     window.dispatchEvent(new Event("skipd_saved_cards_changed"));
     showToast("💳 Card removed from saved payment methods.");
   };

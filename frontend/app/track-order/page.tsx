@@ -49,69 +49,41 @@ function TrackOrderContent() {
         setUserOrders(ordersData);
       }
 
-      if (shipmentsData && Array.isArray(shipmentsData) && shipmentsData.length > 0) {
-        setAllShipments(shipmentsData);
-        // Find matching shipment or default to first
-        const match = shipmentsData.find(
+      if (ordersData && ordersData.length > 0) {
+        // Build shipments from logged-in user's own orders
+        const userShipments: ShipmentDetail[] = ordersData.map((order: any, idx: number) => ({
+          id: idx + 1,
+          awbCode: order.awb || `SR-AWB-${order.order_number}`,
+          orderId: order.order_number,
+          customerName: "Logged-In Customer",
+          customerEmail: "user@skipd.com",
+          customerPhone: "+91 98765 43210",
+          courierName: "Delhivery Express Logistics",
+          destination: "Delivery Address",
+          pinCode: "474001",
+          estDeliveryDate: "Aug 20, 2026",
+          status: (order.status || "IN TRANSIT").toUpperCase(),
+          currentLocation: "Regional Sort Hub",
+          date: order.date || "Aug 17, 2026",
+          timeline: [
+            { title: "Order Confirmed & Payment Received", location: "SKIPD Merchant Hub", date: order.date || "Aug 16, 2026", done: true },
+            { title: "Package Packed & Handed to Logistics", location: "Central Warehouse", date: order.date || "Aug 16, 2026", done: true },
+            { title: "In Transit across Regional Hubs", location: "Regional Logistics Hub", date: "Aug 17, 2026", done: true, current: true },
+            { title: "Out for Express Delivery", location: "Local Delivery Facility", date: "Aug 18, 2026", done: false },
+            { title: "Package Delivered", location: "Customer Destination", date: "Aug 19, 2026", done: false }
+          ]
+        }));
+
+        setAllShipments(userShipments);
+        const match = userShipments.find(
           (s: ShipmentDetail) =>
             (s.awbCode || "").toLowerCase() === (initialAwb || "").toLowerCase() ||
             (s.orderId || "").toLowerCase() === (initialAwb || "").toLowerCase()
         );
-        setCurrentShipment(match || shipmentsData[0] || null);
+        setCurrentShipment(match || userShipments[0] || null);
       } else {
-        // Fallback baseline shipments
-        const fallbackList: ShipmentDetail[] = [
-          {
-            id: 1,
-            awbCode: "SR-8849201",
-            orderId: "#SKIPD-25879",
-            customerName: "Amit Sharma",
-            customerEmail: "amit@gmail.com",
-            customerPhone: "+91 98765 43210",
-            courierName: "Delhivery Surface",
-            destination: "Gwalior, Madhya Pradesh",
-            pinCode: "474001",
-            estDeliveryDate: "Aug 20, 2026",
-            status: "IN TRANSIT",
-            currentLocation: "Bhopal Sort Center (Aug 17, 2026 02:32 PM)",
-            date: "Aug 17, 2026"
-          },
-          {
-            id: 2,
-            awbCode: "SR-8849202",
-            orderId: "#SKIPD-25878",
-            customerName: "Priya Verma",
-            customerEmail: "priya.v@yahoo.com",
-            customerPhone: "+91 98123 45678",
-            courierName: "Bluedart Express Air",
-            destination: "Ahmedabad, Gujarat",
-            pinCode: "380001",
-            estDeliveryDate: "Aug 19, 2026",
-            status: "OUT FOR DELIVERY",
-            currentLocation: "Out for Delivery (Aug 17, 2026 09:15 AM)",
-            date: "Aug 16, 2026"
-          },
-          {
-            id: 4,
-            awbCode: "SR-8849204",
-            orderId: "#SKIPD-25876",
-            customerName: "Sneha Patel",
-            customerEmail: "sneha.p@gmail.com",
-            customerPhone: "+91 96555 44332",
-            courierName: "Ekart Surface",
-            destination: "Pune, Maharashtra",
-            pinCode: "411001",
-            estDeliveryDate: "Aug 15, 2026",
-            status: "DELIVERED",
-            currentLocation: "Delivered (Aug 15, 2026 06:20 PM)",
-            date: "Aug 14, 2026"
-          }
-        ];
-        setAllShipments(fallbackList);
-        const match = fallbackList.find(
-          s => (s.awbCode || "").toLowerCase() === (initialAwb || "").toLowerCase() || (s.orderId || "").toLowerCase() === (initialAwb || "").toLowerCase()
-        );
-        setCurrentShipment(match || fallbackList[0] || null);
+        setAllShipments([]);
+        setCurrentShipment(null);
       }
     } catch (e) {
       console.error("Error loading shipment tracking data:", e);

@@ -35,14 +35,14 @@ export default function DealsPage() {
   }, []);
 
   const sampleDealProducts = [
-    { id: 1, title: "Saree Premium Silk", handle: "saree-premium-silk", price: 299, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500", easyShip: true, weight: "<500gm", earlier: 90, now: 30, save: 300 },
-    { id: 2, title: "Cold Pressed Oil 1L", handle: "cold-pressed-oil-1l", price: 249, image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500", easyShip: true, weight: "1kg-2kg", earlier: 75, now: 25, save: 250 },
-    { id: 3, title: "Velvet Cushion Cover", handle: "velvet-cushion-cover", price: 800, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=500", easyShip: false, weight: "<500gm", earlier: 225, now: 80, save: 700 },
-    { id: 4, title: "20000mAh Power Bank", handle: "20000mah-power-bank", price: 999, image: "https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=500", easyShip: true, weight: "500gm-1kg", earlier: 300, now: 100, save: 1000 },
-    { id: 5, title: "Nike Running Shoe", handle: "nike-running-shoe", price: 700, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", easyShip: true, weight: "500gm-1kg", earlier: 228, now: 120, save: 108 },
-    { id: 6, title: "Leather Jacket", handle: "leather-jacket", price: 999, image: "https://images.unsplash.com/photo-1544441893-675973e31985?w=500", easyShip: false, weight: "1kg-2kg", earlier: 313, now: 134, save: 179 },
-    { id: 7, title: "FPV Toy Drone", handle: "fpv-toy-drone", price: 999, image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=500", easyShip: true, weight: "500gm-1kg", earlier: 417, now: 118, save: 299 },
-    { id: 8, title: "Pro Headphones", handle: "pro-headphones", price: 950, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500", easyShip: false, weight: "500gm-1kg", earlier: 263, now: 98, save: 165 },
+    { id: 101, title: "Saree Premium Silk", handle: "saree-premium-silk", price: 299, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500", easyShip: true, weight: "<500gm", earlier: 599, now: 299, save: 300 },
+    { id: 102, title: "Cold Pressed Oil 1L", handle: "cold-pressed-oil-1l", price: 249, image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500", easyShip: true, weight: "1kg-2kg", earlier: 499, now: 249, save: 250 },
+    { id: 103, title: "Velvet Cushion Cover", handle: "velvet-cushion-cover", price: 800, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=500", easyShip: false, weight: "<500gm", earlier: 1500, now: 800, save: 700 },
+    { id: 104, title: "20000mAh Power Bank", handle: "20000mah-power-bank", price: 999, image: "https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=500", easyShip: true, weight: "500gm-1kg", earlier: 1999, now: 999, save: 1000 },
+    { id: 105, title: "Nike Running Shoe", handle: "nike-running-shoe", price: 700, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", easyShip: true, weight: "500gm-1kg", earlier: 1400, now: 700, save: 700 },
+    { id: 106, title: "Leather Jacket", handle: "leather-jacket", price: 999, image: "https://images.unsplash.com/photo-1544441893-675973e31985?w=500", easyShip: false, weight: "1kg-2kg", earlier: 1999, now: 999, save: 1000 },
+    { id: 107, title: "FPV Toy Drone", handle: "fpv-toy-drone", price: 999, image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=500", easyShip: true, weight: "500gm-1kg", earlier: 2499, now: 999, save: 1500 },
+    { id: 108, title: "Pro Headphones", handle: "pro-headphones", price: 950, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500", easyShip: false, weight: "500gm-1kg", earlier: 4999, now: 950, save: 4049 },
   ];
 
   // Priority: admin-set featured offers > sale products > sample fallback
@@ -53,16 +53,16 @@ export default function DealsPage() {
     productsToDisplay = sale.products.map((p: any, i: number) => {
       const fallback = sampleDealProducts[i % sampleDealProducts.length];
       return {
-        id: p.id || i + 1,
+        id: p.id || fallback?.id || i + 1,
         title: p.title,
-        handle: p.handle || fallback?.handle || "saree-premium-silk",
-        price: p.sale_price || 299,
+        handle: p.handle || fallback?.handle || "nike-running-shoe",
+        price: p.sale_price || fallback?.price || 700,
         image: p.image || fallback?.image || "",
         easyShip: p.shipping_type === "Easy Ship",
         weight: p.weight_range || "<500gm",
-        earlier: Math.round(p.original_price * 0.15) || fallback?.earlier || 90,
-        now: Math.round(p.sale_price * 0.1) || fallback?.now || 30,
-        save: Math.round(p.savings) || fallback?.save || 60
+        earlier: p.original_price || fallback?.earlier || 1400,
+        now: p.sale_price || fallback?.now || 700,
+        save: p.savings || fallback?.save || 700
       };
     });
   } else {
@@ -238,6 +238,14 @@ export default function DealsPage() {
                       </button>
                     ) : (
                       <BuyNowButton
+                        productObj={{
+                          id: item.id,
+                          handle: item.handle,
+                          title: item.title,
+                          price: item.price,
+                          image: item.image
+                        }}
+                        productHandle={item.handle}
                         productTitle={item.title}
                         className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black py-2.5 rounded-2xl text-center transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                       >

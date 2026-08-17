@@ -764,15 +764,18 @@ export async function fetchLiveTracking(awbOrOrder: string): Promise<TrackingDat
 
 export async function fetchUserOrders(): Promise<UserOrder[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/orders/my-orders`, {
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    if (!token) return [];
+
+    const res = await fetch(`${API_BASE_URL}/orders`, {
       headers: {
-        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+        "Authorization": `Bearer ${token}`
       },
       cache: "no-store"
     });
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         return data.map((o: any) => ({
           id: String(o.id),
           order_number: o.order_number || `SKIPD-${o.id}`,
@@ -787,7 +790,7 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
       }
     }
   } catch (e) {
-    console.warn("[API SDK Warning] FastAPI orders endpoint offline, reading user-scoped orders history.");
+    console.warn("[Backend SQL API] Orders endpoint offline, checking user-scoped orders history.");
   }
 
   // Load User-Scoped Orders History
@@ -798,6 +801,85 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
   } catch (e) {}
 
   return [];
+}
+
+export async function fetchUserAddressesAPI() {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    if (!token) return [];
+    const res = await fetch(`${API_BASE_URL}/addresses`, {
+      headers: { "Authorization": `Bearer ${token}` },
+      cache: "no-store"
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.addresses || [];
+    }
+  } catch (e) {}
+  return [];
+}
+
+export async function addUserAddressAPI(addressData: any) {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    if (!token) return null;
+    const res = await fetch(`${API_BASE_URL}/addresses`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(addressData)
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {}
+  return null;
+}
+
+export async function fetchUserWalletAPI() {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    if (!token) return { balance: 0.0, transactions: [] };
+    const res = await fetch(`${API_BASE_URL}/wallet`, {
+      headers: { "Authorization": `Bearer ${token}` },
+      cache: "no-store"
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {}
+  return { balance: 0.0, transactions: [] };
+}
+
+export async function fetchUserCartAPI() {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    if (!token) return [];
+    const res = await fetch(`${API_BASE_URL}/cart`, {
+      headers: { "Authorization": `Bearer ${token}` },
+      cache: "no-store"
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.cart_items || [];
+    }
+  } catch (e) {}
+  return [];
+}
+
+export async function addToCartAPI(productId: number, quantity: number = 1) {
+  try {
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    if (!token) return null;
+    const res = await fetch(`${API_BASE_URL}/cart/add`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({ product_id: productId, quantity })
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {}
+  return null;
 }
 
 export async function requestReturn(orderId: string, reason: string) {

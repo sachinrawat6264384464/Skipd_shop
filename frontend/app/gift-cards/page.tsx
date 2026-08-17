@@ -6,10 +6,12 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Footer from "components/layout/footer";
 import { BuyNowButton } from "components/auth/buy-now-button";
+import { useAuth } from "components/auth/auth-provider";
 import { getUserCartKey } from "lib/utils";
 
 export default function GiftCardsPage() {
   const router = useRouter();
+  const { requireAuth } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [sortBy, setSortBy] = useState("bestselling");
   const [maxPrice, setMaxPrice] = useState(50000);
@@ -104,26 +106,25 @@ export default function GiftCardsPage() {
   };
 
   const handleBuyBrandVoucher = (brandName: string, amount: number) => {
-    const voucherItem = {
-      id: Date.now(),
-      handle: `skipd-voucher-${brandName.toLowerCase().replace(/\s+/g, "-")}`,
-      title: `SKIPD ${brandName} Digital Store Voucher (₹${amount.toLocaleString("en-IN")})`,
-      price: amount,
-      quantity: 1,
-      image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400",
-      isGiftCard: true,
-      giftAmount: amount
-    };
+    requireAuth(() => {
+      const voucherItem = {
+        id: Date.now(),
+        handle: `skipd-voucher-${brandName.toLowerCase().replace(/\s+/g, "-")}`,
+        title: `SKIPD ${brandName} Digital Store Voucher (₹${amount.toLocaleString("en-IN")})`,
+        price: amount,
+        quantity: 1,
+        image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400",
+        isGiftCard: true,
+        giftAmount: amount
+      };
 
-    const cartKey = getUserCartKey();
-    const existing = JSON.parse(localStorage.getItem(cartKey) || "[]");
-    localStorage.setItem(cartKey, JSON.stringify([...existing, voucherItem]));
-    window.dispatchEvent(new Event("skipd_cart_changed"));
+      sessionStorage.setItem("skipd_buy_now_item", JSON.stringify([voucherItem]));
 
-    showToast(`🎉 ${brandName} Voucher ₹${amount} added! Redirecting to Checkout...`);
-    setTimeout(() => {
-      router.push("/checkout");
-    }, 600);
+      showToast(`🎉 ${brandName} Voucher ₹${amount} selected! Redirecting to Checkout...`);
+      setTimeout(() => {
+        router.push("/checkout?buyNow=true");
+      }, 600);
+    });
   };
 
   return (
