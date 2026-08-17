@@ -463,22 +463,30 @@ export default function AdminOrdersPage() {
 
   const tabs = ["All Orders", "Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returns", "Refunds"];
 
-  // Filtered Orders
+  // Filtered Orders (Null-safe)
   const filteredOrders = orders.filter((o) => {
-    const tabMatch = activeTab === "All Orders" || o.status.toLowerCase() === activeTab.toLowerCase();
+    if (!o) return false;
+    const statusStr = (o.status || "").toString();
+    const tabMatch = activeTab === "All Orders" || statusStr.toLowerCase() === activeTab.toLowerCase();
     
-    const searchMatch = !searchQuery.trim() || 
-      o.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.awb.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      o.items.toLowerCase().includes(searchQuery.toLowerCase());
+    const idStr = (o.id || "").toString();
+    const custStr = (o.customer || "").toString();
+    const awbStr = (o.awb || "").toString();
+    const itemsStr = (o.items || "").toString();
 
-    const paymentMatch = paymentFilter === "ALL" || o.payment.toUpperCase() === paymentFilter.toUpperCase();
-    const statusDropdownMatch = statusFilter === "ALL" || o.status.toLowerCase() === statusFilter.toLowerCase();
+    const searchMatch = !searchQuery.trim() || 
+      idStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      custStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      awbStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      itemsStr.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const paymentStr = (o.payment || "").toString();
+    const paymentMatch = paymentFilter === "ALL" || paymentStr.toUpperCase() === paymentFilter.toUpperCase();
+    const statusDropdownMatch = statusFilter === "ALL" || statusStr.toLowerCase() === statusFilter.toLowerCase();
     
     const awbMatch = awbFilter === "ALL" || 
-      (awbFilter === "ASSIGNED" && o.awb !== "Pending" && o.awb !== "Cancelled") ||
-      (awbFilter === "PENDING" && (o.awb === "Pending" || o.awb === "Cancelled"));
+      (awbFilter === "ASSIGNED" && awbStr !== "Pending" && awbStr !== "Cancelled") ||
+      (awbFilter === "PENDING" && (awbStr === "Pending" || awbStr === "Cancelled"));
 
     return tabMatch && searchMatch && paymentMatch && statusDropdownMatch && awbMatch;
   });
@@ -508,12 +516,12 @@ export default function AdminOrdersPage() {
     showNotification("📥 Exporting Orders Lifecycle Report (CSV/PDF)...");
   };
 
-  // Metrics Calculations
-  const totalRev = orders.reduce((sum, o) => sum + (typeof o.amount === 'number' ? o.amount : 0), 0);
-  const completedCount = orders.filter(o => o.status === "Delivered").length;
-  const pendingCount = orders.filter(o => o.status === "Pending" || o.status === "Processing").length;
-  const returnCount = orders.filter(o => o.status === "Returns").length;
-  const refundCount = orders.filter(o => o.status === "Refunds").length;
+  // Metrics Calculations (Null-safe)
+  const totalRev = orders.reduce((sum, o) => sum + (typeof o?.amount === 'number' ? o.amount : Number(o?.amount) || 0), 0);
+  const completedCount = orders.filter(o => (o?.status || "").toLowerCase() === "delivered").length;
+  const pendingCount = orders.filter(o => (o?.status || "").toLowerCase() === "pending" || (o?.status || "").toLowerCase() === "processing").length;
+  const returnCount = orders.filter(o => (o?.status || "").toLowerCase() === "returns").length;
+  const refundCount = orders.filter(o => (o?.status || "").toLowerCase() === "refunds").length;
 
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
