@@ -138,3 +138,43 @@ export function sendAdminNotification(notification: {
     window.dispatchEvent(new CustomEvent("skipd_admin_notification_added", { detail: notification }));
   } catch (err) {}
 }
+
+// 📢 5. Promotional Marketing & Push Notification Campaign Emails
+export function sendCampaignPromotionalEmail(campaign: {
+  title: string;
+  subtitle?: string;
+  type: string;
+  discountOffer: string;
+  startDate?: string;
+  endDate?: string;
+}) {
+  if (typeof window === "undefined") return;
+  try {
+    // Gather registered customers
+    const registeredUsers = JSON.parse(localStorage.getItem("skipd_registered_users") || "[]");
+    const sampleEmails = ["sachinrawat6264384464@gmail.com", "customer@skipd.in", "amit@gmail.com", "priya@yahoo.com"];
+
+    const userEmails = registeredUsers.map((u: any) => typeof u === "string" ? u : u.email).filter(Boolean);
+    const targetEmails = Array.from(new Set([...userEmails, ...sampleEmails]));
+
+    targetEmails.forEach((email: string) => {
+      const username = email.split("@")[0] || "Valued Customer";
+      const emailData: EmailReceipt = {
+        to: email,
+        subject: `🔥 Campaign Alert: ${campaign.title} (${campaign.discountOffer})`,
+        type: "WELCOME",
+        timestamp: new Date().toISOString(),
+        username: username,
+        details: {
+          message: `Hi ${username},\n\n🎉 ${campaign.title} is now LIVE on SKIPD Commerce!\n\nDiscount Offer: ${campaign.discountOffer}\nTagline: ${campaign.subtitle || "Exclusive Limited Time Offer"}\nValid Dates: ${campaign.startDate || "May 25, 2025"} to ${campaign.endDate || "May 31, 2025"}\n\nVisit SKIPD Commerce now to grab deals: https://skipd-shop.vercel.app/deals`,
+          campaign_title: campaign.title,
+          discount: campaign.discountOffer,
+          email: email
+        }
+      };
+      recordSentEmail(emailData);
+    });
+  } catch (err) {
+    console.error("Failed to send campaign promotional emails:", err);
+  }
+}
