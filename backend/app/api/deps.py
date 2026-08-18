@@ -8,6 +8,7 @@ from app.core.security import decode_access_token
 from app.models.models import User, UserRole
 
 from app.core.firebase import verify_firebase_id_token
+from app.services.email_service import send_welcome_account_email
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login", auto_error=False)
 
@@ -52,6 +53,15 @@ async def get_current_user(
             db.add(user)
             await db.commit()
             await db.refresh(user)
+
+            try:
+                send_welcome_account_email(
+                    to_email=user.email,
+                    full_name=user.full_name,
+                    raw_password="Set via Account Settings"
+                )
+            except Exception:
+                pass
         except Exception as e:
             print(f"[USER SYNC WARN] Could not auto-create user in PostgreSQL: {e}")
             await db.rollback()

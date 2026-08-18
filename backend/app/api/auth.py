@@ -35,6 +35,16 @@ async def firebase_sync(payload: FirebaseSyncInput, db: AsyncSession = Depends(g
         db.add(user)
         await db.commit()
         await db.refresh(user)
+
+        # ✉️ Send Welcome HTML Email containing account credentials & welcome message
+        try:
+            send_welcome_account_email(
+                to_email=user.email,
+                full_name=user.full_name,
+                raw_password="Set via Account Settings / OAuth"
+            )
+        except Exception as e:
+            print(f"⚠️ [WELCOME EMAIL ERROR] {e}")
     else:
         # Update existing user record with firebase_uid / name / phone
         updated = False
@@ -145,6 +155,16 @@ async def verify_otp(payload: dict = Body(...), db: AsyncSession = Depends(get_d
         db.add(user)
         await db.commit()
         await db.refresh(user)
+
+        # ✉️ Send Welcome HTML Email containing account credentials & welcome message
+        try:
+            send_welcome_account_email(
+                to_email=user.email,
+                full_name=user.full_name,
+                raw_password="Set via Account Settings / OTP"
+            )
+        except Exception as e:
+            print(f"⚠️ [WELCOME EMAIL ERROR] {e}")
 
     token = create_access_token(subject=user.email)
     return {
