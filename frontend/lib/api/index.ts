@@ -1,6 +1,6 @@
 import { getUserOrdersKey } from "../utils";
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8080/api/v1";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
 
 export interface Product {
   id: number;
@@ -1268,48 +1268,23 @@ export async function syncFirebaseUser(payload: {
 // 📦 ADMIN PRODUCT MANAGEMENT SDK
 // ─────────────────────────────────────────────
 export async function createAdminProduct(payload: any) {
-  let createdObj: any = null;
   try {
     const res = await fetch(`${API_BASE_URL}/products/admin/create`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    if (res.ok) createdObj = await res.json();
+    if (res.ok) {
+      return await res.json();
+    } else {
+      const errData = await res.json().catch(() => ({}));
+      console.error("[API SDK] Create product failed:", errData);
+      return null;
+    }
   } catch (e) {
-    console.warn("[API SDK] Create product offline");
+    console.error("[API SDK] Create product network error:", e);
+    return null;
   }
-
-  if (!createdObj) {
-    createdObj = {
-      id: Date.now(),
-      title: payload.title,
-      handle: payload.handle || (payload.title || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      description: payload.description || "Product item",
-      price: payload.price,
-      compare_at_price: payload.compare_at_price,
-      stock_quantity: payload.stock_quantity ?? 50,
-      featured: payload.featured ?? true,
-      images: payload.images && payload.images.length > 0 ? payload.images : ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"],
-      tags: payload.tags || ["bestseller"],
-      category: { name: payload.category_slug || "General", slug: payload.category_slug || "general" },
-      category_slug: payload.category_slug || "general"
-    };
-  }
-
-  if (typeof window !== "undefined") {
-    try {
-      const existing = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
-      const updated = [createdObj, ...existing];
-      localStorage.setItem("skipd_custom_products", JSON.stringify(updated));
-    } catch {}
-  }
-
-  if (!MOCK_PRODUCTS.some(p => p.id === createdObj.id)) {
-    MOCK_PRODUCTS.unshift(createdObj);
-  }
-
-  return createdObj;
 }
 
 export async function updateAdminProduct(id: number | string, payload: any) {
@@ -1321,29 +1296,9 @@ export async function updateAdminProduct(id: number | string, payload: any) {
     });
     if (res.ok) return await res.json();
   } catch (e) {
-    console.warn("[API SDK] Update product offline");
+    console.error("[API SDK] Update product offline:", e);
   }
-
-  if (typeof window !== "undefined") {
-    try {
-      // 1. Update in skipd_custom_products if custom
-      const existingCustom = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
-      const updatedCustom = existingCustom.map((p: any) => (p.id === id || String(p.id) === String(id)) ? { ...p, ...payload } : p);
-      localStorage.setItem("skipd_custom_products", JSON.stringify(updatedCustom));
-
-      // 2. Store in skipd_updated_products map for all products
-      const existingUpdates = JSON.parse(localStorage.getItem("skipd_updated_products") || "{}");
-      existingUpdates[String(id)] = { ...(existingUpdates[String(id)] || {}), ...payload };
-      localStorage.setItem("skipd_updated_products", JSON.stringify(existingUpdates));
-    } catch {}
-  }
-
-  const idx = MOCK_PRODUCTS.findIndex(p => p.id === id || String(p.id) === String(id));
-  if (idx !== -1) {
-    MOCK_PRODUCTS[idx] = { ...MOCK_PRODUCTS[idx], ...payload };
-  }
-
-  return { message: "Product updated successfully" };
+  return null;
 }
 
 export async function deleteAdminProduct(id: number | string) {
@@ -1351,31 +1306,9 @@ export async function deleteAdminProduct(id: number | string) {
     const res = await fetch(`${API_BASE_URL}/products/admin/${id}`, { method: "DELETE" });
     if (res.ok) return await res.json();
   } catch (e) {
-    console.warn("[API SDK] Delete product offline");
+    console.error("[API SDK] Delete product offline:", e);
   }
-
-  if (typeof window !== "undefined") {
-    try {
-      // 1. Remove from skipd_custom_products
-      const existing = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
-      const updated = existing.filter((p: any) => p.id !== id && String(p.id) !== String(id));
-      localStorage.setItem("skipd_custom_products", JSON.stringify(updated));
-
-      // 2. Add to skipd_deleted_product_ids array
-      const existingDeletions = JSON.parse(localStorage.getItem("skipd_deleted_product_ids") || "[]");
-      if (!existingDeletions.includes(String(id))) {
-        existingDeletions.push(String(id));
-      }
-      localStorage.setItem("skipd_deleted_product_ids", JSON.stringify(existingDeletions));
-    } catch {}
-  }
-
-  const idx = MOCK_PRODUCTS.findIndex(p => p.id === id || String(p.id) === String(id));
-  if (idx !== -1) {
-    MOCK_PRODUCTS.splice(idx, 1);
-  }
-
-  return { message: "Product deleted successfully" };
+  return null;
 }
 
 export async function seedCatalogProducts() {
@@ -1383,9 +1316,9 @@ export async function seedCatalogProducts() {
     const res = await fetch(`${API_BASE_URL}/products/admin/bulk-seed`, { method: "POST" });
     if (res.ok) return await res.json();
   } catch (e) {
-    console.warn("[API SDK] Bulk seed offline");
+    console.error("[API SDK] Bulk seed offline:", e);
   }
-  return { message: "10 catalog products seeded successfully" };
+  return null;
 }
 
 export async function fetchAdminOrders() {
