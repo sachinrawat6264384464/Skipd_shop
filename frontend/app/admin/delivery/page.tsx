@@ -154,43 +154,6 @@ export default function AdminDeliveryPage() {
         });
       }
 
-      // Merge real customer orders from local storage/database into live shipments
-      if (typeof window !== "undefined") {
-        try {
-          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
-          keys.forEach(k => {
-            const item = localStorage.getItem(k);
-            if (item) {
-              const parsed = JSON.parse(item);
-              if (Array.isArray(parsed)) {
-                parsed.forEach((ord: any, idx: number) => {
-                  const ordId = ord.order_number || ord.id || `#SKIPD-${Date.now()}`;
-                  if (!shipments.some(s => s.orderId === ordId)) {
-                    shipments.unshift({
-                      id: 9900 + idx,
-                      awbCode: ord.awb || `SR-${Math.floor(1000000 + Math.random() * 8999999)}`,
-                      orderId: ordId,
-                      customerName: ord.customer || ord.user_name || "Store Customer",
-                      customerEmail: ord.email || "customer@skipd.in",
-                      customerPhone: ord.phone || "+91 98765 43210",
-                      courierName: "Delhivery Surface",
-                      courierBadge: "D",
-                      courierBadgeBg: "bg-black text-white",
-                      destination: ord.address || "Deliver to Customer Address",
-                      pinCode: "474001",
-                      estDeliveryDate: "May 27, 2026",
-                      daysLeft: "2 Days Left",
-                      status: ord.status === "Delivered" ? "DELIVERED" : ord.status === "Shipped" ? "IN TRANSIT" : ord.status === "Cancelled" ? "RTO INITIATED" : "IN TRANSIT",
-                      currentLocation: "Sorting Hub Dispatch"
-                    });
-                  }
-                });
-              }
-            }
-          });
-        } catch (e) {}
-      }
-
       setMetrics({
         totalShipments: String(formatted.length),
         inTransit: String(formatted.filter(s => s.status === "IN TRANSIT").length),

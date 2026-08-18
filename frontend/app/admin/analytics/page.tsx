@@ -39,7 +39,7 @@ export default function AdminAnalyticsPage() {
       // 3. Gather 100% of real placed store orders across Backend & LocalStorages
       let allOrders: any[] = [];
 
-      // A. Fetch from API Backend
+      // A. Fetch 100% strictly from API Backend (No localStorage mock merge)
       try {
         const apiOrders = await fetchAdminOrders();
         if (Array.isArray(apiOrders)) {
@@ -58,40 +58,6 @@ export default function AdminAnalyticsPage() {
           });
         }
       } catch (e) {}
-
-      // B. Scan all user order localStorages
-      if (typeof window !== "undefined") {
-        try {
-          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
-          keys.forEach(k => {
-            const item = localStorage.getItem(k);
-            if (item) {
-              try {
-                const parsed = JSON.parse(item);
-                if (Array.isArray(parsed)) {
-                  parsed.forEach((ord: any) => {
-                    const ordId = String(ord.order_number || ord.id || "");
-                    if (ordId && !allOrders.some(o => o.id === ordId)) {
-                      allOrders.push({
-                        id: ordId,
-                        date: String(ord.date || "Today"),
-                        customer: String(ord.customer || ord.user_name || ord.shipping_address?.name || "Customer"),
-                        email: String(ord.email || ord.shipping_address?.email || "customer@skipd.in"),
-                        state: String(ord.state || ord.shipping_address?.state || "Maharashtra"),
-                        amount: Number(ord.total_amount || ord.total || ord.amount || 0),
-                        payment: String(ord.payment_method || ord.payment || "UPI"),
-                        status: String(ord.status || "Processing"),
-                        itemsCount: Array.isArray(ord.items) ? ord.items.length : 1,
-                        productTitle: typeof ord.items === "string" ? ord.items : (ord.items?.[0]?.title || ord.title || "Item")
-                      });
-                    }
-                  });
-                }
-              } catch (e) {}
-            }
-          });
-        } catch (e) {}
-      }
 
       setRealOrders(allOrders);
     } catch (e) {

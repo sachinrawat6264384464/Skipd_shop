@@ -61,74 +61,16 @@ export default function AdminOrdersPage() {
             status: String(o.status || "Processing")
           }));
 
-          setOrders(prev => {
-            const existingIds = new Set(prev.map(p => p.id));
-            const newItems = formatted.filter((f: any) => !existingIds.has(f.id));
-            return [...newItems, ...prev];
-          });
+          setOrders(formatted);
+        } else {
+          setOrders([]);
         }
       } catch (e) {
-        console.warn("FastAPI Orders API offline, reading live user store orders.");
+        console.warn("FastAPI Orders API offline.");
+        setOrders([]);
+      } finally {
+        setLoading(false);
       }
-
-      // Gather real placed orders from all user session localStorages (Window safe)
-      if (typeof window !== "undefined") {
-        try {
-          let realPlaced: any[] = [];
-          const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
-          keys.forEach(k => {
-            const item = localStorage.getItem(k);
-            if (item) {
-              try {
-                const parsed = JSON.parse(item);
-                if (Array.isArray(parsed)) {
-                  parsed.forEach(ord => {
-                    if (!realPlaced.some(o => o.id === ord.id || o.id === ord.order_number)) {
-                      realPlaced.push({
-                        id: String(ord.order_number || ord.id || `#SKIPD-${Date.now()}`),
-                        date: String(ord.date || "Just now"),
-                        customer: String(ord.customer || ord.user_name || "Store Customer"),
-                        phone: String(ord.phone || "+91 98765 43210"),
-                        email: String(ord.email || "customer@skipd.in"),
-                        address: String(ord.address || "Deliver to Customer Address"),
-                        items: (() => {
-                          if (typeof ord.items === "string") return ord.items;
-                          if (typeof ord.title === "string") return ord.title;
-                          if (Array.isArray(ord.items) && ord.items.length > 0) {
-                            const first = ord.items[0];
-                            return typeof first === "string" 
-                              ? first 
-                              : `${first?.product_title || first?.title || first?.name || 'Store Item'} (x${first?.quantity || 1})`;
-                          }
-                          if (typeof ord.items === "object" && ord.items !== null) {
-                            return `${ord.items.product_title || ord.items.title || ord.items.name || 'Store Item'} (x${ord.items.quantity || 1})`;
-                          }
-                          return "Store Product (x1)";
-                        })(),
-                        img: typeof ord.image === "string" ? ord.image : (typeof ord.img === "string" ? ord.img : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"),
-                        amount: Number(ord.total || ord.amount || 2999),
-                        payment: String(ord.payment || "UPI"),
-                        awb: String(ord.awb || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
-                        status: String(ord.status || "Processing")
-                      });
-                    }
-                  });
-                }
-              } catch (e) {}
-            }
-          });
-
-          if (realPlaced.length > 0) {
-            setOrders(prev => {
-              const ids = new Set(prev.map(p => p.id));
-              const fresh = realPlaced.filter(r => !ids.has(r.id));
-              return [...fresh, ...prev];
-            });
-          }
-        } catch (e) {}
-      }
-
-      setLoading(false);
     }
 
     loadOrdersData();

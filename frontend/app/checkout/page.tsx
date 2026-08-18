@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "components/auth/auth-provider";
 import Link from "next/link";
 import { getUserCartKey, getUserOrdersKey, getUserAddressesKey, getUserGiftBalanceKey } from "lib/utils";
+import { API_BASE_URL } from "lib/api";
 
 interface Address {
   id: string;
@@ -369,14 +370,34 @@ export default function CheckoutPage() {
           }
         };
 
-        // Save to localStorage orders history (User-Scoped & Global Admin Store)
+        // Submit order directly to PostgreSQL Database API
+        try {
+          fetch(`${API_BASE_URL}/orders`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${localStorage.getItem("skipd_token") || ""}`
+            },
+            body: JSON.stringify({
+              order_number: createdOrderNumber,
+              total_amount: finalPayable,
+              payment_method: "Razorpay Online (" + (response.razorpay_payment_id || "PAID") + ")",
+              status: "PAID",
+              shipping_address: selectedAddressObj,
+              items: cartItems.map(item => ({
+                product_id: item.id,
+                quantity: item.quantity,
+                price: item.price
+              }))
+            })
+          });
+        } catch (e) {}
+
+        // Save to user account history
         const ordersKey = getUserOrdersKey();
         const cartKey = getUserCartKey();
         const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
         localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
-
-        const existingAll = JSON.parse(localStorage.getItem("skipd_all_store_orders") || "[]");
-        localStorage.setItem("skipd_all_store_orders", JSON.stringify([newOrder, ...existingAll]));
 
         if (typeof window !== "undefined") {
           window.dispatchEvent(new Event("skipd_orders_changed"));
@@ -507,14 +528,34 @@ export default function CheckoutPage() {
         }
       };
 
-      // Save to localStorage orders history (User-Scoped & Global Admin Store)
+      // Submit order directly to PostgreSQL Database API
+      try {
+        fetch(`${API_BASE_URL}/orders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${localStorage.getItem("skipd_token") || ""}`
+          },
+          body: JSON.stringify({
+            order_number: createdOrderNumber,
+            total_amount: finalPayable,
+            payment_method: selectedMethod === "upi" ? "Razorpay Online UPI" : selectedMethod === "card" ? "Debit / Credit Card" : selectedMethod.toUpperCase(),
+            status: "PACKED",
+            shipping_address: selectedAddressObj,
+            items: cartItems.map(item => ({
+              product_id: item.id,
+              quantity: item.quantity,
+              price: item.price
+            }))
+          })
+        });
+      } catch (e) {}
+
+      // Save to user account history
       const ordersKey = getUserOrdersKey();
       const cartKey = getUserCartKey();
       const existingOrders = JSON.parse(localStorage.getItem(ordersKey) || "[]");
       localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
-
-      const existingAll = JSON.parse(localStorage.getItem("skipd_all_store_orders") || "[]");
-      localStorage.setItem("skipd_all_store_orders", JSON.stringify([newOrder, ...existingAll]));
 
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event("skipd_orders_changed"));

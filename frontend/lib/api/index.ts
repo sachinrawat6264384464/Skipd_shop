@@ -918,113 +918,51 @@ export async function fetchAdminStats() {
       return await res.json();
     }
   } catch (e) {
-    console.warn("[API SDK Warning] FastAPI admin endpoint offline, calculating real-time dynamic admin stats.");
+    console.warn("[API SDK Warning] FastAPI admin stats endpoint offline");
   }
 
-  // Calculate Real-Time Dynamic Admin Stats from actual store activity
-  let allOrders: any[] = [];
-  if (typeof window !== "undefined") {
-    try {
-      const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders");
-      keys.forEach(k => {
-        const item = localStorage.getItem(k);
-        if (item) {
-          try {
-            const parsed = JSON.parse(item);
-            if (Array.isArray(parsed)) {
-              parsed.forEach(ord => {
-                if (!allOrders.some(o => (o.order_number && o.order_number === ord.order_number) || (o.id && o.id === ord.id))) {
-                  allOrders.push(ord);
-                }
-              });
-            }
-          } catch (e) {}
-        }
-      });
-    } catch (e) {}
-  }
-
-  const totalRevenue = allOrders.reduce((sum, ord) => sum + (Number(ord.total) || Number(ord.total_amount) || 0), 0);
-  const totalOrders = allOrders.length;
-  const productsSold = allOrders.reduce((sum, ord) => sum + (ord.items?.length || 1), 0);
-
-  // Registered Users Count
-  let userCount = 0;
-  if (typeof window !== "undefined") {
-    const currentUser = localStorage.getItem("skipd_user");
-    if (currentUser) userCount = 1;
-    const registeredUsers = localStorage.getItem("skipd_all_registered_users");
-    if (registeredUsers) {
-      try {
-        const parsed = JSON.parse(registeredUsers);
-        if (Array.isArray(parsed)) userCount = Math.max(userCount, parsed.length);
-      } catch (e) {}
-    }
-  }
-
-  // Live Products from Database
   const liveProducts = await fetchProducts();
   const productsCount = liveProducts.length;
 
-  // Visit Count
-  let visitsCount = 1;
-  if (typeof window !== "undefined") {
-    const visits = localStorage.getItem("skipd_visit_count");
-    if (visits) visitsCount = parseInt(visits) || 1;
-  }
-
-  // Status breakdown
-  const deliveredCount = allOrders.filter(o => (o.status || "").toUpperCase() === "DELIVERED").length;
-  const processingCount = allOrders.filter(o => (o.status || "").toUpperCase() === "PROCESSING" || (o.status || "").toUpperCase() === "CONFIRMED").length;
-  const shippedCount = allOrders.filter(o => (o.status || "").toUpperCase() === "SHIPPED").length;
-  const cancelledCount = allOrders.filter(o => (o.status || "").toUpperCase() === "CANCELLED").length;
-
   return {
     metrics: {
-      total_revenue: totalRevenue,
-      revenue_growth: totalOrders > 0 ? "+100% Real-Time" : "₹0 Real-Time",
-      total_orders: totalOrders,
-      orders_growth: totalOrders > 0 ? `${totalOrders} Orders Placed` : "0 Orders",
-      total_customers: userCount,
-      customers_growth: `${userCount} Registered`,
-      products_sold: productsSold,
-      products_growth: `${productsSold} Items Sold`,
-      store_visits: visitsCount,
-      visits_growth: `${visitsCount} Real Visits`
+      total_revenue: 0,
+      revenue_growth: "₹0 Real-Time",
+      total_orders: 0,
+      orders_growth: "0 Orders",
+      total_customers: 0,
+      customers_growth: "0 Registered Users",
+      products_sold: 0,
+      products_growth: "0 Items Sold",
+      store_visits: 0,
+      visits_growth: "0 Real Visits"
     },
     sales_overview: [
-      { date: "May 19", revenue: 0, orders: 0 },
-      { date: "May 20", revenue: 0, orders: 0 },
-      { date: "May 21", revenue: 0, orders: 0 },
-      { date: "May 22", revenue: 0, orders: 0 },
-      { date: "May 23", revenue: 0, orders: 0 },
-      { date: "May 24", revenue: 0, orders: 0 },
-      { date: "Today", revenue: totalRevenue, orders: totalOrders }
+      { date: "Period 1", revenue: 0, orders: 0 },
+      { date: "Period 2", revenue: 0, orders: 0 },
+      { date: "Period 3", revenue: 0, orders: 0 },
+      { date: "Period 4", revenue: 0, orders: 0 },
+      { date: "Period 5", revenue: 0, orders: 0 },
+      { date: "Period 6", revenue: 0, orders: 0 },
+      { date: "Period 7", revenue: 0, orders: 0 }
     ],
     order_status: {
-      total: totalOrders,
+      total: 0,
       breakdown: [
-        { label: "Delivered", count: deliveredCount, percentage: totalOrders ? Math.round((deliveredCount / totalOrders) * 100) : 0, color: "#10b981" },
-        { label: "Processing", count: processingCount, percentage: totalOrders ? Math.round((processingCount / totalOrders) * 100) : 0, color: "#3b82f6" },
-        { label: "Shipped", count: shippedCount, percentage: totalOrders ? Math.round((shippedCount / totalOrders) * 100) : 0, color: "#f59e0b" },
-        { label: "Cancelled", count: cancelledCount, percentage: totalOrders ? Math.round((cancelledCount / totalOrders) * 100) : 0, color: "#8b5cf6" }
+        { label: "Delivered", count: 0, percentage: 0, color: "#10b981" },
+        { label: "Processing", count: 0, percentage: 0, color: "#3b82f6" },
+        { label: "Shipped", count: 0, percentage: 0, color: "#f59e0b" },
+        { label: "Cancelled", count: 0, percentage: 0, color: "#8b5cf6" }
       ]
     },
-    top_selling_products: liveProducts.slice(0, 5).map((p, idx) => ({
+    top_selling_products: liveProducts.slice(0, 5).map((p) => ({
       id: p.id,
       title: p.title,
-      sold: Math.max(0, 10 - idx * 2),
+      sold: 0,
       price: p.price,
       image: p.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
     })),
-    recent_orders: allOrders.slice(0, 5).map(o => ({
-      id: o.order_number || `SKIPD-${o.id}`,
-      customer: o.user_name || o.email || "Store Customer",
-      date: o.date || "Today",
-      amount: o.total || 0,
-      payment: o.payment_method || "UPI",
-      status: o.status || "Processing"
-    })),
+    recent_orders: [],
     low_stock_alerts: liveProducts.filter(p => (p.stock_quantity ?? 100) <= 20).slice(0, 4).map(p => ({
       id: p.id,
       title: p.title,
@@ -1033,11 +971,11 @@ export async function fetchAdminStats() {
       image: p.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
     })),
     store_overview: {
-      total_categories: 13,
-      total_brands: 56,
+      total_categories: 11,
+      total_brands: 30,
       total_products: productsCount,
-      total_customers: userCount,
-      newsletter_subscribers: 4
+      total_customers: 0,
+      newsletter_subscribers: 0
     }
   };
 }
