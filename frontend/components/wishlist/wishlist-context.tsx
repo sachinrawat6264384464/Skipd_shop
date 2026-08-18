@@ -41,26 +41,25 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const pendingTogglesRef = useRef<Set<string>>(new Set());
 
-  /** Load wishlist from PostgreSQL DB when logged in, or fallback to LocalStorage for guest users */
-  const loadWishlistFromDB = useCallback(async () => {
-    const token = getToken();
-    if (!token) {
-      if (typeof window !== "undefined") {
-        try {
-          const savedGuest = localStorage.getItem("skipd_guest_wishlist");
-          if (savedGuest) {
-            const parsed = JSON.parse(savedGuest);
-            if (Array.isArray(parsed)) {
-              setWishlist(parsed);
-              return;
-            }
-          }
-        } catch (e) {}
-      }
-      setWishlist([]);
-      return;
+  // 1. Initial Load from LocalStorage + DB Sync
+  const loadWishlist = useCallback(async () => {
+    let localItems: WishlistItem[] = [];
+    if (typeof window !== "undefined") {
+      try {
+        const stored = localStorage.getItem("skipd_wishlist_items") || localStorage.getItem("skipd_guest_wishlist");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) localItems = parsed;
+        }
+      } catch (e) {}
     }
 
+    setWishlist(localItems);
+
+    const token = getToken();
+    if (!token) return;
+
+    // Sync with PostgreSQL DB when logged in
     try {
       const res = await fetch(`${getApiBase()}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -68,7 +67,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       });
       if (res.ok) {
         const data = await res.json();
-        const items: WishlistItem[] = (data.wishlist || []).map((w: any) => ({
+        const dbItems: WishlistItem[] = (data.wishlist || []).map((w: any) => ({
           id: w.product_id,
           handle: w.handle || "",
           title: w.title || "",
@@ -78,38 +77,40 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           category: w.category || undefined
         }));
 
-        // Deduplicate items by product_id
-        const uniqueItems: WishlistItem[] = [];
-        const seen = new Set<string>();
-        items.forEach(it => {
-          const key = String(it.id);
-          if (!seen.has(key)) {
-            seen.add(key);
-            uniqueItems.push(it);
+        // Merge DB items with LocalStorage items cleanly
+        const mergedMap = new Map<string, WishlistItem>();
+        [...localItems, ...dbItems].forEach(it => {
+          if (it && it.id) {
+            mergedMap.set(String(it.id), it);
           }
         });
+        const finalWishlist = Array.from(mergedMap.values());
+        setWishlist(finalWishlist);
 
-        setWishlist(uniqueItems);
-        return;
+        if (typeof window !== "undefined") {
+          localStorage.setItem("skipd_wishlist_items", JSON.stringify(finalWishlist));
+        }
       }
     } catch (e) {
-      console.warn("[Wishlist] Failed to load from DB:", e);
+      console.warn("[Wishlist] DB load fallback to local storage:", e);
     }
   }, []);
 
   useEffect(() => {
-    loadWishlistFromDB();
-    const handleAuthChange = () => loadWishlistFromDB();
-    const handleWishlistUpdated = () => loadWishlistFromDB();
+    loadWishlist();
+    const handleAuthChange = () => loadWishlist();
+    const handleWishlistUpdated = () => loadWishlist();
 
     window.addEventListener("skipd_auth_changed", handleAuthChange);
     window.addEventListener("skipd_wishlist_updated", handleWishlistUpdated);
+    window.addEventListener("skipd_wishlist_changed", handleWishlistUpdated);
 
     return () => {
       window.removeEventListener("skipd_auth_changed", handleAuthChange);
       window.removeEventListener("skipd_wishlist_updated", handleWishlistUpdated);
+      window.removeEventListener("skipd_wishlist_changed", handleWishlistUpdated);
     };
-  }, [loadWishlistFromDB]);
+  }, [loadWishlist]);
 
   /** Loose string/number type-safe check */
   const isInWishlist = (id: number | string) => {
@@ -119,44 +120,35 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   };
 
   /**
-   * OPTIMISTIC toggle with functional state update & rapid click debouncing
+   * Toggle Wishlist Item (Optimistic & Persistent)
    */
   const toggleWishlist = (item: WishlistItem) => {
-    const token = getToken();
+    if (!item || !item.id) return;
     const itemIdStr = String(item.id);
 
-    // Prevent rapid duplicate execution within 300ms window
+    // Debounce rapid double-clicks (150ms)
     if (pendingTogglesRef.current.has(itemIdStr)) {
       return;
     }
     pendingTogglesRef.current.add(itemIdStr);
     setTimeout(() => {
       pendingTogglesRef.current.delete(itemIdStr);
-    }, 300);
+    }, 150);
 
-    let isNowInWishlist = false;
-
-    // ✅ Functional state update ensures latest state is used even with rapid clicks!
     setWishlist(prev => {
       const alreadyIn = prev.some(w => String(w.id) === itemIdStr);
       let updated: WishlistItem[] = [];
 
       if (alreadyIn) {
         updated = prev.filter(w => String(w.id) !== itemIdStr);
-        isNowInWishlist = false;
       } else {
-        isNowInWishlist = true;
-        // Ensure no duplicate insertion
-        if (prev.some(w => String(w.id) === itemIdStr)) {
-          updated = prev;
-        } else {
-          updated = [...prev, item];
-        }
+        updated = [...prev, item];
       }
 
-      // Save to guest local storage if not logged in
-      if (!token && typeof window !== "undefined") {
+      // Persist in LocalStorage
+      if (typeof window !== "undefined") {
         try {
+          localStorage.setItem("skipd_wishlist_items", JSON.stringify(updated));
           localStorage.setItem("skipd_guest_wishlist", JSON.stringify(updated));
         } catch (e) {}
       }
@@ -164,40 +156,27 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       return updated;
     });
 
-    // Dispatch event for navbar count update
+    // Notify header icons & wishlist views
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("skipd_wishlist_changed"));
+      window.dispatchEvent(new Event("skipd_wishlist_updated"));
     }
 
-    if (!token) return;
-
-    // Send Integer product_id to PostgreSQL DB API
-    const numericId = Number(item.id);
-    fetch(`${getApiBase()}/wishlist/toggle`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ product_id: numericId || item.id })
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("DB toggle failed");
-        return res.json();
-      })
-      .catch(err => {
-        console.warn("[Wishlist] DB sync failed, reverting:", err);
-        // Revert state if DB call failed
-        setWishlist(prev => {
-          const alreadyIn = prev.some(w => String(w.id) === itemIdStr);
-          if (isNowInWishlist && alreadyIn) {
-            return prev.filter(w => String(w.id) !== itemIdStr);
-          } else if (!isNowInWishlist && !alreadyIn) {
-            return [...prev, item];
-          }
-          return prev;
-        });
+    // Sync to PostgreSQL DB in background if logged in
+    const token = getToken();
+    if (token) {
+      const numericId = Number(item.id);
+      fetch(`${getApiBase()}/wishlist/toggle`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ product_id: numericId || item.id })
+      }).catch(err => {
+        console.warn("[Wishlist] DB sync background warning:", err);
       });
+    }
   };
 
   const addToWishlist = (item: WishlistItem) => {
@@ -206,7 +185,17 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
   const removeFromWishlist = (id: number | string) => {
     const item = wishlist.find(w => String(w.id) === String(id));
-    if (item) toggleWishlist(item);
+    if (item) {
+      toggleWishlist(item);
+    } else {
+      setWishlist(prev => {
+        const updated = prev.filter(w => String(w.id) !== String(id));
+        if (typeof window !== "undefined") {
+          localStorage.setItem("skipd_wishlist_items", JSON.stringify(updated));
+        }
+        return updated;
+      });
+    }
   };
 
   return (

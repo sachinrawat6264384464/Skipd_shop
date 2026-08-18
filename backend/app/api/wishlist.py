@@ -1,7 +1,7 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func, delete
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, func
 from app.core.database import get_db
 from app.api.deps import get_current_user
 from app.models.models import User, WishlistItem, Product
@@ -11,10 +11,13 @@ router = APIRouter(prefix="/wishlist", tags=["Wishlist"])
 @router.get("")
 @router.get("/")
 async def get_wishlist(
-    current_user: User = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Fetch logged-in user wishlist items from PostgreSQL DB."""
+    if not current_user:
+        return {"wishlist": [], "count": 0}
+
     res = await db.execute(select(WishlistItem).where(WishlistItem.user_id == current_user.id))
     items = res.scalars().all()
 
@@ -34,8 +37,8 @@ async def get_wishlist(
                 "product_id": p.id,
                 "title": p.title,
                 "handle": p.handle,
-                "price": p.price,
-                "compare_at_price": p.compare_at_price,
+                "price": float(p.price or 0),
+                "compare_at_price": float(p.compare_at_price or 0) if p.compare_at_price else None,
                 "image": p.images[0] if p.images else None,
                 "category": None
             })
@@ -46,7 +49,7 @@ async def get_wishlist(
 @router.post("/toggle")
 async def toggle_wishlist(
     payload: dict = Body(...),
-    current_user: User = Depends(get_current_user),
+    current_user: Optional[User] = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
     """Toggle product in user wishlist — saved directly in PostgreSQL DB with int type conversion."""
@@ -59,6 +62,9 @@ async def toggle_wishlist(
     except (ValueError, TypeError):
         raise HTTPException(status_code=400, detail="Invalid product_id format")
 
+    if not current_user:
+        return {"status": "guest_saved", "message": "Saved locally for guest user", "product_id": product_id}
+
     res = await db.execute(
         select(WishlistItem).where(
             WishlistItem.user_id == current_user.id,
@@ -68,7 +74,6 @@ async def toggle_wishlist(
     existing_items = res.scalars().all()
 
     if existing_items:
-        # Delete ALL matching wishlist items for clean removal
         for item in existing_items:
             await db.delete(item)
         await db.commit()
