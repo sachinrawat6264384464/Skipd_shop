@@ -9,6 +9,7 @@ import {
   fetchAdminReviews,
   deleteAdminReview,
   deleteAdminUser,
+  createAdminUser,
   fetchAdminStats
 } from "lib/api";
 
@@ -216,38 +217,26 @@ export default function AdminCustomersCRMPage() {
     showToast(`✓ Review #${id} status changed to "${nextStatus}"`);
   };
 
-  const handleCreateCustomer = (e: React.FormEvent) => {
+  const handleCreateCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCustomerForm.name || !newCustomerForm.email) return;
 
-    const newC = {
-      id: Date.now(),
+    setLoading(true);
+    const res = await createAdminUser({
       name: newCustomerForm.name,
       email: newCustomerForm.email,
-      phone: newCustomerForm.phone || "+91 98765 43210",
-      ordersCount: 1,
-      spent: 2999,
-      group: newCustomerForm.group,
-      tier: "Bronze",
-      role: "CUSTOMER",
-      joined: "May 25, 2025"
-    };
-
-    const updated = [newC, ...customers];
-    setCustomers(updated);
-
-    // Recalculate metrics
-    const totalRev = updated.reduce((sum: number, c: any) => sum + c.spent, 0);
-    setMetrics({
-      ...metrics,
-      totalCustomers: updated.length.toLocaleString("en-IN"),
-      totalRevenue: `₹${totalRev.toLocaleString("en-IN")}`
+      phone: newCustomerForm.phone || "+91 98765 43210"
     });
 
-
-    showToast(`🚀 New Customer "${newCustomerForm.name}" created!`);
-    setShowAddCustomerModal(false);
-    setNewCustomerForm({ name: "", email: "", phone: "", group: "VIP Gold" });
+    if (res) {
+      showToast(`🚀 New Customer "${newCustomerForm.name}" created in PostgreSQL DB!`);
+      setShowAddCustomerModal(false);
+      setNewCustomerForm({ name: "", email: "", phone: "", group: "VIP Gold" });
+      await loadLiveCRMData();
+    } else {
+      showToast(`⚠️ Account with email "${newCustomerForm.email}" already exists or server offline`, "error");
+      setLoading(false);
+    }
   };
 
   // Filtered Reviews Dataset
@@ -848,12 +837,18 @@ export default function AdminCustomersCRMPage() {
                       <td className="px-6 py-4 text-right">
                         <button
                           onClick={async () => {
-                            await deleteAdminUser(c.id, c.email);
-                            const updated = customers.filter(u => u.id !== c.id);
-                            setCustomers(updated);
-                            showToast(`🗑️ User #${c.id} (${c.email}) and all schema data permanently purged!`, "error");
+                            if (!confirm(`Are you sure you want to permanently delete customer "${c.name}" (${c.email}) and purge all associated schema data from PostgreSQL database?`)) return;
+                            setLoading(true);
+                            const res = await deleteAdminUser(c.id);
+                            if (res) {
+                              showToast(`🗑️ Customer "${c.name}" (${c.email}) & schema data permanently purged!`, "error");
+                              await loadLiveCRMData();
+                            } else {
+                              showToast(`⚠️ Failed to delete customer account.`, "error");
+                              setLoading(false);
+                            }
                           }}
-                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer"
+                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer shadow-2xs"
                         >
                           🗑️ Delete Account
                         </button>

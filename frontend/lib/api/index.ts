@@ -1700,6 +1700,22 @@ export async function toggleWishlistDB(token: string, productId: number) {
   return null;
 }
 
+export async function createAdminUser(payload: { name?: string; full_name?: string; email: string; phone?: string }) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/users/admin/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Create admin user DB warning:", e);
+  }
+  return null;
+}
+
+
+
 
 
 

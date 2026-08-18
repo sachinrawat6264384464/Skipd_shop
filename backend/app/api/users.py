@@ -3,7 +3,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from app.core.database import get_db
 from app.api.deps import get_current_user
-from app.models.models import User, Order, WishlistItem, CartItem, Address, Review, Wallet, ReturnRequest
+from app.models.models import User, UserRole, Order, WishlistItem, CartItem, Address, Review, Wallet, ReturnRequest
+from app.core.security import get_password_hash
 
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -45,6 +46,52 @@ async def get_all_admin_users(db: AsyncSession = Depends(get_db)):
         })
 
     return result
+
+
+@router.post("/admin/create")
+async def create_admin_user(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
+    """Admin: Create a new customer account directly in Neon PostgreSQL Database."""
+    full_name = payload.get("full_name") or payload.get("name")
+    email = payload.get("email")
+    phone = payload.get("phone") or "+91 98765 43210"
+    password = payload.get("password") or "SkipdCustomer@123"
+
+    if not full_name or not email:
+        raise HTTPException(status_code=400, detail="full_name and email are required")
+
+    existing = await db.execute(select(User).where(func.lower(User.email) == email.strip().lower()))
+    if existing.scalars().first():
+        raise HTTPException(status_code=400, detail="Account with this email already exists")
+
+    hashed_pwd = get_password_hash(password)
+
+    new_user = User(
+        full_name=full_name.strip(),
+        email=email.strip().lower(),
+        phone=phone.strip(),
+        hashed_password=hashed_pwd,
+        role=UserRole.CUSTOMER,
+        is_active=True
+    )
+
+    db.add(new_user)
+    await db.commit()
+    await db.refresh(new_user)
+
+    return {
+        "id": new_user.id,
+        "full_name": new_user.full_name,
+        "email": new_user.email,
+        "phone": new_user.phone or "",
+        "role": "customer",
+        "is_active": True,
+        "created_at": new_user.created_at.isoformat() if new_user.created_at else None,
+        "orders_count": 0,
+        "total_spent": 0.0
+    }
+
+
+@router.delete("/admin/{user_id}")
 async def delete_admin_user(user_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a user account and permanently purge all associated schema data from PostgreSQL database."""
     res = await db.execute(select(User).where(User.id == user_id))
