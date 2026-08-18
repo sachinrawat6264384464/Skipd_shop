@@ -1,6 +1,6 @@
 from typing import List, Optional, Any
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 
 # User Schemas
 class UserRegister(BaseModel):
