@@ -216,19 +216,11 @@ export default function AdminPaymentsPage() {
   async function loadLivePaymentsData() {
     try {
       let rawTxns: any[] = [];
-      const hasUserSavedKey = typeof window !== "undefined" && localStorage.getItem("skipd_payments") !== null;
-
-      if (hasUserSavedKey) {
-        try {
-          rawTxns = JSON.parse(localStorage.getItem("skipd_payments") || "[]");
-        } catch (e) {}
+      const apiTxns = await fetchAdminPayments();
+      if (Array.isArray(apiTxns) && apiTxns.length > 0) {
+        rawTxns = [...apiTxns];
       } else {
-        const apiTxns = await fetchAdminPayments();
-        if (Array.isArray(apiTxns) && apiTxns.length > 0) {
-          rawTxns = [...apiTxns];
-        } else {
-          rawTxns = [];
-        }
+        rawTxns = [];
       }
 
       // DEDUPLICATE STRICTLY BY orderId AND id
