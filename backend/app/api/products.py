@@ -1,10 +1,10 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 from app.core.database import get_db
-from app.models.models import Product, Category, ProductVariant
+from app.models.models import Product, Category, ProductVariant, WishlistItem, CartItem, Review, InventoryLog, SaleProduct
 from app.schemas.schemas import ProductSchema, CategorySchema
 from app.core.redis_cache import get_cached_json, set_cached_json, invalidate_cache_pattern
 import datetime
@@ -167,16 +167,29 @@ async def admin_update_product(product_id: int, payload: dict = Body(...), db: A
 
 @router.delete("/admin/{product_id}")
 async def admin_delete_product(product_id: int, db: AsyncSession = Depends(get_db)):
-    """Admin: Delete product."""
+    """Admin: Safely delete product and all associated FK rows."""
     result = await db.execute(select(Product).where(Product.id == product_id))
     product = result.scalars().first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
 
-    await db.delete(product)
-    await db.commit()
-    await invalidate_cache_pattern("products:*")
-    return {"message": "Product deleted successfully"}
+    try:
+        # Delete referencing foreign key rows first to prevent FK constraint failures
+        await db.execute(delete(WishlistItem).where(WishlistItem.product_id == product_id))
+        await db.execute(delete(CartItem).where(CartItem.product_id == product_id))
+        await db.execute(delete(Review).where(Review.product_id == product_id))
+        await db.execute(delete(InventoryLog).where(InventoryLog.product_id == product_id))
+        await db.execute(delete(SaleProduct).where(SaleProduct.product_id == product_id))
+        await db.execute(delete(ProductVariant).where(ProductVariant.product_id == product_id))
+
+        await db.delete(product)
+        await db.commit()
+        await invalidate_cache_pattern("products:*")
+        return {"message": "Product deleted successfully", "id": product_id}
+    except Exception as err:
+        await db.rollback()
+        print(f"[PRODUCT DELETE ERROR] {err}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete product: {str(err)}")
 
 
 @router.post("/admin/bulk-seed")
