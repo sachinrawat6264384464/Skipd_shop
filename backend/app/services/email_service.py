@@ -12,7 +12,7 @@ def send_email_notification(to_email: str, subject: str, html_content: str) -> b
     smtp_host = os.getenv("SMTP_HOST", os.getenv("EMAIL_HOST", "smtp.gmail.com")).strip()
     smtp_port = int(os.getenv("SMTP_PORT", os.getenv("EMAIL_PORT", 587)))
     smtp_user = os.getenv("SMTP_USER", os.getenv("EMAIL_HOST_USER", "")).strip()
-    smtp_password = os.getenv("SMTP_PASSWORD", os.getenv("EMAIL_HOST_PASSWORD", "")).replace(" ", "").strip()
+    smtp_password = os.getenv("SMTP_PASSWORD", os.getenv("EMAIL_HOST_PASSWORD", "")).strip()
 
     if smtp_user and smtp_password:
         try:
@@ -176,7 +176,9 @@ def send_order_confirmation_email(
         address_str = f"{line1}, {city}, {state} - {pincode} (Mob: {phone})"
 
     awb_demo = f"SKP{order_number.replace('SKIPD-', '')}IN"
-    tracking_url = f"http://localhost:3003/track-order?awb={awb_demo}"
+    # Use production domain if available, else fallback
+    site_domain = os.getenv("SITE_URL", "https://ecom.botmartz.com")
+    tracking_url = f"{site_domain}/track-order?awb={awb_demo}"
 
     html_content = f"""
     <!DOCTYPE html>
@@ -335,7 +337,7 @@ def send_welcome_account_email(to_email: str, full_name: str, raw_password: str)
           </div>
 
           <div style="text-align: center;">
-            <a href="http://localhost:3003/auth/login" class="btn">⚡ Login to Your Account</a>
+            <a href="{os.getenv('SITE_URL', 'https://ecom.botmartz.com')}/auth/login" class="btn">⚡ Login to Your Account</a>
           </div>
         </div>
 
