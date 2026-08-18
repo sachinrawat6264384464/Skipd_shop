@@ -352,61 +352,6 @@ ALL_PRODUCTS = [
     "images": ["https://images.unsplash.com/photo-1542838132-92c53300491e?w=800"],
     "tags": ["artisan", "organic"],
     "cat_slug": "artisan"
-  },
-  {
-    "title": "N95 Respirator Mask 10 Pcs Pack",
-    "handle": "n95-mask-10pack",
-    "description": "5-layer PM2.5 filtration mask with soft earloops and adjustable nose clip.",
-    "price": 399.0,
-    "compare_at_price": 699.0,
-    "featured": True,
-    "images": ["https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=800"],
-    "tags": ["health", "safety"],
-    "cat_slug": "health"
-  },
-  {
-    "title": "Saree Premium Silk",
-    "handle": "saree-premium-silk",
-    "description": "Exquisite hand-woven premium silk saree with intricate golden zari border. Ideal for weddings, festivities and special occasions.",
-    "price": 299.0,
-    "compare_at_price": 590.0,
-    "featured": True,
-    "images": ["https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800"],
-    "tags": ["fashion", "saree", "silk"],
-    "cat_slug": "fashion"
-  },
-  {
-    "title": "Cold Pressed Oil 1L",
-    "handle": "cold-pressed-oil-1l",
-    "description": "100% pure wood-pressed cold pressed oil, extracted without heat to retain all nutrients.",
-    "price": 249.0,
-    "compare_at_price": 499.0,
-    "featured": True,
-    "images": ["https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=800"],
-    "tags": ["organic", "oil", "kitchen"],
-    "cat_slug": "artisan"
-  },
-  {
-    "title": "20000mAh Power Bank",
-    "handle": "20000mah-power-bank",
-    "description": "Ultra-capacity 20000mAh fast-charging power bank with 22.5W PD charging.",
-    "price": 999.0,
-    "compare_at_price": 1999.0,
-    "featured": True,
-    "images": ["https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=800"],
-    "tags": ["electronics", "powerbank"],
-    "cat_slug": "electronics"
-  },
-  {
-    "title": "Nike Running Shoe",
-    "handle": "nike-running-shoe",
-    "description": "High-performance Nike running shoes with React foam midsole for maximum cushioning.",
-    "price": 700.0,
-    "compare_at_price": 1299.0,
-    "featured": True,
-    "images": ["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800"],
-    "tags": ["footwear", "nike", "sports"],
-    "cat_slug": "footwear"
   }
 ]
 
