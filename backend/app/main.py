@@ -248,6 +248,7 @@ app.include_router(coupons_router, prefix=settings.API_V1_STR)
 app.include_router(categories_router, prefix=settings.API_V1_STR)
 app.include_router(users_router, prefix=settings.API_V1_STR)
 app.include_router(queries_router, prefix=settings.API_V1_STR)
+app.include_router(wishlist_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():
