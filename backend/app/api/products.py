@@ -109,32 +109,64 @@ async def get_product(handle: str, db: AsyncSession = Depends(get_db)):
 
 @router.post("/admin/create")
 async def admin_create_product(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
-    """Admin: Create single new product."""
-    title = payload.get("title", "New Product")
-    handle = payload.get("handle") or title.lower().replace(" ", "-").replace("/", "-") + f"-{int(datetime.datetime.utcnow().timestamp())}"
-    
-    cat_slug = payload.get("category_slug", "tech")
-    cat_res = await db.execute(select(Category).where(Category.slug == cat_slug))
-    category = cat_res.scalars().first()
-    category_id = category.id if category else None
+    """Admin: Create single new product with full safety & unique handles."""
+    try:
+        title = payload.get("title", "New Product")
+        raw_handle = payload.get("handle") or title.lower().replace(" ", "-").replace("/", "-")
+        clean_handle = "".join([c if c.isalnum() or c == "-" else "" for c in raw_handle]).strip("-")
+        if not clean_handle:
+            clean_handle = "product"
+        
+        # Check if handle already exists and ensure uniqueness
+        existing = await db.execute(select(Product).where(Product.handle == clean_handle))
+        if existing.scalars().first():
+            clean_handle = f"{clean_handle}-{int(datetime.datetime.utcnow().timestamp())}"
 
-    product = Product(
-        title=title,
-        handle=handle,
-        description=payload.get("description", "Premium quality product"),
-        price=float(payload.get("price", 999.0)),
-        compare_at_price=float(payload.get("compare_at_price")) if payload.get("compare_at_price") else None,
-        category_id=category_id,
-        featured=payload.get("featured", True),
-        images=payload.get("images", ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]),
-        tags=payload.get("tags", ["new-arrival"]),
-        stock_quantity=int(payload.get("stock_quantity", 100))
-    )
-    db.add(product)
-    await db.commit()
-    await db.refresh(product)
-    await invalidate_cache_pattern("products:*")
-    return {"message": "Product created successfully", "id": product.id, "handle": product.handle}
+        cat_slug = payload.get("category_slug", "tech")
+        category = None
+        if cat_slug:
+            cat_res = await db.execute(select(Category).where(Category.slug == cat_slug))
+            category = cat_res.scalars().first()
+
+            if not category:
+                cat_res_name = await db.execute(select(Category).where(Category.name.ilike(cat_slug)))
+                category = cat_res_name.scalars().first()
+
+            # Dynamically auto-create category if missing in DB
+            if not category:
+                category = Category(
+                    name=cat_slug.replace("-", " ").title(),
+                    slug=cat_slug.lower().replace(" ", "-"),
+                    icon="📁",
+                    status="Active"
+                )
+                db.add(category)
+                await db.commit()
+                await db.refresh(category)
+
+        category_id = category.id if category else None
+
+        product = Product(
+            title=title,
+            handle=clean_handle,
+            description=payload.get("description", "Premium quality product"),
+            price=float(payload.get("price", 999.0)),
+            compare_at_price=float(payload.get("compare_at_price")) if payload.get("compare_at_price") else None,
+            category_id=category_id,
+            featured=payload.get("featured", True),
+            images=payload.get("images", ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]),
+            tags=payload.get("tags", ["bestseller"]),
+            stock_quantity=int(payload.get("stock_quantity", 100))
+        )
+        db.add(product)
+        await db.commit()
+        await db.refresh(product)
+        await invalidate_cache_pattern("products:*")
+        return {"message": "Product created successfully", "id": product.id, "handle": product.handle}
+    except Exception as err:
+        await db.rollback()
+        print(f"[PRODUCT CREATE ERROR] {err}")
+        raise HTTPException(status_code=400, detail=f"Failed to create product: {str(err)}")
 
 
 @router.put("/admin/{product_id}")
