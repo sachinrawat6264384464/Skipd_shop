@@ -14,6 +14,71 @@ from app.services.email_service import send_order_confirmation_email
 
 router = APIRouter(prefix="/orders", tags=["Orders & Checkout"])
 
+@router.put("/{order_id}/status")
+@router.put("/admin/{order_id}/status")
+@router.patch("/{order_id}/status")
+async def update_order_status(
+    order_id: str,
+    payload: dict = Body(...),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Update order fulfillment status in Neon PostgreSQL database.
+    Supports Order ID (integer/string), Order Number (#SKIPD-123456), or AWB Code.
+    """
+    clean_id = order_id.replace("#", "").strip()
+
+    # Search for order
+    query = select(Order)
+    if clean_id.isdigit():
+        query = query.where((Order.id == int(clean_id)) | (Order.order_number == clean_id) | (Order.order_number == f"SKIPD-{clean_id}"))
+    else:
+        query = query.where((Order.order_number == clean_id) | (Order.order_number.ilike(f"%{clean_id}%")))
+
+    res = await db.execute(query)
+    order = res.scalars().first()
+
+    if not order:
+        # Fallback query by all orders if clean_id is inside order_number
+        all_res = await db.execute(select(Order))
+        for o in all_res.scalars().all():
+            if clean_id.lower() in o.order_number.lower() or str(o.id) == clean_id:
+                order = o
+                break
+
+    if not order:
+        raise HTTPException(status_code=404, detail=f"Order {order_id} not found in database")
+
+    new_status_raw = str(payload.get("status") or "").upper().strip()
+
+    # Map to OrderStatus enum
+    if new_status_raw in ["DELIVERED", "MARK DELIVERED"]:
+        order.status = OrderStatus.DELIVERED
+    elif new_status_raw in ["PROCESSING", "PAID"]:
+        order.status = OrderStatus.PROCESSING
+    elif new_status_raw in ["SHIPPED", "DISPATCHED"]:
+        order.status = OrderStatus.SHIPPED
+    elif new_status_raw in ["CANCELLED", "CANCELED"]:
+        order.status = OrderStatus.CANCELLED
+    elif new_status_raw in ["RETURNS", "RETURNED", "RETURN_REQUESTED"]:
+        order.status = OrderStatus.RETURNED
+    elif new_status_raw in ["PENDING", "PENDING_PAYMENT"]:
+        order.status = OrderStatus.PENDING_PAYMENT
+    else:
+        order.status = OrderStatus.DELIVERED if "DELIVER" in new_status_raw else OrderStatus.PROCESSING
+
+    await db.commit()
+    await db.refresh(order)
+
+    return {
+        "status": "success",
+        "order_id": order.id,
+        "order_number": order.order_number,
+        "new_status": order.status.value if hasattr(order.status, 'value') else str(order.status),
+        "message": f"Order #{order.order_number} status updated to {order.status} in PostgreSQL DB"
+    }
+
+
 @router.post("", status_code=201)
 @router.post("/", status_code=201)
 async def create_order_direct(

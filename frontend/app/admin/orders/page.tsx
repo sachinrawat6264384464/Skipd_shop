@@ -96,99 +96,103 @@ export default function AdminOrdersPage() {
   const [dbProducts, setDbProducts] = useState<any[]>([]);
 
   useEffect(() => {
-    async function loadOrdersData() {
-      setLoading(true);
-      try {
-        const [apiOrders, apiCategories, apiProducts] = await Promise.all([
-          fetchAdminOrders(),
-          fetchAdminCategories(),
-          fetchProducts()
-        ]);
+    loadOrdersData();
+    window.addEventListener("skipd_orders_changed", loadOrdersData);
+    return () => {
+      window.removeEventListener("skipd_orders_changed", loadOrdersData);
+    };
+  }, []);
 
-        const productsList = Array.isArray(apiProducts) ? apiProducts : [];
-        const categoriesList = Array.isArray(apiCategories) ? apiCategories : [];
+  async function loadOrdersData() {
+    setLoading(true);
+    try {
+      const [apiOrders, apiCategories, apiProducts] = await Promise.all([
+        fetchAdminOrders(),
+        fetchAdminCategories(),
+        fetchProducts()
+      ]);
 
-        setDbProducts(productsList);
-        setDbCategories(categoriesList);
+      const productsList = Array.isArray(apiProducts) ? apiProducts : [];
+      const categoriesList = Array.isArray(apiCategories) ? apiCategories : [];
 
-        if (apiOrders && Array.isArray(apiOrders) && apiOrders.length > 0) {
-          const formatted = apiOrders.map((o: any) => {
-            const rawItemsList = Array.isArray(o.items) ? o.items : [];
-            const firstItem = rawItemsList.length > 0 ? rawItemsList[0] : null;
+      setDbProducts(productsList);
+      setDbCategories(categoriesList);
 
-            // Resolve Category dynamically
-            let resolvedCat = "Electronics";
-            if (firstItem) {
-              const res = resolveItemCategory(firstItem, productsList);
-              if (res.category) {
-                resolvedCat = res.category.charAt(0).toUpperCase() + res.category.slice(1);
-              } else if (res.title) {
-                for (const cat of categoriesList) {
-                  if (matchesCategory(res.title, cat.slug || "", cat.name || "")) {
-                    resolvedCat = cat.name;
-                    break;
-                  }
-                }
-              }
-            } else if (typeof o.items === "string") {
+      if (apiOrders && Array.isArray(apiOrders) && apiOrders.length > 0) {
+        const formatted = apiOrders.map((o: any) => {
+          const rawItemsList = Array.isArray(o.items) ? o.items : [];
+          const firstItem = rawItemsList.length > 0 ? rawItemsList[0] : null;
+
+          // Resolve Category dynamically
+          let resolvedCat = "Electronics";
+          if (firstItem) {
+            const res = resolveItemCategory(firstItem, productsList);
+            if (res.category) {
+              resolvedCat = res.category.charAt(0).toUpperCase() + res.category.slice(1);
+            } else if (res.title) {
               for (const cat of categoriesList) {
-                if (matchesCategory(o.items, cat.slug || "", cat.name || "")) {
+                if (matchesCategory(res.title, cat.slug || "", cat.name || "")) {
                   resolvedCat = cat.name;
                   break;
                 }
               }
             }
+          } else if (typeof o.items === "string") {
+            for (const cat of categoriesList) {
+              if (matchesCategory(o.items, cat.slug || "", cat.name || "")) {
+                resolvedCat = cat.name;
+                break;
+              }
+            }
+          }
 
-            return {
-              id: String(o.order_number || `#SKIPD-${o.id}`),
-              raw_created_at: o.created_at || new Date().toISOString(),
-              date: (() => {
-                if (!o.created_at) return "Aug 18, 2026, 01:21 PM";
-                const d = new Date(o.created_at);
-                return !isNaN(d.getTime())
-                  ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
-                  : String(o.created_at);
-              })(),
-              customer: String(o.user?.full_name || o.customer_name || o.user_name || "Customer"),
-              phone: String(o.customer_phone || o.user?.phone || "+91 98765 43210"),
-              email: String(o.customer_email || o.user?.email || "customer@skipd.in"),
-              address: o.shipping_address ? `${o.shipping_address.city || ''}, ${o.shipping_address.state || ''} (${o.shipping_address.pincode || ''})` : "India",
-              category: resolvedCat,
-              raw_items: rawItemsList,
-              items: (() => {
-                if (typeof o.items === "string") return o.items;
-                if (Array.isArray(o.items) && o.items.length > 0) {
-                  const first = o.items[0];
-                  return typeof first === "string"
-                    ? first
-                    : `${first?.product_title || first?.title || first?.name || 'Purchased Item'} (x${first?.quantity || 1})`;
-                }
-                return "Store Item (x1)";
-              })(),
-              img: typeof o.items?.[0]?.product_image === "string" ? o.items[0].product_image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-              amount: Number(o.total_amount || o.total || 2999),
-              payment: String(o.payment_method || "UPI"),
-              awb: String(o.tracking_number || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
-              status: String(o.status || "Processing")
-            };
-          });
+          return {
+            id: String(o.order_number || `#SKIPD-${o.id}`),
+            raw_created_at: o.created_at || new Date().toISOString(),
+            date: (() => {
+              if (!o.created_at) return "Aug 18, 2026, 01:21 PM";
+              const d = new Date(o.created_at);
+              return !isNaN(d.getTime())
+                ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                : String(o.created_at);
+            })(),
+            customer: String(o.user?.full_name || o.customer_name || o.user_name || "Customer"),
+            phone: String(o.customer_phone || o.user?.phone || "+91 98765 43210"),
+            email: String(o.customer_email || o.user?.email || "customer@skipd.in"),
+            address: o.shipping_address ? `${o.shipping_address.city || ''}, ${o.shipping_address.state || ''} (${o.shipping_address.pincode || ''})` : "India",
+            category: resolvedCat,
+            raw_items: rawItemsList,
+            items: (() => {
+              if (typeof o.items === "string") return o.items;
+              if (Array.isArray(o.items) && o.items.length > 0) {
+                const first = o.items[0];
+                return typeof first === "string"
+                  ? first
+                  : `${first?.product_title || first?.title || first?.name || 'Purchased Item'} (x${first?.quantity || 1})`;
+              }
+              return "Store Item (x1)";
+            })(),
+            img: typeof o.items?.[0]?.product_image === "string" ? o.items[0].product_image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
+            amount: Number(o.total_amount || o.total || 2999),
+            payment: String(o.payment_method || "UPI"),
+            awb: String(o.tracking_number || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
+            status: String(o.status || "Processing")
+          };
+        });
 
-          setOrders(formatted);
-        } else {
-          setOrders([]);
-        }
-      } catch (e) {
-        console.warn("Orders/Categories API warning:", e);
+        setOrders(formatted);
+      } else {
         setOrders([]);
-        setDbCategories([]);
-        setDbProducts([]);
-      } finally {
-        setLoading(false);
       }
+    } catch (e) {
+      console.warn("Orders/Categories API warning:", e);
+      setOrders([]);
+      setDbCategories([]);
+      setDbProducts([]);
+    } finally {
+      setLoading(false);
     }
-
-    loadOrdersData();
-  }, []);
+  }
 
   const showNotification = (msg: string) => {
     setNotificationMsg(msg);
@@ -355,11 +359,12 @@ export default function AdminOrdersPage() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedOrders = filteredOrders.slice(startIndex, startIndex + itemsPerPage);
 
-  const handleStatusChange = (id: string, newStatus: string) => {
+  const handleStatusChange = async (id: string, newStatus: string) => {
     setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus, delivered_at: newStatus === "DELIVERED" ? new Date().toISOString() : o.delivered_at } : o));
-    updateOrderStatusGlobal(id, newStatus);
+    await updateOrderStatusGlobal(id, newStatus);
     setUpdatingOrderId(null);
-    showNotification(`✓ Order ${id} marked as "${newStatus}"!`);
+    showNotification(`✓ Order ${id} marked as "${newStatus}" in PostgreSQL DB!`);
+    await loadOrdersData();
   };
 
   const handleResetFilters = () => {
@@ -774,11 +779,12 @@ export default function AdminOrdersPage() {
                 {paginatedOrders.map((ord) => {
                   const status = (ord.status || "").toLowerCase();
                   const isDelivered = status === "delivered";
-                  const isProcessing = status === "processing";
-                  const isShipped = status === "shipped";
-                  const isCancelled = status === "cancelled";
-                  const isPending = status === "pending";
-                  const isReturns = status === "returns";
+                  const isProcessing = status === "processing" || status === "paid";
+                  const isShipped = status === "shipped" || status === "dispatched";
+                  const isCancelled = status === "cancelled" || status === "canceled";
+                  const isPending = status === "pending" || status === "pending_payment";
+                  const isReturns = status === "returns" || status === "returned" || status === "return_requested";
+                  const isRefunds = status === "refunds" || status === "refunded";
 
                   return (
                     <tr key={ord.id} className="hover:bg-gray-50 transition group">
@@ -853,10 +859,6 @@ export default function AdminOrdersPage() {
                           <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-emerald-200">
                             <span>✓</span> Delivered
                           </span>
-                        ) : isProcessing ? (
-                          <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-blue-200">
-                            <span>◯</span> Processing
-                          </span>
                         ) : isShipped ? (
                           <span className="bg-purple-100 text-purple-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-purple-200">
                             <span>📦</span> Shipped
@@ -873,9 +875,13 @@ export default function AdminOrdersPage() {
                           <span className="bg-cyan-100 text-cyan-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-cyan-200">
                             <span>↺</span> Returns
                           </span>
-                        ) : (
+                        ) : isRefunds ? (
                           <span className="bg-rose-100 text-rose-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-rose-200">
                             <span>₹</span> Refunds
+                          </span>
+                        ) : (
+                          <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-blue-200">
+                            <span>◯</span> Processing
                           </span>
                         )}
                       </td>

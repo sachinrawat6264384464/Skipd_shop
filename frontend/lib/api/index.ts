@@ -662,53 +662,29 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
 }
 
 export async function updateOrderStatusGlobal(orderId: string, newStatus: string) {
+  const cleanId = orderId.replace("#", "").trim();
   try {
-    await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
+    const res = await fetch(`${API_BASE_URL}/orders/${cleanId}/status`, {
       method: "PUT",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({ status: newStatus })
     });
-  } catch (e) { }
+    if (res.ok) {
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("skipd_orders_changed"));
+      }
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK] updateOrderStatusGlobal warning:", e);
+  }
 
   if (typeof window !== "undefined") {
-    try {
-      const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders" || k === "skipd_shipments");
-      const deliveredTime = new Date().toISOString();
-
-      keys.forEach(k => {
-        const item = localStorage.getItem(k);
-        if (item) {
-          try {
-            const parsed = JSON.parse(item);
-            if (Array.isArray(parsed)) {
-              let modified = false;
-              const updated = parsed.map((ord: any) => {
-                if (
-                  (ord.order_number && ord.order_number.toLowerCase() === orderId.toLowerCase()) ||
-                  (ord.id && String(ord.id).toLowerCase() === orderId.toLowerCase()) ||
-                  (ord.awb && ord.awb.toLowerCase() === orderId.toLowerCase())
-                ) {
-                  modified = true;
-                  return {
-                    ...ord,
-                    status: newStatus,
-                    delivered_at: newStatus === "DELIVERED" ? deliveredTime : ord.delivered_at
-                  };
-                }
-                return ord;
-              });
-              if (modified) {
-                localStorage.setItem(k, JSON.stringify(updated));
-              }
-            }
-          } catch (e) { }
-        }
-      });
-    } catch (e) { }
+    window.dispatchEvent(new Event("skipd_orders_changed"));
   }
+  return null;
 }
 
 export async function fetchUserAddressesAPI() {
