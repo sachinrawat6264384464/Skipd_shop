@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     @validator("DATABASE_URL", pre=True)
     def assemble_database_url(cls, v: str) -> str:
         if isinstance(v, str):
+            if "127.0.0.1" in v or "localhost" in v or "skipd-postgres" in v:
+                v = "postgresql+asyncpg://neondb_owner:npg_co6MJSXeWK8z@ep-still-king-axcdr7h1-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require"
             if v.startswith("postgresql://"):
                 v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
             elif v.startswith("postgres://"):
