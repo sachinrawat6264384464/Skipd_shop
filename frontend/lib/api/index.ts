@@ -457,7 +457,6 @@ const MOCK_PRODUCTS: Product[] = [
 
 export async function fetchProducts(query?: { category?: string; search?: string; featured?: boolean }): Promise<Product[]> {
   let backendProducts: Product[] = [];
-  let isBackendOk = false;
   try {
     const params = new URLSearchParams();
     if (query?.category) params.append("category", query.category);
@@ -472,31 +471,76 @@ export async function fetchProducts(query?: { category?: string; search?: string
       const data = await res.json();
       if (Array.isArray(data)) {
         backendProducts = data;
-        isBackendOk = true;
       }
     }
   } catch (err: any) {
     if (err && (err.$$typeof || err.message?.includes("postpone") || err.digest?.includes("NEXT_PRERENDER"))) {
       throw err;
     }
-    console.warn("[API SDK Warning] FastAPI backend offline, using fallback catalog.", err);
+    console.warn("[API SDK Warning] FastAPI backend offline, using local store catalog.", err);
   }
 
-  // Pure 100% live database products when backend is connected
-  if (isBackendOk) {
-    let list = backendProducts;
-    if (query?.featured) list = list.filter(p => p.featured);
-    if (query?.category && query.category !== "all") {
-      list = list.filter(p => p.category?.slug === query.category || (p as any).category_slug === query.category || p.tags?.includes(query.category!));
-    }
-    if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
-      list = list.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()) || p.category?.name?.toLowerCase().includes(query.search!.toLowerCase()));
-    }
-    return list;
+  // 2. Fetch locally created products from localStorage
+  let localProducts: Product[] = [];
+  if (typeof window !== "undefined") {
+    try {
+      const stored = localStorage.getItem("skipd_custom_products");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) localProducts = parsed;
+      }
+    } catch (e) {}
   }
 
-  // Pure 100% empty list when backend is offline or database has 0 products
-  return [];
+  // 3. Merge Local Products + Backend Products (deduplicated by handle/id)
+  const productMap = new Map<string, Product>();
+  
+  // Local user-created products get top priority
+  localProducts.forEach(p => {
+    const key = String(p.handle || p.id).toLowerCase().trim();
+    if (key) productMap.set(key, p);
+  });
+
+  // Backend products added next
+  backendProducts.forEach(p => {
+    const key = String(p.handle || p.id).toLowerCase().trim();
+    if (key && !productMap.has(key)) productMap.set(key, p);
+  });
+
+  // Fallback to MOCK_PRODUCTS if combined list is empty
+  if (productMap.size === 0) {
+    MOCK_PRODUCTS.forEach(p => {
+      const key = String(p.handle || p.id).toLowerCase().trim();
+      if (key && !productMap.has(key)) productMap.set(key, p);
+    });
+  }
+
+  let finalProducts = Array.from(productMap.values());
+
+  // 4. Apply Filters
+  if (query?.featured) {
+    finalProducts = finalProducts.filter(p => p.featured);
+  }
+  if (query?.category && query.category !== "all") {
+    const catTarget = query.category.toLowerCase().trim();
+    finalProducts = finalProducts.filter(p => {
+      const cSlug = (p.category?.slug || (p as any).category_slug || "").toLowerCase().trim();
+      const cName = (p.category?.name || "").toLowerCase().trim();
+      const pTags = (p.tags || []).map((t: string) => t.toLowerCase());
+      return cSlug === catTarget || cName === catTarget || pTags.includes(catTarget) || (cSlug && catTarget.includes(cSlug)) || (catTarget && cSlug.includes(catTarget));
+    });
+  }
+  if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
+    const searchTarget = query.search.toLowerCase().trim();
+    finalProducts = finalProducts.filter(p => {
+      const titleMatch = (p.title || "").toLowerCase().includes(searchTarget);
+      const catMatch = (p.category?.name || (p as any).category_slug || "").toLowerCase().includes(searchTarget);
+      const tagMatch = (p.tags || []).some((t: string) => t.toLowerCase().includes(searchTarget));
+      return titleMatch || catMatch || tagMatch;
+    });
+  }
+
+  return finalProducts;
 }
 
 export async function fetchProductByHandle(handle: string): Promise<Product | null> {
