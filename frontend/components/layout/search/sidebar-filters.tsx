@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { fetchProducts } from "lib/api";
 
 export function CatalogSidebarFilters() {
   const router = useRouter();
@@ -32,45 +33,50 @@ export function CatalogSidebarFilters() {
     router.push(`${pathname}${query ? `?${query}` : ""}`, { scroll: false });
   };
 
-  const defaultCategories = [
-    { name: "All Categories", icon: "☷", slug: "all" },
-    { name: "Mobiles", icon: "📱", slug: "mobiles" },
-    { name: "Electronics", icon: "🎧", slug: "electronics" },
-    { name: "Watches", icon: "⌚", slug: "watches" },
-    { name: "Laptops", icon: "💻", slug: "laptops" },
-    { name: "Footwear", icon: "👟", slug: "footwear" },
-    { name: "Fashion", icon: "👕", slug: "fashion" },
-    { name: "Lifestyle", icon: "🛍️", slug: "lifestyle" },
-    { name: "Home & Living", icon: "🏠", slug: "home" },
-    { name: "Sports", icon: "🏃", slug: "sports" },
-    { name: "Artisan", icon: "🌾", slug: "artisan" },
-    { name: "Health", icon: "🏥", slug: "health" },
-  ];
-
-  const [categories, setCategories] = useState(defaultCategories);
+  const [categories, setCategories] = useState<{ name: string; icon: string; slug: string }[]>([
+    { name: "All Categories", icon: "☷", slug: "all" }
+  ]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    async function loadActiveCategories() {
       try {
-        const stored = localStorage.getItem("skipd_custom_categories");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            const formattedCustom = parsed.map((c: any) => ({
-              name: typeof c === "string" ? c : c.name || c.title || "Category",
-              icon: typeof c === "object" && c.icon ? c.icon : "📁",
-              slug: typeof c === "string" 
-                ? c.toLowerCase().replace(/[^a-z0-9]/g, "-") 
-                : (c.slug || (c.name || "category").toLowerCase().replace(/[^a-z0-9]/g, "-"))
-            }));
+        const prods = await fetchProducts().catch(() => []);
+        const activeMap = new Map<string, { name: string; icon: string; slug: string }>();
+        activeMap.set("all", { name: "All Categories", icon: "☷", slug: "all" });
 
-            const existingSlugs = new Set(defaultCategories.map(d => d.slug));
-            const newToAdd = formattedCustom.filter((c: any) => c.slug && !existingSlugs.has(c.slug));
-            setCategories([...defaultCategories, ...newToAdd]);
-          }
+        if (Array.isArray(prods) && prods.length > 0) {
+          prods.forEach((p: any) => {
+            const catName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category_slug || p.category);
+            const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
+
+            if (catName && catSlug && !activeMap.has(catSlug)) {
+              let icon = "📁";
+              const s = String(catSlug).toLowerCase();
+              if (s.includes("mobile") || s.includes("phone")) icon = "📱";
+              else if (s.includes("electronic") || s.includes("tech") || s.includes("audio")) icon = "🎧";
+              else if (s.includes("watch")) icon = "⌚";
+              else if (s.includes("laptop") || s.includes("computer")) icon = "💻";
+              else if (s.includes("footwear") || s.includes("shoe") || s.includes("sneaker")) icon = "👟";
+              else if (s.includes("fashion") || s.includes("apparel") || s.includes("clothing")) icon = "👕";
+              else if (s.includes("home")) icon = "🏠";
+              else if (s.includes("sport")) icon = "🏃";
+              else if (s.includes("beauty")) icon = "💄";
+              else if (s.includes("game") || s.includes("gaming")) icon = "🎮";
+
+              activeMap.set(catSlug, {
+                name: String(catName).charAt(0).toUpperCase() + String(catName).slice(1),
+                icon,
+                slug: catSlug
+              });
+            }
+          });
         }
+
+        setCategories(Array.from(activeMap.values()));
       } catch (err) {}
     }
+
+    loadActiveCategories();
   }, []);
 
   const colorPalette = [

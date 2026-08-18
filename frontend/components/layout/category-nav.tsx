@@ -2,49 +2,55 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fetchCategories } from "lib/api";
-
-const defaultCategories = [
-  { name: "Mobiles", slug: "mobiles", icon: "📱", bg: "bg-blue-50 border-blue-200 text-blue-700" },
-  { name: "Laptops", slug: "laptops", icon: "💻", bg: "bg-gray-100 border-gray-300 text-gray-800" },
-  { name: "Electronics", slug: "electronics", icon: "🎧", bg: "bg-purple-50 border-purple-200 text-purple-700" },
-  { name: "Fashion", slug: "fashion", icon: "👕", bg: "bg-rose-50 border-rose-200 text-rose-700" },
-  { name: "Footwear", slug: "footwear", icon: "👟", bg: "bg-amber-50 border-amber-200 text-amber-700" },
-  { name: "Watches", slug: "watches", icon: "⌚", bg: "bg-emerald-50 border-emerald-200 text-emerald-700" },
-  { name: "Beauty", slug: "beauty", icon: "💄", bg: "bg-pink-50 border-pink-200 text-pink-700" },
-  { name: "Home & Living", slug: "home", icon: "🏠", bg: "bg-teal-50 border-teal-200 text-teal-700" },
-  { name: "Gaming", slug: "gaming", icon: "🎮", bg: "bg-indigo-50 border-indigo-200 text-indigo-700" },
-];
+import { fetchProducts } from "lib/api";
 
 export function CategoryNav() {
-  const [categories, setCategories] = useState(defaultCategories);
+  const [categories, setCategories] = useState<{ name: string; slug: string; icon: string; bg: string }[]>([]);
 
   useEffect(() => {
-    async function loadDynamicCategories() {
+    async function loadActiveCategories() {
       try {
-        const apiCats = await fetchCategories().catch(() => []);
-        let combined = [...defaultCategories];
+        const prods = await fetchProducts().catch(() => []);
+        const activeMap = new Map<string, { name: string; slug: string; icon: string; bg: string }>();
 
-        if (Array.isArray(apiCats)) {
-          apiCats.forEach(c => {
-            const slug = c.slug || c.name.toLowerCase().replace(/\s+/g, "-");
-            if (!combined.some(item => item.slug === slug)) {
-              combined.push({
-                name: c.name,
-                slug: slug,
-                icon: "🛍️",
-                bg: "bg-emerald-50 border-emerald-200 text-emerald-700"
+        if (Array.isArray(prods) && prods.length > 0) {
+          prods.forEach((p: any) => {
+            const catName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category_slug || p.category);
+            const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
+
+            if (catName && catSlug && !activeMap.has(catSlug)) {
+              let icon = "📁";
+              let bg = "bg-emerald-50 border-emerald-200 text-emerald-700";
+              const s = String(catSlug).toLowerCase();
+
+              if (s.includes("mobile") || s.includes("phone")) { icon = "📱"; bg = "bg-blue-50 border-blue-200 text-blue-700"; }
+              else if (s.includes("electronic") || s.includes("tech") || s.includes("audio")) { icon = "🎧"; bg = "bg-purple-50 border-purple-200 text-purple-700"; }
+              else if (s.includes("watch")) { icon = "⌚"; bg = "bg-emerald-50 border-emerald-200 text-emerald-700"; }
+              else if (s.includes("laptop") || s.includes("computer")) { icon = "💻"; bg = "bg-gray-100 border-gray-300 text-gray-800"; }
+              else if (s.includes("footwear") || s.includes("shoe") || s.includes("sneaker")) { icon = "👟"; bg = "bg-amber-50 border-amber-200 text-amber-700"; }
+              else if (s.includes("fashion") || s.includes("apparel") || s.includes("clothing")) { icon = "👕"; bg = "bg-rose-50 border-rose-200 text-rose-700"; }
+              else if (s.includes("home")) { icon = "🏠"; bg = "bg-teal-50 border-teal-200 text-teal-700"; }
+              else if (s.includes("beauty")) { icon = "💄"; bg = "bg-pink-50 border-pink-200 text-pink-700"; }
+              else if (s.includes("game") || s.includes("gaming")) { icon = "🎮"; bg = "bg-indigo-50 border-indigo-200 text-indigo-700"; }
+
+              activeMap.set(catSlug, {
+                name: String(catName).charAt(0).toUpperCase() + String(catName).slice(1),
+                slug: catSlug,
+                icon,
+                bg
               });
             }
           });
         }
 
-        setCategories(combined);
+        setCategories(Array.from(activeMap.values()));
       } catch (e) {}
     }
 
-    loadDynamicCategories();
+    loadActiveCategories();
   }, []);
+
+  if (categories.length === 0) return null;
 
   return (
     <nav className="bg-white border-b border-gray-200 py-4 px-4 overflow-x-auto no-scrollbar">
