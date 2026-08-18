@@ -288,29 +288,17 @@ export default function AdminOrdersPage() {
     let orderVolume = 0;
 
     dateFilteredOrders.forEach((o) => {
-      let isMatch = false;
-      const orderCatName = (o.category || "").toLowerCase().trim();
-      const catNameClean = (cat.name || "").toLowerCase().trim();
-      const catSlugClean = (cat.slug || "").toLowerCase().trim();
+      const oCat = (o.category || "Electronics").toLowerCase().trim();
+      const isExactMatch = oCat === catName.trim() || oCat === catSlug.trim();
+      const isKeywordMatch = (oCat.includes("electronic") && catSlug.includes("electronic")) ||
+                             (oCat.includes("fashion") && catSlug.includes("fashion")) ||
+                             (oCat.includes("mobile") && catSlug.includes("mobile")) ||
+                             (oCat.includes("laptop") && catSlug.includes("laptop")) ||
+                             (oCat.includes("watch") && catSlug.includes("watch")) ||
+                             (oCat.includes("footwear") && catSlug.includes("footwear")) ||
+                             (oCat.includes("home") && catSlug.includes("home"));
 
-      if (orderCatName && (orderCatName === catNameClean || orderCatName === catSlugClean)) {
-        isMatch = true;
-      } else {
-        const rawList = Array.isArray(o.raw_items) && o.raw_items.length > 0 ? o.raw_items : [{ title: o.items }];
-        rawList.forEach((it: any) => {
-          const resolved = resolveItemCategory(it, dbProducts);
-          if (resolved.category) {
-            const resCat = resolved.category.toLowerCase().trim();
-            if (resCat === catNameClean || resCat === catSlugClean) {
-              isMatch = true;
-            }
-          } else if (matchesCategory(resolved.title, catSlugClean, catNameClean)) {
-            isMatch = true;
-          }
-        });
-      }
-
-      if (isMatch) {
+      if (isExactMatch || isKeywordMatch) {
         orderCount++;
         orderVolume += Number(o.amount || 0);
       }

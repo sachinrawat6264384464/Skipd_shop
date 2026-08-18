@@ -205,7 +205,7 @@ export default function AdminAnalyticsPage() {
           const lineTotal = price * qty;
 
           let matchedKey = pId && map[pId] ? pId : null;
-          if (!matchedKey) {
+          if (!matchedKey && pName !== "Purchased Item") {
             matchedKey = Object.keys(map).find(k => (map[k]?.title || "").toLowerCase().trim() === pName.toLowerCase().trim()) || null;
           }
 
@@ -215,7 +215,7 @@ export default function AdminAnalyticsPage() {
             targetObj.revenue += lineTotal;
           } else {
             // New or custom ordered item
-            const newKey = pId || `custom-${pName}`;
+            const newKey = pId || `custom-${pName}-${o.id}`;
             map[newKey] = {
               id: pId || newKey,
               title: pName,
@@ -223,18 +223,23 @@ export default function AdminAnalyticsPage() {
               revenue: lineTotal,
               price: price,
               img: it.product_image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-              category: it.category || "Electronics",
+              category: o.category || it.category || "Electronics",
               handle: `prod-${newKey}`
             };
           }
         });
       } else if (o.amount > 0) {
-        const firstProdKey = Object.keys(map)[0];
-        const firstObj = firstProdKey ? map[firstProdKey] : null;
-        if (firstObj) {
-          firstObj.sold += 1;
-          firstObj.revenue += o.amount;
-        }
+        const customKey = `custom-order-${o.id}`;
+        map[customKey] = {
+          id: customKey,
+          title: `Store Order ${o.id}`,
+          sold: 1,
+          revenue: o.amount,
+          price: o.amount,
+          img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
+          category: o.category || "Electronics",
+          handle: `prod-${customKey}`
+        };
       }
     });
 
@@ -260,16 +265,32 @@ export default function AdminAnalyticsPage() {
       }
     });
 
-    // Accumulate revenue from product performance list
-    productPerformanceList.forEach(p => {
-      const rawCat = p.category || "Electronics";
-      const matchedCat = Object.keys(catMap).find(k => k.toLowerCase() === rawCat.toLowerCase()) || rawCat;
-      
-      if (!catMap[matchedCat]) {
-        const colorIdx = Object.keys(catMap).length % colors.length;
-        catMap[matchedCat] = { name: matchedCat, revenue: 0, color: colors[colorIdx] || "bg-emerald-500" };
+    // Accumulate revenue directly from valid DB orders using order's resolved category
+    validOrders.forEach(o => {
+      let oCat = o.category || "Electronics";
+
+      const items = Array.isArray(o.items) ? o.items : [];
+      if (items.length > 0) {
+        const firstIt = items[0];
+        const pId = String(firstIt.product_id || firstIt.id || "");
+        if (pId) {
+          const matchProd = dbProducts.find((p: any) => String(p.id) === pId);
+          if (matchProd) {
+            const cName = typeof matchProd.category === "object" ? matchProd.category?.name : (matchProd.category || "");
+            if (cName) oCat = cName;
+          }
+        }
       }
-      catMap[matchedCat].revenue += p.revenue;
+
+      const matchedCatName = Object.keys(catMap).find(k => k.toLowerCase().trim() === oCat.toLowerCase().trim()) ||
+                             Object.keys(catMap).find(k => k.toLowerCase().includes("electronic") && oCat.toLowerCase().includes("electronic")) ||
+                             oCat;
+
+      if (!catMap[matchedCatName]) {
+        const colorIdx = Object.keys(catMap).length % colors.length;
+        catMap[matchedCatName] = { name: matchedCatName, revenue: 0, color: colors[colorIdx] || "bg-emerald-500" };
+      }
+      catMap[matchedCatName].revenue += Number(o.amount || 0);
     });
 
     const sorted = Object.values(catMap).sort((a, b) => b.revenue - a.revenue);
@@ -278,7 +299,7 @@ export default function AdminAnalyticsPage() {
       ...c,
       pct: totalGrossSales > 0 ? Math.round((c.revenue / totalGrossSales) * 100) : 0
     }));
-  }, [dbCategories, productPerformanceList, totalGrossSales]);
+  }, [dbCategories, dbProducts, validOrders, totalGrossSales]);
 
   // 100% Dynamic Sales by Location calculation from real customer orders
   const locationSales = useMemo(() => {
