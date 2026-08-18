@@ -1,5 +1,5 @@
 services:
-  # 1. FastAPI Web Server
+  # 1. FastAPI Web Server (Connected Live to Neon Cloud PostgreSQL & Upstash Redis)
   - type: web
     name: skipd-commerce-backend
     env: python
@@ -13,53 +13,18 @@ services:
       - key: PORT
         value: 10000
       - key: CORS_ORIGINS
-        sync: false
+        value: "*"
       - key: DATABASE_URL
-        fromDatabase:
-          name: skipd-postgres
-          property: connectionString
+        value: postgresql+asyncpg://neondb_owner:npg_co6MJSXeWK8z@ep-still-king-axcdr7h1-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require
       - key: REDIS_URL
-        fromService:
-          type: redis
-          name: skipd-redis
-          property: connectionString
+        value: rediss://default:gQAAAAAAApeoAAIgcDIyYmVlZDhhODBhY2Q0MjhiYmUzYzkzMzlkNDY3N2ZiYw@relaxed-beetle-169896.upstash.io:6379
       - key: JWT_SECRET
-        generateValue: true
+        value: super_secret_jwt_key_skipd_2026_dev
       - key: RAZORPAY_KEY_ID
-        sync: false
+        value: rzp_test_TPfRXRqzrh7kXX
       - key: RAZORPAY_KEY_SECRET
-        sync: false
+        value: EwSRHUOV8KNJrsQ49U53kPtA
       - key: SHIPROCKET_EMAIL
-        sync: false
+        value: demo@skipd.in
       - key: SHIPROCKET_PASSWORD
-        sync: false
-
-  # 2. Celery Background Worker Service
-  - type: worker
-    name: skipd-celery-worker
-    env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: celery -A app.core.celery_app worker --loglevel=info
-    envVars:
-      - key: DATABASE_URL
-        fromDatabase:
-          name: skipd-postgres
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          type: redis
-          name: skipd-redis
-          property: connectionString
-
-# 3. Redis In-Memory Message Broker
-  - type: redis
-    name: skipd-redis
-    ipAllowList: [] # internal access only
-    plan: free
-
-# 4. PostgreSQL Database
-databases:
-  - name: skipd-postgres
-    databaseName: skipd_db
-    user: skipd_user
-    plan: free
+        value: demo_password_123
