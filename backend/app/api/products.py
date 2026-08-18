@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from sqlalchemy.orm import selectinload
 from app.core.database import get_db
-from app.models.models import Product, Category, ProductVariant, WishlistItem, CartItem, Review, InventoryLog, SaleProduct
+from app.models.models import Product, Category, ProductVariant, WishlistItem, CartItem, Review, InventoryLog, SaleProduct, OrderItem
 from app.schemas.schemas import ProductSchema, CategorySchema
 from app.core.redis_cache import get_cached_json, set_cached_json, invalidate_cache_pattern
 import datetime
@@ -175,6 +175,7 @@ async def admin_delete_product(product_id: int, db: AsyncSession = Depends(get_d
 
     try:
         # Delete referencing foreign key rows first to prevent FK constraint failures
+        await db.execute(delete(OrderItem).where(OrderItem.product_id == product_id))
         await db.execute(delete(WishlistItem).where(WishlistItem.product_id == product_id))
         await db.execute(delete(CartItem).where(CartItem.product_id == product_id))
         await db.execute(delete(Review).where(Review.product_id == product_id))
