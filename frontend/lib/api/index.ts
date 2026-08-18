@@ -1301,6 +1301,21 @@ export async function createAdminProduct(payload: any) {
   throw new Error(errData.detail || errData.message || `Database error (${res.status}): Failed to save product in Neon PostgreSQL DB`);
 }
 
+export async function bulkCreateAdminProducts(products: any[]) {
+  const res = await fetch(`${API_BASE_URL}/products/admin/bulk-create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ products })
+  });
+
+  if (res.ok) {
+    return await res.json();
+  }
+
+  const errData = await res.json().catch(() => ({}));
+  throw new Error(errData.detail || errData.message || `Database error (${res.status}): Failed to bulk save products in Neon PostgreSQL DB`);
+}
+
 export async function updateAdminProduct(id: number | string, payload: any) {
   try {
     const res = await fetch(`${API_BASE_URL}/products/admin/${id}`, {

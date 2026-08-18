@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fetchProducts, updateAdminProduct, deleteAdminProduct, createAdminProduct } from "lib/api";
+import { fetchProducts, updateAdminProduct, deleteAdminProduct, createAdminProduct, bulkCreateAdminProducts } from "lib/api";
 
 export default function AdminInventoryPage() {
   const [loading, setLoading] = useState(true);
@@ -127,46 +127,26 @@ export default function AdminInventoryPage() {
         }
 
         if (importedItems.length > 0) {
-          // Save to backend PostgreSQL database
-          for (const item of importedItems) {
-            try {
-              await createAdminProduct({
-                title: item.title,
-                handle: (item.title || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-                description: item.description || item.title,
-                price: item.price,
-                compare_at_price: item.compare_at_price || item.price * 1.4,
-                stock_quantity: item.stock_quantity || item.stock || 20,
-                category_slug: (item.category || "general").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                images: item.images || ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]
-              });
-            } catch (e) {}
-          }
-
-          const formattedImported = importedItems.map((p, idx) => ({
-            id: p.id || Date.now() + idx,
-            title: p.title || "Imported Product",
-            variant: p.subcategory || "Standard Edition",
-            sku: p.sku || `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`,
-            barcode: `890123${Math.floor(100000 + Math.random() * 900000)}`,
-            category: p.category || "General",
-            warehouse: p.warehouse || "Central FC",
-            stock: Number(p.stock_quantity || p.stock || 25),
-            minStock: 5,
-            reserved: 2,
-            price: Number(p.price || 999),
-            stockValue: Number(p.price || 999) * Number(p.stock_quantity || p.stock || 25),
-            status: Number(p.stock_quantity || p.stock || 25) > 15 ? "In Stock" : "Low Stock",
-            lastUpdated: "Just now",
-            image: p.images?.[0] || p.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
+          // Bulk Save to Neon PostgreSQL database in ONE request
+          const payloadList = importedItems.map((item) => ({
+            title: item.title,
+            handle: (item.title || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+            description: item.description || item.title,
+            price: item.price,
+            compare_at_price: item.compare_at_price || item.price * 1.4,
+            stock_quantity: item.stock_quantity || item.stock || 20,
+            category_slug: (item.category || "general").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+            images: item.images || ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]
           }));
 
-          setProducts(prev => {
-            const ids = new Set(prev.map(p => String(p.id)));
-            const fresh = formattedImported.filter(r => !ids.has(String(r.id)));
-            return [...fresh, ...prev];
-          });
-          showToast(`✓ Successfully imported & saved ${importedItems.length} products to database! ${bulkImages.length > 0 ? `(${bulkImages.length} images matched)` : ""}`);
+          try {
+            await bulkCreateAdminProducts(payloadList);
+            showToast(`✓ Successfully imported & saved ${importedItems.length} products live to Neon PostgreSQL DB!`);
+          } catch (err: any) {
+            showToast(err?.message || "Failed to bulk save products in DB", "error");
+          }
+
+          await loadInventoryData();
           setBulkImages([]);
           setShowImportModal(false);
         } else {

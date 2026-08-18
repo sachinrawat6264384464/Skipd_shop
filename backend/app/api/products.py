@@ -188,6 +188,98 @@ async def admin_create_product(payload: dict = Body(...), db: AsyncSession = Dep
         raise HTTPException(status_code=400, detail=f"Failed to create product: {str(err)}")
 
 
+@router.post("/admin/bulk-create")
+async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
+    """Admin: Bulk import and save products array directly into PostgreSQL database."""
+    products_list = payload.get("products", [])
+    if not isinstance(products_list, list) or len(products_list) == 0:
+        raise HTTPException(status_code=400, detail="No products array provided in payload")
+
+    created_products = []
+    ts = int(datetime.datetime.utcnow().timestamp())
+
+    try:
+        # Pre-fetch existing categories for fast mapping
+        cats_res = await db.execute(select(Category))
+        all_cats = cats_res.scalars().all()
+        cat_map = {c.slug.lower(): c.id for c in all_cats}
+        cat_name_map = {c.name.lower(): c.id for c in all_cats}
+
+        for idx, item in enumerate(products_list):
+            title = item.get("title", f"Imported Product {idx+1}")
+            raw_handle = item.get("handle") or title.lower().replace(" ", "-").replace("/", "-")
+            clean_handle = "".join([c if c.isalnum() or c == "-" else "" for c in raw_handle]).strip("-")
+            if not clean_handle:
+                clean_handle = f"product-{idx+1}"
+            
+            # Ensure unique handle
+            clean_handle = f"{clean_handle}-{ts}-{idx}"
+
+            cat_slug = (item.get("category_slug") or item.get("category") or "general").lower().replace(" ", "-")
+            category_id = cat_map.get(cat_slug) or cat_name_map.get(cat_slug.replace("-", " "))
+
+            # Auto-create category if missing
+            if not category_id and cat_slug:
+                new_cat = Category(
+                    name=cat_slug.replace("-", " ").title(),
+                    slug=cat_slug,
+                    icon="📁",
+                    status="Active"
+                )
+                db.add(new_cat)
+                await db.commit()
+                await db.refresh(new_cat)
+                category_id = new_cat.id
+                cat_map[cat_slug] = category_id
+
+            images_raw = item.get("images")
+            if isinstance(images_raw, str):
+                images_list = [images_raw]
+            elif isinstance(images_raw, list) and len(images_raw) > 0:
+                images_list = [str(img) for img in images_raw if img]
+            else:
+                images_list = ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]
+
+            tags_raw = item.get("tags")
+            if isinstance(tags_raw, str):
+                tags_list = [tags_raw]
+            elif isinstance(tags_raw, list):
+                tags_list = [str(t) for t in tags_raw if t]
+            else:
+                tags_list = ["bestseller"]
+
+            prod = Product(
+                title=title,
+                handle=clean_handle,
+                description=item.get("description", f"{title} catalog product."),
+                price=float(item.get("price", 999.0)),
+                compare_at_price=float(item.get("compare_at_price")) if item.get("compare_at_price") else None,
+                category_id=category_id,
+                featured=item.get("featured", True),
+                images=images_list,
+                tags=tags_list,
+                stock_quantity=int(item.get("stock_quantity") or item.get("stock") or 50)
+            )
+            db.add(prod)
+            created_products.append(prod)
+
+        await db.commit()
+
+        try:
+            await invalidate_cache_pattern("products:*")
+        except BaseException as cache_err:
+            print(f"[CACHE BYPASS WARNING] {cache_err}")
+
+        return {
+            "message": f"Successfully created {len(created_products)} products in Neon PostgreSQL DB",
+            "count": len(created_products)
+        }
+    except Exception as err:
+        await db.rollback()
+        print(f"[BULK CREATE ERROR] {err}")
+        raise HTTPException(status_code=400, detail=f"Bulk creation failed: {str(err)}")
+
+
 @router.put("/admin/{product_id}")
 async def admin_update_product(product_id: int, payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
     """Admin: Update existing product."""
