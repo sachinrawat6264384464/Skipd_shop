@@ -6,6 +6,9 @@ import { DynamicHomeShowcase } from "components/home/dynamic-home-showcase";
 import { fetchProducts } from "lib/api";
 import Footer from "components/layout/footer";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata = {
   title: "SKIPD | Modern Direct-to-Consumer Storefront",
   description: "Explore premium electronics, fashion, footwear, and accessories with instant Razorpay checkout and Shiprocket live tracking.",
