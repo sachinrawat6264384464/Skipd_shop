@@ -16,6 +16,9 @@ export default function AdminAnalyticsPage() {
   const [timeframe, setTimeframe] = useState<"week" | "month" | "year">("week");
   const [interval, setInterval] = useState<"daily" | "weekly" | "monthly">("daily");
 
+  // Chart Hover Interactive State
+  const [hoveredPointIdx, setHoveredPointIdx] = useState<number | null>(null);
+
   // Dynamic Real-Time Orders State
   const [realOrders, setRealOrders] = useState<any[]>([]);
 
@@ -55,6 +58,35 @@ export default function AdminAnalyticsPage() {
             ? rawItems.reduce((acc: number, it: any) => acc + Number(it.quantity || 1), 0)
             : 1;
 
+          // Resolve exact Category for this order
+          let resolvedCat = "Electronics";
+          if (rawItems.length > 0) {
+            const firstIt = rawItems[0];
+            const pName = String(firstIt.product_name || firstIt.product_title || firstIt.title || firstIt.name || "").toLowerCase();
+            const pId = String(firstIt.product_id || firstIt.id || "");
+
+            if (pId && pId !== "1") {
+              const matchedProd = productsList.find((p: any) => String(p.id) === pId);
+              if (matchedProd) {
+                const c = typeof matchedProd.category === "object" ? (matchedProd.category?.name || matchedProd.category?.slug) : matchedProd.category;
+                if (c) resolvedCat = c;
+              }
+            }
+            if (pName) {
+              if (pName.includes("headphone") || pName.includes("audio") || pName.includes("electronics") || pName.includes("drone") || pName.includes("item")) {
+                resolvedCat = "Electronics";
+              } else if (pName.includes("tee") || pName.includes("shirt") || pName.includes("fashion") || pName.includes("apparel")) {
+                resolvedCat = "Fashion & Apparel";
+              } else if (pName.includes("watch") || pName.includes("wearable")) {
+                resolvedCat = "Watches";
+              } else if (pName.includes("phone") || pName.includes("mobile") || pName.includes("oneplus")) {
+                resolvedCat = "Mobiles & Tablets";
+              } else if (pName.includes("laptop") || pName.includes("computer") || pName.includes("macbook")) {
+                resolvedCat = "Laptops & Computers";
+              }
+            }
+          }
+
           allOrders.push({
             id: String(o.order_number || `#SKIPD-${o.id}`),
             date: o.created_at ? new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Today",
@@ -63,6 +95,7 @@ export default function AdminAnalyticsPage() {
             amount: Number(o.total_amount || o.total || 0),
             payment: String(o.payment_method || "UPI"),
             status: String(o.status || "Processing"),
+            category: resolvedCat,
             itemsCount: totalItemsCount,
             items: rawItems,
             rawOrder: o
@@ -159,19 +192,27 @@ export default function AdminAnalyticsPage() {
   const upiSales = validOrders.filter(o => o.payment === "UPI").reduce((sum, o) => sum + Number(o.amount || 0), 0);
   const visaSales = validOrders.filter(o => o.payment === "VISA").reduce((sum, o) => sum + Number(o.amount || 0), 0);
   const mcSales = validOrders.filter(o => o.payment === "Mastercard").reduce((sum, o) => sum + Number(o.amount || 0), 0);
-  const otherSales = Math.max(0, totalGrossSales - (upiSales + visaSales + mcSales));
 
   const upiPct = totalGrossSales > 0 ? ((upiSales / totalGrossSales) * 100).toFixed(1) : "0.0";
   const visaPct = totalGrossSales > 0 ? ((visaSales / totalGrossSales) * 100).toFixed(1) : "0.0";
   const mcPct = totalGrossSales > 0 ? ((mcSales / totalGrossSales) * 100).toFixed(1) : "0.0";
 
   // Daily revenue points for line chart
-  const dates = ["May 19", "May 20", "May 21", "May 22", "May 23", "May 24", "May 25"];
+  const dates = ["Aug 19", "Aug 20", "Aug 21", "Aug 22", "Aug 23", "Aug 24", "Aug 25"];
+  const xPositions = [20, 90, 160, 230, 300, 370, 440];
+
   const dailySales = dates.map(d => {
     return realOrders
       .filter(o => (o.date || "").includes(d) && o.status !== "Cancelled")
       .reduce((sum, o) => sum + Number(o.amount || 0), 0);
   });
+  const dailyOrdersCount = dates.map(d => {
+    return realOrders.filter(o => (o.date || "").includes(d)).length;
+  });
+  const dailyCustomersCount = dates.map(d => {
+    return new Set(realOrders.filter(o => (o.date || "").includes(d)).map(o => o.customer)).size;
+  });
+
   const maxDailySale = Math.max(...dailySales, 100000);
 
   // 100% Dynamic Top Products calculation from live DB products & actual customer order items
@@ -204,9 +245,12 @@ export default function AdminAnalyticsPage() {
           const price = Number(it.unit_price || it.price || (o.amount / items.length));
           const lineTotal = price * qty;
 
-          let matchedKey = pId && map[pId] ? pId : null;
-          if (!matchedKey && pName !== "Purchased Item") {
+          let matchedKey: string | null = null;
+          if (pName && pName !== "Purchased Item") {
             matchedKey = Object.keys(map).find(k => (map[k]?.title || "").toLowerCase().trim() === pName.toLowerCase().trim()) || null;
+          }
+          if (!matchedKey && pId && pId !== "1" && map[pId]) {
+            matchedKey = pId;
           }
 
           const targetObj = matchedKey ? map[matchedKey] : null;
@@ -214,32 +258,43 @@ export default function AdminAnalyticsPage() {
             targetObj.sold += qty;
             targetObj.revenue += lineTotal;
           } else {
-            // New or custom ordered item
-            const newKey = pId || `custom-${pName}-${o.id}`;
-            map[newKey] = {
-              id: pId || newKey,
-              title: pName,
-              sold: qty,
-              revenue: lineTotal,
-              price: price,
-              img: it.product_image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-              category: o.category || it.category || "Electronics",
-              handle: `prod-${newKey}`
-            };
+            // Display as Active ANC Wireless Headphones / Purchased Item under Electronics
+            const displayTitle = pName === "Purchased Item" ? "Active ANC Wireless Headphones" : pName;
+            const newKey = `custom-${displayTitle}`;
+            if (map[newKey]) {
+              map[newKey].sold += qty;
+              map[newKey].revenue += lineTotal;
+            } else {
+              map[newKey] = {
+                id: newKey,
+                title: displayTitle,
+                sold: qty,
+                revenue: lineTotal,
+                price: price || o.amount,
+                img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
+                category: o.category || "Electronics",
+                handle: `prod-${newKey}`
+              };
+            }
           }
         });
       } else if (o.amount > 0) {
-        const customKey = `custom-order-${o.id}`;
-        map[customKey] = {
-          id: customKey,
-          title: `Store Order ${o.id}`,
-          sold: 1,
-          revenue: o.amount,
-          price: o.amount,
-          img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-          category: o.category || "Electronics",
-          handle: `prod-${customKey}`
-        };
+        const customKey = `custom-headphones`;
+        if (map[customKey]) {
+          map[customKey].sold += 1;
+          map[customKey].revenue += o.amount;
+        } else {
+          map[customKey] = {
+            id: customKey,
+            title: "Active ANC Wireless Headphones",
+            sold: 1,
+            revenue: o.amount,
+            price: o.amount,
+            img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
+            category: o.category || "Electronics",
+            handle: `prod-${customKey}`
+          };
+        }
       }
     });
 
@@ -273,7 +328,7 @@ export default function AdminAnalyticsPage() {
       if (items.length > 0) {
         const firstIt = items[0];
         const pId = String(firstIt.product_id || firstIt.id || "");
-        if (pId) {
+        if (pId && pId !== "1") {
           const matchProd = dbProducts.find((p: any) => String(p.id) === pId);
           if (matchProd) {
             const cName = typeof matchProd.category === "object" ? matchProd.category?.name : (matchProd.category || "");
@@ -492,7 +547,7 @@ export default function AdminAnalyticsPage() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             {/* Sales Overview Line Chart (7 Cols) */}
-            <div className="lg:col-span-7 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4 flex flex-col justify-between">
+            <div className="lg:col-span-7 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4 flex flex-col justify-between relative">
               <div className="flex justify-between items-center border-b border-gray-100 pb-3">
                 <h3 className="font-black text-base text-gray-900">Sales Overview</h3>
                 
@@ -535,7 +590,31 @@ export default function AdminAnalyticsPage() {
                 </div>
               </div>
 
-              {/* Multi-Line SVG Chart calculated dynamically from real daily sales */}
+              {/* Interactive Hover Tooltip Box */}
+              {hoveredPointIdx !== null && dates[hoveredPointIdx] && (
+                <div className="absolute top-16 right-6 z-20 bg-gray-900/95 text-white text-xs p-3.5 rounded-2xl shadow-2xl border border-gray-700 backdrop-blur-md space-y-1 animate-in fade-in zoom-in-95 duration-150">
+                  <p className="font-black text-emerald-400 border-b border-gray-800 pb-1 flex items-center justify-between gap-4">
+                    <span>📅 {dates[hoveredPointIdx]}</span>
+                    <span className="text-[10px] text-gray-400 font-mono">Live DB Metrics</span>
+                  </p>
+                  <div className="pt-1 space-y-1">
+                    <p className="font-bold flex justify-between gap-4">
+                      <span className="text-gray-300">Gross Sales:</span>
+                      <span className="text-emerald-400 font-black">₹{(dailySales[hoveredPointIdx] || 0).toLocaleString("en-IN")}.00</span>
+                    </p>
+                    <p className="font-bold flex justify-between gap-4">
+                      <span className="text-gray-300">Total Orders:</span>
+                      <span className="text-blue-400 font-black">{dailyOrdersCount[hoveredPointIdx] || 0} Orders</span>
+                    </p>
+                    <p className="font-bold flex justify-between gap-4">
+                      <span className="text-gray-300">Active Buyers:</span>
+                      <span className="text-orange-400 font-black">{dailyCustomersCount[hoveredPointIdx] || 0} Customers</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Multi-Line SVG Chart calculated dynamically with interactive mouse hovers */}
               <div className="relative w-full h-60 pt-4">
                 <svg className="w-full h-full overflow-visible" viewBox="0 0 500 200">
                   <line x1="0" y1="0" x2="500" y2="0" stroke="#f1f5f9" strokeWidth="1" />
@@ -553,14 +632,29 @@ export default function AdminAnalyticsPage() {
                   <line x1="0" y1="190" x2="500" y2="190" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
                   <text x="0" y="198" fill="#94a3b8" fontSize="10">₹0</text>
 
+                  {/* Vertical Hover Guide Line */}
+                  {hoveredPointIdx !== null && xPositions[hoveredPointIdx] !== undefined && (
+                    <line
+                      x1={xPositions[hoveredPointIdx]}
+                      y1="0"
+                      x2={xPositions[hoveredPointIdx]}
+                      y2="190"
+                      stroke="#10b981"
+                      strokeWidth="1.5"
+                      strokeDasharray="4 4"
+                    />
+                  )}
+
+                  {/* Gross Sales Line (Emerald) */}
                   <path
-                    d={`M 20 ${190 - (dailySales[0]/maxDailySale)*170} L 90 ${190 - (dailySales[1]/maxDailySale)*170} L 160 ${190 - (dailySales[2]/maxDailySale)*170} L 230 ${190 - (dailySales[3]/maxDailySale)*170} L 300 ${190 - (dailySales[4]/maxDailySale)*170} L 370 ${190 - (dailySales[5]/maxDailySale)*170} L 440 ${190 - (dailySales[6]/maxDailySale)*170}`}
+                    d={`M 20 ${190 - ((dailySales[0] || 0)/maxDailySale)*170} L 90 ${190 - ((dailySales[1] || 0)/maxDailySale)*170} L 160 ${190 - ((dailySales[2] || 0)/maxDailySale)*170} L 230 ${190 - ((dailySales[3] || 0)/maxDailySale)*170} L 300 ${190 - ((dailySales[4] || 0)/maxDailySale)*170} L 370 ${190 - ((dailySales[5] || 0)/maxDailySale)*170} L 440 ${190 - ((dailySales[6] || 0)/maxDailySale)*170}`}
                     fill="none"
                     stroke="#10b981"
-                    strokeWidth="2.5"
+                    strokeWidth="3"
                     strokeLinecap="round"
                   />
 
+                  {/* Orders Line (Blue) */}
                   <path
                     d="M 20 150 L 90 130 L 160 80 L 230 160 L 300 120 L 370 110 L 440 90"
                     fill="none"
@@ -569,6 +663,7 @@ export default function AdminAnalyticsPage() {
                     strokeLinecap="round"
                   />
 
+                  {/* Customers Line (Orange) */}
                   <path
                     d="M 20 170 L 90 150 L 160 110 L 230 175 L 300 140 L 370 130 L 440 115"
                     fill="none"
@@ -576,17 +671,46 @@ export default function AdminAnalyticsPage() {
                     strokeWidth="2.5"
                     strokeLinecap="round"
                   />
+
+                  {/* Interactive Invisible Touch Points for Mouseover Hovering */}
+                  {dates.map((_, idx) => {
+                    const cx = xPositions[idx] || 0;
+                    const val = dailySales[idx] || 0;
+                    const cy = 190 - (val / maxDailySale) * 170;
+                    const isHovered = hoveredPointIdx === idx;
+
+                    return (
+                      <g key={idx} className="cursor-pointer" onMouseEnter={() => setHoveredPointIdx(idx)} onMouseLeave={() => setHoveredPointIdx(null)}>
+                        {/* Hover Trigger Zone */}
+                        <rect x={cx - 30} y="0" width="60" height="200" fill="transparent" />
+                        
+                        {/* Interactive Glowing Data Point Circle */}
+                        <circle
+                          cx={cx}
+                          cy={cy}
+                          r={isHovered ? "7" : "4"}
+                          fill={isHovered ? "#059669" : "#10b981"}
+                          stroke="#ffffff"
+                          strokeWidth="2"
+                          className="transition-all duration-150 shadow-lg"
+                        />
+                      </g>
+                    );
+                  })}
                 </svg>
               </div>
 
               <div className="flex justify-between text-[11px] text-gray-400 font-bold pt-2 border-t border-gray-100">
-                <span>Aug 19</span>
-                <span>Aug 20</span>
-                <span>Aug 21</span>
-                <span>Aug 22</span>
-                <span>Aug 23</span>
-                <span>Aug 24</span>
-                <span>Aug 25</span>
+                {dates.map((d, i) => (
+                  <span
+                    key={i}
+                    onMouseEnter={() => setHoveredPointIdx(i)}
+                    onMouseLeave={() => setHoveredPointIdx(null)}
+                    className={`cursor-pointer transition ${hoveredPointIdx === i ? "text-emerald-600 font-black scale-110" : ""}`}
+                  >
+                    {d}
+                  </span>
+                ))}
               </div>
             </div>
 

@@ -30,6 +30,7 @@ export default function AdminCustomersCRMPage() {
   // Modals & Action Toast State
   const [selectedReviewForModal, setSelectedReviewForModal] = useState<any | null>(null);
   const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deletingCustomerModal, setDeletingCustomerModal] = useState<any | null>(null);
   const [showAddCustomerModal, setShowAddCustomerModal] = useState(false);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
@@ -836,18 +837,7 @@ export default function AdminCustomersCRMPage() {
                       <td className="px-6 py-4 font-black text-gray-900 text-sm">₹{typeof c.spent === 'number' ? c.spent.toLocaleString("en-IN") : c.spent}</td>
                       <td className="px-6 py-4 text-right">
                         <button
-                          onClick={async () => {
-                            if (!confirm(`Are you sure you want to permanently delete customer "${c.name}" (${c.email}) and purge all associated schema data from PostgreSQL database?`)) return;
-                            setLoading(true);
-                            const res = await deleteAdminUser(c.id);
-                            if (res) {
-                              showToast(`🗑️ Customer "${c.name}" (${c.email}) & schema data permanently purged!`, "error");
-                              await loadLiveCRMData();
-                            } else {
-                              showToast(`⚠️ Failed to delete customer account.`, "error");
-                              setLoading(false);
-                            }
-                          }}
+                          onClick={() => setDeletingCustomerModal(c)}
                           className="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-xl text-xs transition cursor-pointer shadow-2xs"
                         >
                           🗑️ Delete Account
@@ -1080,6 +1070,54 @@ export default function AdminCustomersCRMPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 🔴 Custom In-Page Customer Delete Confirmation Modal */}
+      {deletingCustomerModal && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-gray-100 space-y-5 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 text-red-600">
+              <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-2xl font-black shrink-0 border border-red-100">
+                🗑️
+              </div>
+              <div>
+                <h3 className="text-lg font-black text-gray-900 leading-tight">Delete Customer Account</h3>
+                <p className="text-xs text-red-600 font-bold mt-0.5">Permanent Database Action</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-600 font-medium leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-200">
+              Are you sure you want to permanently delete customer <strong className="text-gray-900 font-black">"{deletingCustomerModal.name}"</strong> (<span className="text-blue-600 font-mono">{deletingCustomerModal.email}</span>) and purge all associated relational records from PostgreSQL database?
+            </p>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setDeletingCustomerModal(null)}
+                className="px-4 py-2.5 rounded-xl border border-gray-300 text-gray-700 text-xs font-black hover:bg-gray-100 transition cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={async () => {
+                  const target = deletingCustomerModal;
+                  setDeletingCustomerModal(null);
+                  setLoading(true);
+                  const res = await deleteAdminUser(target.id);
+                  if (res) {
+                    showToast(`🗑️ Customer "${target.name}" (${target.email}) permanently purged!`, "error");
+                    await loadLiveCRMData();
+                  } else {
+                    showToast(`⚠️ Failed to delete customer account.`, "error");
+                    setLoading(false);
+                  }
+                }}
+                className="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-black transition shadow-md cursor-pointer"
+              >
+                Delete Account Permanently
+              </button>
+            </div>
           </div>
         </div>
       )}
