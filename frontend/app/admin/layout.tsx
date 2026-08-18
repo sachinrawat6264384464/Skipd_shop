@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { fetchAdminQueries, fetchAdminOrders } from "lib/api";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -18,6 +19,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   
   const [unreadNotifs, setUnreadNotifs] = useState(0);
   const [unreadMsgs, setUnreadMsgs] = useState(0);
+
+  const [liveNotifications, setLiveNotifications] = useState<any[]>([]);
+  const [liveMessages, setLiveMessages] = useState<any[]>([]);
   
   const [globalQuery, setGlobalQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -53,6 +57,69 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       }
     }
   }, [pathname, router]);
+
+  // Load Real-Time PostgreSQL DB Notifications & Messages
+  const loadHeaderData = async () => {
+    try {
+      // 1. Fetch Queries from DB
+      const queries = await fetchAdminQueries();
+      if (Array.isArray(queries)) {
+        setLiveMessages(queries);
+        const pendingCount = queries.filter((q: any) => (q.status || "PENDING").toUpperCase() === "PENDING").length;
+        setUnreadMsgs(pendingCount);
+      }
+
+      // 2. Fetch Orders from DB for Notifications
+      const orders = await fetchAdminOrders();
+      const notifs: any[] = [];
+
+      if (Array.isArray(queries)) {
+        queries.slice(0, 5).forEach((q: any) => {
+          notifs.push({
+            id: `q-${q.id}`,
+            title: `📩 ${q.query_type || "Customer Query"}: ${q.subject || "Inquiry"}`,
+            subtitle: `From: ${q.customer_name || "Customer"} (${q.customer_email || ""})`,
+            date: q.created_at ? new Date(q.created_at).toLocaleDateString() : "Just now",
+            href: "/admin/queries",
+            isNew: (q.status || "PENDING").toUpperCase() === "PENDING"
+          });
+        });
+      }
+
+      if (Array.isArray(orders)) {
+        orders.slice(0, 5).forEach((o: any) => {
+          notifs.push({
+            id: `o-${o.id}`,
+            title: `🛒 Order #${o.order_number} (${o.status || "PAID"})`,
+            subtitle: `Customer: ${o.customer_name} • ₹${o.total_amount}`,
+            date: o.created_at ? new Date(o.created_at).toLocaleDateString() : "Recently",
+            href: "/admin/orders",
+            isNew: true
+          });
+        });
+      }
+
+      setLiveNotifications(notifs);
+      setUnreadNotifs(notifs.filter(n => n.isNew).length);
+    } catch (e) {
+      console.warn("Failed to load live header notifications:", e);
+    }
+  };
+
+  useEffect(() => {
+    if (isAdminAuthenticated) {
+      loadHeaderData();
+      const interval = setInterval(loadHeaderData, 15000);
+      window.addEventListener("skipd_new_query", loadHeaderData);
+      window.addEventListener("skipd_new_order", loadHeaderData);
+
+      return () => {
+        clearInterval(interval);
+        window.removeEventListener("skipd_new_query", loadHeaderData);
+        window.removeEventListener("skipd_new_order", loadHeaderData);
+      };
+    }
+  }, [isAdminAuthenticated]);
 
   // Keyboard shortcut Ctrl + / or Cmd + / to focus search
   useEffect(() => {
@@ -343,21 +410,43 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
               {/* Notifications Floating Card */}
               {showNotifications && (
-                <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="absolute right-0 top-12 w-84 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex justify-between items-center border-b border-gray-100 pb-2">
                     <h4 className="font-black text-gray-900 text-xs">Notifications ({unreadNotifs})</h4>
+                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">Live DB Sync</span>
                   </div>
 
-                  <div className="p-6 text-center text-xs text-gray-400 font-bold">
-                    🔔 No new store notifications.
-                  </div>
+                  {liveNotifications.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-gray-400 font-bold">
+                      🔔 No new store notifications.
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                      {liveNotifications.map((notif) => (
+                        <Link
+                          key={notif.id}
+                          href={notif.href}
+                          onClick={() => setShowNotifications(false)}
+                          className={`block p-2.5 rounded-xl border transition text-xs ${
+                            notif.isNew ? "bg-emerald-50/60 border-emerald-200 hover:bg-emerald-100/60" : "bg-gray-50 border-gray-100 hover:bg-gray-100"
+                          }`}
+                        >
+                          <div className="flex justify-between items-start">
+                            <p className="font-bold text-gray-900 truncate pr-2">{notif.title}</p>
+                            <span className="text-[9px] text-gray-400 shrink-0">{notif.date}</span>
+                          </div>
+                          <p className="text-[11px] text-gray-600 mt-0.5 truncate">{notif.subtitle}</p>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
 
                   <Link
-                    href="/admin/logs"
+                    href="/admin/queries"
                     onClick={() => setShowNotifications(false)}
-                    className="block text-center text-[11px] font-bold text-gray-500 hover:text-gray-900 pt-2 border-t border-gray-100"
+                    className="block text-center text-[11px] font-bold text-emerald-700 hover:text-emerald-900 pt-2 border-t border-gray-100"
                   >
-                    View All Audit Logs &rarr;
+                    View All Customer Queries &amp; Orders &rarr;
                   </Link>
                 </div>
               )}
@@ -384,19 +473,48 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
               {/* Customer Messages Floating Card */}
               {showMessages && (
-                <div className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
+                <div className="absolute right-0 top-12 w-84 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="flex justify-between items-center border-b border-gray-100 pb-2">
                     <h4 className="font-black text-gray-900 text-xs">Customer Messages ({unreadMsgs})</h4>
+                    <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full">Real-Time DB</span>
                   </div>
 
-                  <div className="p-6 text-center text-xs text-gray-400 font-bold">
-                    💬 No new customer messages.
-                  </div>
+                  {liveMessages.length === 0 ? (
+                    <div className="p-6 text-center text-xs text-gray-400 font-bold">
+                      💬 No new customer messages.
+                    </div>
+                  ) : (
+                    <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+                      {liveMessages.map((msg) => (
+                        <Link
+                          key={msg.id}
+                          href="/admin/queries"
+                          onClick={() => setShowMessages(false)}
+                          className={`block p-2.5 rounded-xl border transition text-xs ${
+                            (msg.status || "PENDING").toUpperCase() === "PENDING"
+                              ? "bg-blue-50/60 border-blue-200 hover:bg-blue-100/60"
+                              : "bg-gray-50 border-gray-100 hover:bg-gray-100"
+                          }`}
+                        >
+                          <div className="flex justify-between items-center mb-0.5">
+                            <span className="font-black text-gray-900 text-xs">{msg.customer_name || "Customer"}</span>
+                            <span className="text-[9px] bg-gray-200 text-gray-700 px-1.5 py-0.5 rounded font-bold">{msg.query_type || "General"}</span>
+                          </div>
+                          <p className="font-bold text-blue-900 text-[11px] truncate">{msg.subject}</p>
+                          <p className="text-[10px] text-gray-500 line-clamp-1 mt-0.5">{msg.message}</p>
+                          <div className="flex justify-between items-center text-[9px] text-gray-400 mt-1">
+                            <span>{msg.customer_email}</span>
+                            <span className="font-bold text-amber-600">{msg.status || "PENDING"}</span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
 
                   <Link
-                    href="/admin/tickets"
+                    href="/admin/queries"
                     onClick={() => setShowMessages(false)}
-                    className="block text-center text-[11px] font-bold text-gray-500 hover:text-gray-900 pt-2 border-t border-gray-100"
+                    className="block text-center text-[11px] font-bold text-gray-600 hover:text-gray-900 pt-2 border-t border-gray-100"
                   >
                     Manage Customer Support Tickets &rarr;
                   </Link>

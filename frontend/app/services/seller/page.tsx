@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Footer from "components/layout/footer";
 import Link from "next/link";
+import { submitCustomerQuery } from "lib/api";
 
 export default function SellerPage() {
   const [formData, setFormData] = useState({
@@ -15,10 +16,29 @@ export default function SellerPage() {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setLoading(true);
+    try {
+      await submitCustomerQuery({
+        customer_name: formData.businessName || "Vendor Candidate",
+        customer_email: formData.email || "seller@skipd.in",
+        query_type: "Seller Application",
+        subject: `New Seller Application: ${formData.businessName} (GSTIN: ${formData.gstin})`,
+        message: `Business: ${formData.businessName}, Contact: ${formData.contactPerson || 'N/A'}, GSTIN: ${formData.gstin}, Mobile: ${formData.phone}`,
+        priority: "High"
+      });
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("skipd_new_query"));
+      }
+    } catch (err) {
+      console.warn("Seller application DB submit error:", err);
+    } finally {
+      setLoading(false);
+      setSubmitted(true);
+    }
   };
 
   return (

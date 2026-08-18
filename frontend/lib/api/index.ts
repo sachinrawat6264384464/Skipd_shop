@@ -1373,11 +1373,14 @@ export async function fetchAdminCustomers() {
 export async function fetchAdminQueries() {
   try {
     const res = await fetch(`${API_BASE_URL}/queries`, { cache: "no-store" });
-    if (res.ok) return await res.json();
+    if (res.ok) {
+      const data = await res.json();
+      return Array.isArray(data) ? data : (data.queries || []);
+    }
   } catch (e) {
     console.warn("[API SDK] Fetch admin queries offline fallback");
   }
-  return null;
+  return [];
 }
 
 export async function submitCustomerQuery(queryData: any) {
