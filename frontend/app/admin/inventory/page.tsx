@@ -127,12 +127,7 @@ export default function AdminInventoryPage() {
         }
 
         if (importedItems.length > 0) {
-          // 1. Save in local storage
-          const existingCustom = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
-          const updatedCustom = [...importedItems, ...existingCustom];
-          localStorage.setItem("skipd_custom_products", JSON.stringify(updatedCustom));
-
-          // 2. ALSO Save to backend PostgreSQL database
+          // Save to backend PostgreSQL database
           for (const item of importedItems) {
             try {
               await createAdminProduct({
@@ -234,11 +229,6 @@ export default function AdminInventoryPage() {
       await createAdminProduct(newProductObj);
     } catch (e) {}
 
-    try {
-      const existingCustom = JSON.parse(localStorage.getItem("skipd_custom_products") || "[]");
-      localStorage.setItem("skipd_custom_products", JSON.stringify([newProductObj, ...existingCustom]));
-    } catch (e) {}
-
     const tableItem = {
       id: newProdId,
       title: newTitle,
@@ -275,21 +265,6 @@ export default function AdminInventoryPage() {
     setLoading(true);
     try {
       let data = await fetchProducts();
-      
-      // Merge locally stored custom products if any are missing from fetchProducts
-      if (typeof window !== "undefined") {
-        try {
-          const stored = localStorage.getItem("skipd_custom_products");
-          if (stored) {
-            const customList = JSON.parse(stored);
-            if (Array.isArray(customList) && customList.length > 0) {
-              const existingIds = new Set((data || []).map((p: any) => String(p.id)));
-              const freshCustom = customList.filter((c: any) => !existingIds.has(String(c.id)));
-              data = [...freshCustom, ...(data || [])];
-            }
-          }
-        } catch (e) {}
-      }
 
       let inventoryList: any[] = [];
 

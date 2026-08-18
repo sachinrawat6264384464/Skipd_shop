@@ -35,55 +35,10 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
   };
 
   useEffect(() => {
+    setProducts(initialProducts || []);
+
     if (typeof window !== "undefined") {
       try {
-        // Read custom admin products
-        let custom: any[] = [];
-        const storedCustom = localStorage.getItem("skipd_custom_products");
-        if (storedCustom) {
-          const parsed = JSON.parse(storedCustom);
-          if (Array.isArray(parsed)) custom = parsed;
-        }
-
-        // Read updated products
-        let updatesMap: Record<string, any> = {};
-        const storedUpdates = localStorage.getItem("skipd_updated_products");
-        if (storedUpdates) {
-          updatesMap = JSON.parse(storedUpdates);
-        }
-
-        // Read deleted products
-        let deletedSet = new Set<string>();
-        const storedDeletions = localStorage.getItem("skipd_deleted_product_ids");
-        if (storedDeletions) {
-          const parsed = JSON.parse(storedDeletions);
-          if (Array.isArray(parsed)) {
-            parsed.forEach((id: any) => deletedSet.add(String(id)));
-          }
-        }
-
-        let combined = [...custom, ...initialProducts];
-        const seen = new Set();
-        combined = combined
-          .filter(p => {
-            const pIdStr = String(p.id);
-            if (deletedSet.has(pIdStr) || deletedSet.has(p.handle)) return false;
-            const key = p.id || p.handle;
-            if (seen.has(key)) return false;
-            seen.add(key);
-            return true;
-          })
-          .map(p => {
-            const pIdStr = String(p.id);
-            if (updatesMap[pIdStr]) {
-              return { ...p, ...updatesMap[pIdStr] };
-            }
-            return p;
-          });
-
-        setProducts(combined);
-
-        // 🔒 Load "Pick up where you left off" items STRICTLY for the currently logged-in customer!
         let userInteracted: any[] = [];
         
         // 1. Read logged-in user's cart items
@@ -132,7 +87,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
 
         // Fallback default catalog products if logged in user hasn't added items yet
         if (userInteracted.length < 4) {
-          combined.slice(0, 4).forEach(p => {
+          (initialProducts || []).slice(0, 4).forEach(p => {
             if (!userInteracted.some(u => u.label === p.title)) {
               userInteracted.push({
                 img: p.images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",

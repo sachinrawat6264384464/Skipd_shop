@@ -39,30 +39,6 @@ export function CategoryNav() {
           });
         }
 
-        // Read admin custom products for new categories
-        if (typeof window !== "undefined") {
-          const storedCustom = localStorage.getItem("skipd_custom_products");
-          if (storedCustom) {
-            const parsed = JSON.parse(storedCustom);
-            if (Array.isArray(parsed)) {
-              parsed.forEach((p: any) => {
-                const catName = p.category?.name || p.category;
-                if (catName && typeof catName === "string") {
-                  const catSlug = p.category?.slug || catName.toLowerCase().replace(/\s+/g, "-");
-                  if (!combined.some(item => item.slug === catSlug)) {
-                    combined.push({
-                      name: catName,
-                      slug: catSlug,
-                      icon: "✨",
-                      bg: "bg-purple-50 border-purple-200 text-purple-700"
-                    });
-                  }
-                }
-              });
-            }
-          }
-        }
-
         setCategories(combined);
       } catch (e) {}
     }
