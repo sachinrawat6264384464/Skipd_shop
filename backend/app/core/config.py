@@ -2,6 +2,10 @@ import os
 from typing import List, Union
 from pydantic import AnyHttpUrl, validator
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
+# Ensure .env settings strictly override any stale system environment variables
+load_dotenv(override=True)
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "SKIPD Custom Commerce API"
@@ -12,17 +16,18 @@ class Settings(BaseSettings):
     PORT: int = 8000
     
     # Database (Neon Cloud PostgreSQL)
-    DATABASE_URL: str = "postgresql+asyncpg://neondb_owner:npg_co6MJSXeWK8z@ep-still-king-axcdr7h1-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require"
+    DATABASE_URL: str = "postgresql+asyncpg://neondb_owner:npg_co6MJSXeWK8z@ep-still-king-axcdr7h1-pooler.c-4.us-east-2.aws.neon.tech/neondb"
 
     @validator("DATABASE_URL", pre=True)
     def assemble_database_url(cls, v: str) -> str:
         if isinstance(v, str):
-            if "127.0.0.1" in v or "localhost" in v or "skipd-postgres" in v:
-                v = "postgresql+asyncpg://neondb_owner:npg_co6MJSXeWK8z@ep-still-king-axcdr7h1-pooler.c-4.us-east-2.aws.neon.tech/neondb?ssl=require"
+            if "127.0.0.1" in v or "localhost" in v or "skipd-postgres" in v or "supabase.co" in v:
+                v = "postgresql+asyncpg://neondb_owner:npg_co6MJSXeWK8z@ep-still-king-axcdr7h1-pooler.c-4.us-east-2.aws.neon.tech/neondb"
             if v.startswith("postgresql://"):
                 v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
             elif v.startswith("postgres://"):
                 v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+            v = v.replace("?ssl=require", "").replace("&ssl=require", "").replace("?sslmode=require", "").replace("&sslmode=require", "")
         return v
     
     # CORS

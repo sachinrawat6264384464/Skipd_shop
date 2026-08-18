@@ -11,8 +11,15 @@ if db_url.startswith("postgresql://"):
 elif db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
 
+# Clean ssl query parameters from URL string for asyncpg compatibility
+connect_args = {}
+if "ssl=require" in db_url or "sslmode=require" in db_url or "neon.tech" in db_url:
+    db_url = db_url.replace("?ssl=require", "").replace("&ssl=require", "").replace("?sslmode=require", "").replace("&sslmode=require", "")
+    connect_args = {"ssl": True}
+
 engine = create_async_engine(
     db_url,
+    connect_args=connect_args,
     echo=settings.ENVIRONMENT == "development",
     future=True,
     pool_size=20,

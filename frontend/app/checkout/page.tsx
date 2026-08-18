@@ -372,6 +372,8 @@ export default function CheckoutPage() {
 
         // Submit order directly to PostgreSQL Database API
         try {
+          const currentUserStr = localStorage.getItem("skipd_user");
+          const parsedUser = currentUserStr ? JSON.parse(currentUserStr) : null;
           fetch(`${API_BASE_URL}/orders`, {
             method: "POST",
             headers: {
@@ -383,14 +385,18 @@ export default function CheckoutPage() {
               total_amount: finalPayable,
               payment_method: "Razorpay Online (" + (response.razorpay_payment_id || "PAID") + ")",
               status: "PAID",
+              customer_name: selectedAddressObj.name || parsedUser?.user_name || "Customer",
+              customer_email: parsedUser?.email || (selectedAddressObj as any)?.email || "customer@skipd.in",
+              customer_phone: selectedAddressObj.phone || parsedUser?.phone || "9876543210",
               shipping_address: selectedAddressObj,
               items: cartItems.map(item => ({
                 product_id: item.id,
+                title: item.title || item.name || "Purchased Item",
                 quantity: item.quantity,
                 price: item.price
               }))
             })
-          });
+          }).catch(err => console.error("[DB SYNC ERROR]", err));
         } catch (e) {}
 
         // Save to user account history
@@ -530,6 +536,8 @@ export default function CheckoutPage() {
 
       // Submit order directly to PostgreSQL Database API
       try {
+        const currentUserStr = localStorage.getItem("skipd_user");
+        const parsedUser = currentUserStr ? JSON.parse(currentUserStr) : null;
         fetch(`${API_BASE_URL}/orders`, {
           method: "POST",
           headers: {
@@ -541,14 +549,18 @@ export default function CheckoutPage() {
             total_amount: finalPayable,
             payment_method: selectedMethod === "upi" ? "Razorpay Online UPI" : selectedMethod === "card" ? "Debit / Credit Card" : selectedMethod.toUpperCase(),
             status: "PACKED",
+            customer_name: selectedAddressObj.name || parsedUser?.user_name || "Customer",
+            customer_email: parsedUser?.email || (selectedAddressObj as any)?.email || "customer@skipd.in",
+            customer_phone: selectedAddressObj.phone || parsedUser?.phone || "9876543210",
             shipping_address: selectedAddressObj,
             items: cartItems.map(item => ({
               product_id: item.id,
+              title: item.title || item.name || "Purchased Item",
               quantity: item.quantity,
               price: item.price
             }))
           })
-        });
+        }).catch(err => console.error("[DB SYNC ERROR]", err));
       } catch (e) {}
 
       // Save to user account history
