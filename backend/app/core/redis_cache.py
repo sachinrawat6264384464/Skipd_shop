@@ -17,7 +17,7 @@ async def get_cached_json(key: str) -> Optional[Any]:
         data = await redis_client.get(key)
         if data:
             return json.loads(data)
-    except Exception as err:
+    except BaseException as err:
         print(f"[REDIS CACHE GET WARNING] {err}")
     return None
 
@@ -26,7 +26,7 @@ async def set_cached_json(key: str, value: Any, expire_seconds: int = 300) -> bo
     try:
         await redis_client.set(key, json.dumps(value), ex=expire_seconds)
         return True
-    except Exception as err:
+    except BaseException as err:
         print(f"[REDIS CACHE SET WARNING] {err}")
         return False
 
@@ -38,6 +38,6 @@ async def invalidate_cache_pattern(pattern: str = "products:*") -> int:
             deleted_count = await redis_client.delete(*keys)
             print(f"🧹 [REDIS CACHE PURGED] Invalidated {deleted_count} keys matching '{pattern}'")
             return deleted_count
-    except Exception as err:
+    except BaseException as err:
         print(f"[REDIS CACHE INVALIDATION WARNING] {err}")
     return 0

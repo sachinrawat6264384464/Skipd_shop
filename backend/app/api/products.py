@@ -161,8 +161,15 @@ async def admin_create_product(payload: dict = Body(...), db: AsyncSession = Dep
         db.add(product)
         await db.commit()
         await db.refresh(product)
-        await invalidate_cache_pattern("products:*")
+
+        try:
+            await invalidate_cache_pattern("products:*")
+        except BaseException as cache_err:
+            print(f"[CACHE BYPASS WARNING] {cache_err}")
+
         return {"message": "Product created successfully", "id": product.id, "handle": product.handle}
+    except HTTPException:
+        raise
     except Exception as err:
         await db.rollback()
         print(f"[PRODUCT CREATE ERROR] {err}")
@@ -193,7 +200,11 @@ async def admin_update_product(product_id: int, payload: dict = Body(...), db: A
         product.stock_quantity = int(payload["stock_quantity"])
 
     await db.commit()
-    await invalidate_cache_pattern("products:*")
+    try:
+        await invalidate_cache_pattern("products:*")
+    except BaseException as cache_err:
+        print(f"[CACHE BYPASS WARNING] {cache_err}")
+
     return {"message": "Product updated successfully", "id": product.id}
 
 
@@ -217,7 +228,11 @@ async def admin_delete_product(product_id: int, db: AsyncSession = Depends(get_d
 
         await db.delete(product)
         await db.commit()
-        await invalidate_cache_pattern("products:*")
+        try:
+            await invalidate_cache_pattern("products:*")
+        except BaseException as cache_err:
+            print(f"[CACHE BYPASS WARNING] {cache_err}")
+
         return {"message": "Product deleted successfully", "id": product_id}
     except Exception as err:
         await db.rollback()
