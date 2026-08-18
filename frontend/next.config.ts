@@ -22,4 +22,12 @@ export default {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/api/v1/:path*",
+        destination: "https://skipd-ecom.onrender.com/api/v1/:path*",
+      },
+    ];
+  },
 };

@@ -497,11 +497,11 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
 
   // Search full product catalog (PostgreSQL DB)
   const allProds = await fetchProducts();
-  
+
   // 1. Direct handle, ID or clean handle match
-  let found = allProds.find(p => 
-    p.handle === handle || 
-    String(p.id) === handle || 
+  let found = allProds.find(p =>
+    p.handle === handle ||
+    String(p.id) === handle ||
     (p.handle && p.handle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === cleanSearch) ||
     p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === cleanSearch
   );
@@ -512,7 +512,7 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
     const pSlug = (p.handle || p.title).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     if (!pSlug) return false;
     return cleanSearch.includes(pSlug) || pSlug.includes(cleanSearch) ||
-           cleanSearch.split("-").filter(w => w.length > 2).slice(0, 3).every(w => pSlug.includes(w));
+      cleanSearch.split("-").filter(w => w.length > 2).slice(0, 3).every(w => pSlug.includes(w));
   });
   if (found) return found;
 
@@ -526,7 +526,7 @@ export async function fetchCategories(): Promise<Category[]> {
       const dbCats = await dbRes.json();
       if (Array.isArray(dbCats)) return dbCats;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   return [];
 }
@@ -535,7 +535,7 @@ export async function createCheckoutSession(checkoutData: any) {
   try {
     const res = await fetch(`${API_BASE_URL}/orders/checkout`, {
       method: "POST",
-      headers: { 
+      headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
       },
@@ -558,7 +558,7 @@ export async function createCheckoutSession(checkoutData: any) {
   };
 }
 
-export async function fetchWalletBalance(): Promise<{balance: number}> {
+export async function fetchWalletBalance(): Promise<{ balance: number }> {
   try {
     const res = await fetch(`${API_BASE_URL}/wallet`, {
       headers: {
@@ -637,7 +637,7 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
   try {
     const saved = localStorage.getItem(ordersKey);
     if (saved) return JSON.parse(saved);
-  } catch (e) {}
+  } catch (e) { }
 
   return [];
 }
@@ -652,7 +652,7 @@ export async function updateOrderStatusGlobal(orderId: string, newStatus: string
       },
       body: JSON.stringify({ status: newStatus })
     });
-  } catch (e) {}
+  } catch (e) { }
 
   if (typeof window !== "undefined") {
     try {
@@ -685,10 +685,10 @@ export async function updateOrderStatusGlobal(orderId: string, newStatus: string
                 localStorage.setItem(k, JSON.stringify(updated));
               }
             }
-          } catch (e) {}
+          } catch (e) { }
         }
       });
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
@@ -704,7 +704,7 @@ export async function fetchUserAddressesAPI() {
       const data = await res.json();
       return data.addresses || [];
     }
-  } catch (e) {}
+  } catch (e) { }
   return [];
 }
 
@@ -721,7 +721,7 @@ export async function addUserAddressAPI(addressData: any) {
       body: JSON.stringify(addressData)
     });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch (e) { }
   return null;
 }
 
@@ -734,7 +734,7 @@ export async function fetchUserWalletAPI() {
       cache: "no-store"
     });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch (e) { }
   return { balance: 0.0, transactions: [] };
 }
 
@@ -750,7 +750,7 @@ export async function fetchUserCartAPI() {
       const data = await res.json();
       return data.cart_items || [];
     }
-  } catch (e) {}
+  } catch (e) { }
   return [];
 }
 
@@ -767,7 +767,7 @@ export async function addToCartAPI(productId: number, quantity: number = 1) {
       body: JSON.stringify({ product_id: productId, quantity })
     });
     if (res.ok) return await res.json();
-  } catch (e) {}
+  } catch (e) { }
   return null;
 }
 
@@ -864,14 +864,14 @@ export async function fetchAdminStats() {
 export async function purgeAllStoreOrders() {
   try {
     await fetch(`${API_BASE_URL}/admin/reset-store`, { method: "POST" });
-  } catch (e) {}
+  } catch (e) { }
 
   if (typeof window !== "undefined") {
     try {
       const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders" || k === "skipd_payments");
       keys.forEach(k => localStorage.removeItem(k));
       window.dispatchEvent(new Event("skipd_orders_changed"));
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 
@@ -1075,7 +1075,7 @@ export async function requestOTP(emailOrPhone: string) {
         try {
           const { sendForgotOTPNotification } = await import("lib/services/email-service");
           sendForgotOTPNotification(emailOrPhone.trim(), data.otp_demo || mockOtp);
-        } catch (e) {}
+        } catch (e) { }
       }
       return data;
     }
@@ -1088,7 +1088,7 @@ export async function requestOTP(emailOrPhone: string) {
     try {
       const { sendForgotOTPNotification } = await import("lib/services/email-service");
       sendForgotOTPNotification(emailOrPhone.trim(), mockOtp);
-    } catch (e) {}
+    } catch (e) { }
   }
 
   return {
@@ -1153,13 +1153,13 @@ export function saveRegisteredEmail(email: string) {
       try {
         const parsed = JSON.parse(existing);
         if (Array.isArray(parsed)) list = parsed.map((item: any) => (typeof item === "string" ? item : item.email)).filter(Boolean);
-      } catch (e) {}
+      } catch (e) { }
     }
     if (!list.includes(cleanEmail)) {
       list.push(cleanEmail);
       localStorage.setItem("skipd_registered_users", JSON.stringify(list));
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 export async function checkEmailRegistered(email: string) {
@@ -1207,7 +1207,7 @@ export async function checkEmailRegistered(email: string) {
           });
         }
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   if (registeredEmails.includes(targetEmail)) {
@@ -1497,7 +1497,7 @@ export async function fetchAdminCategories() {
     try {
       const stored = localStorage.getItem("skipd_custom_categories");
       if (stored) return JSON.parse(stored);
-    } catch (err) {}
+    } catch (err) { }
   }
   return null;
 }
@@ -1574,7 +1574,7 @@ function syncCategoryToLocal(cat: any) {
     const filtered = existing.filter((c: any) => c.id !== cat.id && c.slug !== cat.slug);
     filtered.unshift(cat);
     localStorage.setItem("skipd_custom_categories", JSON.stringify(filtered));
-  } catch (err) {}
+  } catch (err) { }
 }
 
 function updateCategoryInLocal(id: any, payload: any) {
@@ -1587,7 +1587,7 @@ function updateCategoryInLocal(id: any, payload: any) {
       const updated = existing.map((c: any) => (String(c.id) === String(id) || c.slug === payload.slug ? { ...c, ...payload } : c));
       localStorage.setItem("skipd_custom_categories", JSON.stringify(updated));
     }
-  } catch (err) {}
+  } catch (err) { }
 }
 
 function deleteCategoryFromLocal(id: any) {
@@ -1600,7 +1600,7 @@ function deleteCategoryFromLocal(id: any) {
       const filtered = existing.filter((c: any) => String(c.id) !== String(id));
       localStorage.setItem("skipd_custom_categories", JSON.stringify(filtered));
     }
-  } catch (err) {}
+  } catch (err) { }
 }
 
 
