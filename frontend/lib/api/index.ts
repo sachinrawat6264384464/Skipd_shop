@@ -1370,6 +1370,44 @@ export async function fetchAdminCustomers() {
   return null;
 }
 
+export async function fetchAdminQueries() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/queries`, { cache: "no-store" });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Fetch admin queries offline fallback");
+  }
+  return null;
+}
+
+export async function submitCustomerQuery(queryData: any) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/queries`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(queryData)
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Submit customer query offline fallback");
+  }
+  return null;
+}
+
+export async function updateQueryStatus(id: number | string, status: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/queries/${id}/status`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ status })
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Update query status offline fallback");
+  }
+  return null;
+}
+
 export async function deleteAdminUser(id: number | string, email?: string) {
   try {
     const res = await fetch(`${API_BASE_URL}/users/admin/${id}`, { method: "DELETE" });

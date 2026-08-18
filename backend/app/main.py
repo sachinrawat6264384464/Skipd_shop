@@ -28,6 +28,7 @@ from app.api.reviews import router as reviews_router
 from app.api.gift_cards import router as gift_cards_router
 from app.api.inventory import router as inventory_router
 from app.api.wallet import router as wallet_router
+from app.api.queries import router as queries_router
 from app.models.models import SaleEvent, SaleProduct, SaleStatus, HomepageSection
 
 from init_db_tables import initialize_and_migrate_all_tables
@@ -246,6 +247,7 @@ app.include_router(wallet_router, prefix=settings.API_V1_STR)
 app.include_router(coupons_router, prefix=settings.API_V1_STR)
 app.include_router(categories_router, prefix=settings.API_V1_STR)
 app.include_router(users_router, prefix=settings.API_V1_STR)
+app.include_router(queries_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():

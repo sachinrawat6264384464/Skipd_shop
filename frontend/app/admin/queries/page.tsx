@@ -2,87 +2,130 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { fetchAdminQueries, updateQueryStatus, submitCustomerQuery } from "lib/api";
+import { toast } from "sonner";
 
 export default function AdminProductQueriesPage() {
   const [queries, setQueries] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    total: 0,
+    resolved: 0,
+    pending: 0,
+    rejected: 0
+  });
 
   const [selectedStatus, setSelectedStatus] = useState("All Status");
   const [selectedType, setSelectedType] = useState("All Types");
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newCustName, setNewCustName] = useState("");
+  const [newCustEmail, setNewCustEmail] = useState("");
+  const [newProdName, setNewProdName] = useState("");
+  const [newQueryType, setNewQueryType] = useState("Product Info");
+  const [newSubject, setNewSubject] = useState("");
+  const [newMessage, setNewMessage] = useState("");
+
+  const loadQueriesFromDB = async () => {
+    setLoading(true);
     try {
-      const storedQueriesStr = localStorage.getItem("skipd_return_queries");
-      if (storedQueriesStr) {
-        const localQueries = JSON.parse(storedQueriesStr);
-        if (Array.isArray(localQueries) && localQueries.length > 0) {
-          const formatted = localQueries.map((l: any) => ({
-            id: l.id || `#Q-${Math.floor(10000 + Math.random() * 90000)}`,
-            customer: l.customer_name || "Customer",
-            email: l.email || "customer@skipd.in",
-            product: l.product_title || "Returned Product",
-            price: `₹${l.refund_amount ? l.refund_amount.toLocaleString("en-IN") : '2,999'}`,
-            img: l.product_image || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=100",
-            queryText: `24h Return Request: ${l.reason} (${l.description || 'Defective item'})`,
-            type: "Return & Refund",
-            status: l.status || "Pending",
-            priority: "High",
-            priorityColor: "text-red-500",
-            date: l.date || "Just now"
-          }));
-          setQueries(prev => {
-            const ids = new Set(prev.map(p => p.id));
-            const newItems = formatted.filter((f: any) => !ids.has(f.id));
-            return [...newItems, ...prev];
-          });
-        }
-      }
-
-      // Load Admin Notifications & Inquiries
-      const storedInquiries = localStorage.getItem("skipd_admin_inquiries");
-      if (storedInquiries) {
-        const parsedInquiries = JSON.parse(storedInquiries);
-        if (Array.isArray(parsedInquiries) && parsedInquiries.length > 0) {
-          const formattedInquiries = parsedInquiries.map((inq: any, i: number) => ({
-            id: `#INQ-${1000 + i}`,
-            customer: inq.customer_email ? inq.customer_email.split("@")[0] : "Customer",
-            email: inq.customer_email || "customer@skipd.in",
-            product: inq.title || "Store Order Inquiry",
-            price: inq.amount ? `₹${inq.amount.toLocaleString("en-IN")}` : "₹0",
-            img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100",
-            queryText: inq.message || "New customer inquiry message received.",
-            type: inq.type === "NEW_ORDER" ? "New Order" : "Inquiry",
-            status: "Pending",
-            priority: "High",
-            priorityColor: "text-emerald-500",
-            date: inq.date ? new Date(inq.date).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) : "Just now"
-          }));
-
-          setQueries(prev => {
-            const ids = new Set(prev.map(p => p.id));
-            const newItems = formattedInquiries.filter((f: any) => !ids.has(f.id));
-            return [...newItems, ...prev];
-          });
-        }
+      const data = await fetchAdminQueries();
+      if (data && data.queries) {
+        const formatted = data.queries.map((q: any) => ({
+          id: q.query_number || `#INQ-${q.id}`,
+          db_id: q.id,
+          customer: q.customer_name || "Customer",
+          email: q.customer_email || "customer@skipd.in",
+          product: q.product_name || "Store Item",
+          price: "Inquiry",
+          img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100",
+          queryText: q.message || q.subject || "Customer Inquiry",
+          subject: q.subject,
+          type: q.query_type || "General Inquiry",
+          status: q.status === "RESOLVED" ? "Resolved" : q.status === "REJECTED" ? "Rejected" : "Pending",
+          priority: q.priority || "High",
+          priorityColor: q.priority === "High" ? "text-red-500" : "text-amber-500",
+          date: q.created_at ? new Date(q.created_at).toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" }) : "Just now"
+        }));
+        setQueries(formatted);
+        setStats({
+          total: data.total_queries || formatted.length,
+          resolved: data.resolved_count || formatted.filter((f: any) => f.status === "Resolved").length,
+          pending: data.pending_count || formatted.filter((f: any) => f.status === "Pending").length,
+          rejected: data.rejected_count || formatted.filter((f: any) => f.status === "Rejected").length
+        });
       }
     } catch (e) {
-      console.warn("Could not load return queries");
+      console.warn("Error loading queries from DB:", e);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    loadQueriesFromDB();
   }, []);
 
-  const handleStatusChange = (id: string, newStatus: string) => {
-    setQueries(queries.map(q => q.id === id ? { ...q, status: newStatus } : q));
+  const handleStatusChange = async (queryObj: any, newStatus: string) => {
+    // Optimistic UI update
+    setQueries(prev => prev.map(q => q.id === queryObj.id ? { ...q, status: newStatus } : q));
+    toast.success(`Query ${queryObj.id} updated to ${newStatus}`);
 
-    // Update in localStorage for live customer sync
     try {
-      const storedQueriesStr = localStorage.getItem("skipd_return_queries") || "[]";
-      const localQueries = JSON.parse(storedQueriesStr);
-      const updated = localQueries.map((l: any) => l.id === id ? { ...l, status: newStatus } : l);
-      localStorage.setItem("skipd_return_queries", JSON.stringify(updated));
-    } catch (e) {}
-
-    alert(`✓ Query ${id} status updated to ${newStatus}`);
+      await updateQueryStatus(queryObj.db_id || queryObj.id, newStatus.toUpperCase());
+      loadQueriesFromDB();
+    } catch (e) {
+      console.error("Status update error:", e);
+    }
   };
+
+  const handleCreateNewQuery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCustName || !newCustEmail || !newSubject || !newMessage) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    try {
+      const res = await submitCustomerQuery({
+        customer_name: newCustName,
+        customer_email: newCustEmail,
+        product_name: newProdName || "Store Product",
+        query_type: newQueryType,
+        subject: newSubject,
+        message: newMessage,
+        priority: "High"
+      });
+
+      if (res && res.status === "success") {
+        toast.success("🔥 New Query saved to PostgreSQL Database successfully!");
+        setIsModalOpen(false);
+        setNewCustName("");
+        setNewCustEmail("");
+        setNewProdName("");
+        setNewSubject("");
+        setNewMessage("");
+        loadQueriesFromDB();
+      }
+    } catch (e) {
+      toast.error("Failed to create query");
+    }
+  };
+
+  // Filter queries based on search and dropdown filters
+  const filteredQueries = queries.filter(q => {
+    const matchesSearch = !searchQuery.trim() || 
+      q.customer.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.product.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      q.id.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesStatus = selectedStatus === "All Status" || q.status.toLowerCase() === selectedStatus.toLowerCase();
+    const matchesType = selectedType === "All Types" || q.type.toLowerCase().includes(selectedType.toLowerCase());
+
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
@@ -91,23 +134,20 @@ export default function AdminProductQueriesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-black text-gray-900">Product Queries</h1>
-          <p className="text-xs text-gray-500 font-medium mt-0.5">Manage all customer queries and 24-hour return requests related to products</p>
+          <p className="text-xs text-gray-500 font-medium mt-0.5">Manage all customer queries and 24-hour return requests from PostgreSQL DB</p>
         </div>
 
         <div className="flex items-center gap-3">
-          <button className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
-            📥 Export
+          <button onClick={loadQueriesFromDB} className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
+            🔄 Refresh DB
           </button>
-          <button className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
-            🌪️ Filters
-          </button>
-          <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md shadow-indigo-600/20 cursor-pointer flex items-center gap-1">
+          <button onClick={() => setIsModalOpen(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1">
             + New Query
           </button>
         </div>
       </div>
 
-      {/* 📊 4 Top Metric Cards (Dynamic from queries) */}
+      {/* 📊 4 Top Metric Cards (Dynamic from Neon PostgreSQL DB) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Card 1: Total Queries */}
@@ -117,8 +157,8 @@ export default function AdminProductQueriesPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Total Queries</p>
-            <h3 className="text-xl font-black text-gray-900 mt-0.5">{queries.length}</h3>
-            <p className="text-[10px] text-gray-400 font-medium mt-0.5">{queries.length > 0 ? "100% of all queries" : "0 queries"}</p>
+            <h3 className="text-xl font-black text-gray-900 mt-0.5">{stats.total}</h3>
+            <p className="text-[10px] text-gray-400 font-medium mt-0.5">{stats.total > 0 ? "100% of all queries" : "0 queries"}</p>
           </div>
         </div>
 
@@ -129,8 +169,8 @@ export default function AdminProductQueriesPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Resolved</p>
-            <h3 className="text-xl font-black text-gray-900 mt-0.5">{queries.filter(q => q.status === "Resolved").length}</h3>
-            <p className="text-[10px] text-emerald-600 font-medium mt-0.5">{queries.length > 0 ? `${((queries.filter(q => q.status === "Resolved").length / queries.length) * 100).toFixed(1)}% of total` : "0.0%"}</p>
+            <h3 className="text-xl font-black text-gray-900 mt-0.5">{stats.resolved}</h3>
+            <p className="text-[10px] text-emerald-600 font-medium mt-0.5">{stats.total > 0 ? `${((stats.resolved / stats.total) * 100).toFixed(1)}% of total` : "0.0%"}</p>
           </div>
         </div>
 
@@ -141,8 +181,8 @@ export default function AdminProductQueriesPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Pending</p>
-            <h3 className="text-xl font-black text-gray-900 mt-0.5">{queries.filter(q => q.status === "Pending").length}</h3>
-            <p className="text-[10px] text-amber-600 font-medium mt-0.5">{queries.length > 0 ? `${((queries.filter(q => q.status === "Pending").length / queries.length) * 100).toFixed(1)}% of total` : "0.0%"}</p>
+            <h3 className="text-xl font-black text-gray-900 mt-0.5">{stats.pending}</h3>
+            <p className="text-[10px] text-amber-600 font-medium mt-0.5">{stats.total > 0 ? `${((stats.pending / stats.total) * 100).toFixed(1)}% of total` : "0.0%"}</p>
           </div>
         </div>
 
@@ -153,14 +193,14 @@ export default function AdminProductQueriesPage() {
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Rejected</p>
-            <h3 className="text-xl font-black text-gray-900 mt-0.5">{queries.filter(q => q.status === "Rejected").length}</h3>
-            <p className="text-[10px] text-rose-600 font-medium mt-0.5">{queries.length > 0 ? `${((queries.filter(q => q.status === "Rejected").length / queries.length) * 100).toFixed(1)}% of total` : "0.0%"}</p>
+            <h3 className="text-xl font-black text-gray-900 mt-0.5">{stats.rejected}</h3>
+            <p className="text-[10px] text-rose-600 font-medium mt-0.5">{stats.total > 0 ? `${((stats.rejected / stats.total) * 100).toFixed(1)}% of total` : "0.0%"}</p>
           </div>
         </div>
 
       </div>
 
-      {/* 🔍 Filter Bar Section (Exact Screenshot Match) */}
+      {/* 🔍 Filter Bar Section */}
       <div className="bg-white border border-gray-200/80 p-4 rounded-2xl shadow-2xs flex flex-col md:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
           <input
@@ -192,21 +232,10 @@ export default function AdminProductQueriesPage() {
           >
             <option>All Types</option>
             <option>Product Info</option>
-            <option>Order Related</option>
+            <option>New Order</option>
             <option>Return &amp; Refund</option>
-            <option>Other</option>
+            <option>General Inquiry</option>
           </select>
-
-          <select className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 focus:outline-none">
-            <option>All Products</option>
-            <option>OnePlus Nord 4 5G</option>
-            <option>boAt Rockerz 450 Pro</option>
-            <option>MacBook Air M2</option>
-          </select>
-
-          <div className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-700">
-            📅 May 19, 2025 - May 25, 2025
-          </div>
 
           <button
             onClick={() => { setSelectedStatus("All Status"); setSelectedType("All Types"); setSearchQuery(""); }}
@@ -217,7 +246,7 @@ export default function AdminProductQueriesPage() {
         </div>
       </div>
 
-      {/* 📋 Queries Table (Exact Screenshot Match) */}
+      {/* 📋 Queries Table Connected to PostgreSQL DB */}
       <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs text-gray-700">
@@ -226,168 +255,175 @@ export default function AdminProductQueriesPage() {
                 <th className="px-4 py-3"><input type="checkbox" className="rounded" /></th>
                 <th className="px-4 py-3">Query ID</th>
                 <th className="px-4 py-3">Customer</th>
-                <th className="px-4 py-3">Product</th>
-                <th className="px-4 py-3">Query</th>
+                <th className="px-4 py-3">Product / Subject</th>
+                <th className="px-4 py-3">Query Message</th>
                 <th className="px-4 py-3">Type</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Priority</th>
-                <th className="px-4 py-3">Date</th>
+                <th className="px-4 py-3">Time</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 font-medium">
-              {queries.map((q) => (
-                <tr key={q.id} className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3.5"><input type="checkbox" className="rounded" /></td>
-                  <td className="px-4 py-3.5 font-bold font-mono text-gray-900">{q.id}</td>
-                  <td className="px-4 py-3.5">
-                    <p className="font-bold text-gray-900">{q.customer}</p>
-                    <p className="text-[10px] text-gray-400">{q.email}</p>
-                  </td>
-                  <td className="px-4 py-3.5 flex items-center gap-2">
-                    <img src={q.img} alt={q.product} className="w-8 h-8 rounded-lg object-cover border border-gray-100 bg-gray-50 shrink-0" />
-                    <div>
-                      <p className="font-bold text-gray-900 text-xs">{q.product}</p>
-                      <p className="text-[10px] text-gray-400">{q.price}</p>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <p className="font-bold text-gray-900 text-xs max-w-[200px] truncate">{q.queryText}</p>
-                    <button className="text-indigo-600 font-bold text-[10px] hover:underline">View Details</button>
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-100">
-                      {q.type}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5">
-                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                      q.status === "Resolved" ? "bg-emerald-100 text-emerald-800" :
-                      q.status === "Pending" ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800"
-                    }`}>
-                      {q.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3.5 font-bold text-[11px] flex items-center gap-1 mt-3">
-                    <span className={`text-xs ${q.priorityColor}`}>●</span> {q.priority}
-                  </td>
-                  <td className="px-4 py-3.5 text-gray-400 text-[11px]">{q.date}</td>
-                  <td className="px-4 py-3.5 text-right space-x-1">
-                    <button title="View Query" className="p-1 text-gray-500 hover:text-gray-900 bg-gray-100 rounded-lg">👁</button>
-                    <button onClick={() => handleStatusChange(q.id, "Resolved")} title="Approve / Resolve" className="p-1 text-emerald-600 hover:bg-emerald-50 border border-emerald-200 rounded-lg">✓</button>
-                    <button onClick={() => handleStatusChange(q.id, "Rejected")} title="Reject Query" className="p-1 text-red-600 hover:bg-red-50 border border-red-200 rounded-lg">✕</button>
+              {loading ? (
+                <tr>
+                  <td colSpan={10} className="text-center py-8 text-xs text-gray-400 font-bold">
+                    ⏳ Loading queries from Neon PostgreSQL Database...
                   </td>
                 </tr>
-              ))}
+              ) : filteredQueries.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="text-center py-8 text-xs text-gray-400 font-bold">
+                    No queries found in database.
+                  </td>
+                </tr>
+              ) : (
+                filteredQueries.map((q) => (
+                  <tr key={q.id} className="hover:bg-gray-50 transition">
+                    <td className="px-4 py-3.5"><input type="checkbox" className="rounded" /></td>
+                    <td className="px-4 py-3.5 font-bold font-mono text-gray-900">{q.id}</td>
+                    <td className="px-4 py-3.5">
+                      <p className="font-bold text-gray-900">{q.customer}</p>
+                      <p className="text-[10px] text-gray-400">{q.email}</p>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <p className="font-bold text-gray-900 text-xs">{q.product}</p>
+                      {q.subject && <p className="text-[10px] text-indigo-600 font-medium">{q.subject}</p>}
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <p className="font-medium text-gray-800 text-xs max-w-[220px] truncate">{q.queryText}</p>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="bg-blue-50 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-100">
+                        {q.type}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        q.status === "Resolved" ? "bg-emerald-100 text-emerald-800" :
+                        q.status === "Pending" ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800"
+                      }`}>
+                        {q.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 font-bold text-[11px]">
+                      <span className={`text-xs ${q.priorityColor}`}>●</span> {q.priority}
+                    </td>
+                    <td className="px-4 py-3.5 text-gray-400 text-[11px]">{q.date}</td>
+                    <td className="px-4 py-3.5 text-right space-x-1">
+                      <button onClick={() => handleStatusChange(q, "Resolved")} title="Approve / Resolve" className="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer">✓</button>
+                      <button onClick={() => handleStatusChange(q, "Rejected")} title="Reject Query" className="p-1.5 text-red-600 hover:bg-red-50 border border-red-200 rounded-lg cursor-pointer">✕</button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
-
-        {/* Pagination Footer */}
-        <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center text-xs text-gray-500 gap-3">
-          <span>Showing 1 to 5 of 1,248 entries</span>
-          <div className="flex items-center gap-1">
-            <button className="px-3 py-1 bg-gray-100 rounded-lg text-gray-600 font-bold">&lt;</button>
-            <button className="px-3 py-1 bg-indigo-600 text-white rounded-lg font-bold">1</button>
-            <button className="px-3 py-1 bg-gray-100 rounded-lg text-gray-600 font-bold">2</button>
-            <button className="px-3 py-1 bg-gray-100 rounded-lg text-gray-600 font-bold">3</button>
-            <span>...</span>
-            <button className="px-3 py-1 bg-gray-100 rounded-lg text-gray-600 font-bold">125</button>
-            <button className="px-3 py-1 bg-gray-100 rounded-lg text-gray-600 font-bold">&gt;</button>
-          </div>
-        </div>
       </div>
 
-      {/* 📈 Bottom Section: Query Types Donut + Top Products + Recent Activity (Exact Screenshot Match) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2">
-        
-        {/* Donut Chart (4 Cols) */}
-        <div className="lg:col-span-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4">
-          <h3 className="font-black text-base text-gray-900 border-b border-gray-100 pb-3">Query Types</h3>
-          
-          <div className="flex items-center justify-between gap-4">
-            <svg className="w-32 h-32 transform -rotate-90 shrink-0" viewBox="0 0 100 100">
-              <circle cx="50" cy="50" r="38" stroke="#f1f5f9" strokeWidth="14" fill="none" />
-              {/* Product Info 67.6% */}
-              <circle cx="50" cy="50" r="38" stroke="#3b82f6" strokeWidth="14" fill="none" strokeDasharray="161 238" strokeDashoffset="0" />
-              {/* Order Related 15.9% */}
-              <circle cx="50" cy="50" r="38" stroke="#f97316" strokeWidth="14" fill="none" strokeDasharray="38 238" strokeDashoffset="-161" />
-              {/* Return & Refund 9.0% */}
-              <circle cx="50" cy="50" r="38" stroke="#10b981" strokeWidth="14" fill="none" strokeDasharray="21 238" strokeDashoffset="-199" />
-              {/* Other 7.7% */}
-              <circle cx="50" cy="50" r="38" stroke="#94a3b8" strokeWidth="14" fill="none" strokeDasharray="18 238" strokeDashoffset="-220" />
-            </svg>
-
-            <div className="space-y-2 text-[11px] font-bold text-gray-700 w-full">
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Product Info</span>
-                <span>{queries.filter(q => q.type === "Product Info").length}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-orange-500"></span> Order Related</span>
-                <span>{queries.filter(q => q.type === "Order Related").length}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Return &amp; Refund</span>
-                <span>{queries.filter(q => q.type === "Return & Refund").length}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-gray-400"></span> Other</span>
-                <span>{queries.filter(q => q.type === "Other").length}</span>
-              </div>
+      {/* ➕ Modal: Create New Query */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full space-y-4 shadow-2xl animate-in zoom-in-95 border border-gray-200">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <h3 className="font-black text-lg text-gray-900">Create New Product Query</h3>
+              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-gray-600 text-sm font-bold">✕</button>
             </div>
+
+            <form onSubmit={handleCreateNewQuery} className="space-y-3 text-xs">
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Customer Name</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Sachin Rawat"
+                  value={newCustName}
+                  onChange={(e) => setNewCustName(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Customer Email</label>
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. sachin@gmail.com"
+                  value={newCustEmail}
+                  onChange={(e) => setNewCustEmail(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Product Title</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Nike Air Force 1"
+                  value={newProdName}
+                  onChange={(e) => setNewProdName(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Query Type</label>
+                <select
+                  value={newQueryType}
+                  onChange={(e) => setNewQueryType(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none font-medium"
+                >
+                  <option>Product Info</option>
+                  <option>New Order</option>
+                  <option>Return &amp; Refund</option>
+                  <option>General Inquiry</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Subject</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Size Exchange Inquiry"
+                  value={newSubject}
+                  onChange={(e) => setNewSubject(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                />
+              </div>
+
+              <div>
+                <label className="font-bold text-gray-700 block mb-1">Message Details</label>
+                <textarea
+                  rows={3}
+                  required
+                  placeholder="Type customer message or query..."
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                />
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="w-1/2 bg-gray-100 text-gray-700 font-bold py-2.5 rounded-xl hover:bg-gray-200 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl transition shadow-sm"
+                >
+                  Save to DB
+                </button>
+              </div>
+            </form>
           </div>
         </div>
-
-        {/* Top Products by Queries (4 Cols) */}
-        <div className="lg:col-span-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4">
-          <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-            <h3 className="font-black text-base text-gray-900">Top Products (by Queries)</h3>
-          </div>
-
-          <div className="space-y-3">
-            {queries.length === 0 ? (
-              <p className="text-center text-xs text-gray-400 font-bold py-4">No product queries logged yet.</p>
-            ) : (
-              queries.slice(0, 3).map((q, i) => (
-                <div key={i} className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition">
-                  <div className="flex items-center gap-3">
-                    <img src={q.img} alt={q.product} className="w-9 h-9 rounded-lg object-cover border border-gray-100" />
-                    <h4 className="font-bold text-gray-900 text-xs">{q.product}</h4>
-                  </div>
-                  <span className="font-bold text-gray-500 text-xs">1 Query</span>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Recent Activity Timeline (4 Cols) */}
-        <div className="lg:col-span-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4">
-          <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-            <h3 className="font-black text-base text-gray-900">Recent Activity</h3>
-          </div>
-
-          <div className="space-y-3 text-xs">
-            {queries.length === 0 ? (
-              <p className="text-center text-xs text-gray-400 font-bold py-4">No query activity recorded.</p>
-            ) : (
-              queries.slice(0, 3).map((q, i) => (
-                <div key={i} className="flex items-start gap-2.5">
-                  <span className={`w-5 h-5 rounded-full ${q.status === "Resolved" ? "bg-emerald-100 text-emerald-600" : "bg-amber-100 text-amber-600"} flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5`}>
-                    {q.status === "Resolved" ? "✓" : "⏳"}
-                  </span>
-                  <div>
-                    <p className="font-bold text-gray-900">Query {q.id} ({q.status})</p>
-                    <p className="text-[10px] text-gray-400">{q.date}</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-      </div>
+      )}
 
     </div>
   );

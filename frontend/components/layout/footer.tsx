@@ -91,12 +91,12 @@ export default function Footer() {
             ABOUT
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Contact Us</Link></li>
+            <li><Link href="/contact" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Contact Us</Link></li>
             <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">About Us</Link></li>
-            <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Careers</Link></li>
-            <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Stories</Link></li>
-            <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Press Releases</Link></li>
-            <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Corporate Info</Link></li>
+            <li><Link href="/about#careers" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Careers</Link></li>
+            <li><Link href="/about#stories" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Stories</Link></li>
+            <li><Link href="/about#press" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Press Releases</Link></li>
+            <li><Link href="/about#corporate" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Corporate Info</Link></li>
           </ul>
         </div>
 
@@ -107,9 +107,9 @@ export default function Footer() {
             GROUP BRANDS
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><Link href="/search?category=apparel" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Apparel</Link></li>
-            <li><Link href="/search?category=tech" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Audio</Link></li>
-            <li><Link href="/search?category=tech" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Tech</Link></li>
+            <li><Link href="/search?collection=fashion" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Apparel</Link></li>
+            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Audio</Link></li>
+            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Tech</Link></li>
             <li><Link href="/track-order" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Express Courier</Link></li>
           </ul>
         </div>
@@ -121,9 +121,9 @@ export default function Footer() {
             HELP
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><Link href="/help" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Payments</Link></li>
-            <li><Link href="/help" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Shipping</Link></li>
-            <li><Link href="/help" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Cancellation &amp; Returns</Link></li>
+            <li><Link href="/help?tab=payments" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Payments</Link></li>
+            <li><Link href="/help?tab=shipping" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Shipping</Link></li>
+            <li><Link href="/help?tab=returns" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Cancellation &amp; Returns</Link></li>
             <li><Link href="/help" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">FAQ &amp; Help Center</Link></li>
           </ul>
         </div>
@@ -136,10 +136,10 @@ export default function Footer() {
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
             <li><Link href="/terms" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Terms Of Use</Link></li>
-            <li><Link href="/terms" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Security &amp; Privacy</Link></li>
-            <li><Link href="/sitemap.xml" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Sitemap</Link></li>
-            <li><Link href="/terms" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Grievance Redressal</Link></li>
-            <li><Link href="/terms" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">EPR Compliance</Link></li>
+            <li><Link href="/terms?tab=privacy" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Security &amp; Privacy</Link></li>
+            <li><Link href="/store-sitemap" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Sitemap</Link></li>
+            <li><Link href="/terms?tab=grievance" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Grievance Redressal</Link></li>
+            <li><Link href="/terms?tab=epr" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">EPR Compliance</Link></li>
           </ul>
         </div>
 
@@ -187,7 +187,7 @@ export default function Footer() {
             <Link href="/services/advertise" className="flex items-center gap-2 hover:text-emerald-700 transition font-extrabold text-gray-800">
               <span>⭐</span> Advertise
             </Link>
-            <Link href="/account?tab=gift-cards" className="flex items-center gap-2 hover:text-emerald-700 transition font-extrabold text-gray-800">
+            <Link href="/gift-cards" className="flex items-center gap-2 hover:text-emerald-700 transition font-extrabold text-gray-800">
               <span>🎁</span> Gift Cards
             </Link>
             <Link href="/help" className="flex items-center gap-2 hover:text-emerald-700 transition font-extrabold text-gray-800">

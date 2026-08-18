@@ -5,8 +5,8 @@ from sqlalchemy.orm import relationship
 from app.core.database import Base
 
 class UserRole(str, enum.Enum):
-    CUSTOMER = "customer"
     ADMIN = "admin"
+    CUSTOMER = "customer"
 
 class OrderStatus(str, enum.Enum):
     PENDING_PAYMENT = "PENDING_PAYMENT"
@@ -18,6 +18,11 @@ class OrderStatus(str, enum.Enum):
     RETURN_REQUESTED = "RETURN_REQUESTED"
     RETURNED = "RETURNED"
 
+class QueryStatus(str, enum.Enum):
+    PENDING = "PENDING"
+    RESOLVED = "RESOLVED"
+    REJECTED = "REJECTED"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -26,19 +31,13 @@ class User(Base):
     full_name = Column(String(150), nullable=False)
     email = Column(String(150), unique=True, index=True, nullable=False)
     phone = Column(String(20), nullable=True)
-    hashed_password = Column(String(255), nullable=True)
+    hashed_password = Column(String(255), nullable=False)
     role = Column(SQLEnum(UserRole), default=UserRole.CUSTOMER)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-
-    orders = relationship("Order", back_populates="user", cascade="all, delete-orphan")
-    wishlist_items = relationship("WishlistItem", cascade="all, delete-orphan")
-    cart_items = relationship("CartItem", cascade="all, delete-orphan")
-    addresses = relationship("Address", cascade="all, delete-orphan")
-    reviews = relationship("Review", cascade="all, delete-orphan")
-    wallet = relationship("Wallet", back_populates="user", cascade="all, delete-orphan", uselist=False)
-    return_requests = relationship("ReturnRequest", back_populates="user", cascade="all, delete-orphan")
+    orders = relationship("Order", back_populates="user")
+    reviews = relationship("Review", back_populates="user")
 
 class Category(Base):
     __tablename__ = "categories"
@@ -47,49 +46,52 @@ class Category(Base):
     name = Column(String(100), nullable=False)
     slug = Column(String(100), unique=True, index=True, nullable=False)
     description = Column(Text, nullable=True)
-    image_url = Column(String(500), nullable=True)
-    icon = Column(String(50), default="📁")
-    status = Column(String(50), default="Active")
+    image = Column(String(255), nullable=True)
+    is_featured = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
-    products = relationship("Product", back_populates="category")
+    products = relationship("Product", back_populates="category_rel")
 
 class Product(Base):
     __tablename__ = "products"
 
     __table_args__ = (
         Index("idx_products_category_created", "category_id", "created_at"),
-        Index("idx_products_price_created", "price", "created_at"),
+        Index("idx_products_price_featured", "price", "is_featured"),
     )
 
     id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)
+    title = Column(String(255), nullable=False, index=True)
     handle = Column(String(255), unique=True, index=True, nullable=False)
     description = Column(Text, nullable=True)
     price = Column(Float, nullable=False)
     compare_at_price = Column(Float, nullable=True)
+    cost_price = Column(Float, nullable=True)
+    sku = Column(String(100), unique=True, nullable=True)
+    barcode = Column(String(100), nullable=True)
+    stock_quantity = Column(Integer, default=0)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
-    featured = Column(Boolean, default=False)
-    images = Column(JSON, default=list) # List of image URLs
-    tags = Column(JSON, default=list)
-    stock_quantity = Column(Integer, default=100)  # Direct product stock
+    images = Column(JSON, nullable=True) # Array of Image URLs
+    tags = Column(JSON, nullable=True) # Array of Tag Strings
+    is_featured = Column(Boolean, default=False)
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    category = relationship("Category", back_populates="products")
+    category_rel = relationship("Category", back_populates="products")
     variants = relationship("ProductVariant", back_populates="product", cascade="all, delete-orphan")
+    order_items = relationship("OrderItem", back_populates="product")
+    reviews = relationship("Review", back_populates="product_rel")
 
 class ProductVariant(Base):
     __tablename__ = "product_variants"
 
-    __table_args__ = (
-        Index("idx_variants_product_stock", "product_id", "stock_quantity"),
-    )
-
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    title = Column(String(100), nullable=False) # e.g. "Size M / Black"
-    sku = Column(String(100), unique=True, index=True, nullable=False)
+    title = Column(String(100), nullable=False) # e.g. "Red / XL"
+    sku = Column(String(100), unique=True, nullable=True)
     price = Column(Float, nullable=False)
-    stock_quantity = Column(Integer, default=50)
+    stock_quantity = Column(Integer, default=0)
 
     product = relationship("Product", back_populates="variants")
 
@@ -131,23 +133,20 @@ class OrderItem(Base):
     unit_price = Column(Float, nullable=False)
 
     order = relationship("Order", back_populates="items")
+    product = relationship("Product", back_populates="order_items")
 
 class PaymentTransaction(Base):
     __tablename__ = "payment_transactions"
 
     id = Column(Integer, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    razorpay_order_id = Column(String(100), nullable=False)
-    razorpay_payment_id = Column(String(100), nullable=True)
-    razorpay_signature = Column(String(255), nullable=True)
+    razorpay_payment_id = Column(String(100), unique=True, nullable=True)
+    razorpay_order_id = Column(String(100), nullable=True)
     amount = Column(Float, nullable=False)
-    payment_method = Column(String(50), default="UPI")
-    gateway = Column(String(50), default="Razorpay")
-    status = Column(String(50), default="SUCCESS")
+    status = Column(String(50), nullable=False) # e.g. "captured", "failed"
     created_at = Column(DateTime, default=datetime.utcnow)
 
     order = relationship("Order", back_populates="payment")
-
 
 class Shipment(Base):
     __tablename__ = "shipments"
@@ -156,80 +155,14 @@ class Shipment(Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     shiprocket_order_id = Column(String(100), nullable=True)
     shiprocket_shipment_id = Column(String(100), nullable=True)
-    awb_code = Column(String(100), unique=True, index=True, nullable=False)
-    courier_name = Column(String(100), default="Delhivery Surface")
-    status = Column(String(100), default="IN TRANSIT")
-    destination = Column(String(255), default="Gwalior, Madhya Pradesh")
-    pin_code = Column(String(20), default="474001")
-    est_delivery_date = Column(String(100), default="May 27, 2026")
-    current_location = Column(String(255), default="Bhopal Sort Center")
-    tracking_url = Column(String(500), nullable=True)
+    awb_code = Column(String(100), nullable=True)
+    courier_name = Column(String(100), nullable=True)
+    status = Column(String(50), default="MANIFEST_GENERATED")
+    tracking_url = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     order = relationship("Order", back_populates="shipment")
 
-
-
-# ─────────────────────────────────────────────
-# 🔥 SALE EVENTS
-# ─────────────────────────────────────────────
-class SaleStatus(str, enum.Enum):
-    DRAFT = "DRAFT"
-    ACTIVE = "ACTIVE"
-    ENDED = "ENDED"
-
-class SaleEvent(Base):
-    __tablename__ = "sale_events"
-
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)          # e.g. "Great Freedom Sale"
-    slug = Column(String(100), unique=True, index=True, nullable=False)  # e.g. "freedom-sale"
-    subtitle = Column(String(500), nullable=True)
-    badge_text = Column(String(100), nullable=True)      # e.g. "Live Now"
-    hero_bg_color = Column(String(50), default="#f97316")  # orange
-    hero_image_url = Column(String(500), nullable=True)
-    status = Column(SQLEnum(SaleStatus), default=SaleStatus.DRAFT)
-    start_date = Column(DateTime, nullable=True)
-    end_date = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-    products = relationship("SaleProduct", back_populates="sale", cascade="all, delete-orphan")
-
-class SaleProduct(Base):
-    __tablename__ = "sale_products"
-
-    id = Column(Integer, primary_key=True, index=True)
-    sale_id = Column(Integer, ForeignKey("sale_events.id"), nullable=False)
-    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    sale_price = Column(Float, nullable=False)
-    original_price = Column(Float, nullable=False)
-    shipping_type = Column(String(50), default="Easy Ship")  # Easy Ship / FC
-    weight_range = Column(String(50), default="<500gm")
-
-    sale = relationship("SaleEvent", back_populates="products")
-    product = relationship("Product")
-
-
-# ─────────────────────────────────────────────
-# 🏠 HOMEPAGE SECTIONS
-# ─────────────────────────────────────────────
-class HomepageSection(Base):
-    __tablename__ = "homepage_sections"
-
-    id = Column(Integer, primary_key=True, index=True)
-    title = Column(String(255), nullable=False)
-    section_type = Column(String(50), default="DEAL_BLOCK")  # DEAL_BLOCK | WIDE_BANNER | SCROLL_CAROUSEL
-    href = Column(String(255), default="/search")
-    items = Column(JSON, default=list)   # List of {img, label, price, mrp}
-    position = Column(Integer, default=0)
-    is_active = Column(Boolean, default=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-
-# ─────────────────────────────────────────────
-# 🌟 MODULAR EXTENDED E-COMMERCE MODELS
-# ─────────────────────────────────────────────
 class WishlistItem(Base):
     __tablename__ = "wishlist_items"
 
@@ -287,6 +220,9 @@ class Review(Base):
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
+    user = relationship("User", back_populates="reviews")
+    product_rel = relationship("Product", back_populates="reviews")
+
 class GiftCard(Base):
     __tablename__ = "gift_cards"
 
@@ -302,8 +238,19 @@ class InventoryLog(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    quantity_change = Column(Integer, nullable=False)
-    reason = Column(String(150), default="STOCK_UPDATE")
+    change_amount = Column(Integer, nullable=False)
+    reason = Column(String(100), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+class ReturnRequest(Base):
+    __tablename__ = "return_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    reason = Column(String(255), nullable=False)
+    status = Column(String(50), default="PENDING")
+    refund_amount = Column(Float, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Wallet(Base):
@@ -313,9 +260,7 @@ class Wallet(Base):
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     balance = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    user = relationship("User")
     transactions = relationship("WalletTransaction", back_populates="wallet", cascade="all, delete-orphan")
 
 class WalletTransaction(Base):
@@ -330,43 +275,24 @@ class WalletTransaction(Base):
 
     wallet = relationship("Wallet", back_populates="transactions")
 
-class ReturnStatus(str, enum.Enum):
-    PENDING = "PENDING"
-    APPROVED = "APPROVED"
-    REJECTED = "REJECTED"
-    COMPLETED = "COMPLETED"
-
-class ReturnRequest(Base):
-    __tablename__ = "return_requests"
+class ProductQuery(Base):
+    __tablename__ = "product_queries"
 
     id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    reason = Column(Text, nullable=False)
-    status = Column(SQLEnum(ReturnStatus), default=ReturnStatus.PENDING)
-    refund_amount = Column(Float, nullable=False)
-    admin_notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    order = relationship("Order")
-    user = relationship("User")
-
-
-# ─────────────────────────────────────────────
-# ✉️ EMAIL NOTIFICATION EVENT LOGS
-# ─────────────────────────────────────────────
-class EmailNotificationStatus(str, enum.Enum):
-    PENDING = "PENDING"
-    SENT = "SENT"
-    FAILED = "FAILED"
-
-class EmailLog(Base):
-    __tablename__ = "email_logs"
-
-    id = Column(Integer, primary_key=True, index=True)
-    to_email = Column(String(255), nullable=False, index=True)
+    query_number = Column(String(50), unique=True, index=True, nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    customer_name = Column(String(150), nullable=False)
+    customer_email = Column(String(150), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=True)
+    product_name = Column(String(255), nullable=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)
+    query_type = Column(String(50), default="General Inquiry")
     subject = Column(String(255), nullable=False)
-    status = Column(SQLEnum(EmailNotificationStatus), default=EmailNotificationStatus.PENDING)
-    error_message = Column(Text, nullable=True)
+    message = Column(Text, nullable=False)
+    priority = Column(String(20), default="High")
+    status = Column(SQLEnum(QueryStatus), default=QueryStatus.PENDING)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+    product = relationship("Product")
+    user = relationship("User")
+    order = relationship("Order")

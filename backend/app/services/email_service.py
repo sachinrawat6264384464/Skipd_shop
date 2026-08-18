@@ -18,7 +18,7 @@ def send_email_notification(to_email: str, subject: str, html_content: str) -> b
         try:
             msg = MIMEMultipart("alternative")
             msg["Subject"] = Header(subject, "utf-8")
-            msg["From"] = f"SKIPD Security <{smtp_user}>"
+            msg["From"] = f"SKIPD Commerce <{smtp_user}>"
             msg["To"] = to_email
             msg.attach(MIMEText(html_content, "html", "utf-8"))
 
