@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 export interface WishlistItem {
-  id: number;
+  id: number | string;
   handle: string;
   title: string;
   price: number;
@@ -16,8 +16,8 @@ export interface WishlistItem {
 interface WishlistContextType {
   wishlist: WishlistItem[];
   addToWishlist: (item: WishlistItem) => void;
-  removeFromWishlist: (id: number) => void;
-  isInWishlist: (id: number) => boolean;
+  removeFromWishlist: (id: number | string) => void;
+  isInWishlist: (id: number | string) => boolean;
   toggleWishlist: (item: WishlistItem) => void;
 }
 
@@ -40,13 +40,26 @@ function getToken(): string | null {
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
 
-  /** Load wishlist from PostgreSQL DB when logged in */
+  /** Load wishlist from PostgreSQL DB when logged in, or fallback to LocalStorage for guest users */
   const loadWishlistFromDB = useCallback(async () => {
     const token = getToken();
     if (!token) {
+      if (typeof window !== "undefined") {
+        try {
+          const savedGuest = localStorage.getItem("skipd_guest_wishlist");
+          if (savedGuest) {
+            const parsed = JSON.parse(savedGuest);
+            if (Array.isArray(parsed)) {
+              setWishlist(parsed);
+              return;
+            }
+          }
+        } catch (e) {}
+      }
       setWishlist([]);
       return;
     }
+
     try {
       const res = await fetch(`${getApiBase()}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -69,45 +82,61 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     } catch (e) {
       console.warn("[Wishlist] Failed to load from DB:", e);
     }
-    setWishlist([]);
   }, []);
 
   useEffect(() => {
     loadWishlistFromDB();
-    window.addEventListener("skipd_auth_changed", loadWishlistFromDB);
+    const handleAuthChange = () => loadWishlistFromDB();
+    const handleWishlistUpdated = () => loadWishlistFromDB();
+
+    window.addEventListener("skipd_auth_changed", handleAuthChange);
+    window.addEventListener("skipd_wishlist_updated", handleWishlistUpdated);
+
     return () => {
-      window.removeEventListener("skipd_auth_changed", loadWishlistFromDB);
+      window.removeEventListener("skipd_auth_changed", handleAuthChange);
+      window.removeEventListener("skipd_wishlist_updated", handleWishlistUpdated);
     };
   }, [loadWishlistFromDB]);
 
-  const isInWishlist = (id: number) => wishlist.some(w => w.id === id);
+  /** Loose string/number type-safe check */
+  const isInWishlist = (id: number | string) => {
+    if (!id) return false;
+    return wishlist.some(w => String(w.id) === String(id));
+  };
 
   /**
-   * OPTIMISTIC toggle:
-   * 1. Update local state immediately so UI flips instantly
-   * 2. Fire DB call in background
-   * 3. If DB call fails → revert the optimistic state
+   * OPTIMISTIC toggle with String ID comparison & Guest local storage support
    */
   const toggleWishlist = (item: WishlistItem) => {
     const token = getToken();
-    const alreadyIn = wishlist.some(w => w.id === item.id);
+    const itemIdStr = String(item.id);
+    const alreadyIn = wishlist.some(w => String(w.id) === itemIdStr);
 
-    // ✅ Optimistic update — instant UI feedback
+    let nextWishlist: WishlistItem[] = [];
     if (alreadyIn) {
-      setWishlist(prev => prev.filter(w => w.id !== item.id));
+      nextWishlist = wishlist.filter(w => String(w.id) !== itemIdStr);
     } else {
-      setWishlist(prev => [...prev, item]);
+      nextWishlist = [...wishlist, item];
     }
 
-    // Fire event so navbar count updates immediately
+    // Instantly update state
+    setWishlist(nextWishlist);
+
+    // Save to guest local storage if not logged in
+    if (!token && typeof window !== "undefined") {
+      try {
+        localStorage.setItem("skipd_guest_wishlist", JSON.stringify(nextWishlist));
+      } catch (e) {}
+    }
+
+    // Fire event for UI & navbar update
     if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("skipd_wishlist_updated"));
+      window.dispatchEvent(new Event("skipd_wishlist_changed"));
     }
 
-    // If not logged in → just show optimistic state (will be cleared on next load)
     if (!token) return;
 
-    // DB sync in background
+    // Fire PostgreSQL DB sync call in background
     fetch(`${getApiBase()}/wishlist/toggle`, {
       method: "POST",
       headers: {
@@ -120,23 +149,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         if (!res.ok) throw new Error("DB toggle failed");
         return res.json();
       })
-      .then(data => {
-        // DB confirmed — if response doesn't match optimistic state, sync
-        if (data.status === "added" && alreadyIn) {
-          // Was in wishlist locally but DB says added → revert
-          setWishlist(prev => prev.filter(w => w.id !== item.id));
-        } else if (data.status === "removed" && !alreadyIn) {
-          // Was not in wishlist locally but DB says removed → add back
-          setWishlist(prev => (prev.some(w => w.id === item.id) ? prev : [...prev, item]));
-        }
-      })
       .catch(err => {
         console.warn("[Wishlist] DB sync failed, reverting:", err);
         // Revert optimistic update on failure
         if (alreadyIn) {
-          setWishlist(prev => (prev.some(w => w.id === item.id) ? prev : [...prev, item]));
+          setWishlist(prev => (prev.some(w => String(w.id) === itemIdStr) ? prev : [...prev, item]));
         } else {
-          setWishlist(prev => prev.filter(w => w.id !== item.id));
+          setWishlist(prev => prev.filter(w => String(w.id) !== itemIdStr));
         }
       });
   };
@@ -145,8 +164,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     if (!isInWishlist(item.id)) toggleWishlist(item);
   };
 
-  const removeFromWishlist = (id: number) => {
-    const item = wishlist.find(w => w.id === id);
+  const removeFromWishlist = (id: number | string) => {
+    const item = wishlist.find(w => String(w.id) === String(id));
     if (item) toggleWishlist(item);
   };
 
