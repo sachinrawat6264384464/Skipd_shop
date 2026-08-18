@@ -289,17 +289,25 @@ export default function AdminOrdersPage() {
 
     dateFilteredOrders.forEach((o) => {
       let isMatch = false;
-      const rawList = Array.isArray(o.raw_items) && o.raw_items.length > 0 ? o.raw_items : [{ title: o.items }];
+      const orderCatName = (o.category || "").toLowerCase().trim();
+      const catNameClean = (cat.name || "").toLowerCase().trim();
+      const catSlugClean = (cat.slug || "").toLowerCase().trim();
 
-      rawList.forEach((it: any) => {
-        const resolved = resolveItemCategory(it, dbProducts);
-        if (matchesCategory(resolved.title, catSlug, catName, resolved.category)) {
-          isMatch = true;
-        }
-      });
-
-      if (!isMatch && (o.items?.toLowerCase().includes("purchased item") || o.items?.toLowerCase().includes("store item")) && (catSlug.includes("tech") || catSlug.includes("electronics") || idx === 0)) {
+      if (orderCatName && (orderCatName === catNameClean || orderCatName === catSlugClean)) {
         isMatch = true;
+      } else {
+        const rawList = Array.isArray(o.raw_items) && o.raw_items.length > 0 ? o.raw_items : [{ title: o.items }];
+        rawList.forEach((it: any) => {
+          const resolved = resolveItemCategory(it, dbProducts);
+          if (resolved.category) {
+            const resCat = resolved.category.toLowerCase().trim();
+            if (resCat === catNameClean || resCat === catSlugClean) {
+              isMatch = true;
+            }
+          } else if (matchesCategory(resolved.title, catSlugClean, catNameClean)) {
+            isMatch = true;
+          }
+        });
       }
 
       if (isMatch) {
