@@ -199,12 +199,37 @@ async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession
     ts = int(datetime.datetime.utcnow().timestamp())
 
     try:
-        # Pre-fetch existing categories for fast mapping
+        # 1. Pre-fetch existing categories for fast mapping
         cats_res = await db.execute(select(Category))
         all_cats = cats_res.scalars().all()
         cat_map = {c.slug.lower(): c.id for c in all_cats}
         cat_name_map = {c.name.lower(): c.id for c in all_cats}
 
+        # 2. Collect & pre-create any missing categories FIRST in batch
+        missing_cat_slugs = set()
+        for item in products_list:
+            cat_slug = (item.get("category_slug") or item.get("category") or "general").lower().replace(" ", "-")
+            if cat_slug and cat_slug not in cat_map and cat_slug.replace("-", " ") not in cat_name_map:
+                missing_cat_slugs.add(cat_slug)
+
+        if missing_cat_slugs:
+            for m_slug in missing_cat_slugs:
+                new_cat = Category(
+                    name=m_slug.replace("-", " ").title(),
+                    slug=m_slug,
+                    icon="📁",
+                    status="Active"
+                )
+                db.add(new_cat)
+            await db.commit()
+
+            # Refresh category maps
+            cats_res_updated = await db.execute(select(Category))
+            all_cats_updated = cats_res_updated.scalars().all()
+            cat_map = {c.slug.lower(): c.id for c in all_cats_updated}
+            cat_name_map = {c.name.lower(): c.id for c in all_cats_updated}
+
+        # 3. Create all product objects
         for idx, item in enumerate(products_list):
             title = item.get("title", f"Imported Product {idx+1}")
             raw_handle = item.get("handle") or title.lower().replace(" ", "-").replace("/", "-")
@@ -212,25 +237,10 @@ async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession
             if not clean_handle:
                 clean_handle = f"product-{idx+1}"
             
-            # Ensure unique handle
             clean_handle = f"{clean_handle}-{ts}-{idx}"
 
             cat_slug = (item.get("category_slug") or item.get("category") or "general").lower().replace(" ", "-")
             category_id = cat_map.get(cat_slug) or cat_name_map.get(cat_slug.replace("-", " "))
-
-            # Auto-create category if missing
-            if not category_id and cat_slug:
-                new_cat = Category(
-                    name=cat_slug.replace("-", " ").title(),
-                    slug=cat_slug,
-                    icon="📁",
-                    status="Active"
-                )
-                db.add(new_cat)
-                await db.commit()
-                await db.refresh(new_cat)
-                category_id = new_cat.id
-                cat_map[cat_slug] = category_id
 
             images_raw = item.get("images")
             if isinstance(images_raw, str):
@@ -274,6 +284,8 @@ async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession
             "message": f"Successfully created {len(created_products)} products in Neon PostgreSQL DB",
             "count": len(created_products)
         }
+    except HTTPException:
+        raise
     except Exception as err:
         await db.rollback()
         print(f"[BULK CREATE ERROR] {err}")
