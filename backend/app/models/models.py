@@ -23,6 +23,23 @@ class QueryStatus(str, enum.Enum):
     RESOLVED = "RESOLVED"
     REJECTED = "REJECTED"
 
+class SaleStatus(str, enum.Enum):
+    DRAFT = "DRAFT"
+    ACTIVE = "ACTIVE"
+    SCHEDULED = "SCHEDULED"
+    COMPLETED = "COMPLETED"
+
+class ReturnStatus(str, enum.Enum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    COMPLETED = "COMPLETED"
+
+class EmailNotificationStatus(str, enum.Enum):
+    PENDING = "PENDING"
+    SENT = "SENT"
+    FAILED = "FAILED"
+
 class User(Base):
     __tablename__ = "users"
 
@@ -47,6 +64,8 @@ class Category(Base):
     slug = Column(String(100), unique=True, index=True, nullable=False)
     description = Column(Text, nullable=True)
     image = Column(String(255), nullable=True)
+    icon = Column(String(50), nullable=True)
+    status = Column(String(50), default="Active")
     is_featured = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -71,8 +90,8 @@ class Product(Base):
     barcode = Column(String(100), nullable=True)
     stock_quantity = Column(Integer, default=0)
     category_id = Column(Integer, ForeignKey("categories.id"), nullable=True)
-    images = Column(JSON, nullable=True) # Array of Image URLs
-    tags = Column(JSON, nullable=True) # Array of Tag Strings
+    images = Column(JSON, nullable=True)
+    tags = Column(JSON, nullable=True)
     is_featured = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
@@ -88,7 +107,7 @@ class ProductVariant(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    title = Column(String(100), nullable=False) # e.g. "Red / XL"
+    title = Column(String(100), nullable=False)
     sku = Column(String(100), unique=True, nullable=True)
     price = Column(Float, nullable=False)
     stock_quantity = Column(Integer, default=0)
@@ -142,8 +161,11 @@ class PaymentTransaction(Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     razorpay_payment_id = Column(String(100), unique=True, nullable=True)
     razorpay_order_id = Column(String(100), nullable=True)
+    razorpay_signature = Column(String(255), nullable=True)
+    payment_method = Column(String(50), default="Razorpay UPI")
+    gateway = Column(String(50), default="Razorpay")
     amount = Column(Float, nullable=False)
-    status = Column(String(50), nullable=False) # e.g. "captured", "failed"
+    status = Column(String(50), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     order = relationship("Order", back_populates="payment")
@@ -162,6 +184,49 @@ class Shipment(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     order = relationship("Order", back_populates="shipment")
+
+class SaleEvent(Base):
+    __tablename__ = "sale_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    slug = Column(String(100), unique=True, index=True, nullable=False)
+    subtitle = Column(String(500), nullable=True)
+    badge_text = Column(String(100), nullable=True)
+    hero_bg_color = Column(String(50), default="#f97316")
+    hero_image_url = Column(String(500), nullable=True)
+    status = Column(SQLEnum(SaleStatus), default=SaleStatus.DRAFT)
+    start_date = Column(DateTime, nullable=True)
+    end_date = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    products = relationship("SaleProduct", back_populates="sale", cascade="all, delete-orphan")
+
+class SaleProduct(Base):
+    __tablename__ = "sale_products"
+
+    id = Column(Integer, primary_key=True, index=True)
+    sale_id = Column(Integer, ForeignKey("sale_events.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    sale_price = Column(Float, nullable=False)
+    original_price = Column(Float, nullable=False)
+    shipping_type = Column(String(50), default="Easy Ship")
+    weight_range = Column(String(50), default="<500gm")
+
+    sale = relationship("SaleEvent", back_populates="products")
+    product = relationship("Product")
+
+class HomepageSection(Base):
+    __tablename__ = "homepage_sections"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String(255), nullable=False)
+    section_type = Column(String(50), default="DEAL_BLOCK")
+    href = Column(String(255), default="/search")
+    items = Column(JSON, default=list)
+    position = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class WishlistItem(Base):
     __tablename__ = "wishlist_items"
@@ -216,7 +281,7 @@ class Review(Base):
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     user_name = Column(String(150), default="Customer")
-    rating = Column(Integer, nullable=False) # 1 to 5
+    rating = Column(Integer, nullable=False)
     comment = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
@@ -238,19 +303,9 @@ class InventoryLog(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
-    change_amount = Column(Integer, nullable=False)
-    reason = Column(String(100), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-class ReturnRequest(Base):
-    __tablename__ = "return_requests"
-
-    id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    reason = Column(String(255), nullable=False)
-    status = Column(String(50), default="PENDING")
-    refund_amount = Column(Float, nullable=False)
+    change_amount = Column(Integer, default=0)
+    quantity_change = Column(Integer, default=0)
+    reason = Column(String(150), default="STOCK_UPDATE")
     created_at = Column(DateTime, default=datetime.utcnow)
 
 class Wallet(Base):
@@ -260,7 +315,9 @@ class Wallet(Base):
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     balance = Column(Float, default=0.0)
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+    user = relationship("User")
     transactions = relationship("WalletTransaction", back_populates="wallet", cascade="all, delete-orphan")
 
 class WalletTransaction(Base):
@@ -274,6 +331,32 @@ class WalletTransaction(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     wallet = relationship("Wallet", back_populates="transactions")
+
+class ReturnRequest(Base):
+    __tablename__ = "return_requests"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    reason = Column(Text, nullable=False)
+    status = Column(SQLEnum(ReturnStatus), default=ReturnStatus.PENDING)
+    refund_amount = Column(Float, nullable=False)
+    admin_notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    order = relationship("Order")
+    user = relationship("User")
+
+class EmailLog(Base):
+    __tablename__ = "email_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    to_email = Column(String(255), nullable=False, index=True)
+    subject = Column(String(255), nullable=False)
+    status = Column(SQLEnum(EmailNotificationStatus), default=EmailNotificationStatus.PENDING)
+    error_message = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class ProductQuery(Base):
     __tablename__ = "product_queries"
