@@ -476,57 +476,8 @@ export async function fetchProducts(query?: { category?: string; search?: string
     return list;
   }
 
-  // Safe fallback catalog only if backend server is unreachable
-  let updatedProductsMap: Record<string, any> = {};
-  let deletedIdsSet = new Set<string>();
-
-  if (typeof window !== "undefined") {
-    try {
-      const storedUpdates = localStorage.getItem("skipd_updated_products");
-      if (storedUpdates) {
-        updatedProductsMap = JSON.parse(storedUpdates);
-      }
-
-      const storedDeletions = localStorage.getItem("skipd_deleted_product_ids");
-      if (storedDeletions) {
-        const parsed = JSON.parse(storedDeletions);
-        if (Array.isArray(parsed)) {
-          parsed.forEach((id: any) => deletedIdsSet.add(String(id)));
-        }
-      }
-    } catch {}
-  }
-
-  let combined = [...MOCK_PRODUCTS];
-
-  // Remove duplicates & deleted items, apply updates
-  const seenIds = new Set();
-  combined = combined
-    .filter(p => {
-      const pIdStr = String(p.id);
-      if (deletedIdsSet.has(pIdStr) || deletedIdsSet.has(p.handle)) return false;
-      const key = p.id || p.handle;
-      if (seenIds.has(key)) return false;
-      seenIds.add(key);
-      return true;
-    })
-    .map(p => {
-      const pIdStr = String(p.id);
-      if (updatedProductsMap[pIdStr]) {
-        return { ...p, ...updatedProductsMap[pIdStr] };
-      }
-      return p;
-    });
-
-  if (query?.featured) combined = combined.filter(p => p.featured);
-  if (query?.category && query.category !== "all") {
-    combined = combined.filter(p => p.category?.slug === query.category || (p as any).category_slug === query.category || p.tags?.includes(query.category!));
-  }
-  if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
-    combined = combined.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()) || p.category?.name?.toLowerCase().includes(query.search!.toLowerCase()));
-  }
-  
-  return combined;
+  // Pure 100% empty list when backend is offline or database has 0 products
+  return [];
 }
 
 export async function fetchProductByHandle(handle: string): Promise<Product | null> {
@@ -541,10 +492,10 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
       if (data && data.id) return data;
     }
   } catch (err) {
-    console.warn("[API SDK Warning] FastAPI backend offline, using fallback product detail.", err);
+    console.warn("[API SDK Warning] FastAPI backend offline", err);
   }
 
-  // Search full product catalog (PostgreSQL DB + Custom Admin Products + Mock Catalog)
+  // Search full product catalog (PostgreSQL DB)
   const allProds = await fetchProducts();
   
   // 1. Direct handle, ID or clean handle match
@@ -565,8 +516,7 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
   });
   if (found) return found;
 
-  const mockFound = MOCK_PRODUCTS.find(p => p.handle === handle || String(p.id) === handle);
-  return mockFound ?? null;
+  return null;
 }
 
 export async function fetchCategories(): Promise<Category[]> {
@@ -574,80 +524,11 @@ export async function fetchCategories(): Promise<Category[]> {
     const dbRes = await fetch(`${API_BASE_URL}/categories`, { cache: "no-store" });
     if (dbRes.ok) {
       const dbCats = await dbRes.json();
-      if (Array.isArray(dbCats) && dbCats.length > 0) return dbCats;
+      if (Array.isArray(dbCats)) return dbCats;
     }
   } catch (e) {}
 
-  let categories: Category[] = [
-    { id: 1, name: "Mobiles", slug: "mobiles" },
-    { id: 2, name: "Laptops", slug: "laptops" },
-    { id: 3, name: "Electronics", slug: "electronics" },
-    { id: 4, name: "Fashion", slug: "fashion" },
-    { id: 5, name: "Footwear", slug: "footwear" },
-    { id: 6, name: "Watches", slug: "watches" },
-    { id: 7, name: "Beauty", slug: "beauty" },
-    { id: 8, name: "Home & Living", slug: "home" },
-    { id: 9, name: "Gaming", slug: "gaming" }
-  ];
-
-  try {
-    const res = await fetch(`${API_BASE_URL}/products/categories`, {
-      cache: "no-store"
-    });
-    if (res.ok) {
-      const apiCats = await res.json();
-      if (Array.isArray(apiCats) && apiCats.length > 0) {
-        apiCats.forEach(c => {
-          if (!categories.some(exist => exist.slug === c.slug || exist.name.toLowerCase() === c.name.toLowerCase())) {
-            categories.push(c);
-          }
-        });
-      }
-    }
-  } catch (err) {
-    console.warn("[API SDK Warning] FastAPI backend offline, using fallback categories.");
-  }
-
-  // Dynamic Category extraction from all products (including custom products & categories added by Admin!)
-  if (typeof window !== "undefined") {
-    try {
-      // 1. Extract from custom categories in localStorage
-      const customCatsItem = localStorage.getItem("skipd_custom_categories");
-      if (customCatsItem) {
-        const parsed = JSON.parse(customCatsItem);
-        if (Array.isArray(parsed)) {
-          parsed.forEach(c => {
-            const name = typeof c === "string" ? c : (c.name || c.title);
-            if (name && typeof name === "string" && name.trim().length > 0) {
-              const slug = (typeof c === "object" && c.slug ? c.slug : name).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-              if (!categories.some(exist => exist.slug === slug || exist.name.toLowerCase() === name.toLowerCase())) {
-                categories.push({ id: Date.now() + Math.floor(Math.random() * 1000), name, slug });
-              }
-            }
-          });
-        }
-      }
-
-      // 2. Extract categories from custom products in localStorage
-      const customProdsItem = localStorage.getItem("skipd_custom_products");
-      if (customProdsItem) {
-        const parsedP = JSON.parse(customProdsItem);
-        if (Array.isArray(parsedP)) {
-          parsedP.forEach(p => {
-            const catName = p.category_name || p.category?.name || p.category_slug || (typeof p.category === "string" ? p.category : null);
-            if (catName && typeof catName === "string" && catName.trim().length > 0) {
-              const slug = catName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-              if (!categories.some(exist => exist.slug === slug || exist.name.toLowerCase() === catName.toLowerCase())) {
-                categories.push({ id: Date.now() + Math.floor(Math.random() * 1000), name: catName, slug });
-              }
-            }
-          });
-        }
-      }
-    } catch (e) {}
-  }
-
-  return categories;
+  return [];
 }
 
 export async function createCheckoutSession(checkoutData: any) {
