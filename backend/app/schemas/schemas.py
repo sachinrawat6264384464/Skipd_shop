@@ -80,11 +80,45 @@ class ProductSchema(BaseModel):
     price: float
     compare_at_price: Optional[float] = None
     featured: bool = False
-    images: List[str] = []
-    tags: List[str] = []
-    stock_quantity: int = 100
+    images: Optional[Any] = []
+    tags: Optional[Any] = []
+    stock_quantity: Optional[int] = 100
     category: Optional[CategorySchema] = None
-    variants: List[VariantSchema] = []
+    variants: Optional[List[VariantSchema]] = []
+
+    @field_validator("images", mode="before")
+    @classmethod
+    def parse_images(cls, v):
+        if v is None:
+            return []
+        if isinstance(v, str):
+            if v.startswith("["):
+                try:
+                    import json
+                    return json.loads(v)
+                except Exception:
+                    pass
+            return [v]
+        if isinstance(v, list):
+            return [str(item) for item in v if item]
+        return []
+
+    @field_validator("tags", mode="before")
+    @classmethod
+    def parse_tags(cls, v):
+        if v is None:
+            return []
+        if isinstance(v, str):
+            if v.startswith("["):
+                try:
+                    import json
+                    return json.loads(v)
+                except Exception:
+                    pass
+            return [v]
+        if isinstance(v, list):
+            return [str(item) for item in v if item]
+        return []
 
     class Config:
         from_attributes = True

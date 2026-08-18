@@ -17,40 +17,52 @@ async def list_products(
     search: Optional[str] = Query(None),
     featured: Optional[bool] = Query(None),
     skip: int = Query(0, ge=0),
-    limit: int = Query(50, ge=1, le=100),
+    limit: int = Query(200, ge=1, le=500),
     db: AsyncSession = Depends(get_db)
 ):
-    # 1. REDIS CACHE FIRST CHECK
-    cache_key = f"products:list:{category}:{search}:{featured}:{skip}:{limit}"
-    cached_data = await get_cached_json(cache_key)
-    if cached_data is not None:
-        print(f"[REDIS CACHE HIT] {cache_key}")
-        return cached_data
-
-    # 2. PostgreSQL DB Query on Cache Miss
-    query = select(Product).options(selectinload(Product.category), selectinload(Product.variants))
-    
-    if featured is not None:
-        query = query.where(Product.featured == featured)
-
-    if category and category != "all":
-        query = query.join(Category).where(Category.slug == category)
-
-    if search:
-        query = query.where(Product.title.ilike(f"%{search}%"))
-
-    query = query.order_by(Product.created_at.desc()).offset(skip).limit(limit)
-    result = await db.execute(query)
-    products = result.scalars().all()
-
-    # 3. Store in Redis Cache with 300s TTL
     try:
-        serialized = [ProductSchema.model_validate(p).model_dump(mode="json") for p in products]
-        await set_cached_json(cache_key, serialized, expire_seconds=300)
-    except Exception as err:
-        print(f"[CACHE SERDE ERROR] {err}")
+        # 1. REDIS CACHE FIRST CHECK (Guarded against connection errors)
+        cache_key = f"products:list:{category}:{search}:{featured}:{skip}:{limit}"
+        try:
+            cached_data = await get_cached_json(cache_key)
+            if cached_data is not None:
+                print(f"[REDIS CACHE HIT] {cache_key}")
+                return cached_data
+        except BaseException as c_err:
+            print(f"[REDIS CACHE BYPASS] {c_err}")
 
-    return products
+        # 2. PostgreSQL DB Query on Cache Miss
+        query = select(Product).options(selectinload(Product.category), selectinload(Product.variants))
+        
+        if featured is not None:
+            query = query.where(Product.featured == featured)
+
+        if category and category != "all":
+            cat_check = await db.execute(select(Category).where(Category.slug == category))
+            cat_obj = cat_check.scalars().first()
+            if cat_obj:
+                query = query.where(Product.category_id == cat_obj.id)
+            else:
+                query = query.join(Category).where(Category.slug == category)
+
+        if search and search.lower() not in ["all", "all-categories", "catalog"]:
+            query = query.where(Product.title.ilike(f"%{search}%"))
+
+        query = query.order_by(Product.created_at.desc()).offset(skip).limit(limit)
+        result = await db.execute(query)
+        products = result.scalars().all()
+
+        # 3. Store in Redis Cache safely
+        try:
+            serialized = [ProductSchema.model_validate(p).model_dump(mode="json") for p in products]
+            await set_cached_json(cache_key, serialized, expire_seconds=300)
+        except BaseException as err:
+            print(f"[CACHE SERDE ERROR] {err}")
+
+        return products
+    except Exception as err:
+        print(f"[LIST PRODUCTS ERROR] {err}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch products: {str(err)}")
 
 @router.get("/categories", response_model=List[CategorySchema])
 async def list_categories(db: AsyncSession = Depends(get_db)):
