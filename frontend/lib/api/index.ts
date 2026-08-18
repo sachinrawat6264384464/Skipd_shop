@@ -1511,7 +1511,7 @@ export async function fetchAdminPayments() {
   } catch (e) {
     console.warn("[API SDK] Fetch admin payments offline fallback");
   }
-  return null;
+  return [];
 }
 
 export async function fetchAdminShipments() {
@@ -1763,6 +1763,8 @@ export async function toggleWishlistDB(token: string, productId: number) {
   }
   return null;
 }
+
+
 
 
 

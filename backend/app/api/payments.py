@@ -12,29 +12,63 @@ router = APIRouter(prefix="/payments", tags=["Payments"])
 
 @router.get("/admin/all")
 async def get_all_admin_payments(db: AsyncSession = Depends(get_db)):
-    """Fetch all payment transactions for Admin Payments & Finance dashboard."""
+    """Fetch all payment transactions and orders directly from Neon PostgreSQL DB for Admin Payments dashboard."""
     res = await db.execute(
         select(PaymentTransaction).options(selectinload(PaymentTransaction.order)).order_by(PaymentTransaction.id.desc())
     )
     txns = res.scalars().all()
 
+    orders_res = await db.execute(select(Order).order_by(Order.id.desc()))
+    orders = orders_res.scalars().all()
+
+    seen_order_ids = set()
     output = []
+
     for idx, t in enumerate(txns):
         ord_obj = t.order
+        if ord_obj:
+            seen_order_ids.add(ord_obj.id)
+            seen_order_ids.add(ord_obj.order_number)
+
         output.append({
             "id": f"PAY-{99201 + idx}",
             "db_id": t.id,
             "orderId": ord_obj.order_number if ord_obj else f"#SKIPD-{25879 - idx}",
             "customerName": ord_obj.customer_name if ord_obj else "Customer Account",
             "customerEmail": ord_obj.customer_email if ord_obj else "customer@skipd.in",
-            "amount": float(t.amount or 2999.0),
-            "payment_method": t.payment_method or "Razorpay UPI",
+            "amount": float(t.amount or 0.0),
+            "payment_method": t.payment_method or "Razorpay Online",
             "gateway": t.gateway or "Razorpay",
             "status": t.status or "SUCCESS",
             "rzpPaymentId": t.razorpay_payment_id or f"pay_MB4291048{idx+1}",
-            "date": t.created_at.strftime("%b %d, %Y") if t.created_at else "May 25, 2025",
+            "date": t.created_at.strftime("%b %d, %Y") if t.created_at else "May 25, 2026",
             "time": t.created_at.strftime("%I:%M %p") if t.created_at else "02:14 PM"
         })
+
+    for o_idx, o in enumerate(orders):
+        if o.id in seen_order_ids or o.order_number in seen_order_ids:
+            continue
+        
+        status_val = str(o.status.value if hasattr(o.status, 'value') else o.status).upper()
+        status_str = "SUCCESS" if status_val in ["PAID", "PROCESSING", "SHIPPED", "DELIVERED"] else "FAILED"
+        if status_val in ["CANCELLED", "RETURNED"]:
+            status_str = "REFUNDED"
+
+        output.append({
+            "id": f"PAY-{99500 + o_idx}",
+            "db_id": o.id,
+            "orderId": o.order_number,
+            "customerName": o.customer_name or "Customer",
+            "customerEmail": o.customer_email or "customer@skipd.in",
+            "amount": float(o.total_amount or 0.0),
+            "payment_method": "Razorpay UPI / Online",
+            "gateway": "Razorpay",
+            "status": status_str,
+            "rzpPaymentId": o.razorpay_order_id or f"pay_RZP_{o.id}",
+            "date": o.created_at.strftime("%b %d, %Y") if o.created_at else "May 25, 2026",
+            "time": o.created_at.strftime("%I:%M %p") if o.created_at else "02:14 PM"
+        })
+
     return output
 
 @router.post("/verify")
@@ -104,6 +138,16 @@ async def razorpay_webhook(request: Request, db: AsyncSession = Depends(get_db))
             order = res.scalars().first()
             if order:
                 order.status = OrderStatus.PAID
+
+                # Record PaymentTransaction
+                txn = PaymentTransaction(
+                    order_id=order.id,
+                    razorpay_order_id=rzp_order_id,
+                    razorpay_payment_id=rzp_payment_id,
+                    amount=order.total_amount,
+                    status="SUCCESS"
+                )
+                db.add(txn)
                 await db.commit()
 
     return {"status": "ok"}
