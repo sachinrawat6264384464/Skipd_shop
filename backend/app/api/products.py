@@ -34,21 +34,27 @@ async def list_products(
         # 2. PostgreSQL DB Query on Cache Miss
         query = select(Product).options(selectinload(Product.category), selectinload(Product.variants))
         
-        if featured is not None:
-            query = query.where(Product.featured == featured)
+        category_val = category if isinstance(category, str) else None
+        search_val = search if isinstance(search, str) else None
+        featured_val = featured if isinstance(featured, bool) else None
+        skip_val = int(skip) if (isinstance(skip, (int, str)) and str(skip).isdigit()) else 0
+        limit_val = int(limit) if (isinstance(limit, (int, str)) and str(limit).isdigit()) else 200
 
-        if category and category != "all":
-            cat_check = await db.execute(select(Category).where(Category.slug == category))
+        if featured_val is not None:
+            query = query.where(Product.is_featured == featured_val)
+
+        if category_val and category_val != "all":
+            cat_check = await db.execute(select(Category).where(Category.slug == category_val))
             cat_obj = cat_check.scalars().first()
             if cat_obj:
                 query = query.where(Product.category_id == cat_obj.id)
             else:
-                query = query.join(Category).where(Category.slug == category)
+                query = query.join(Category).where(Category.slug == category_val)
 
-        if search and search.lower() not in ["all", "all-categories", "catalog"]:
-            query = query.where(Product.title.ilike(f"%{search}%"))
+        if search_val and search_val.lower() not in ["all", "all-categories", "catalog"]:
+            query = query.where(Product.title.ilike(f"%{search_val}%"))
 
-        query = query.order_by(Product.created_at.desc()).offset(skip).limit(limit)
+        query = query.order_by(Product.created_at.desc()).offset(skip_val).limit(limit_val)
         result = await db.execute(query)
         products = result.scalars().all()
 

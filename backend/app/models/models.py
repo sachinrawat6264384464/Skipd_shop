@@ -69,7 +69,7 @@ class Category(Base):
     is_featured = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    products = relationship("Product", back_populates="category_rel")
+    products = relationship("Product", back_populates="category")
 
 class Product(Base):
     __tablename__ = "products"
@@ -94,10 +94,18 @@ class Product(Base):
     tags = Column(JSON, nullable=True)
     is_featured = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
+
+    @property
+    def featured(self):
+        return self.is_featured
+
+    @featured.setter
+    def featured(self, value):
+        self.is_featured = value
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    category_rel = relationship("Category", back_populates="products")
+    category = relationship("Category", back_populates="products")
     variants = relationship("ProductVariant", back_populates="product", cascade="all, delete-orphan")
     order_items = relationship("OrderItem", back_populates="product")
     reviews = relationship("Review", back_populates="product_rel")
