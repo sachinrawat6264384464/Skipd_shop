@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import {
   fetchProducts,
@@ -13,6 +13,70 @@ import {
   updateAdminCategory,
   deleteAdminCategory
 } from "lib/api";
+
+const CATEGORY_SUBCATEGORIES_MAP: Record<string, { name: string; slug: string }[]> = {
+  electronics: [
+    { name: "Wireless Headphones", slug: "wireless-headphones" },
+    { name: "Bluetooth Speakers", slug: "bluetooth-speakers" },
+    { name: "Active ANC Headphones", slug: "anc-headphones" },
+    { name: "Power Banks & Chargers", slug: "power-banks" },
+    { name: "4K Smart TVs", slug: "4k-smart-tvs" },
+    { name: "Smart Home Lighting", slug: "smart-lighting" },
+    { name: "Drones & Quadcopters", slug: "drones" },
+  ],
+  mobiles: [
+    { name: "Flagship Smartphones", slug: "smartphones" },
+    { name: "Budget Mobiles", slug: "budget-mobiles" },
+    { name: "Mobile Cases & Covers", slug: "mobile-cases" },
+    { name: "Fast Chargers & Cables", slug: "chargers" },
+    { name: "Screen Protectors", slug: "screen-protectors" },
+  ],
+  laptops: [
+    { name: "Gaming Laptops", slug: "gaming-laptops" },
+    { name: "Thin & Light Ultrabooks", slug: "ultrabooks" },
+    { name: "Laptop Backpacks & Sleeves", slug: "backpacks" },
+    { name: "Wireless Mice & Keyboards", slug: "wireless-mice" },
+    { name: "External SSDs & Hard Drives", slug: "ssds-drives" },
+  ],
+  fashion: [
+    { name: "Graphic Tees & T-Shirts", slug: "graphic-tees" },
+    { name: "Casual Shirts", slug: "casual-shirts" },
+    { name: "Winter Jackets & Coats", slug: "winter-jackets" },
+    { name: "Denim Jeans & Trousers", slug: "jeans" },
+    { name: "Ethnic Wear & Sarees", slug: "ethnic-wear" },
+    { name: "Hoodies & Sweatshirts", slug: "hoodies" },
+  ],
+  footwear: [
+    { name: "Sneakers & Casual Shoes", slug: "sneakers" },
+    { name: "Formal Leather Shoes", slug: "formal-shoes" },
+    { name: "Running & Sports Shoes", slug: "running-shoes" },
+    { name: "Sandals & Flip Flops", slug: "sandals" },
+  ],
+  watches: [
+    { name: "Smartwatches", slug: "smartwatches" },
+    { name: "Analog Chronographs", slug: "analog-watches" },
+    { name: "Fitness Activity Bands", slug: "fitness-bands" },
+    { name: "Luxury Timepieces", slug: "luxury-watches" },
+  ],
+  beauty: [
+    { name: "Skincare & Serums", slug: "skincare" },
+    { name: "Haircare & Oils", slug: "haircare" },
+    { name: "Perfumes & Fragrances", slug: "fragrances" },
+    { name: "Grooming & Shaving Kits", slug: "grooming" },
+  ],
+  home: [
+    { name: "Cushion Covers & Linens", slug: "cushions" },
+    { name: "Home Decor & Wall Art", slug: "home-decor" },
+    { name: "Kitchenware & Storage", slug: "kitchenware" },
+    { name: "Smart Lighting & Plugs", slug: "smart-lighting" },
+  ],
+  gaming: [
+    { name: "Gaming Consoles", slug: "gaming-consoles" },
+    { name: "RGB Mechanical Keyboards", slug: "mechanical-keyboards" },
+    { name: "Gaming Mice & Controllers", slug: "gaming-mice" },
+    { name: "VR Headsets", slug: "vr-headsets" },
+  ]
+};
 
 export default function AdminProductsPage() {
   const [activeTab, setActiveTab] = useState("Products");
@@ -491,6 +555,31 @@ export default function AdminProductsPage() {
   const [attributes, setAttributes] = useState<any[]>([]);
   const [variants, setVariants] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+
+  // 🏷️ Dynamically compute matching subcategories for currently selected Category
+  const activeSubCategories = useMemo(() => {
+    const currentCatSlug = (newProduct.category_slug || "").toLowerCase().trim();
+    const mapList = CATEGORY_SUBCATEGORIES_MAP[currentCatSlug] || [];
+
+    const customList = subCategories.filter(sc => {
+      const parentSlug = (sc.parent || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      return parentSlug.includes(currentCatSlug) || currentCatSlug.includes(parentSlug) || sc.category_slug === currentCatSlug;
+    }).map(sc => ({ name: sc.name, slug: sc.slug || sc.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") }));
+
+    const combinedMap = new Map<string, { name: string; slug: string }>();
+    mapList.forEach(s => combinedMap.set(s.slug, s));
+    customList.forEach(s => combinedMap.set(s.slug, s));
+
+    if (combinedMap.size === 0 && currentCatSlug) {
+      const catObj = categories.find(c => c.slug === currentCatSlug);
+      const catName = catObj ? catObj.name : currentCatSlug.replace(/-/g, " ");
+      combinedMap.set(`${currentCatSlug}-general`, { name: `General ${catName}`, slug: `${currentCatSlug}-general` });
+      combinedMap.set(`${currentCatSlug}-pro`, { name: `Pro & Premium ${catName}`, slug: `${currentCatSlug}-pro` });
+      combinedMap.set(`${currentCatSlug}-accessories`, { name: `${catName} Accessories`, slug: `${currentCatSlug}-accessories` });
+    }
+
+    return Array.from(combinedMap.values());
+  }, [newProduct.category_slug, subCategories, categories]);
 
   const tabs = [
     "Products",
@@ -2427,7 +2516,7 @@ export default function AdminProductsPage() {
                         ) : (
                           <select
                             value={newProduct.category_slug}
-                            onChange={(e) => setNewProduct({ ...newProduct, category_slug: e.target.value })}
+                            onChange={(e) => setNewProduct({ ...newProduct, category_slug: e.target.value, subcategory: "" })}
                             className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none capitalize cursor-pointer"
                           >
                             {categories.map((c: any) => (
@@ -2455,12 +2544,14 @@ export default function AdminProductsPage() {
                           <select
                             value={newProduct.subcategory}
                             onChange={(e) => setNewProduct({ ...newProduct, subcategory: e.target.value })}
-                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
+                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none cursor-pointer"
                           >
                             <option value="">Select Sub Category ▾</option>
-                            <option value="headphones">Wireless Headphones</option>
-                            <option value="speakers">Bluetooth Speakers</option>
-                            <option value="smartphones">Flagship Smartphones</option>
+                            {activeSubCategories.map((sc) => (
+                              <option key={sc.slug} value={sc.slug}>
+                                {sc.name}
+                              </option>
+                            ))}
                           </select>
                         )}
                       </div>
