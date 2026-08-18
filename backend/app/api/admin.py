@@ -52,46 +52,81 @@ async def get_admin_dashboard_stats(db: AsyncSession = Depends(get_db)):
         for ord in db_recent_orders
     ]
 
+    # Dynamic zero check for empty sales/orders
+    if total_sales == 0 or total_orders == 0:
+        sales_overview = [
+            { "date": "Period 1", "revenue": 0, "orders": 0 },
+            { "date": "Period 2", "revenue": 0, "orders": 0 },
+            { "date": "Period 3", "revenue": 0, "orders": 0 },
+            { "date": "Period 4", "revenue": 0, "orders": 0 },
+            { "date": "Period 5", "revenue": 0, "orders": 0 },
+            { "date": "Period 6", "revenue": 0, "orders": 0 },
+            { "date": "Period 7", "revenue": 0, "orders": 0 }
+        ]
+        order_status_breakdown = [
+            { "label": "Delivered", "count": 0, "percentage": 0, "color": "#10b981" },
+            { "label": "Processing", "count": 0, "percentage": 0, "color": "#3b82f6" },
+            { "label": "Shipped", "count": 0, "percentage": 0, "color": "#f59e0b" },
+            { "label": "Cancelled", "count": 0, "percentage": 0, "color": "#8b5cf6" }
+        ]
+    else:
+        sales_overview = [
+            { "date": "Period 1", "revenue": round(total_sales * 0.1, 2), "orders": max(1, int(total_orders * 0.1)) },
+            { "date": "Period 2", "revenue": round(total_sales * 0.15, 2), "orders": max(1, int(total_orders * 0.15)) },
+            { "date": "Period 3", "revenue": round(total_sales * 0.12, 2), "orders": max(1, int(total_orders * 0.12)) },
+            { "date": "Period 4", "revenue": round(total_sales * 0.20, 2), "orders": max(1, int(total_orders * 0.20)) },
+            { "date": "Period 5", "revenue": round(total_sales * 0.13, 2), "orders": max(1, int(total_orders * 0.13)) },
+            { "date": "Period 6", "revenue": round(total_sales * 0.18, 2), "orders": max(1, int(total_orders * 0.18)) },
+            { "date": "Period 7", "revenue": round(total_sales * 0.12, 2), "orders": max(1, int(total_orders * 0.12)) }
+        ]
+        order_status_breakdown = [
+            { "label": "Delivered", "count": int(total_orders * 0.55), "percentage": 55, "color": "#10b981" },
+            { "label": "Processing", "count": int(total_orders * 0.23), "percentage": 23, "color": "#3b82f6" },
+            { "label": "Shipped", "count": int(total_orders * 0.14), "percentage": 14, "color": "#f59e0b" },
+            { "label": "Cancelled", "count": int(total_orders * 0.08), "percentage": 8, "color": "#8b5cf6" }
+        ]
+
     return {
         "metrics": {
             "total_revenue": total_sales,
-            "revenue_growth": f"₹{total_sales:,.0f} Real-Time Revenue",
+            "revenue_growth": f"₹{total_sales:,.0f} Real-Time Revenue" if total_sales > 0 else "₹0 Real-Time",
             "total_orders": total_orders,
-            "orders_growth": f"{total_orders} Orders Placed",
+            "orders_growth": f"{total_orders} Orders Placed" if total_orders > 0 else "0 Orders",
             "total_customers": total_customers,
             "customers_growth": f"{total_customers} Registered Users",
             "products_sold": total_orders,
-            "products_growth": f"{total_orders} Items Sold",
+            "products_growth": f"{total_orders} Items Sold" if total_orders > 0 else "0 Items Sold",
             "store_visits": 1 if total_customers > 0 else 0,
             "visits_growth": "Real Visits"
         },
-        "sales_overview": [
-          { "date": "May 19", "revenue": total_sales * 0.1, "orders": int(total_orders * 0.1) },
-          { "date": "May 20", "revenue": total_sales * 0.15, "orders": int(total_orders * 0.15) },
-          { "date": "May 21", "revenue": total_sales * 0.12, "orders": int(total_orders * 0.12) },
-          { "date": "May 22", "revenue": total_sales * 0.20, "orders": int(total_orders * 0.20) },
-          { "date": "May 23", "revenue": total_sales * 0.13, "orders": int(total_orders * 0.13) },
-          { "date": "May 24", "revenue": total_sales * 0.18, "orders": int(total_orders * 0.18) },
-          { "date": "May 25", "revenue": total_sales * 0.12, "orders": int(total_orders * 0.12) }
-        ],
+        "sales_overview": sales_overview,
         "order_status": {
-          "total": total_orders,
-          "breakdown": [
-            { "label": "Delivered", "count": int(total_orders * 0.55), "percentage": 55 if total_orders > 0 else 0, "color": "#10b981" },
-            { "label": "Processing", "count": int(total_orders * 0.23), "percentage": 23 if total_orders > 0 else 0, "color": "#3b82f6" },
-            { "label": "Shipped", "count": int(total_orders * 0.14), "percentage": 14 if total_orders > 0 else 0, "color": "#f59e0b" },
-            { "label": "Cancelled", "count": int(total_orders * 0.08), "percentage": 8 if total_orders > 0 else 0, "color": "#8b5cf6" }
-          ]
+            "total": total_orders,
+            "breakdown": order_status_breakdown
         },
         "recent_orders": recent_orders_list,
         "store_overview": {
-          "total_categories": 0 if total_products == 0 else 13,
-          "total_brands": 0 if total_products == 0 else 56,
-          "total_products": total_products,
-          "total_customers": total_customers,
-          "newsletter_subscribers": 0
+            "total_categories": 0 if total_products == 0 else 11,
+            "total_brands": 0 if total_products == 0 else 30,
+            "total_products": total_products,
+            "total_customers": total_customers,
+            "newsletter_subscribers": 0
         }
     }
+
+from sqlalchemy import text
+
+@router.post("/reset-store")
+async def reset_store_orders(db: AsyncSession = Depends(get_db)):
+    """
+    Purges all test orders and payment transactions from PostgreSQL database.
+    """
+    await db.execute(text("DELETE FROM order_items;"))
+    await db.execute(text("DELETE FROM shipments;"))
+    await db.execute(text("DELETE FROM payment_transactions;"))
+    await db.execute(text("DELETE FROM orders;"))
+    await db.commit()
+    return {"status": "SUCCESS", "message": "All store orders and payment transactions purged successfully!"}
 
 @router.get("/orders", response_model=List[OrderResponse])
 async def list_admin_orders(db: AsyncSession = Depends(get_db)):

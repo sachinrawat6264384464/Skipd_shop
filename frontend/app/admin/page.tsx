@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fetchAdminStats, fetchProducts, updateAdminProduct, seedCatalogProducts } from "lib/api";
+import { fetchAdminStats, fetchProducts, updateAdminProduct, seedCatalogProducts, purgeAllStoreOrders } from "lib/api";
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -14,6 +14,10 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     loadDashboardData();
+    window.addEventListener("skipd_orders_changed", loadDashboardData);
+    return () => {
+      window.removeEventListener("skipd_orders_changed", loadDashboardData);
+    };
   }, []);
 
   async function loadDashboardData() {
@@ -52,6 +56,15 @@ export default function AdminDashboardPage() {
     await seedCatalogProducts();
     await loadDashboardData();
     setRestockMsg("⚡ Catalog Seeded into PostgreSQL DB!");
+    setTimeout(() => setRestockMsg(null), 3500);
+  };
+
+  const handleResetStore = async () => {
+    if (!confirm("Are you sure you want to reset all test orders and revenue history to ₹0?")) return;
+    setLoading(true);
+    await purgeAllStoreOrders();
+    await loadDashboardData();
+    setRestockMsg("🗑️ All Store Orders & Revenue History Reset to ₹0!");
     setTimeout(() => setRestockMsg(null), 3500);
   };
 
@@ -145,6 +158,13 @@ export default function AdminDashboardPage() {
             className="bg-blue-50 text-blue-700 border border-blue-200 font-bold text-xs px-3.5 py-2 rounded-xl hover:bg-blue-100 transition cursor-pointer shadow-2xs"
           >
             ⚡ Seed Database
+          </button>
+
+          <button
+            onClick={handleResetStore}
+            className="bg-red-50 text-red-700 border border-red-200 font-bold text-xs px-3.5 py-2 rounded-xl hover:bg-red-100 transition cursor-pointer shadow-2xs"
+          >
+            🗑️ Reset Orders (₹0)
           </button>
         </div>
       </div>

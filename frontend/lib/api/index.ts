@@ -1042,6 +1042,20 @@ export async function fetchAdminStats() {
   };
 }
 
+export async function purgeAllStoreOrders() {
+  try {
+    await fetch(`${API_BASE_URL}/admin/reset-store`, { method: "POST" });
+  } catch (e) {}
+
+  if (typeof window !== "undefined") {
+    try {
+      const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders" || k === "skipd_payments");
+      keys.forEach(k => localStorage.removeItem(k));
+      window.dispatchEvent(new Event("skipd_orders_changed"));
+    } catch (e) {}
+  }
+}
+
 // ─────────────────────────────────────────────
 // 🔥 SALE EVENTS API SDK
 // ─────────────────────────────────────────────
