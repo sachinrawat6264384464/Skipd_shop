@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fetchAdminStats, fetchProducts, updateAdminProduct, seedCatalogProducts, purgeAllStoreOrders } from "lib/api";
+import { fetchAdminStats, fetchProducts, fetchAdminCategories, fetchAdminCustomers, updateAdminProduct, seedCatalogProducts, purgeAllStoreOrders } from "lib/api";
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>(null);
   const [dbProducts, setDbProducts] = useState<any[]>([]);
+  const [dbCategories, setDbCategories] = useState<any[]>([]);
+  const [adminCustomersCount, setAdminCustomersCount] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState<"week" | "month" | "year">("week");
   const [selectedOrderDetails, setSelectedOrderDetails] = useState<any | null>(null);
@@ -23,12 +25,18 @@ export default function AdminDashboardPage() {
   async function loadDashboardData() {
     setLoading(true);
     try {
-      const [statsData, productsData] = await Promise.all([
+      const [statsData, productsData, categoriesData, customersData] = await Promise.all([
         fetchAdminStats(),
-        fetchProducts()
+        fetchProducts(),
+        fetchAdminCategories(),
+        fetchAdminCustomers()
       ]);
       setStats(statsData);
-      setDbProducts(productsData);
+      setDbProducts(Array.isArray(productsData) ? productsData : []);
+      setDbCategories(Array.isArray(categoriesData) ? categoriesData : []);
+      if (customersData && Array.isArray(customersData)) {
+        setAdminCustomersCount(customersData.length);
+      }
     } catch (e) {
       console.error("Failed to load dashboard data:", e);
     } finally {
@@ -68,6 +76,26 @@ export default function AdminDashboardPage() {
     setTimeout(() => setRestockMsg(null), 3500);
   };
 
+  // Dynamic Store Overview Calculations
+  const categoryCount = Math.max(
+    dbCategories.length,
+    new Set(dbProducts.map(p => {
+      if (typeof p.category === "string") return p.category;
+      if (p.category?.name) return p.category.name;
+      if (p.category_slug) return p.category_slug;
+      return null;
+    }).filter(Boolean)).size
+  );
+
+  const brandCount = new Set(
+    dbProducts.map(p => {
+      const b = p.brand || p.brand_name || (Array.isArray(p.tags) ? p.tags[0] : null);
+      return typeof b === "string" ? b.trim() : null;
+    }).filter(Boolean)
+  ).size;
+
+  const totalCustomersCount = Math.max(adminCustomersCount, stats?.metrics?.total_customers ?? 0);
+
   // Timeframe Dynamic Multipliers
   const multiplier = timeframe === "year" ? 12 : timeframe === "month" ? 4 : 1;
 
@@ -77,15 +105,15 @@ export default function AdminDashboardPage() {
     revenue_growth: (stats?.metrics?.total_orders ?? 0) > 0 ? "Real-Time Revenue" : "₹0 Real-Time",
     total_orders: (stats?.metrics?.total_orders ?? 0),
     orders_growth: (stats?.metrics?.total_orders ?? 0) > 0 ? `${stats?.metrics?.total_orders} Orders Placed` : "0 Orders",
-    total_customers: (stats?.metrics?.total_customers ?? 0),
-    customers_growth: `${stats?.metrics?.total_customers ?? 0} Registered Users`,
+    total_customers: totalCustomersCount,
+    customers_growth: `${totalCustomersCount} Registered Users`,
     products_sold: (stats?.metrics?.products_sold ?? 0),
     products_growth: `${stats?.metrics?.products_sold ?? 0} Items Sold`,
     store_visits: (stats?.metrics?.store_visits ?? 1),
     visits_growth: `${stats?.metrics?.store_visits ?? 1} Real Visits`
   };
 
-  // Top Products derived strictly from real customer sales (Empty when 0 orders placed)
+  // Top Products derived strictly from real customer sales
   const topProducts = (metrics.total_orders > 0 && Array.isArray(stats?.top_selling_products))
     ? stats.top_selling_products.filter((p: any) => (p.sold ?? 0) > 0).slice(0, 5).map((p: any, idx: number) => ({
         rank: idx + 1,
@@ -365,7 +393,7 @@ export default function AdminDashboardPage() {
               <line x1="0" y1="150" x2="500" y2="150" stroke="#f1f5f9" strokeWidth="1" strokeDasharray="4 4" />
               <text x="0" y="160" fill="#94a3b8" fontSize="10">₹0</text>
 
-              {/* Revenue Green Line (Flat M 0 150 L 500 150 if 0 revenue) */}
+              {/* Revenue Green Line */}
               <path
                 d={metrics.total_revenue > 0 ? "M 20 120 L 90 80 L 160 100 L 230 60 L 300 85 L 370 50 L 440 80 L 490 60" : "M 0 150 L 500 150"}
                 fill="none"
@@ -374,7 +402,7 @@ export default function AdminDashboardPage() {
                 strokeLinecap="round"
               />
 
-              {/* Orders Purple Line (Flat M 0 150 L 500 150 if 0 orders) */}
+              {/* Orders Purple Line */}
               <path
                 d={metrics.total_orders > 0 ? "M 20 140 L 90 110 L 160 125 L 230 90 L 300 115 L 370 75 L 440 110 L 490 100" : "M 0 150 L 500 150"}
                 fill="none"
@@ -599,49 +627,52 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-          {/* Store Overview Counts (3 Cols) */}
-          <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-3 text-xs">
-            <h3 className="font-black text-base text-gray-900 border-b border-gray-100 pb-2">Store Overview</h3>
-            
-            <div className="flex justify-between items-center py-1.5">
-              <span className="text-gray-600 flex items-center gap-2 font-medium">
-                <span className="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs">📁</span> Total Categories
-              </span>
-              <span className="font-black text-gray-900 text-sm">
-                {new Set(dbProducts.map(p => typeof p.category === "string" ? p.category : (p.category_slug || p.category?.slug || "general"))).size}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center py-1.5">
-              <span className="text-gray-600 flex items-center gap-2 font-medium">
-                <span className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">🏷️</span> Partner Brands
-              </span>
-              <span className="font-black text-gray-900 text-sm">
-                {new Set(dbProducts.map(p => p.brand || p.tags?.[0] || "SKIPD").filter(Boolean)).size}
-              </span>
-            </div>
-
-            <div className="flex justify-between items-center py-1.5">
-              <span className="text-gray-600 flex items-center gap-2 font-medium">
-                <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">📦</span> Database Products
-              </span>
-              <span className="font-black text-gray-900 text-sm">{dbProducts.length}</span>
-            </div>
-
-            <div className="flex justify-between items-center py-1.5">
-              <span className="text-gray-600 flex items-center gap-2 font-medium">
-                <span className="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">👥</span> Store Customers
-              </span>
-              <span className="font-black text-gray-900 text-sm">{metrics.total_customers.toLocaleString("en-IN")}</span>
-            </div>
-
-            <div className="flex justify-between items-center py-1.5">
-              <span className="text-gray-600 flex items-center gap-2 font-medium">
-                <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">✉️</span> Registered DB Accounts
-              </span>
-              <span className="font-black text-gray-900 text-sm">{metrics.total_customers.toLocaleString("en-IN")}</span>
-            </div>
+        {/* 🏬 100% Dynamic Store Overview Counts (3 Cols) */}
+        <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-3 text-xs">
+          <div className="flex justify-between items-center border-b border-gray-100 pb-2">
+            <h3 className="font-black text-base text-gray-900">Store Overview</h3>
+            <span className="text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">Live DB</span>
           </div>
+          
+          <div className="flex justify-between items-center py-1.5 border-b border-gray-50">
+            <span className="text-gray-600 flex items-center gap-2 font-medium">
+              <span className="w-6 h-6 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs">📁</span> Total Categories
+            </span>
+            <span className="font-black text-gray-900 text-sm">
+              {categoryCount}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center py-1.5 border-b border-gray-50">
+            <span className="text-gray-600 flex items-center gap-2 font-medium">
+              <span className="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">🏷️</span> Partner Brands
+            </span>
+            <span className="font-black text-gray-900 text-sm">
+              {brandCount}
+            </span>
+          </div>
+
+          <div className="flex justify-between items-center py-1.5 border-b border-gray-50">
+            <span className="text-gray-600 flex items-center gap-2 font-medium">
+              <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">📦</span> Database Products
+            </span>
+            <span className="font-black text-gray-900 text-sm">{dbProducts.length}</span>
+          </div>
+
+          <div className="flex justify-between items-center py-1.5 border-b border-gray-50">
+            <span className="text-gray-600 flex items-center gap-2 font-medium">
+              <span className="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">👥</span> Store Customers
+            </span>
+            <span className="font-black text-gray-900 text-sm">{metrics.total_customers.toLocaleString("en-IN")}</span>
+          </div>
+
+          <div className="flex justify-between items-center py-1.5">
+            <span className="text-gray-600 flex items-center gap-2 font-medium">
+              <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">✉️</span> Registered DB Accounts
+            </span>
+            <span className="font-black text-gray-900 text-sm">{metrics.total_customers.toLocaleString("en-IN")}</span>
+          </div>
+        </div>
 
       </div>
 
