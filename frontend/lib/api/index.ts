@@ -1632,6 +1632,55 @@ function deleteCategoryFromLocal(id: any) {
   } catch (err) { }
 }
 
+export async function fetchAdminGiftCards() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/gift-cards/admin/all`, { cache: "no-store" });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Fetch admin gift cards offline fallback");
+  }
+  return [];
+}
+
+export async function createAdminGiftCard(payload: { code?: string; amount: number; recipient?: string }) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/gift-cards/admin/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Create gift card offline fallback");
+  }
+  return null;
+}
+
+export async function fetchAdminRewardsUsers() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/rewards/admin/all-users`, { cache: "no-store" });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Fetch rewards users offline fallback");
+  }
+  return [];
+}
+
+export async function creditUserSuperCoins(email: string, coins: number) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/rewards/admin/credit-coins`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, coins })
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Credit user coins offline fallback");
+  }
+  return null;
+}
+
+
 
 
 
