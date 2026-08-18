@@ -8,6 +8,45 @@ from app.models.models import User, WishlistItem, Product
 
 router = APIRouter(prefix="/wishlist", tags=["Wishlist"])
 
+@router.get("/admin/stats")
+async def get_admin_wishlist_stats(db: AsyncSession = Depends(get_db)):
+    """
+    Admin: Fetch real per-product wishlist save counts from PostgreSQL wishlist_items table.
+    """
+    count_res = await db.execute(
+        select(WishlistItem.product_id, func.count(WishlistItem.id).label("wishlist_count"))
+        .group_by(WishlistItem.product_id)
+        .order_by(func.count(WishlistItem.id).desc())
+    )
+    counts_by_product = {row.product_id: row.wishlist_count for row in count_res.all()}
+
+    prods_res = await db.execute(select(Product))
+    products = prods_res.scalars().all()
+
+    total_wishlist_saves = sum(counts_by_product.values())
+
+    output = []
+    for p in products:
+        count = counts_by_product.get(p.id, 0)
+        output.append({
+            "product_id": p.id,
+            "title": p.title,
+            "handle": p.handle,
+            "price": float(p.price or 0),
+            "images": p.images or [],
+            "category_name": "General Catalog",
+            "wishlist_count": count
+        })
+
+    output.sort(key=lambda x: (x["wishlist_count"], x["product_id"]), reverse=True)
+
+    return {
+        "total_wishlist_saves": total_wishlist_saves,
+        "total_products": len(products),
+        "products": output
+    }
+
+
 @router.get("")
 @router.get("/")
 async def get_wishlist(
@@ -83,40 +122,3 @@ async def toggle_wishlist(
         db.add(new_w)
         await db.commit()
         return {"status": "added", "message": "Added to wishlist in PostgreSQL DB", "product_id": product_id}
-
-
-@router.get("/admin/stats")
-async def get_admin_wishlist_stats(db: AsyncSession = Depends(get_db)):
-    """
-    Admin: Fetch real per-product wishlist save counts from PostgreSQL wishlist_items table.
-    """
-    count_res = await db.execute(
-        select(WishlistItem.product_id, func.count(WishlistItem.id).label("wishlist_count"))
-        .group_by(WishlistItem.product_id)
-        .order_by(func.count(WishlistItem.id).desc())
-    )
-    counts_by_product = {row.product_id: row.wishlist_count for row in count_res.all()}
-
-    prods_res = await db.execute(select(Product).order_by(Product.id.desc()))
-    products = prods_res.scalars().all()
-
-    total_wishlist_saves = sum(counts_by_product.values())
-
-    output = []
-    for p in products:
-        count = counts_by_product.get(p.id, 0)
-        output.append({
-            "product_id": p.id,
-            "title": p.title,
-            "handle": p.handle,
-            "price": float(p.price or 0),
-            "images": p.images or [],
-            "category_name": None,
-            "wishlist_count": count
-        })
-
-    return {
-        "total_wishlist_saves": total_wishlist_saves,
-        "total_products": len(products),
-        "products": output
-    }
