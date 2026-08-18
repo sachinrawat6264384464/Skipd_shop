@@ -1552,24 +1552,20 @@ export async function createCoupon(data: any) {
 }
 
 // ─────────────────────────────────────────────
-// 📁 CATEGORY API FUNCTIONS (PostgreSQL Database Sync)
+// 📁 CATEGORY API FUNCTIONS (Strict PostgreSQL Database Sync)
 // ─────────────────────────────────────────────
 
 export async function fetchAdminCategories() {
   try {
     const res = await fetch(`${API_BASE_URL}/categories/admin/all`, { cache: "no-store" });
-    if (res.ok) return await res.json();
+    if (res.ok) {
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    }
   } catch (e) {
-    console.warn("[API SDK] Fetch admin categories offline fallback");
+    console.warn("[API SDK] Fetch admin categories DB warning:", e);
   }
-
-  if (typeof window !== "undefined") {
-    try {
-      const stored = localStorage.getItem("skipd_custom_categories");
-      if (stored) return JSON.parse(stored);
-    } catch (err) { }
-  }
-  return null;
+  return [];
 }
 
 export async function createAdminCategory(payload: any) {
@@ -1579,25 +1575,11 @@ export async function createAdminCategory(payload: any) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    if (res.ok) {
-      const created = await res.json();
-      syncCategoryToLocal(created);
-      return created;
-    }
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.warn("[API SDK] Create admin category offline fallback");
+    console.warn("[API SDK] Create admin category DB warning:", e);
   }
-
-  const newCat = {
-    id: Date.now(),
-    name: payload.name,
-    slug: payload.slug || payload.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-    icon: payload.icon || "📁",
-    status: payload.status || "Active",
-    count: 0
-  };
-  syncCategoryToLocal(newCat);
-  return newCat;
+  return null;
 }
 
 export async function updateAdminCategory(id: number | string, payload: any) {
@@ -1607,70 +1589,21 @@ export async function updateAdminCategory(id: number | string, payload: any) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    if (res.ok) {
-      const updated = await res.json();
-      updateCategoryInLocal(id, updated);
-      return updated;
-    }
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.warn("[API SDK] Update admin category offline fallback");
+    console.warn("[API SDK] Update admin category DB warning:", e);
   }
-
-  updateCategoryInLocal(id, payload);
-  return { id, ...payload };
+  return null;
 }
 
 export async function deleteAdminCategory(id: number | string) {
   try {
     const res = await fetch(`${API_BASE_URL}/categories/admin/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      const data = await res.json();
-      deleteCategoryFromLocal(id);
-      return data;
-    }
+    if (res.ok) return await res.json();
   } catch (e) {
-    console.warn("[API SDK] Delete admin category offline fallback");
+    console.warn("[API SDK] Delete admin category DB warning:", e);
   }
-
-  deleteCategoryFromLocal(id);
-  return { status: "success" };
-}
-
-function syncCategoryToLocal(cat: any) {
-  if (typeof window === "undefined") return;
-  try {
-    const stored = localStorage.getItem("skipd_custom_categories");
-    const existing = stored ? JSON.parse(stored) : [];
-    const filtered = existing.filter((c: any) => c.id !== cat.id && c.slug !== cat.slug);
-    filtered.unshift(cat);
-    localStorage.setItem("skipd_custom_categories", JSON.stringify(filtered));
-  } catch (err) { }
-}
-
-function updateCategoryInLocal(id: any, payload: any) {
-  if (typeof window === "undefined") return;
-  try {
-    const stored = localStorage.getItem("skipd_custom_categories");
-    if (!stored) return;
-    const existing = JSON.parse(stored);
-    if (Array.isArray(existing)) {
-      const updated = existing.map((c: any) => (String(c.id) === String(id) || c.slug === payload.slug ? { ...c, ...payload } : c));
-      localStorage.setItem("skipd_custom_categories", JSON.stringify(updated));
-    }
-  } catch (err) { }
-}
-
-function deleteCategoryFromLocal(id: any) {
-  if (typeof window === "undefined") return;
-  try {
-    const stored = localStorage.getItem("skipd_custom_categories");
-    if (!stored) return;
-    const existing = JSON.parse(stored);
-    if (Array.isArray(existing)) {
-      const filtered = existing.filter((c: any) => String(c.id) !== String(id));
-      localStorage.setItem("skipd_custom_categories", JSON.stringify(filtered));
-    }
-  } catch (err) { }
+  return null;
 }
 
 export async function fetchAdminGiftCards() {

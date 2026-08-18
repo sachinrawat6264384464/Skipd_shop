@@ -16,15 +16,7 @@ const COLOR_PALETTES = [
   { bg: "bg-cyan-50/90 text-cyan-900 border-cyan-200 hover:border-cyan-400" },
 ];
 
-const DEFAULT_FALLBACK_CATEGORIES = [
-  { id: 1, name: "Electronics", slug: "electronics", icon: "⚡", count: 8 },
-  { id: 2, name: "Mobiles & Tablets", slug: "mobiles", icon: "📱", count: 5 },
-  { id: 3, name: "Laptops & Computers", slug: "laptops", icon: "💻", count: 4 },
-  { id: 4, name: "Fashion & Apparel", slug: "fashion", icon: "👕", count: 12 },
-  { id: 5, name: "Footwear & Shoes", slug: "footwear", icon: "👟", count: 6 },
-  { id: 6, name: "Watches & Smartwear", slug: "watches", icon: "⌚", count: 7 },
-  { id: 7, name: "Home & Living", slug: "home", icon: "🏡", count: 3 }
-];
+
 
 function matchesCategory(orderItemTitle: string, catSlug: string, catName: string): boolean {
   const t = (orderItemTitle || "").toLowerCase();
@@ -93,10 +85,10 @@ export default function AdminOrdersPage() {
           fetchAdminCategories()
         ]);
 
-        if (apiCategories && Array.isArray(apiCategories) && apiCategories.length > 0) {
+        if (apiCategories && Array.isArray(apiCategories)) {
           setDbCategories(apiCategories);
         } else {
-          setDbCategories(DEFAULT_FALLBACK_CATEGORIES);
+          setDbCategories([]);
         }
 
         if (apiOrders && Array.isArray(apiOrders) && apiOrders.length > 0) {
@@ -137,9 +129,9 @@ export default function AdminOrdersPage() {
           setOrders([]);
         }
       } catch (e) {
-        console.warn("Orders/Categories API offline fallback:", e);
+        console.warn("Orders/Categories API warning:", e);
         setOrders([]);
-        setDbCategories(DEFAULT_FALLBACK_CATEGORIES);
+        setDbCategories([]);
       } finally {
         setLoading(false);
       }
@@ -221,8 +213,8 @@ export default function AdminOrdersPage() {
   const prevRef = previous7DaysOrders.filter(o => (o.status || "").toLowerCase() === "refunds").length;
   const refStat = calcPctChange(curRef, prevRef);
 
-  // Compute Dynamic Category Breakdown from Date-Filtered Orders
-  const categoryBreakdown = (dbCategories.length > 0 ? dbCategories : DEFAULT_FALLBACK_CATEGORIES).map((cat, idx) => {
+  // Compute Dynamic Category Breakdown strictly from DB Categories
+  const categoryBreakdown = dbCategories.map((cat, idx) => {
     const catSlug = cat.slug || cat.name?.toLowerCase() || "";
     const catName = cat.name || "";
     const catIcon = cat.icon || "📁";
