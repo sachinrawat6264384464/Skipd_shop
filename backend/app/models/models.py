@@ -63,7 +63,7 @@ class Category(Base):
     name = Column(String(100), nullable=False)
     slug = Column(String(100), unique=True, index=True, nullable=False)
     description = Column(Text, nullable=True)
-    image = Column(String(255), nullable=True)
+    image_url = Column(String(255), nullable=True)
     icon = Column(String(50), nullable=True)
     status = Column(String(50), default="Active")
     is_featured = Column(Boolean, default=False)
