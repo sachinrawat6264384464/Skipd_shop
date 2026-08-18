@@ -218,66 +218,68 @@ export function SearchCatalogView({
   return (
     <div className="space-y-6 w-full">
       
-      {/* 🚀 CATEGORY HERO SLIDER BANNER */}
-      <div className="relative w-full h-56 sm:h-72 md:h-80 rounded-3xl overflow-hidden shadow-xl border border-gray-200/80 group">
-        {/* Slide Background Images with smooth fade transition */}
-        {currentBanner.slides.map((imgUrl, i) => (
-          <div
-            key={i}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              i === activeSlide ? "opacity-100 scale-105" : "opacity-0 scale-100"
-            }`}
-            style={{ transitionProperty: "opacity, transform" }}
-          >
-            <img src={imgUrl} alt={currentBanner.title} className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-gray-950/90 via-gray-900/60 to-transparent" />
-          </div>
-        ))}
-
-        {/* Banner Content Overlay */}
-        <div className="relative z-10 h-full flex flex-col justify-center px-6 sm:px-12 max-w-2xl space-y-3 text-white">
-          <span className="bg-emerald-500/90 backdrop-blur-md text-white text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border border-emerald-300/40 inline-block self-start shadow-md">
-            {currentBanner.tag}
-          </span>
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-md">
-            {currentBanner.title}
-          </h1>
-          <p className="text-xs sm:text-sm text-gray-200 font-medium line-clamp-2 drop-shadow-xs max-w-lg">
-            {currentBanner.subtitle}
-          </p>
-        </div>
-
-        {/* Prev / Next Carousel Controls */}
-        {currentBanner.slides.length > 1 && (
-          <>
-            <button
-              onClick={() => setActiveSlide((prev) => (prev - 1 + currentBanner.slides.length) % currentBanner.slides.length)}
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center font-bold text-lg backdrop-blur-md border border-white/20 transition cursor-pointer z-20 opacity-0 group-hover:opacity-100"
+      {/* 🚀 CATEGORY HERO SLIDER BANNER (Permanently hidden on "All Categories & Catalog" page) */}
+      {categorySlug && categorySlug !== "all" && currentBanner && (
+        <div className="relative w-full h-56 sm:h-72 md:h-80 rounded-3xl overflow-hidden shadow-xl border border-gray-200/80 group">
+          {/* Slide Background Images with smooth fade transition */}
+          {currentBanner.slides.map((imgUrl, i) => (
+            <div
+              key={i}
+              className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                i === activeSlide ? "opacity-100 scale-105" : "opacity-0 scale-100"
+              }`}
+              style={{ transitionProperty: "opacity, transform" }}
             >
-              ‹
-            </button>
-            <button
-              onClick={() => setActiveSlide((prev) => (prev + 1) % currentBanner.slides.length)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center font-bold text-lg backdrop-blur-md border border-white/20 transition cursor-pointer z-20 opacity-0 group-hover:opacity-100"
-            >
-              ›
-            </button>
-
-            {/* Carousel Dot Indicators */}
-            <div className="absolute bottom-4 right-6 z-20 flex gap-2">
-              {currentBanner.slides.map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => setActiveSlide(i)}
-                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    i === activeSlide ? "w-7 bg-emerald-500 shadow-md" : "w-2.5 bg-white/50 hover:bg-white"
-                  }`}
-                />
-              ))}
+              <img src={imgUrl} alt={currentBanner.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-r from-gray-950/90 via-gray-900/60 to-transparent" />
             </div>
-          </>
-        )}
-      </div>
+          ))}
+
+          {/* Banner Content Overlay */}
+          <div className="relative z-10 h-full flex flex-col justify-center px-6 sm:px-12 max-w-2xl space-y-3 text-white">
+            <span className="bg-emerald-500/90 backdrop-blur-md text-white text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border border-emerald-300/40 inline-block self-start shadow-md">
+              {currentBanner.tag}
+            </span>
+            <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-md">
+              {currentBanner.title}
+            </h1>
+            <p className="text-xs sm:text-sm text-gray-200 font-medium line-clamp-2 drop-shadow-xs max-w-lg">
+              {currentBanner.subtitle}
+            </p>
+          </div>
+
+          {/* Prev / Next Carousel Controls */}
+          {currentBanner.slides.length > 1 && (
+            <>
+              <button
+                onClick={() => setActiveSlide((prev) => (prev - 1 + currentBanner.slides.length) % currentBanner.slides.length)}
+                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center font-bold text-lg backdrop-blur-md border border-white/20 transition cursor-pointer z-20 opacity-0 group-hover:opacity-100"
+              >
+                ‹
+              </button>
+              <button
+                onClick={() => setActiveSlide((prev) => (prev + 1) % currentBanner.slides.length)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/40 hover:bg-black/70 text-white flex items-center justify-center font-bold text-lg backdrop-blur-md border border-white/20 transition cursor-pointer z-20 opacity-0 group-hover:opacity-100"
+              >
+                ›
+              </button>
+
+              {/* Carousel Dot Indicators */}
+              <div className="absolute bottom-4 right-6 z-20 flex gap-2">
+                {currentBanner.slides.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveSlide(i)}
+                    className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      i === activeSlide ? "w-7 bg-emerald-500 shadow-md" : "w-2.5 bg-white/50 hover:bg-white"
+                    }`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      )}
 
       {/* 📍 Breadcrumb & Top Header Title Controls */}
       <div className="space-y-3">
