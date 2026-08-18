@@ -85,15 +85,17 @@ export default function AdminDashboardPage() {
     visits_growth: `${stats?.metrics?.store_visits ?? 1} Real Visits`
   };
 
-  // Top Products derived from DB items
-  const topProducts = dbProducts.slice(0, 5).map((p, idx) => ({
-    rank: idx + 1,
-    title: p.title,
-    sold: `In Stock: ${p.stock_quantity ?? 0} units`,
-    price: p.price,
-    img: p.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-    handle: p.handle
-  }));
+  // Top Products derived strictly from real customer sales (Empty when 0 orders placed)
+  const topProducts = (metrics.total_orders > 0 && Array.isArray(stats?.top_selling_products))
+    ? stats.top_selling_products.filter((p: any) => (p.sold ?? 0) > 0).slice(0, 5).map((p: any, idx: number) => ({
+        rank: idx + 1,
+        title: p.title,
+        sold: `${p.sold} units sold`,
+        price: p.price,
+        img: p.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
+        handle: p.handle || `prod-${p.id}`
+      }))
+    : [];
 
   // Real recent orders from live store activity
   const recentOrders = (stats?.recent_orders && stats.recent_orders.length > 0)
@@ -473,26 +475,34 @@ export default function AdminDashboardPage() {
           </div>
 
           <div className="space-y-3">
-            {topProducts.map((p) => (
-              <Link
-                key={p.rank}
-                href={`/product/${p.handle}`}
-                target="_blank"
-                className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition group cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black flex items-center justify-center shrink-0">
-                    {p.rank}
-                  </span>
-                  <img src={p.img} alt={p.title} className="w-10 h-10 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0 group-hover:scale-105 transition" />
-                  <div>
-                    <h4 className="font-bold text-gray-900 text-xs truncate max-w-[140px] group-hover:text-emerald-700 transition">{p.title}</h4>
-                    <p className="text-[10px] text-gray-400 font-medium">{p.sold}</p>
+            {topProducts.length === 0 ? (
+              <div className="p-8 text-center text-gray-400 font-bold space-y-1.5 border border-dashed border-gray-200 rounded-2xl my-2">
+                <div className="text-2xl">📦</div>
+                <p className="text-xs font-black text-gray-700">No Products Sold Yet</p>
+                <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Products will rank here automatically as customer orders are placed.</p>
+              </div>
+            ) : (
+              topProducts.map((p: any) => (
+                <Link
+                  key={p.rank}
+                  href={`/product/${p.handle}`}
+                  target="_blank"
+                  className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition group cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black flex items-center justify-center shrink-0">
+                      {p.rank}
+                    </span>
+                    <img src={p.img} alt={p.title} className="w-10 h-10 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0 group-hover:scale-105 transition" />
+                    <div>
+                      <h4 className="font-bold text-gray-900 text-xs truncate max-w-[140px] group-hover:text-emerald-700 transition">{p.title}</h4>
+                      <p className="text-[10px] text-gray-400 font-medium">{p.sold}</p>
+                    </div>
                   </div>
-                </div>
-                <span className="font-black text-gray-900 text-xs">₹{Number(p.price || 0).toLocaleString("en-IN")}</span>
-              </Link>
-            ))}
+                  <span className="font-black text-gray-900 text-xs">₹{Number(p.price || 0).toLocaleString("en-IN")}</span>
+                </Link>
+              ))
+            )}
           </div>
         </div>
 
