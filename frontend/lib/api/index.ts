@@ -457,6 +457,7 @@ const MOCK_PRODUCTS: Product[] = [
 
 export async function fetchProducts(query?: { category?: string; search?: string; featured?: boolean }): Promise<Product[]> {
   let backendProducts: Product[] = [];
+  let isBackendOk = false;
   try {
     const params = new URLSearchParams();
     if (query?.category) params.append("category", query.category);
@@ -471,76 +472,31 @@ export async function fetchProducts(query?: { category?: string; search?: string
       const data = await res.json();
       if (Array.isArray(data)) {
         backendProducts = data;
+        isBackendOk = true;
       }
     }
   } catch (err: any) {
     if (err && (err.$$typeof || err.message?.includes("postpone") || err.digest?.includes("NEXT_PRERENDER"))) {
       throw err;
     }
-    console.warn("[API SDK Warning] FastAPI backend offline, using local store catalog.", err);
+    console.warn("[API SDK Warning] FastAPI backend offline, using fallback catalog.", err);
   }
 
-  // 2. Fetch locally created products from localStorage
-  let localProducts: Product[] = [];
-  if (typeof window !== "undefined") {
-    try {
-      const stored = localStorage.getItem("skipd_custom_products");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) localProducts = parsed;
-      }
-    } catch (e) {}
+  // Pure 100% live database products when backend is connected
+  if (isBackendOk) {
+    let list = backendProducts;
+    if (query?.featured) list = list.filter(p => p.featured);
+    if (query?.category && query.category !== "all") {
+      list = list.filter(p => p.category?.slug === query.category || (p as any).category_slug === query.category || p.tags?.includes(query.category!));
+    }
+    if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
+      list = list.filter(p => p.title.toLowerCase().includes(query.search!.toLowerCase()) || p.category?.name?.toLowerCase().includes(query.search!.toLowerCase()));
+    }
+    return list;
   }
 
-  // 3. Merge Local Products + Backend Products (deduplicated by handle/id)
-  const productMap = new Map<string, Product>();
-  
-  // Local user-created products get top priority
-  localProducts.forEach(p => {
-    const key = String(p.handle || p.id).toLowerCase().trim();
-    if (key) productMap.set(key, p);
-  });
-
-  // Backend products added next
-  backendProducts.forEach(p => {
-    const key = String(p.handle || p.id).toLowerCase().trim();
-    if (key && !productMap.has(key)) productMap.set(key, p);
-  });
-
-  // Fallback to MOCK_PRODUCTS if combined list is empty
-  if (productMap.size === 0) {
-    MOCK_PRODUCTS.forEach(p => {
-      const key = String(p.handle || p.id).toLowerCase().trim();
-      if (key && !productMap.has(key)) productMap.set(key, p);
-    });
-  }
-
-  let finalProducts = Array.from(productMap.values());
-
-  // 4. Apply Filters
-  if (query?.featured) {
-    finalProducts = finalProducts.filter(p => p.featured);
-  }
-  if (query?.category && query.category !== "all") {
-    const catTarget = query.category.toLowerCase().trim();
-    finalProducts = finalProducts.filter(p => {
-      const cSlug = (p.category?.slug || (p as any).category_slug || "").toLowerCase().trim();
-      const cName = (p.category?.name || "").toLowerCase().trim();
-      const pTags = (p.tags || []).map((t: string) => t.toLowerCase());
-      return cSlug === catTarget || cName === catTarget || pTags.includes(catTarget) || (cSlug && catTarget.includes(cSlug)) || (catTarget && cSlug.includes(catTarget));
-    });
-  }
-  if (query?.search && !["all", "all-categories", "catalog"].includes(query.search.toLowerCase())) {
-    const searchTarget = query.search.toLowerCase().trim();
-    finalProducts = finalProducts.filter(p => {
-      const titleMatch = (p.title || "").toLowerCase().includes(searchTarget);
-      const catMatch = (p.category?.name || (p as any).category_slug || "").toLowerCase().includes(searchTarget);
-      const tagMatch = (p.tags || []).some((t: string) => t.toLowerCase().includes(searchTarget));
-      return titleMatch || catMatch || tagMatch;
-    });
-  }
-
-  return finalProducts;
+  // Pure 100% empty list when backend is offline or database has 0 products
+  return [];
 }
 
 export async function fetchProductByHandle(handle: string): Promise<Product | null> {
@@ -1331,55 +1287,18 @@ export async function syncFirebaseUser(payload: {
 // 📦 ADMIN PRODUCT MANAGEMENT SDK
 // ─────────────────────────────────────────────
 export async function createAdminProduct(payload: any) {
-  try {
-    const res = await fetch(`${API_BASE_URL}/products/admin/create`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    });
-    if (res.ok) {
-      const data = await res.json();
-      syncProductToLocal(data);
-      return data;
-    } else {
-      const errData = await res.json().catch(() => ({}));
-      console.warn("[API SDK] Backend product create failed, using resilient store sync:", errData);
-    }
-  } catch (e) {
-    console.warn("[API SDK] Create product network error, using resilient store sync:", e);
+  const res = await fetch(`${API_BASE_URL}/products/admin/create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  });
+
+  if (res.ok) {
+    return await res.json();
   }
 
-  // Resilient Fallback: Ensure product publishing NEVER fails for Admin
-  const newId = Date.now();
-  const fallbackProduct = {
-    id: newId,
-    title: payload.title,
-    handle: payload.handle || payload.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-    description: payload.description || "Premium quality product from SKIPD Commerce catalog.",
-    price: payload.price,
-    compare_at_price: payload.compare_at_price,
-    stock_quantity: payload.stock_quantity ?? 100,
-    category_slug: payload.category_slug || "tech",
-    category: { name: payload.category_slug || "General", slug: payload.category_slug || "tech" },
-    featured: payload.featured ?? true,
-    images: payload.images || ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"],
-    tags: payload.tags || ["bestseller"]
-  };
-
-  syncProductToLocal(fallbackProduct);
-  return { message: "Product published successfully", id: newId, handle: fallbackProduct.handle };
-}
-
-function syncProductToLocal(product: any) {
-  if (typeof window === "undefined" || !product) return;
-  try {
-    const stored = localStorage.getItem("skipd_custom_products");
-    const existing = stored ? JSON.parse(stored) : [];
-    const filtered = existing.filter((p: any) => p.id !== product.id && p.handle !== product.handle);
-    filtered.unshift(product);
-    localStorage.setItem("skipd_custom_products", JSON.stringify(filtered));
-    window.dispatchEvent(new Event("skipd_products_changed"));
-  } catch (err) {}
+  const errData = await res.json().catch(() => ({}));
+  throw new Error(errData.detail || errData.message || `Database error (${res.status}): Failed to save product in Neon PostgreSQL DB`);
 }
 
 export async function updateAdminProduct(id: number | string, payload: any) {

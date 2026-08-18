@@ -700,13 +700,17 @@ export default function AdminProductsPage() {
       return;
     }
 
-    const res = await createAdminProduct(payload);
-    if (res) {
-      showNotification(`🚀 Product "${newProduct.title}" (${discountOffPct > 0 ? discountOffPct + "% OFF" : "Published"}) Live to PostgreSQL DB!`);
-      handleCloseAndResetForm();
-      loadProducts();
-    } else {
-      showNotification("Failed to publish product", "error");
+    try {
+      const res = await createAdminProduct(payload);
+      if (res) {
+        showNotification(`🚀 Product "${newProduct.title}" created & saved live in Neon PostgreSQL DB!`);
+        handleCloseAndResetForm();
+        await loadProducts();
+      } else {
+        showNotification("Failed to publish product in Neon PostgreSQL DB", "error");
+      }
+    } catch (err: any) {
+      showNotification(err?.message || "Failed to publish product in Neon PostgreSQL DB", "error");
     }
   };
 
