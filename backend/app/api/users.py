@@ -9,11 +9,29 @@ router = APIRouter(prefix="/users", tags=["Users"])
 
 @router.get("/admin/all")
 async def get_all_admin_users(db: AsyncSession = Depends(get_db)):
-    """Fetch all registered customer accounts directly from PostgreSQL database."""
+    """Fetch all registered customer accounts directly from PostgreSQL database with dynamic orders count and total spent aggregation."""
     res = await db.execute(select(User).order_by(User.created_at.desc()))
     users = res.scalars().all()
-    return [
-        {
+
+    orders_res = await db.execute(select(Order))
+    all_orders = orders_res.scalars().all()
+
+    result = []
+    for u in users:
+        u_email = (u.email or "").strip().lower()
+        u_name = (u.full_name or "").strip().lower()
+
+        user_orders = [
+            o for o in all_orders
+            if (o.user_id == u.id) or
+               (o.customer_email and o.customer_email.strip().lower() == u_email) or
+               (o.customer_name and o.customer_name.strip().lower() == u_name)
+        ]
+
+        orders_count = len(user_orders)
+        total_spent = sum(o.total_amount or 0.0 for o in user_orders)
+
+        result.append({
             "id": u.id,
             "firebase_uid": u.firebase_uid,
             "full_name": u.full_name,
@@ -21,10 +39,12 @@ async def get_all_admin_users(db: AsyncSession = Depends(get_db)):
             "phone": u.phone or "",
             "role": u.role.value if hasattr(u.role, 'value') else str(u.role),
             "is_active": u.is_active,
-            "created_at": u.created_at.isoformat() if u.created_at else None
-        }
-        for u in users
-    ]
+            "created_at": u.created_at.isoformat() if u.created_at else None,
+            "orders_count": orders_count,
+            "total_spent": round(total_spent, 2)
+        })
+
+    return result
 async def delete_admin_user(user_id: int, db: AsyncSession = Depends(get_db)):
     """Delete a user account and permanently purge all associated schema data from PostgreSQL database."""
     res = await db.execute(select(User).where(User.id == user_id))

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   fetchAdminCustomers,
+  fetchAdminOrders,
   fetchProducts,
   fetchAdminReviews,
   deleteAdminReview,
@@ -69,12 +70,32 @@ export default function AdminCustomersCRMPage() {
   async function loadLiveCRMData() {
     setLoading(true);
     try {
-      // 1. Fetch Real Registered Users from PostgreSQL Database
-      const apiCusts = await fetchAdminCustomers();
+      // 1. Fetch Real Registered Users & Orders from PostgreSQL Database
+      const [apiCusts, apiOrders, liveProducts, apiReviews] = await Promise.all([
+        fetchAdminCustomers(),
+        fetchAdminOrders(),
+        fetchProducts(),
+        fetchAdminReviews()
+      ]);
+
       let rawCusts = Array.isArray(apiCusts) ? apiCusts : [];
+      let rawOrders = Array.isArray(apiOrders) ? apiOrders : [];
 
       const formattedCusts = rawCusts.map((u: any, idx: number) => {
-        const spent = Number(u.total_spent || 0);
+        const uEmail = (u.email || "").trim().toLowerCase();
+        const uName = (u.full_name || u.name || "").trim().toLowerCase();
+
+        const matchingOrders = rawOrders.filter((o: any) => {
+          const oUserId = o.user_id || o.user?.id;
+          const oEmail = (o.customer_email || o.email || o.user?.email || "").trim().toLowerCase();
+          const oName = (o.customer_name || o.customer || o.user_name || o.user?.full_name || "").trim().toLowerCase();
+          return (u.id && String(oUserId) === String(u.id)) || (uEmail && oEmail === uEmail) || (uName && oName === uName);
+        });
+
+        const ordersCount = Math.max(u.orders_count || 0, matchingOrders.length);
+        const spentFromOrders = matchingOrders.reduce((sum: number, o: any) => sum + Number(o.total_amount || o.total || o.amount || 0), 0);
+        const spent = Math.max(Number(u.total_spent || 0), spentFromOrders);
+
         const group = spent >= 50000 ? "VIP Platinum" : spent >= 15000 ? "VIP Gold" : spent >= 5000 ? "Silver Regular" : "Regular";
         const tier = spent >= 50000 ? "Platinum" : spent >= 15000 ? "Gold" : spent >= 5000 ? "Silver" : "Bronze";
 
@@ -83,7 +104,7 @@ export default function AdminCustomersCRMPage() {
           name: u.full_name || "Store Customer",
           email: u.email || `customer${idx}@skipd.in`,
           phone: u.phone || "+91 98765 43210",
-          ordersCount: u.orders_count || 0,
+          ordersCount: ordersCount,
           spent: spent,
           group: group,
           tier: tier,
@@ -123,11 +144,7 @@ export default function AdminCustomersCRMPage() {
         { name: "New Buyers", count: bronzeUsers.length, avgSpent: `₹${calcAvgSpent(bronzeUsers).toLocaleString("en-IN")}`, badge: "bg-emerald-100 text-emerald-800" }
       ]);
 
-      // 2. Fetch Real Product Catalog from PostgreSQL Database
-      const liveProducts = await fetchProducts();
-      
       // 3. Fetch Real Reviews from PostgreSQL Database
-      const apiReviews = await fetchAdminReviews();
       let rawReviews = Array.isArray(apiReviews) ? apiReviews : [];
 
       const colors = ["bg-emerald-600", "bg-purple-600", "bg-amber-500", "bg-blue-600", "bg-rose-500"];
@@ -154,7 +171,6 @@ export default function AdminCustomersCRMPage() {
           tier: idx % 2 === 0 ? "Gold" : "Silver"
         };
       });
-
 
       setReviews(formattedRevs);
 
