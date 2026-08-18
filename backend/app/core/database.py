@@ -8,10 +8,8 @@ if "localhost" in db_url:
     db_url = db_url.replace("localhost", "127.0.0.1")
 if db_url.startswith("postgresql://"):
     db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)
-
-# Ensure local fallback to port 5433 postgresql if unconfigured
-if not db_url or "skipd_commerce" not in db_url:
-    db_url = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5433/skipd_commerce_db"
+elif db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql+asyncpg://", 1)
 
 engine = create_async_engine(
     db_url,
