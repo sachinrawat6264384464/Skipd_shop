@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 
 export interface WishlistItem {
   id: number | string;
@@ -39,6 +39,7 @@ function getToken(): string | null {
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
+  const pendingTogglesRef = useRef<Set<string>>(new Set());
 
   /** Load wishlist from PostgreSQL DB when logged in, or fallback to LocalStorage for guest users */
   const loadWishlistFromDB = useCallback(async () => {
@@ -76,7 +77,19 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           image: w.image || "",
           category: w.category || undefined
         }));
-        setWishlist(items);
+
+        // Deduplicate items by product_id
+        const uniqueItems: WishlistItem[] = [];
+        const seen = new Set<string>();
+        items.forEach(it => {
+          const key = String(it.id);
+          if (!seen.has(key)) {
+            seen.add(key);
+            uniqueItems.push(it);
+          }
+        });
+
+        setWishlist(uniqueItems);
         return;
       }
     } catch (e) {
@@ -101,49 +114,72 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   /** Loose string/number type-safe check */
   const isInWishlist = (id: number | string) => {
     if (!id) return false;
-    return wishlist.some(w => String(w.id) === String(id));
+    const searchIdStr = String(id);
+    return wishlist.some(w => String(w.id) === searchIdStr);
   };
 
   /**
-   * OPTIMISTIC toggle with String ID comparison & Guest local storage support
+   * OPTIMISTIC toggle with functional state update & rapid click debouncing
    */
   const toggleWishlist = (item: WishlistItem) => {
     const token = getToken();
     const itemIdStr = String(item.id);
-    const alreadyIn = wishlist.some(w => String(w.id) === itemIdStr);
 
-    let nextWishlist: WishlistItem[] = [];
-    if (alreadyIn) {
-      nextWishlist = wishlist.filter(w => String(w.id) !== itemIdStr);
-    } else {
-      nextWishlist = [...wishlist, item];
+    // Prevent rapid duplicate execution within 300ms window
+    if (pendingTogglesRef.current.has(itemIdStr)) {
+      return;
     }
+    pendingTogglesRef.current.add(itemIdStr);
+    setTimeout(() => {
+      pendingTogglesRef.current.delete(itemIdStr);
+    }, 300);
 
-    // Instantly update state
-    setWishlist(nextWishlist);
+    let isNowInWishlist = false;
 
-    // Save to guest local storage if not logged in
-    if (!token && typeof window !== "undefined") {
-      try {
-        localStorage.setItem("skipd_guest_wishlist", JSON.stringify(nextWishlist));
-      } catch (e) {}
-    }
+    // ✅ Functional state update ensures latest state is used even with rapid clicks!
+    setWishlist(prev => {
+      const alreadyIn = prev.some(w => String(w.id) === itemIdStr);
+      let updated: WishlistItem[] = [];
 
-    // Fire event for UI & navbar update
+      if (alreadyIn) {
+        updated = prev.filter(w => String(w.id) !== itemIdStr);
+        isNowInWishlist = false;
+      } else {
+        isNowInWishlist = true;
+        // Ensure no duplicate insertion
+        if (prev.some(w => String(w.id) === itemIdStr)) {
+          updated = prev;
+        } else {
+          updated = [...prev, item];
+        }
+      }
+
+      // Save to guest local storage if not logged in
+      if (!token && typeof window !== "undefined") {
+        try {
+          localStorage.setItem("skipd_guest_wishlist", JSON.stringify(updated));
+        } catch (e) {}
+      }
+
+      return updated;
+    });
+
+    // Dispatch event for navbar count update
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("skipd_wishlist_changed"));
     }
 
     if (!token) return;
 
-    // Fire PostgreSQL DB sync call in background
+    // Send Integer product_id to PostgreSQL DB API
+    const numericId = Number(item.id);
     fetch(`${getApiBase()}/wishlist/toggle`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`
       },
-      body: JSON.stringify({ product_id: item.id })
+      body: JSON.stringify({ product_id: numericId || item.id })
     })
       .then(res => {
         if (!res.ok) throw new Error("DB toggle failed");
@@ -151,12 +187,16 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       })
       .catch(err => {
         console.warn("[Wishlist] DB sync failed, reverting:", err);
-        // Revert optimistic update on failure
-        if (alreadyIn) {
-          setWishlist(prev => (prev.some(w => String(w.id) === itemIdStr) ? prev : [...prev, item]));
-        } else {
-          setWishlist(prev => prev.filter(w => String(w.id) !== itemIdStr));
-        }
+        // Revert state if DB call failed
+        setWishlist(prev => {
+          const alreadyIn = prev.some(w => String(w.id) === itemIdStr);
+          if (isNowInWishlist && alreadyIn) {
+            return prev.filter(w => String(w.id) !== itemIdStr);
+          } else if (!isNowInWishlist && !alreadyIn) {
+            return [...prev, item];
+          }
+          return prev;
+        });
       });
   };
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from sqlalchemy.orm import selectinload
 from app.core.database import get_db
 from app.api.deps import get_current_user
@@ -9,6 +9,7 @@ from app.models.models import User, WishlistItem, Product
 router = APIRouter(prefix="/wishlist", tags=["Wishlist"])
 
 @router.get("")
+@router.get("/")
 async def get_wishlist(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
@@ -18,8 +19,14 @@ async def get_wishlist(
     items = res.scalars().all()
 
     wishlist = []
+    seen_products = set()
     for item in items:
-        p_res = await db.execute(select(Product).where(Product.id == item.product_id))
+        p_id = item.product_id
+        if p_id in seen_products:
+            continue
+        seen_products.add(p_id)
+
+        p_res = await db.execute(select(Product).where(Product.id == p_id))
         p = p_res.scalars().first()
         if p:
             wishlist.append({
@@ -42,31 +49,42 @@ async def toggle_wishlist(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Toggle product in user wishlist — saved directly in PostgreSQL DB."""
-    product_id = payload.get("product_id")
-    res = await db.execute(
-        select(WishlistItem).where(WishlistItem.user_id == current_user.id, WishlistItem.product_id == product_id)
-    )
-    existing = res.scalars().first()
+    """Toggle product in user wishlist — saved directly in PostgreSQL DB with int type conversion."""
+    raw_p_id = payload.get("product_id")
+    if raw_p_id is None:
+        raise HTTPException(status_code=400, detail="product_id is required")
 
-    if existing:
-        await db.delete(existing)
+    try:
+        product_id = int(raw_p_id)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="Invalid product_id format")
+
+    res = await db.execute(
+        select(WishlistItem).where(
+            WishlistItem.user_id == current_user.id,
+            WishlistItem.product_id == product_id
+        )
+    )
+    existing_items = res.scalars().all()
+
+    if existing_items:
+        # Delete ALL matching wishlist items for clean removal
+        for item in existing_items:
+            await db.delete(item)
         await db.commit()
-        return {"status": "removed", "message": "Removed from wishlist in PostgreSQL DB"}
+        return {"status": "removed", "message": "Removed from wishlist in PostgreSQL DB", "product_id": product_id}
     else:
         new_w = WishlistItem(user_id=current_user.id, product_id=product_id)
         db.add(new_w)
         await db.commit()
-        return {"status": "added", "message": "Added to wishlist in PostgreSQL DB"}
+        return {"status": "added", "message": "Added to wishlist in PostgreSQL DB", "product_id": product_id}
 
 
 @router.get("/admin/stats")
 async def get_admin_wishlist_stats(db: AsyncSession = Depends(get_db)):
     """
     Admin: Fetch real per-product wishlist save counts from PostgreSQL wishlist_items table.
-    Returns each product with its real DB wishlist count.
     """
-    # Count saves per product_id from the wishlist_items table
     count_res = await db.execute(
         select(WishlistItem.product_id, func.count(WishlistItem.id).label("wishlist_count"))
         .group_by(WishlistItem.product_id)
@@ -74,7 +92,6 @@ async def get_admin_wishlist_stats(db: AsyncSession = Depends(get_db)):
     )
     counts_by_product = {row.product_id: row.wishlist_count for row in count_res.all()}
 
-    # Fetch all products
     prods_res = await db.execute(select(Product).order_by(Product.id.desc()))
     products = prods_res.scalars().all()
 
