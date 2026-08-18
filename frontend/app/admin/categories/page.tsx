@@ -150,7 +150,11 @@ export default function AdminCategoriesPage() {
                 {categories.map((cat) => (
                   <tr key={cat.id} className="hover:bg-gray-50 transition">
                     <td className="px-6 py-4 flex items-center gap-3">
-                      <span className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-lg">{cat.icon || "📁"}</span>
+                      {cat.icon && (cat.icon.startsWith("data:") || cat.icon.startsWith("http") || cat.icon.startsWith("/")) ? (
+                        <img src={cat.icon} alt={cat.name} className="w-9 h-9 rounded-xl object-cover border border-gray-200 shadow-2xs" />
+                      ) : (
+                        <span className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-lg">{cat.icon || "📁"}</span>
+                      )}
                       <span className="font-bold text-gray-900 text-sm">{cat.name}</span>
                     </td>
                     <td className="px-6 py-4 font-mono text-emerald-700 font-bold">/category/{cat.slug}</td>
@@ -192,7 +196,7 @@ export default function AdminCategoriesPage() {
           <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl relative">
             <div className="flex justify-between items-center border-b pb-3">
               <h3 className="text-lg font-black text-gray-900">+ Add New Category</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-gray-400 font-bold text-lg">✕</button>
+              <button onClick={() => setShowAddModal(false)} className="text-gray-400 font-bold text-lg cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleCreate} className="space-y-4 text-xs">
               <div>
@@ -221,13 +225,52 @@ export default function AdminCategoriesPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Icon / Emoji</label>
-                <input
-                  type="text"
-                  value={formState.icon}
-                  onChange={(e) => setFormState({ ...formState, icon: e.target.value })}
-                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900"
-                />
+                <label className="block text-xs font-bold text-gray-700 mb-1">Category Image / Icon *</label>
+                {formState.icon && (formState.icon.startsWith("data:") || formState.icon.startsWith("http") || formState.icon.startsWith("/")) ? (
+                  <div className="relative mb-2 w-16 h-16 rounded-xl overflow-hidden border-2 border-emerald-500 shadow-xs">
+                    <img src={formState.icon} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setFormState({ ...formState, icon: "📁" })}
+                      className="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl bg-emerald-50 p-2 rounded-xl border border-emerald-200">{formState.icon || "📁"}</span>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <label className="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 border-dashed rounded-xl px-3.5 py-2 cursor-pointer text-xs font-bold transition">
+                    <span>📁 Upload Image from Device (Mobile / PC)</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            if (typeof reader.result === "string") {
+                              setFormState({ ...formState, icon: reader.result });
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Or paste Image URL / type Emoji"
+                    value={formState.icon}
+                    onChange={(e) => setFormState({ ...formState, icon: e.target.value })}
+                    className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900"
+                  />
+                </div>
               </div>
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 bg-gray-100 font-bold py-2.5 rounded-xl">Cancel</button>
@@ -244,7 +287,7 @@ export default function AdminCategoriesPage() {
           <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl relative">
             <div className="flex justify-between items-center border-b pb-3">
               <h3 className="text-lg font-black text-gray-900">✏️ Edit Category #{editingCategory.id}</h3>
-              <button onClick={() => setShowEditModal(false)} className="text-gray-400 font-bold text-lg">✕</button>
+              <button onClick={() => setShowEditModal(false)} className="text-gray-400 font-bold text-lg cursor-pointer">✕</button>
             </div>
             <form onSubmit={handleUpdate} className="space-y-4 text-xs">
               <div>
@@ -268,13 +311,52 @@ export default function AdminCategoriesPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-700 mb-1">Icon / Emoji</label>
-                <input
-                  type="text"
-                  value={formState.icon}
-                  onChange={(e) => setFormState({ ...formState, icon: e.target.value })}
-                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900"
-                />
+                <label className="block text-xs font-bold text-gray-700 mb-1">Category Image / Icon *</label>
+                {formState.icon && (formState.icon.startsWith("data:") || formState.icon.startsWith("http") || formState.icon.startsWith("/")) ? (
+                  <div className="relative mb-2 w-16 h-16 rounded-xl overflow-hidden border-2 border-emerald-500 shadow-xs">
+                    <img src={formState.icon} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setFormState({ ...formState, icon: "📁" })}
+                      className="absolute top-0.5 right-0.5 bg-red-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] font-bold"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl bg-emerald-50 p-2 rounded-xl border border-emerald-200">{formState.icon || "📁"}</span>
+                  </div>
+                )}
+                <div className="space-y-2">
+                  <label className="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 border-dashed rounded-xl px-3.5 py-2 cursor-pointer text-xs font-bold transition">
+                    <span>📁 Upload Image from Device (Mobile / PC)</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            if (typeof reader.result === "string") {
+                              setFormState({ ...formState, icon: reader.result });
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Or paste Image URL / type Emoji"
+                    value={formState.icon}
+                    onChange={(e) => setFormState({ ...formState, icon: e.target.value })}
+                    className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900"
+                  />
+                </div>
               </div>
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">Status</label>

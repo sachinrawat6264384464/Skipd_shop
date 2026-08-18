@@ -61,8 +61,12 @@ export function CategoryNav() {
             href={`/category/${cat.slug}`}
             className="group flex flex-col items-center gap-2 cursor-pointer transition transform hover:-translate-y-0.5"
           >
-            <div className={`w-14 h-14 rounded-full border ${cat.bg} flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition`}>
-              {cat.icon}
+            <div className={`w-14 h-14 rounded-full border ${cat.bg} flex items-center justify-center text-xl shadow-xs group-hover:scale-105 transition overflow-hidden`}>
+              {cat.icon && (cat.icon.startsWith("data:") || cat.icon.startsWith("http") || cat.icon.startsWith("/")) ? (
+                <img src={cat.icon} alt={cat.name} className="w-full h-full object-cover" />
+              ) : (
+                cat.icon
+              )}
             </div>
             <span className="text-xs font-bold text-gray-700 group-hover:text-emerald-700 transition">
               {cat.name}

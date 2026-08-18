@@ -1216,7 +1216,11 @@ export default function AdminProductsPage() {
                 {categories.map((c) => (
                   <tr key={c.id} className="hover:bg-gray-50 transition">
                     <td className="px-6 py-4 flex items-center gap-3 font-bold text-gray-900 text-sm">
-                      <span className="text-xl bg-gray-100 p-2 rounded-xl border border-gray-200">{c.icon}</span>
+                      {c.icon && (c.icon.startsWith("data:") || c.icon.startsWith("http") || c.icon.startsWith("/")) ? (
+                        <img src={c.icon} alt={c.name} className="w-9 h-9 rounded-xl object-cover border border-gray-200 shadow-2xs" />
+                      ) : (
+                        <span className="text-xl bg-gray-100 p-2 rounded-xl border border-gray-200">{c.icon || "📁"}</span>
+                      )}
                       <span>{c.name}</span>
                     </td>
                     <td className="px-6 py-4 font-mono text-gray-500 text-[11px]">/category/{c.slug}</td>
@@ -1615,14 +1619,61 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Icon / Emoji</label>
-                <input
-                  type="text"
-                  placeholder="e.g. 👗, 🪑, 📱, 👟"
-                  value={newCategoryForm.icon}
-                  onChange={(e) => setNewCategoryForm({ ...newCategoryForm, icon: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
-                />
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Image / Icon *</label>
+                
+                {/* Live Image Preview */}
+                {newCategoryForm.icon && (newCategoryForm.icon.startsWith("data:") || newCategoryForm.icon.startsWith("http") || newCategoryForm.icon.startsWith("/")) ? (
+                  <div className="relative mb-2.5 w-20 h-20 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-sm group">
+                    <img src={newCategoryForm.icon} alt="Category Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setNewCategoryForm({ ...newCategoryForm, icon: "📁" })}
+                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-md cursor-pointer hover:scale-110 transition"
+                      title="Remove Image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl bg-emerald-50 p-2 rounded-xl border border-emerald-200">{newCategoryForm.icon || "📁"}</span>
+                    <span className="text-[11px] text-gray-500 font-medium">Default Icon / Emoji</span>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 border-dashed rounded-xl px-3.5 py-2.5 cursor-pointer text-xs font-bold transition">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    <span>📁 Upload Image from Device (Mobile / PC)</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            if (typeof reader.result === "string") {
+                              setNewCategoryForm({ ...newCategoryForm, icon: reader.result });
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="Or paste Image URL / type Emoji (e.g. https://... or 👗)"
+                    value={newCategoryForm.icon}
+                    onChange={(e) => setNewCategoryForm({ ...newCategoryForm, icon: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div className="flex gap-3 pt-3 border-t border-gray-100">
@@ -1685,13 +1736,61 @@ export default function AdminProductsPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Icon / Emoji</label>
-                <input
-                  type="text"
-                  value={editCategoryForm.icon}
-                  onChange={(e) => setEditCategoryForm({ ...editCategoryForm, icon: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
-                />
+                <label className="block text-xs font-extrabold text-gray-700 mb-1">Category Image / Icon *</label>
+                
+                {/* Live Image Preview */}
+                {editCategoryForm.icon && (editCategoryForm.icon.startsWith("data:") || editCategoryForm.icon.startsWith("http") || editCategoryForm.icon.startsWith("/")) ? (
+                  <div className="relative mb-2.5 w-20 h-20 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-sm group">
+                    <img src={editCategoryForm.icon} alt="Category Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setEditCategoryForm({ ...editCategoryForm, icon: "📁" })}
+                      className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold shadow-md cursor-pointer hover:scale-110 transition"
+                      title="Remove Image"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-2xl bg-emerald-50 p-2 rounded-xl border border-emerald-200">{editCategoryForm.icon || "📁"}</span>
+                    <span className="text-[11px] text-gray-500 font-medium">Default Icon / Emoji</span>
+                  </div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 border-dashed rounded-xl px-3.5 py-2.5 cursor-pointer text-xs font-bold transition">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    <span>📁 Upload New Image from Device</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            if (typeof reader.result === "string") {
+                              setEditCategoryForm({ ...editCategoryForm, icon: reader.result });
+                            }
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                    />
+                  </label>
+
+                  <input
+                    type="text"
+                    placeholder="Or paste Image URL / type Emoji (e.g. https://... or 👗)"
+                    value={editCategoryForm.icon}
+                    onChange={(e) => setEditCategoryForm({ ...editCategoryForm, icon: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  />
+                </div>
               </div>
 
               <div>
