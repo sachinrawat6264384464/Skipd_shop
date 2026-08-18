@@ -105,50 +105,73 @@ export default function AdminOrdersPage() {
           fetchProducts()
         ]);
 
-        if (apiProducts && Array.isArray(apiProducts)) {
-          setDbProducts(apiProducts);
-        } else {
-          setDbProducts([]);
-        }
+        const productsList = Array.isArray(apiProducts) ? apiProducts : [];
+        const categoriesList = Array.isArray(apiCategories) ? apiCategories : [];
 
-        if (apiCategories && Array.isArray(apiCategories)) {
-          setDbCategories(apiCategories);
-        } else {
-          setDbCategories([]);
-        }
+        setDbProducts(productsList);
+        setDbCategories(categoriesList);
 
         if (apiOrders && Array.isArray(apiOrders) && apiOrders.length > 0) {
-          const formatted = apiOrders.map((o: any) => ({
-            id: String(o.order_number || `#SKIPD-${o.id}`),
-            raw_created_at: o.created_at || new Date().toISOString(),
-            date: (() => {
-              if (!o.created_at) return "Aug 18, 2026, 01:21 PM";
-              const d = new Date(o.created_at);
-              return !isNaN(d.getTime())
-                ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
-                : String(o.created_at);
-            })(),
-            customer: String(o.user?.full_name || o.customer_name || o.user_name || "Customer"),
-            phone: String(o.customer_phone || o.user?.phone || "+91 98765 43210"),
-            email: String(o.customer_email || o.user?.email || "customer@skipd.in"),
-            address: o.shipping_address ? `${o.shipping_address.city || ''}, ${o.shipping_address.state || ''} (${o.shipping_address.pincode || ''})` : "India",
-            raw_items: Array.isArray(o.items) ? o.items : [],
-            items: (() => {
-              if (typeof o.items === "string") return o.items;
-              if (Array.isArray(o.items) && o.items.length > 0) {
-                const first = o.items[0];
-                return typeof first === "string"
-                  ? first
-                  : `${first?.product_title || first?.title || first?.name || 'Purchased Item'} (x${first?.quantity || 1})`;
+          const formatted = apiOrders.map((o: any) => {
+            const rawItemsList = Array.isArray(o.items) ? o.items : [];
+            const firstItem = rawItemsList.length > 0 ? rawItemsList[0] : null;
+
+            // Resolve Category dynamically
+            let resolvedCat = "Electronics";
+            if (firstItem) {
+              const res = resolveItemCategory(firstItem, productsList);
+              if (res.category) {
+                resolvedCat = res.category.charAt(0).toUpperCase() + res.category.slice(1);
+              } else if (res.title) {
+                for (const cat of categoriesList) {
+                  if (matchesCategory(res.title, cat.slug || "", cat.name || "")) {
+                    resolvedCat = cat.name;
+                    break;
+                  }
+                }
               }
-              return "Store Item (x1)";
-            })(),
-            img: typeof o.items?.[0]?.product_image === "string" ? o.items[0].product_image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
-            amount: Number(o.total_amount || o.total || 2999),
-            payment: String(o.payment_method || "UPI"),
-            awb: String(o.tracking_number || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
-            status: String(o.status || "Processing")
-          }));
+            } else if (typeof o.items === "string") {
+              for (const cat of categoriesList) {
+                if (matchesCategory(o.items, cat.slug || "", cat.name || "")) {
+                  resolvedCat = cat.name;
+                  break;
+                }
+              }
+            }
+
+            return {
+              id: String(o.order_number || `#SKIPD-${o.id}`),
+              raw_created_at: o.created_at || new Date().toISOString(),
+              date: (() => {
+                if (!o.created_at) return "Aug 18, 2026, 01:21 PM";
+                const d = new Date(o.created_at);
+                return !isNaN(d.getTime())
+                  ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
+                  : String(o.created_at);
+              })(),
+              customer: String(o.user?.full_name || o.customer_name || o.user_name || "Customer"),
+              phone: String(o.customer_phone || o.user?.phone || "+91 98765 43210"),
+              email: String(o.customer_email || o.user?.email || "customer@skipd.in"),
+              address: o.shipping_address ? `${o.shipping_address.city || ''}, ${o.shipping_address.state || ''} (${o.shipping_address.pincode || ''})` : "India",
+              category: resolvedCat,
+              raw_items: rawItemsList,
+              items: (() => {
+                if (typeof o.items === "string") return o.items;
+                if (Array.isArray(o.items) && o.items.length > 0) {
+                  const first = o.items[0];
+                  return typeof first === "string"
+                    ? first
+                    : `${first?.product_title || first?.title || first?.name || 'Purchased Item'} (x${first?.quantity || 1})`;
+                }
+                return "Store Item (x1)";
+              })(),
+              img: typeof o.items?.[0]?.product_image === "string" ? o.items[0].product_image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200",
+              amount: Number(o.total_amount || o.total || 2999),
+              payment: String(o.payment_method || "UPI"),
+              awb: String(o.tracking_number || `SR-${Math.floor(100000 + Math.random() * 900000)}`),
+              status: String(o.status || "Processing")
+            };
+          });
 
           setOrders(formatted);
         } else {
@@ -307,12 +330,14 @@ export default function AdminOrdersPage() {
     const custStr = (o.customer || "").toString();
     const awbStr = (o.awb || "").toString();
     const itemsStr = (o.items || "").toString();
+    const catStr = (o.category || "").toString();
 
     const searchMatch = !searchQuery.trim() || 
       idStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
       custStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
       awbStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      itemsStr.toLowerCase().includes(searchQuery.toLowerCase());
+      itemsStr.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      catStr.toLowerCase().includes(searchQuery.toLowerCase());
 
     const paymentStr = (o.payment || "").toString();
     const paymentMatch = paymentFilter === "ALL" || paymentStr.toUpperCase() === paymentFilter.toUpperCase();
@@ -348,7 +373,7 @@ export default function AdminOrdersPage() {
     showNotification("🔄 Filters Reset");
   };
 
-  // 📥 100% Real-Time CSV File Export Handler
+  // 📥 100% Real-Time CSV File Export Handler with Category Column
   const handleExportOrders = () => {
     if (filteredOrders.length === 0) {
       showNotification("⚠️ No orders matching selected filters to export.");
@@ -361,6 +386,7 @@ export default function AdminOrdersPage() {
       "Customer Name",
       "Email",
       "Phone",
+      "Category",
       "Items",
       "Total Amount (INR)",
       "Payment Method",
@@ -377,6 +403,7 @@ export default function AdminOrdersPage() {
         `"${(o.customer || '').replace(/"/g, '""')}"`,
         `"${(o.email || '').replace(/"/g, '""')}"`,
         `"${(o.phone || '').replace(/"/g, '""')}"`,
+        `"${(o.category || 'Electronics').replace(/"/g, '""')}"`,
         `"${(typeof o.items === 'string' ? o.items : 'Product Item').replace(/"/g, '""')}"`,
         o.amount,
         `"${o.payment}"`,
@@ -711,7 +738,7 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      {/* 🛍️ Main Orders Table (Explicit Order ID & Date Column with Timestamp) */}
+      {/* 🛍️ Main Orders Table (Explicit Order ID, Date Timestamp & Category Column) */}
       <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
           {loading ? (
@@ -734,6 +761,7 @@ export default function AdminOrdersPage() {
                 <tr>
                   <th className="px-5 py-3.5">Order ID &amp; Timestamp</th>
                   <th className="px-5 py-3.5">Customer</th>
+                  <th className="px-5 py-3.5">Category</th>
                   <th className="px-5 py-3.5">Items</th>
                   <th className="px-5 py-3.5">Total Amount</th>
                   <th className="px-5 py-3.5">Payment</th>
@@ -770,6 +798,14 @@ export default function AdminOrdersPage() {
                         <p className="text-[10px] text-gray-400 font-medium mt-0.5">{ord.phone}</p>
                       </td>
 
+                      {/* Category Badge Column */}
+                      <td className="px-5 py-4">
+                        <span className="bg-purple-50 text-purple-800 border border-purple-200/80 font-black px-2.5 py-1 rounded-xl text-[10px] inline-flex items-center gap-1 shadow-2xs">
+                          <span>📁</span>
+                          <span>{ord.category || "Electronics"}</span>
+                        </span>
+                      </td>
+
                       {/* Items */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
@@ -778,7 +814,7 @@ export default function AdminOrdersPage() {
                             alt={typeof ord.items === "string" ? ord.items : "Product Image"}
                             className="w-10 h-10 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0 group-hover:scale-105 transition"
                           />
-                          <span className="font-bold text-gray-900 text-xs truncate max-w-[180px]">
+                          <span className="font-bold text-gray-900 text-xs truncate max-w-[160px]">
                             {typeof ord.items === "string" ? ord.items : "Store Product (x1)"}
                           </span>
                         </div>
@@ -969,8 +1005,8 @@ export default function AdminOrdersPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gray-50 border border-gray-200 p-3 rounded-2xl space-y-0.5">
-                  <p className="text-[10px] text-gray-400 font-bold uppercase">Payment Mode</p>
-                  <p className="font-black text-gray-900">{selectedOrderDetails.payment}</p>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase">Order Category</p>
+                  <p className="font-black text-purple-800">📁 {selectedOrderDetails.category || "Electronics"}</p>
                 </div>
                 <div className="bg-gray-50 border border-gray-200 p-3 rounded-2xl space-y-0.5">
                   <p className="text-[10px] text-gray-400 font-bold uppercase">AWB Tracking Code</p>
