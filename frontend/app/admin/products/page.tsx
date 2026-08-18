@@ -134,21 +134,31 @@ export default function AdminProductsPage() {
   const handleCreateSubCategory = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newSubCategoryForm.name) return;
+
+    const parentVal = newSubCategoryForm.parent || (categories[0]?.slug || categories[0]?.name || "");
+    const parentCatObj = categories.find(c => c.slug === parentVal || c.name === parentVal);
+
+    const parentName = parentCatObj ? parentCatObj.name : parentVal;
+    const parentSlug = parentCatObj ? (parentCatObj.slug || parentCatObj.name.toLowerCase().replace(/[^a-z0-9]+/g, "-")) : parentVal.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
     const newSub = {
       id: Date.now(),
       name: newSubCategoryForm.name,
-      parent: newSubCategoryForm.parent,
+      parent: parentName,
+      category_slug: parentSlug,
       slug: newSubCategoryForm.slug || newSubCategoryForm.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
       count: 0
     };
+
     setSubCategories(prev => {
       const updated = [newSub, ...prev];
       if (typeof window !== "undefined") localStorage.setItem("skipd_subcategories", JSON.stringify(updated));
       return updated;
     });
-    showNotification(`✓ Sub-Category "${newSubCategoryForm.name}" created!`);
+
+    showNotification(`✓ Sub-Category "${newSubCategoryForm.name}" created under "${parentName}"!`);
     setShowAddSubCategoryModal(false);
-    setNewSubCategoryForm({ name: "", parent: "Mobiles & Tablets", slug: "" });
+    setNewSubCategoryForm({ name: "", parent: categories[0]?.slug || "", slug: "" });
   };
 
   const handleUpdateSubCategory = (e: React.FormEvent) => {
@@ -1954,12 +1964,14 @@ export default function AdminProductsPage() {
               <div>
                 <label className="block text-xs font-extrabold text-gray-700 mb-1">Parent Category *</label>
                 <select
-                  value={newSubCategoryForm.parent}
+                  value={newSubCategoryForm.parent || (categories[0]?.slug || categories[0]?.name || "")}
                   onChange={(e) => setNewSubCategoryForm({ ...newSubCategoryForm, parent: e.target.value })}
-                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold"
+                  className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-bold capitalize cursor-pointer"
                 >
                   {categories.map(c => (
-                    <option key={c.id} value={c.name}>{c.name}</option>
+                    <option key={c.id || c.slug} value={c.slug || c.name}>
+                      {c.icon ? `${c.icon} ` : ""}{c.name}
+                    </option>
                   ))}
                 </select>
               </div>
