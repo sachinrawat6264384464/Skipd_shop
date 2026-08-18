@@ -1,6 +1,25 @@
 import { getUserOrdersKey } from "../utils";
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://skipd-ecom.onrender.com/api/v1";
+export const getApiBaseUrl = () => {
+  if (typeof window !== "undefined") {
+    const envUrl = process.env.NEXT_PUBLIC_API_URL;
+    if (envUrl && !envUrl.includes("127.0.0.1") && !envUrl.includes("localhost")) {
+      return envUrl;
+    }
+    if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+      return "https://skipd-ecom.onrender.com/api/v1";
+    }
+    return envUrl || "http://127.0.0.1:8000/api/v1";
+  }
+
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (envUrl && !envUrl.includes("127.0.0.1") && !envUrl.includes("localhost")) {
+    return envUrl;
+  }
+  return "https://skipd-ecom.onrender.com/api/v1";
+};
+
+export const API_BASE_URL = getApiBaseUrl();
 
 export interface Product {
   id: number;
