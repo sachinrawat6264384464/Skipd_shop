@@ -64,11 +64,12 @@ export default function AdminOrdersPage() {
   const [activeTab, setActiveTab] = useState<string>("All Orders");
   const [loading, setLoading] = useState(true);
 
-  // Search & Filter state
+  // Search, Filter & Date Range State
   const [searchQuery, setSearchQuery] = useState("");
   const [paymentFilter, setPaymentFilter] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [awbFilter, setAwbFilter] = useState("ALL");
+  const [dateRangeFilter, setDateRangeFilter] = useState<"ALL" | "LAST_7" | "LAST_30" | "THIS_MONTH">("ALL");
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -92,27 +93,26 @@ export default function AdminOrdersPage() {
           fetchAdminCategories()
         ]);
 
-        // 1. Process Categories from PostgreSQL DB
         if (apiCategories && Array.isArray(apiCategories) && apiCategories.length > 0) {
           setDbCategories(apiCategories);
         } else {
           setDbCategories(DEFAULT_FALLBACK_CATEGORIES);
         }
 
-        // 2. Process Orders from PostgreSQL DB
         if (apiOrders && Array.isArray(apiOrders) && apiOrders.length > 0) {
           const formatted = apiOrders.map((o: any) => ({
             id: String(o.order_number || `#SKIPD-${o.id}`),
+            raw_created_at: o.created_at || new Date().toISOString(),
             date: (() => {
-              if (!o.created_at) return "May 25, 2025 10:30 AM";
+              if (!o.created_at) return "Aug 18, 2026, 01:21 PM";
               const d = new Date(o.created_at);
               return !isNaN(d.getTime())
                 ? d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
                 : String(o.created_at);
             })(),
-            customer: String(o.user?.full_name || o.user_name || "Customer"),
-            phone: String(o.user?.phone || "+91 98765 43210"),
-            email: String(o.user?.email || "customer@skipd.in"),
+            customer: String(o.user?.full_name || o.customer_name || o.user_name || "Customer"),
+            phone: String(o.customer_phone || o.user?.phone || "+91 98765 43210"),
+            email: String(o.customer_email || o.user?.email || "customer@skipd.in"),
             address: o.shipping_address ? `${o.shipping_address.city || ''}, ${o.shipping_address.state || ''} (${o.shipping_address.pincode || ''})` : "India",
             raw_items: Array.isArray(o.items) ? o.items : [],
             items: (() => {
@@ -155,16 +155,81 @@ export default function AdminOrdersPage() {
 
   const tabs = ["All Orders", "Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Returns", "Refunds"];
 
-  // Compute Dynamic Category Breakdown & Demand Calculations
+  // 📅 Real-Time Date Range Filtering Logic
+  const dateFilteredOrders = orders.filter((o) => {
+    if (dateRangeFilter === "ALL") return true;
+
+    const rawDate = o.raw_created_at ? new Date(o.raw_created_at) : new Date();
+    const now = new Date();
+    const diffDays = (now.getTime() - rawDate.getTime()) / (1000 * 3600 * 24);
+
+    if (dateRangeFilter === "LAST_7") return diffDays <= 7;
+    if (dateRangeFilter === "LAST_30") return diffDays <= 30;
+    if (dateRangeFilter === "THIS_MONTH") {
+      return rawDate.getMonth() === now.getMonth() && rawDate.getFullYear() === now.getFullYear();
+    }
+    return true;
+  });
+
+  // 📊 Dynamic 7-Day vs Previous 7-Day Calculations for Metric Badges
+  const nowTime = new Date().getTime();
+  const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
+  const fourteenDaysMs = 14 * 24 * 60 * 60 * 1000;
+
+  const current7DaysOrders = orders.filter(o => {
+    const d = new Date(o.raw_created_at).getTime();
+    return (nowTime - d) <= sevenDaysMs;
+  });
+
+  const previous7DaysOrders = orders.filter(o => {
+    const d = new Date(o.raw_created_at).getTime();
+    const diff = nowTime - d;
+    return diff > sevenDaysMs && diff <= fourteenDaysMs;
+  });
+
+  const calcPctChange = (curVal: number, prevVal: number) => {
+    if (prevVal === 0 && curVal === 0) return { text: "0% vs last 7 days", isUp: true };
+    if (prevVal === 0) return { text: "↑ +100% vs last 7 days", isUp: true };
+    const pct = (((curVal - prevVal) / prevVal) * 100).toFixed(1);
+    const num = Number(pct);
+    if (num >= 0) return { text: `↑ +${pct}% vs last 7 days`, isUp: true };
+    return { text: `↓ ${pct}% vs last 7 days`, isUp: false };
+  };
+
+  // Metric 1: Total Revenue
+  const curRev = current7DaysOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  const prevRev = previous7DaysOrders.reduce((sum, o) => sum + (o.amount || 0), 0);
+  const revStat = calcPctChange(curRev, prevRev);
+
+  // Metric 2: Completed Orders
+  const curComp = current7DaysOrders.filter(o => (o.status || "").toLowerCase() === "delivered").length;
+  const prevComp = previous7DaysOrders.filter(o => (o.status || "").toLowerCase() === "delivered").length;
+  const compStat = calcPctChange(curComp, prevComp);
+
+  // Metric 3: Pending Orders
+  const curPend = current7DaysOrders.filter(o => (o.status || "").toLowerCase() === "pending" || (o.status || "").toLowerCase() === "processing").length;
+  const prevPend = previous7DaysOrders.filter(o => (o.status || "").toLowerCase() === "pending" || (o.status || "").toLowerCase() === "processing").length;
+  const pendStat = calcPctChange(curPend, prevPend);
+
+  // Metric 4: Return Requests
+  const curRet = current7DaysOrders.filter(o => (o.status || "").toLowerCase() === "returns").length;
+  const prevRet = previous7DaysOrders.filter(o => (o.status || "").toLowerCase() === "returns").length;
+  const retStat = calcPctChange(curRet, prevRet);
+
+  // Metric 5: Refunds Issued
+  const curRef = current7DaysOrders.filter(o => (o.status || "").toLowerCase() === "refunds").length;
+  const prevRef = previous7DaysOrders.filter(o => (o.status || "").toLowerCase() === "refunds").length;
+  const refStat = calcPctChange(curRef, prevRef);
+
+  // Compute Dynamic Category Breakdown from Date-Filtered Orders
   const categoryBreakdown = (dbCategories.length > 0 ? dbCategories : DEFAULT_FALLBACK_CATEGORIES).map((cat, idx) => {
     const catSlug = cat.slug || cat.name?.toLowerCase() || "";
     const catName = cat.name || "";
     const catIcon = cat.icon || "📁";
     const prodCount = cat.count || 0;
 
-    // Calculate order count for this category dynamically
     let orderCount = 0;
-    orders.forEach((o) => {
+    dateFilteredOrders.forEach((o) => {
       let isMatch = false;
       if (Array.isArray(o.raw_items) && o.raw_items.length > 0) {
         isMatch = o.raw_items.some((it: any) => {
@@ -190,11 +255,10 @@ export default function AdminOrdersPage() {
     };
   });
 
-  // Sort categories by order_count descending (Highest demand category first)
   categoryBreakdown.sort((a, b) => b.order_count - a.order_count);
 
-  // Filtered Orders (Null-safe)
-  const filteredOrders = orders.filter((o) => {
+  // Filtered Orders (Search + Tab + Dropdowns + Date Range)
+  const filteredOrders = dateFilteredOrders.filter((o) => {
     if (!o) return false;
     const statusStr = (o.status || "").toString();
     const tabMatch = activeTab === "All Orders" || statusStr.toLowerCase() === activeTab.toLowerCase();
@@ -239,20 +303,68 @@ export default function AdminOrdersPage() {
     setPaymentFilter("ALL");
     setStatusFilter("ALL");
     setAwbFilter("ALL");
+    setDateRangeFilter("ALL");
     setCurrentPage(1);
     showNotification("🔄 Filters Reset");
   };
 
+  // 📥 100% Real-Time CSV File Export Handler
   const handleExportOrders = () => {
-    showNotification("📥 Exporting Orders Lifecycle Report (CSV/PDF)...");
+    if (filteredOrders.length === 0) {
+      showNotification("⚠️ No orders matching selected filters to export.");
+      return;
+    }
+
+    const headers = [
+      "Order ID",
+      "Date & Time",
+      "Customer Name",
+      "Email",
+      "Phone",
+      "Items",
+      "Total Amount (INR)",
+      "Payment Method",
+      "AWB Tracking Code",
+      "Fulfillment Status",
+      "Shipping Address"
+    ];
+
+    const csvRows = [
+      headers.join(","),
+      ...filteredOrders.map(o => [
+        `"${o.id}"`,
+        `"${o.date}"`,
+        `"${(o.customer || '').replace(/"/g, '""')}"`,
+        `"${(o.email || '').replace(/"/g, '""')}"`,
+        `"${(o.phone || '').replace(/"/g, '""')}"`,
+        `"${(typeof o.items === 'string' ? o.items : 'Product Item').replace(/"/g, '""')}"`,
+        o.amount,
+        `"${o.payment}"`,
+        `"${o.awb}"`,
+        `"${o.status}"`,
+        `"${(o.address || '').replace(/"/g, '""')}"`
+      ].join(","))
+    ];
+
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `skipd_orders_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showNotification(`📥 Exported ${filteredOrders.length} orders to CSV successfully!`);
   };
 
-  // Metrics Calculations (Null-safe)
-  const totalRev = orders.reduce((sum, o) => sum + (typeof o?.amount === 'number' ? o.amount : Number(o?.amount) || 0), 0);
-  const completedCount = orders.filter(o => (o?.status || "").toLowerCase() === "delivered").length;
-  const pendingCount = orders.filter(o => (o?.status || "").toLowerCase() === "pending" || (o?.status || "").toLowerCase() === "processing").length;
-  const returnCount = orders.filter(o => (o?.status || "").toLowerCase() === "returns").length;
-  const refundCount = orders.filter(o => (o?.status || "").toLowerCase() === "refunds").length;
+  // Dynamic Overall Metrics Calculations
+  const totalRev = dateFilteredOrders.reduce((sum, o) => sum + (typeof o?.amount === 'number' ? o.amount : Number(o?.amount) || 0), 0);
+  const completedCount = dateFilteredOrders.filter(o => (o?.status || "").toLowerCase() === "delivered").length;
+  const pendingCount = dateFilteredOrders.filter(o => (o?.status || "").toLowerCase() === "pending" || (o?.status || "").toLowerCase() === "processing").length;
+  const returnCount = dateFilteredOrders.filter(o => (o?.status || "").toLowerCase() === "returns").length;
+  const refundCount = dateFilteredOrders.filter(o => (o?.status || "").toLowerCase() === "refunds").length;
 
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
@@ -279,14 +391,28 @@ export default function AdminOrdersPage() {
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2 bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-700 cursor-pointer shadow-2xs">
-            <span>📅 Live Real-Time DB</span>
-            <span className="text-[10px] text-gray-400">▼</span>
-          </div>
+          
+          {/* 📅 Interactive Date Range Selector Dropdown */}
+          <select
+            value={dateRangeFilter}
+            onChange={(e) => {
+              setDateRangeFilter(e.target.value as any);
+              setCurrentPage(1);
+              showNotification("📅 Date filter updated");
+            }}
+            className="bg-gray-50 border border-gray-300 hover:bg-gray-100 font-bold text-xs px-3.5 py-2.5 rounded-xl transition cursor-pointer shadow-2xs text-gray-800 focus:outline-none"
+          >
+            <option value="ALL">📅 All Time (Live DB)</option>
+            <option value="LAST_7">📅 Last 7 Days</option>
+            <option value="LAST_30">📅 Last 30 Days</option>
+            <option value="THIS_MONTH">📅 This Month</option>
+          </select>
 
+          {/* 📥 Working CSV Export Button */}
           <button
             onClick={handleExportOrders}
-            className="bg-white border border-emerald-600 text-emerald-700 hover:bg-emerald-50 font-black text-xs px-4 py-2.5 rounded-xl transition cursor-pointer shadow-2xs flex items-center gap-1.5"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition cursor-pointer shadow-md flex items-center gap-1.5"
+            title="Download CSV Orders Report"
           >
             <span>📥</span>
             <span>Export Orders</span>
@@ -296,7 +422,7 @@ export default function AdminOrdersPage() {
             <span className="text-lg">🛒</span>
             <div className="text-left leading-tight">
               <p className="text-[9px] text-emerald-600 font-bold uppercase">Total Orders</p>
-              <p className="font-black text-sm text-emerald-900">{orders.length}</p>
+              <p className="font-black text-sm text-emerald-900">{dateFilteredOrders.length}</p>
             </div>
           </div>
         </div>
@@ -307,8 +433,8 @@ export default function AdminOrdersPage() {
         {tabs.map((tab) => {
           const active = activeTab === tab;
           const count = tab === "All Orders" 
-            ? orders.length 
-            : orders.filter(o => (o?.status || "").toLowerCase() === tab.toLowerCase()).length;
+            ? dateFilteredOrders.length 
+            : dateFilteredOrders.filter(o => (o?.status || "").toLowerCase() === tab.toLowerCase()).length;
 
           return (
             <button
@@ -334,8 +460,10 @@ export default function AdminOrdersPage() {
         })}
       </div>
 
-      {/* 📊 5 Metric Overview Cards Row */}
+      {/* 📊 5 Metric Overview Cards Row with Dynamic Real-Time 7-Day % Calculation */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        
+        {/* Total Revenue */}
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl shrink-0">
             ₹
@@ -343,10 +471,13 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Total Revenue</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">₹{totalRev.toLocaleString("en-IN")}</h3>
-            <p className="text-[10px] text-emerald-600 font-bold">↑ Live PostgreSQL DB</p>
+            <p className={`text-[10px] font-bold ${revStat.isUp ? "text-emerald-600" : "text-amber-600"}`}>
+              {revStat.text}
+            </p>
           </div>
         </div>
 
+        {/* Orders Completed */}
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-black text-xl shrink-0">
             ☑
@@ -354,10 +485,13 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Orders Completed</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">{completedCount}</h3>
-            <p className="text-[10px] text-emerald-600 font-bold">Delivered Orders</p>
+            <p className={`text-[10px] font-bold ${compStat.isUp ? "text-emerald-600" : "text-amber-600"}`}>
+              {compStat.text}
+            </p>
           </div>
         </div>
 
+        {/* Orders Pending */}
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center font-black text-xl shrink-0">
             🕒
@@ -365,10 +499,13 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Orders Pending</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">{pendingCount}</h3>
-            <p className="text-[10px] text-amber-600 font-bold">Processing Queue</p>
+            <p className={`text-[10px] font-bold ${pendStat.isUp ? "text-amber-600" : "text-emerald-600"}`}>
+              {pendStat.text}
+            </p>
           </div>
         </div>
 
+        {/* Return Requests */}
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center font-black text-xl shrink-0">
             ↺
@@ -376,10 +513,13 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Return Requests</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">{returnCount}</h3>
-            <p className="text-[10px] text-emerald-600 font-bold">PostgreSQL Sync</p>
+            <p className={`text-[10px] font-bold ${retStat.isUp ? "text-rose-600" : "text-emerald-600"}`}>
+              {retStat.text}
+            </p>
           </div>
         </div>
 
+        {/* Refunds Issued */}
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3">
           <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-700 flex items-center justify-center font-black text-xl shrink-0">
             💳
@@ -387,12 +527,14 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Refunds Issued</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">{refundCount}</h3>
-            <p className="text-[10px] text-emerald-600 font-bold">Wallet &amp; Gateway</p>
+            <p className={`text-[10px] font-bold ${refStat.isUp ? "text-rose-600" : "text-emerald-600"}`}>
+              {refStat.text}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* 🏷️ DYNAMIC CATEGORY-WISE ORDERS BREAKDOWN CARDS (100% Fetched from PostgreSQL DB) */}
+      {/* 🏷️ DYNAMIC CATEGORY-WISE ORDERS BREAKDOWN CARDS */}
       <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-3">
         <div className="flex justify-between items-center flex-wrap gap-2">
           <div>
@@ -524,7 +666,7 @@ export default function AdminOrdersPage() {
         </div>
       </div>
 
-      {/* 🛍️ Main Orders Table */}
+      {/* 🛍️ Main Orders Table (Explicit Order ID & Date Column with Timestamp) */}
       <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
           {loading ? (
@@ -545,7 +687,7 @@ export default function AdminOrdersPage() {
             <table className="w-full text-left text-xs text-gray-700">
               <thead className="bg-gray-50 text-gray-400 uppercase text-[10px] font-extrabold border-b border-gray-100 tracking-wider">
                 <tr>
-                  <th className="px-5 py-3.5">Order ID &amp; Date</th>
+                  <th className="px-5 py-3.5">Order ID &amp; Timestamp</th>
                   <th className="px-5 py-3.5">Customer</th>
                   <th className="px-5 py-3.5">Items</th>
                   <th className="px-5 py-3.5">Total Amount</th>
@@ -564,20 +706,26 @@ export default function AdminOrdersPage() {
                   const isCancelled = status === "cancelled";
                   const isPending = status === "pending";
                   const isReturns = status === "returns";
-                  const isRefunds = status === "refunds";
 
                   return (
                     <tr key={ord.id} className="hover:bg-gray-50 transition group">
+                      
+                      {/* Explicit Order ID & Date Timestamp Column */}
                       <td className="px-5 py-4">
                         <p className="font-black text-gray-900 font-mono text-xs">{ord.id}</p>
-                        <p className="text-[10px] text-gray-400 font-medium mt-0.5">{ord.date}</p>
+                        <p className="text-[10px] text-gray-500 font-bold mt-0.5 flex items-center gap-1">
+                          <span>📅</span>
+                          <span>{ord.date}</span>
+                        </p>
                       </td>
 
+                      {/* Customer */}
                       <td className="px-5 py-4">
                         <p className="font-black text-gray-900 text-xs">{ord.customer}</p>
                         <p className="text-[10px] text-gray-400 font-medium mt-0.5">{ord.phone}</p>
                       </td>
 
+                      {/* Items */}
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
                           <img
@@ -591,10 +739,12 @@ export default function AdminOrdersPage() {
                         </div>
                       </td>
 
+                      {/* Total Amount */}
                       <td className="px-5 py-4 font-black text-gray-900 text-sm">
                         ₹{Number(ord?.amount || 0).toLocaleString("en-IN")}
                       </td>
 
+                      {/* Payment */}
                       <td className="px-5 py-4">
                         {ord.payment === "UPI" ? (
                           <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 font-black px-2.5 py-0.5 rounded text-[10px]">
@@ -611,10 +761,12 @@ export default function AdminOrdersPage() {
                         )}
                       </td>
 
+                      {/* AWB Code */}
                       <td className="px-5 py-4 font-mono text-gray-500 text-[11px] font-bold">
                         {ord.awb}
                       </td>
 
+                      {/* Fulfillment Status Badges */}
                       <td className="px-5 py-4">
                         {isDelivered ? (
                           <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-emerald-200">
@@ -647,6 +799,7 @@ export default function AdminOrdersPage() {
                         )}
                       </td>
 
+                      {/* Actions Column */}
                       <td className="px-5 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           {!isDelivered && (
