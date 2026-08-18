@@ -3,48 +3,28 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { LoginModal } from "components/auth/login-modal";
-import { getUserWishlistKey } from "lib/utils";
+import { useWishlist } from "components/wishlist/wishlist-context";
 
 export function WishlistNavButton() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [wishlistCount, setWishlistCount] = useState(0);
+  const { wishlist } = useWishlist();
 
-  const updateCount = () => {
+  const checkLogin = () => {
     const token = localStorage.getItem("skipd_token");
     const user = localStorage.getItem("skipd_user");
     setIsLoggedIn(!!(token || user));
-
-    try {
-      const key = getUserWishlistKey();
-      const saved = localStorage.getItem(key);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setWishlistCount(parsed.length);
-          return;
-        }
-      }
-      setWishlistCount(0);
-    } catch (e) {
-      setWishlistCount(0);
-    }
   };
 
   useEffect(() => {
-    updateCount();
-
-    window.addEventListener("skipd_auth_changed", updateCount);
-    window.addEventListener("skipd_wishlist_updated", updateCount);
-    window.addEventListener("skipd_wishlist_changed", updateCount);
-    window.addEventListener("storage", updateCount);
+    checkLogin();
+    window.addEventListener("skipd_auth_changed", checkLogin);
     return () => {
-      window.removeEventListener("skipd_auth_changed", updateCount);
-      window.removeEventListener("skipd_wishlist_updated", updateCount);
-      window.removeEventListener("skipd_wishlist_changed", updateCount);
-      window.removeEventListener("storage", updateCount);
+      window.removeEventListener("skipd_auth_changed", checkLogin);
     };
   }, []);
+
+  const wishlistCount = wishlist.length;
 
   if (!isLoggedIn) {
     return (

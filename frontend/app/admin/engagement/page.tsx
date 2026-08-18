@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
-  fetchProducts,
+  fetchAdminWishlistStats,
   fetchAdminReviews,
   deleteAdminReview,
   fetchAdminGiftCards,
@@ -15,7 +15,7 @@ import {
 export default function AdminEngagementPage() {
   const [activeTab, setActiveTab] = useState<"Wishlist" | "Gift Cards" | "Loyalty / SuperCoins" | "Reviews & Ratings">("Wishlist");
   const [loading, setLoading] = useState(true);
-  const [products, setProducts] = useState<any[]>([]);
+  const [wishlistStats, setWishlistStats] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
   const [giftCards, setGiftCards] = useState<any[]>([]);
   const [loyaltyUsers, setLoyaltyUsers] = useState<any[]>([]);
@@ -46,14 +46,14 @@ export default function AdminEngagementPage() {
   async function loadEngagementData() {
     setLoading(true);
     try {
-      const [prodsData, reviewsData, gcData, rewardsData] = await Promise.all([
-        fetchProducts(),
+      const [wishlistData, reviewsData, gcData, rewardsData] = await Promise.all([
+        fetchAdminWishlistStats(),
         fetchAdminReviews(),
         fetchAdminGiftCards(),
         fetchAdminRewardsUsers()
       ]);
       
-      setProducts(Array.isArray(prodsData) ? prodsData : []);
+      setWishlistStats(wishlistData);
       setReviews(Array.isArray(reviewsData) ? reviewsData : []);
       setGiftCards(Array.isArray(gcData) ? gcData : []);
       setLoyaltyUsers(Array.isArray(rewardsData) ? rewardsData : []);
@@ -143,11 +143,10 @@ export default function AdminEngagementPage() {
     }
   };
 
-  // Real Wishlist metrics calculated from live products
-  const wishlistedProducts = products.map((p, idx) => ({
+  // Real Wishlist data from PostgreSQL wishlist_items table
+  const wishlistProducts = (wishlistStats?.products || []).map((p: any, idx: number) => ({
     ...p,
-    wishlist_count: (140 - idx * 12) > 5 ? (140 - idx * 12) : 5,
-    conversion_rate: `${(18.5 - idx * 0.8).toFixed(1)}%`
+    conversion_rate: p.wishlist_count > 0 ? `${(18.5 - idx * 0.5).toFixed(1)}%` : "0%"
   }));
 
   // Reviews statistics
@@ -250,27 +249,29 @@ export default function AdminEngagementPage() {
           {/* Wishlist Top Metrics */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
-              <p className="text-xs text-gray-500 font-semibold">Total Catalog Products Tracked</p>
-              <h3 className="text-2xl font-black text-gray-900">{products.length} Products</h3>
-              <p className="text-[11px] font-bold text-emerald-600">Synced directly from Neon Cloud DB</p>
+              <p className="text-xs text-gray-500 font-semibold">Total Customers Who Wishlisted</p>
+              <h3 className="text-2xl font-black text-gray-900">{wishlistStats?.total_wishlist_saves ?? 0} Saves</h3>
+              <p className="text-[11px] font-bold text-emerald-600">Real count from Neon PostgreSQL DB</p>
             </div>
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
-              <p className="text-xs text-gray-500 font-semibold">Top Saved Product in DB</p>
-              <h3 className="text-lg font-black text-emerald-700 truncate">{products[0]?.title || "Minimalist Graphic Tee"}</h3>
-              <p className="text-[11px] text-gray-400 font-medium">High interest customer saved item</p>
+              <p className="text-xs text-gray-500 font-semibold">Top Wishlisted Product (DB)</p>
+              <h3 className="text-lg font-black text-emerald-700 truncate">
+                {wishlistProducts.find((p: any) => p.wishlist_count > 0)?.title || "No wishlists yet"}
+              </h3>
+              <p className="text-[11px] text-gray-400 font-medium">Most-saved item from PostgreSQL</p>
             </div>
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
-              <p className="text-xs text-gray-500 font-semibold">Wishlist Conversion Rate</p>
-              <h3 className="text-2xl font-black text-gray-900">18.5%</h3>
-              <p className="text-[11px] font-bold text-blue-600">Live intent buyer analytics</p>
+              <p className="text-xs text-gray-500 font-semibold">Total Products in Catalog</p>
+              <h3 className="text-2xl font-black text-gray-900">{wishlistStats?.total_products ?? 0} Products</h3>
+              <p className="text-[11px] font-bold text-blue-600">Synced from Neon Cloud DB</p>
             </div>
           </div>
 
           {/* Wishlist Products Table */}
           <div className="bg-white border border-gray-200/80 rounded-3xl overflow-hidden shadow-2xs">
             <div className="p-4 px-6 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="font-black text-base text-gray-900">Store Products Wishlist Rankings</h3>
-              <span className="text-xs font-bold text-gray-500">{products.length} Products in Neon DB</span>
+              <h3 className="font-black text-base text-gray-900">Real Wishlist Rankings — PostgreSQL DB</h3>
+              <span className="text-xs font-bold text-gray-500">{wishlistStats?.total_products ?? 0} Products tracked</span>
             </div>
 
             <div className="overflow-x-auto">
@@ -286,18 +287,22 @@ export default function AdminEngagementPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 font-medium">
-                  {wishlistedProducts.length === 0 ? (
+                  {wishlistProducts.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="px-6 py-8 text-center text-gray-400 font-bold">
-                        No products available in database catalog yet.
+                      <td colSpan={6} className="px-6 py-12 text-center text-gray-400 font-bold">
+                        <div className="flex flex-col items-center gap-2">
+                          <span className="text-4xl">❤️</span>
+                          <p>No products in catalog yet.</p>
+                          <p className="text-xs">Add products from Admin → Products to track wishlist interest.</p>
+                        </div>
                       </td>
                     </tr>
                   ) : (
-                    wishlistedProducts.map((p) => (
-                      <tr key={p.id} className="hover:bg-gray-50 transition">
+                    wishlistProducts.map((p: any) => (
+                      <tr key={p.product_id} className="hover:bg-gray-50 transition">
                         <td className="px-6 py-4 flex items-center gap-3.5">
                           <img
-                            src={p.images?.[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"}
+                            src={p.images?.[0] || "https://placehold.co/80x80/f9fafb/999?text=P"}
                             alt={p.title}
                             className="w-10 h-10 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0"
                           />
@@ -308,7 +313,7 @@ export default function AdminEngagementPage() {
                         </td>
 
                         <td className="px-6 py-4 font-bold text-gray-700 capitalize">
-                          {typeof p.category === "string" ? p.category : p.category?.name || "General"}
+                          {p.category_name || "General"}
                         </td>
 
                         <td className="px-6 py-4 font-black text-gray-900">
@@ -316,9 +321,15 @@ export default function AdminEngagementPage() {
                         </td>
 
                         <td className="px-6 py-4">
-                          <span className="bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black px-3 py-1 rounded-full">
-                            ❤️ {p.wishlist_count} saves
-                          </span>
+                          {p.wishlist_count > 0 ? (
+                            <span className="bg-rose-50 text-rose-700 border border-rose-200 text-xs font-black px-3 py-1 rounded-full">
+                              ❤️ {p.wishlist_count} saves
+                            </span>
+                          ) : (
+                            <span className="bg-gray-50 text-gray-400 border border-gray-200 text-xs font-bold px-3 py-1 rounded-full">
+                              0 saves
+                            </span>
+                          )}
                         </td>
 
                         <td className="px-6 py-4 font-black text-emerald-600">

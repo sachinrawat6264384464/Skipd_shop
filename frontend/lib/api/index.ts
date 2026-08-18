@@ -1680,6 +1680,53 @@ export async function creditUserSuperCoins(email: string, coins: number) {
   return null;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 📊 ADMIN WISHLIST STATS — real counts from PostgreSQL wishlist_items table
+// ─────────────────────────────────────────────────────────────────────────────
+export async function fetchAdminWishlistStats() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/wishlist/admin/stats`, { cache: "no-store" });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Fetch admin wishlist stats fallback");
+  }
+  return null;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ❤️ USER WISHLIST — saved in PostgreSQL wishlist_items table (requires token)
+// ─────────────────────────────────────────────────────────────────────────────
+export async function fetchUserWishlistDB(token: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/wishlist`, {
+      headers: { Authorization: `Bearer ${token}` },
+      cache: "no-store"
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Fetch user wishlist from DB fallback");
+  }
+  return null;
+}
+
+export async function toggleWishlistDB(token: string, productId: number) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/wishlist/toggle`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ product_id: productId })
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Toggle wishlist DB fallback");
+  }
+  return null;
+}
+
+
 
 
 

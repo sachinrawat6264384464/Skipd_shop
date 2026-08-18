@@ -1,7 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
-import { getUserWishlistKey } from "lib/utils";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 export interface WishlistItem {
   id: number;
@@ -24,84 +23,114 @@ interface WishlistContextType {
 
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
+const API_BASE = typeof window !== "undefined"
+  ? (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1"
+    ? "https://skipd-ecom.onrender.com/api/v1"
+    : (process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1"))
+  : "https://skipd-ecom.onrender.com/api/v1";
+
+function getToken(): string | null {
+  if (typeof window === "undefined") return null;
+  return localStorage.getItem("skipd_token") || null;
+}
+
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
 
-  const loadWishlist = () => {
-    const key = getUserWishlistKey();
-    const token = localStorage.getItem("skipd_token");
-    const user = localStorage.getItem("skipd_user");
-    const loggedIn = !!(token || user);
-
-    const saved = localStorage.getItem(key);
-    if (saved !== null) {
-      try {
-        setWishlist(JSON.parse(saved));
-        return;
-      } catch (e) {}
+  /** Load wishlist from PostgreSQL DB if logged in */
+  const loadWishlistFromDB = useCallback(async () => {
+    const token = getToken();
+    if (!token) {
+      // Guest user: empty wishlist, no localStorage fallback
+      setWishlist([]);
+      return;
     }
-
-    // New logged-in user starts with 0 items, guest gets demo seed items
-    const initial = loggedIn ? [] : [
-      {
-        id: 1,
-        handle: "active-anc-headphones",
-        title: "boAt Rockerz Plus 550 ANC Headphones",
-        price: 1799,
-        compare_at_price: 4990,
-        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
-        category: "Tech Essentials",
-        rating: 4.3
+    try {
+      const res = await fetch(`${API_BASE}/wishlist`, {
+        headers: { Authorization: `Bearer ${token}` },
+        cache: "no-store"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const items: WishlistItem[] = (data.wishlist || []).map((w: any) => ({
+          id: w.product_id,
+          handle: w.handle || "",
+          title: w.title || "",
+          price: w.price || 0,
+          compare_at_price: w.compare_at_price,
+          image: w.image || "",
+          category: w.category || undefined
+        }));
+        setWishlist(items);
+        return;
       }
-    ];
-    setWishlist(initial);
-    localStorage.setItem(key, JSON.stringify(initial));
-  };
-
-  useEffect(() => {
-    loadWishlist();
-
-    window.addEventListener("skipd_auth_changed", loadWishlist);
-    window.addEventListener("skipd_wishlist_updated", loadWishlist);
-    window.addEventListener("skipd_wishlist_changed", loadWishlist);
-    window.addEventListener("storage", loadWishlist);
-    return () => {
-      window.removeEventListener("skipd_auth_changed", loadWishlist);
-      window.removeEventListener("skipd_wishlist_updated", loadWishlist);
-      window.removeEventListener("skipd_wishlist_changed", loadWishlist);
-      window.removeEventListener("storage", loadWishlist);
-    };
+    } catch (e) {
+      console.warn("[Wishlist] Failed to load from DB:", e);
+    }
+    setWishlist([]);
   }, []);
 
-  const saveWishlist = (items: WishlistItem[]) => {
-    setWishlist(items);
-    const key = getUserWishlistKey();
-    localStorage.setItem(key, JSON.stringify(items));
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("skipd_wishlist_updated"));
-      window.dispatchEvent(new Event("skipd_wishlist_changed"));
+  useEffect(() => {
+    loadWishlistFromDB();
+    window.addEventListener("skipd_auth_changed", loadWishlistFromDB);
+    return () => {
+      window.removeEventListener("skipd_auth_changed", loadWishlistFromDB);
+    };
+  }, [loadWishlistFromDB]);
+
+  /** Toggle wishlist item — writes directly to PostgreSQL DB via API */
+  const toggleWishlistDB = async (productId: number): Promise<"added" | "removed" | null> => {
+    const token = getToken();
+    if (!token) return null;
+    try {
+      const res = await fetch(`${API_BASE}/wishlist/toggle`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ product_id: productId })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return data.status as "added" | "removed";
+      }
+    } catch (e) {
+      console.warn("[Wishlist] Toggle DB failed:", e);
+    }
+    return null;
+  };
+
+  const addToWishlist = async (item: WishlistItem) => {
+    if (wishlist.some(w => w.id === item.id)) return;
+    const status = await toggleWishlistDB(item.id);
+    if (status === "added") {
+      setWishlist(prev => [...prev, item]);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("skipd_wishlist_updated"));
+      }
     }
   };
 
-  const addToWishlist = (item: WishlistItem) => {
-    if (!wishlist.some(w => w.id === item.id)) {
-      saveWishlist([...wishlist, item]);
+  const removeFromWishlist = async (id: number) => {
+    const status = await toggleWishlistDB(id);
+    if (status === "removed") {
+      setWishlist(prev => prev.filter(w => w.id !== id));
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("skipd_wishlist_updated"));
+      }
     }
-  };
-
-  const removeFromWishlist = (id: number) => {
-    saveWishlist(wishlist.filter(w => w.id !== id));
   };
 
   const isInWishlist = (id: number) => {
     return wishlist.some(w => w.id === id);
   };
 
-  const toggleWishlist = (item: WishlistItem) => {
+  const toggleWishlist = async (item: WishlistItem) => {
     if (isInWishlist(item.id)) {
-      removeFromWishlist(item.id);
+      await removeFromWishlist(item.id);
     } else {
-      addToWishlist(item);
+      await addToWishlist(item);
     }
   };
 
