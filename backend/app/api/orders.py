@@ -511,27 +511,32 @@ async def track_order_timeline(
     Get 100% real-time tracking timeline & status history from PostgreSQL DB.
     Supports Order Number (#SKIPD-123456, SKIPD-123456, WH1025), Order ID, or AWB Code.
     """
-    clean_id = order_identifier.replace("#", "").strip()
+    raw_str = order_identifier.strip()
+    clean_id = raw_str.replace("#", "").replace("SR-AWB-", "").replace("AWB-", "").strip()
 
-    query = select(Order).options(selectinload(Order.status_history), selectinload(Order.items)).where(
-        (Order.order_number == clean_id) | 
-        (Order.order_number == f"SKIPD-{clean_id}") |
-        (Order.order_number.ilike(f"%{clean_id}%"))
-    )
-    if clean_id.isdigit():
-        query = select(Order).options(selectinload(Order.status_history), selectinload(Order.items)).where(
-            (Order.id == int(clean_id)) | (Order.order_number == clean_id) | (Order.order_number == f"SKIPD-{clean_id}")
-        )
+    all_res = await db.execute(select(Order).options(selectinload(Order.status_history), selectinload(Order.items)))
+    all_orders = all_res.scalars().all()
 
-    res = await db.execute(query)
-    order = res.scalars().first()
+    order = None
+    raw_lower = raw_str.lower()
+    clean_lower = clean_id.lower()
+    digits = "".join([c for c in raw_str if c.isdigit()])
 
-    if not order:
-        all_res = await db.execute(select(Order).options(selectinload(Order.status_history), selectinload(Order.items)))
-        for o in all_res.scalars().all():
-            if clean_id.lower() in o.order_number.lower() or str(o.id) == clean_id:
-                order = o
-                break
+    for o in all_orders:
+        o_num_lower = o.order_number.lower()
+        o_num_digits = "".join([c for c in o.order_number if c.isdigit()])
+
+        if (
+            raw_lower == o_num_lower or
+            clean_lower == o_num_lower or
+            str(o.id) == clean_id or
+            (clean_lower and clean_lower in o_num_lower) or
+            (o_num_lower and o_num_lower in raw_lower) or
+            (digits and len(digits) >= 4 and digits == o_num_digits) or
+            (digits and str(o.id) == digits)
+        ):
+            order = o
+            break
 
     if not order:
         raise HTTPException(status_code=404, detail=f"No active order found matching '{order_identifier}'")
