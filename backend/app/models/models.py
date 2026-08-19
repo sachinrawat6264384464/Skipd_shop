@@ -147,6 +147,19 @@ class Order(Base):
     items = relationship("OrderItem", back_populates="order", cascade="all, delete-orphan")
     payment = relationship("PaymentTransaction", back_populates="order", uselist=False)
     shipment = relationship("Shipment", back_populates="order", uselist=False)
+    status_history = relationship("OrderStatusHistory", back_populates="order", cascade="all, delete-orphan", order_by="OrderStatusHistory.created_at.asc()")
+
+class OrderStatusHistory(Base):
+    __tablename__ = "order_status_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False, index=True)
+    status = Column(String(50), nullable=False)
+    message = Column(Text, nullable=True)
+    updated_by = Column(String(100), default="System")
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    order = relationship("Order", back_populates="status_history")
 
 class OrderItem(Base):
     __tablename__ = "order_items"

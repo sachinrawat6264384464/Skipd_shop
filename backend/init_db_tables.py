@@ -4,7 +4,7 @@ import sys
 from sqlalchemy import text, select, func
 from app.core.database import engine, AsyncSessionLocal, Base
 from app.models.models import (
-    User, UserRole, Category, Product, ProductVariant, Order, OrderItem,
+    User, UserRole, Category, Product, ProductVariant, Order, OrderItem, OrderStatusHistory,
     PaymentTransaction, Shipment, SaleEvent, SaleProduct, HomepageSection,
     WishlistItem, CartItem, Address, Coupon, Review, GiftCard, InventoryLog,
     Wallet, WalletTransaction, ReturnRequest, EmailLog

@@ -594,6 +594,21 @@ export async function fetchWalletBalance(): Promise<{ balance: number }> {
   return { balance: 0.0 };
 }
 
+export async function fetchTrackOrder(orderIdentifier: string) {
+  try {
+    const cleanId = orderIdentifier.trim().replace(/^#/, "");
+    const res = await fetch(`${API_BASE_URL}/orders/track/${encodeURIComponent(cleanId)}`, {
+      cache: "no-store"
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK Warning] Live track endpoint failed:", e);
+  }
+  return null;
+}
+
 export async function fetchLiveTracking(awbOrOrder: string): Promise<TrackingData> {
   try {
     const res = await fetch(`${API_BASE_URL}/shipping/track?tracking_number=${awbOrOrder}`);
