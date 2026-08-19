@@ -1,7 +1,20 @@
 import random
 from typing import List, Optional
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks, Query, Body
+
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def to_ist_datetime(dt: Optional[datetime]) -> datetime:
+    if dt is None:
+        dt = datetime.now(timezone.utc)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(IST)
+
+def format_ist(dt: Optional[datetime]) -> str:
+    ist_dt = to_ist_datetime(dt)
+    return ist_dt.strftime("%d %b %Y at %I:%M %p").lower()
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
@@ -631,6 +644,18 @@ async def track_order_timeline(
     if current_status_str == "DELIVERED":
         last_completed_idx = 6
 
+    offsets = [
+        timedelta(minutes=0),     # Order Placed
+        timedelta(minutes=5),     # Order Confirmed
+        timedelta(hours=2),       # Processing
+        timedelta(hours=6),       # Packed
+        timedelta(hours=18),      # Dispatched
+        timedelta(hours=26),      # Out for Delivery
+        timedelta(hours=30)       # Delivered
+    ]
+
+    base_ist = to_ist_datetime(order.created_at)
+
     timeline = []
     for idx, stage in enumerate(all_stages):
         stage_norm = stage["status"].lower()
@@ -644,21 +669,24 @@ async def track_order_timeline(
         is_current = (idx == last_completed_idx) and (current_status_str != "DELIVERED" or idx == 6)
 
         if matched_history:
-            dt = matched_history.created_at
-            formatted_date = dt.strftime("%d %b, %I:%M %p")
+            formatted_date = format_ist(matched_history.created_at)
             msg = matched_history.message or stage["default_msg"]
             updated_by = matched_history.updated_by
+            ts_iso = to_ist_datetime(matched_history.created_at).isoformat()
         else:
+            exp_dt = base_ist + offsets[idx]
+            exp_str = exp_dt.strftime("%d %b %Y at %I:%M %p").lower()
+            formatted_date = f"Expected {exp_str}"
+            ts_iso = exp_dt.isoformat()
+
             if is_done:
-                formatted_date = order.created_at.strftime("%d %b, %I:%M %p")
+                formatted_date = format_ist(order.created_at)
                 msg = stage["default_msg"]
                 updated_by = "System"
             elif idx == last_completed_idx + 1:
-                formatted_date = "Expected Today"
                 msg = "Estimated next milestone"
                 updated_by = "Logistics"
             else:
-                formatted_date = f"Expected in {idx - last_completed_idx} days"
                 msg = "Pending milestone"
                 updated_by = "Logistics"
 
@@ -668,7 +696,7 @@ async def track_order_timeline(
             "status": stage["status"],
             "message": msg,
             "date": formatted_date,
-            "timestamp": matched_history.created_at.isoformat() if matched_history else None,
+            "timestamp": ts_iso,
             "updated_by": updated_by if matched_history else "System",
             "is_done": is_done,
             "is_current": is_current
@@ -681,8 +709,8 @@ async def track_order_timeline(
         "customer_email": order.customer_email,
         "total_amount": order.total_amount,
         "status": current_status_str,
-        "created_at": order.created_at.strftime("%d %b %Y, %I:%M %p"),
-        "created_at_iso": order.created_at.isoformat(),
+        "created_at": format_ist(order.created_at),
+        "created_at_iso": base_ist.isoformat(),
         "shipping_address": order.shipping_address,
         "items": [
             {

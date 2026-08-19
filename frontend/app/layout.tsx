@@ -8,8 +8,6 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import { baseUrl } from "lib/utils";
 
-import { WhatsAppFloatingWidget } from "components/whatsapp/whatsapp-widget";
-
 const { SITE_NAME } = process.env;
 
 const siteBaseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
@@ -83,7 +81,6 @@ export default async function RootLayout({
                   <Toaster closeButton />
                   <WelcomeToast />
                   <EmailToastListener />
-                  <WhatsAppFloatingWidget />
                 </main>
               </CartProvider>
             </WishlistProvider>
