@@ -461,7 +461,7 @@ async def list_user_orders(
 ):
     if not current_user:
         return []
-    query = select(Order).options(selectinload(Order.items)).where(Order.user_id == current_user.id).order_by(Order.created_at.desc()).offset(skip).limit(limit)
+    query = select(Order).options(selectinload(Order.items).selectinload(OrderItem.product)).where(Order.user_id == current_user.id).order_by(Order.created_at.desc()).offset(skip).limit(limit)
     result = await db.execute(query)
     orders = result.scalars().all()
     return orders
@@ -527,7 +527,7 @@ async def track_order_timeline(
     raw_str = order_identifier.strip()
     clean_id = raw_str.replace("#", "").replace("SR-AWB-", "").replace("AWB-", "").strip()
 
-    all_res = await db.execute(select(Order).options(selectinload(Order.status_history), selectinload(Order.items)))
+    all_res = await db.execute(select(Order).options(selectinload(Order.status_history), selectinload(Order.items).selectinload(OrderItem.product)))
     all_orders = all_res.scalars().all()
 
     order = None
@@ -717,7 +717,8 @@ async def track_order_timeline(
                 "product_id": item.product_id,
                 "product_name": item.product_name,
                 "quantity": item.quantity,
-                "unit_price": item.unit_price
+                "unit_price": item.unit_price,
+                "product_image": (item.product.images[0] if (item.product and item.product.images and len(item.product.images) > 0) else None)
             } for item in order.items
         ],
         "timeline": timeline

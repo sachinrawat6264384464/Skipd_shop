@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Footer from "components/layout/footer";
-import { fetchTrackOrder, fetchUserOrders, UserOrder } from "lib/api";
+import { fetchTrackOrder, fetchUserOrders, getProductImageByTitle, UserOrder } from "lib/api";
 
 interface TimelineItem {
   stage_index: number;
@@ -310,15 +310,24 @@ function TrackOrderContent() {
                 </div>
 
                 {/* Purchased Items List */}
-                <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-2">
+                <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
                   <p className="font-black text-gray-900 text-xs uppercase tracking-wider">📦 Ordered Items ({trackingData.items.length})</p>
-                  <div className="space-y-1.5">
-                    {trackingData.items.map((item, i) => (
-                      <div key={i} className="flex justify-between items-center text-xs">
-                        <span className="font-bold text-gray-800">{item.quantity}x {item.product_name}</span>
-                        <span className="font-black text-gray-900">₹{(item.unit_price * item.quantity).toLocaleString("en-IN")}</span>
-                      </div>
-                    ))}
+                  <div className="space-y-2">
+                    {trackingData.items.map((item, i) => {
+                      const img = (item as any).product_image || getProductImageByTitle(item.product_name);
+                      return (
+                        <div key={i} className="flex items-center justify-between gap-3 text-xs bg-white p-2.5 rounded-xl border border-gray-200">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <img src={img} alt={item.product_name} className="w-10 h-10 rounded-lg object-cover border border-gray-200 shrink-0 bg-white" />
+                            <div className="min-w-0">
+                              <span className="font-bold text-gray-800 block truncate">{item.quantity}x {item.product_name}</span>
+                              <span className="text-[10px] text-gray-500 font-medium">₹{item.unit_price.toLocaleString("en-IN")} each</span>
+                            </div>
+                          </div>
+                          <span className="font-black text-gray-900 shrink-0">₹{(item.unit_price * item.quantity).toLocaleString("en-IN")}</span>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -329,9 +338,9 @@ function TrackOrderContent() {
             {/* Selector for Logged-In User's Other Orders */}
             {userOrders.length > 0 && (
               <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
-                <h3 className="font-black text-sm text-gray-900">Select Another Order to Track ({userOrders.length} Orders)</h3>
+                <h3 className="font-black text-sm text-gray-900">Your Placed Orders ({userOrders.length})</h3>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {userOrders.map((o) => (
                     <button
                       key={o.id}
@@ -339,18 +348,25 @@ function TrackOrderContent() {
                         setSearchQuery(o.order_number);
                         executeTrack(o.order_number);
                       }}
-                      className={`p-4 rounded-2xl border text-left transition cursor-pointer space-y-1 ${
+                      className={`p-4 rounded-2xl border text-left transition cursor-pointer flex items-center gap-3.5 ${
                         trackingData?.order_number === o.order_number
                           ? "bg-[#EAF8F2] border-[#059669] ring-2 ring-emerald-500/20 shadow-xs"
                           : "bg-gray-50 hover:bg-gray-100 border-gray-200"
                       }`}
                     >
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="font-mono font-black text-emerald-700">{o.order_number}</span>
-                        <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded">{o.status}</span>
+                      <img
+                        src={o.image}
+                        alt={o.title}
+                        className="w-14 h-14 rounded-xl object-cover border border-gray-200 shrink-0 bg-white"
+                      />
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="font-mono font-black text-emerald-700">{o.order_number}</span>
+                          <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded uppercase">{o.status}</span>
+                        </div>
+                        <p className="font-bold text-gray-900 text-xs truncate">{o.title}</p>
+                        <p className="text-[10px] text-gray-500 font-medium">{o.date} • ₹{o.total.toLocaleString("en-IN")}</p>
                       </div>
-                      <p className="font-bold text-gray-900 text-xs truncate">{o.title}</p>
-                      <p className="text-[10px] text-gray-500 font-medium">Placed on {o.date} • ₹{o.total.toLocaleString("en-IN")}</p>
                     </button>
                   ))}
                 </div>

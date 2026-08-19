@@ -153,6 +153,7 @@ class OrderItemSchema(BaseModel):
     product_name: str
     quantity: int
     unit_price: float
+    product_image: Optional[str] = None
 
 class OrderResponse(BaseModel):
     id: int

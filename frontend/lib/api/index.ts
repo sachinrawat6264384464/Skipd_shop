@@ -635,6 +635,35 @@ export async function fetchLiveTracking(awbOrOrder: string): Promise<TrackingDat
   };
 }
 
+export function getProductImageByTitle(title?: string): string {
+  const t = (title || "").toLowerCase();
+  if (t.includes("sony") || t.includes("headphone") || t.includes("audio") || t.includes("anc")) {
+    return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800";
+  }
+  if (t.includes("oneplus") || t.includes("nord") || t.includes("iphone") || t.includes("mobile") || t.includes("phone")) {
+    return "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800";
+  }
+  if (t.includes("watch") || t.includes("chrono") || t.includes("apple watch")) {
+    return "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800";
+  }
+  if (t.includes("drone") || t.includes("rc")) {
+    return "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=800";
+  }
+  if (t.includes("macbook") || t.includes("laptop")) {
+    return "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800";
+  }
+  if (t.includes("nike") || t.includes("air force") || t.includes("shoe") || t.includes("sneaker")) {
+    return "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800";
+  }
+  if (t.includes("jacket") || t.includes("trench") || t.includes("wool")) {
+    return "https://images.unsplash.com/photo-1544441893-675973e31985?w=800";
+  }
+  if (t.includes("tee") || t.includes("shirt") || t.includes("apparel")) {
+    return "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800";
+  }
+  return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800";
+}
+
 export async function fetchUserOrders(): Promise<UserOrder[]> {
   try {
     const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
@@ -649,17 +678,36 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
     if (res.ok) {
       const data = await res.json();
       if (Array.isArray(data)) {
-        return data.map((o: any) => ({
-          id: String(o.id),
-          order_number: o.order_number || `SKIPD-${o.id}`,
-          date: o.created_at ? new Date(o.created_at).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "Today",
-          total: o.total_amount || 0,
-          title: o.items?.[0]?.product_name || "Purchased Product",
-          image: o.items?.[0]?.product_image || "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500",
-          status: o.status || "SHIPPED",
-          awb: `SR-AWB-${o.order_number || o.id}`,
-          deliveryText: o.status === "DELIVERED" ? "Delivered" : "In Transit across regional hubs"
-        }));
+        return data.map((o: any) => {
+          const firstItem = o.items?.[0];
+          const prodTitle = firstItem?.product_name || "Purchased Product";
+          const imgUrl = firstItem?.product_image || (firstItem?.product?.images && firstItem.product.images[0]) || getProductImageByTitle(prodTitle);
+          
+          let formattedDate = "Today";
+          if (o.created_at) {
+            const dt = new Date(o.created_at);
+            formattedDate = dt.toLocaleString("en-IN", {
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true
+            });
+          }
+
+          return {
+            id: String(o.id),
+            order_number: o.order_number || `SKIPD-${o.id}`,
+            date: formattedDate,
+            total: o.total_amount || 0,
+            title: prodTitle,
+            image: imgUrl,
+            status: o.status || "SHIPPED",
+            awb: `SR-AWB-${o.order_number || o.id}`,
+            deliveryText: o.status === "DELIVERED" ? "Delivered" : "In Transit across regional hubs"
+          };
+        });
       }
     }
   } catch (e) {
