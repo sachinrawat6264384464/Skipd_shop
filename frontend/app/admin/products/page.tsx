@@ -8,6 +8,11 @@ import {
   updateAdminProduct,
   deleteAdminProduct,
   toggleProductNewArrival,
+  fetchNewArrivalsDB,
+  fetchNewArrivalIdsDB,
+  toggleNewArrivalDB,
+  addProductToNewArrivalsDB,
+  removeProductFromNewArrivalsDB,
   seedCatalogProducts,
   fetchAdminCategories,
   createAdminCategory,
@@ -18,6 +23,8 @@ import {
 export default function AdminProductsPage() {
   const [activeTab, setActiveTab] = useState("Products");
   const [products, setProducts] = useState<any[]>([]);
+  const [newArrivalDbIds, setNewArrivalDbIds] = useState<number[]>([]);
+  const [newArrivalsDbProducts, setNewArrivalsDbProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Search & Filter State
@@ -540,40 +547,50 @@ export default function AdminProductsPage() {
     "Reviews"
   ];
 
+  const loadNewArrivalsData = async () => {
+    try {
+      const [ids, dbProds] = await Promise.all([
+        fetchNewArrivalIdsDB(),
+        fetchNewArrivalsDB()
+      ]);
+      setNewArrivalDbIds(ids || []);
+      setNewArrivalsDbProducts(dbProds || []);
+    } catch (e) {
+      console.error("Failed to load new arrivals DB data:", e);
+    }
+  };
+
   const handleToggleNewArrival = async (product: any) => {
-    const currentTags = Array.isArray(product.tags) ? product.tags : [];
-    const isCurrentlyNew = currentTags.includes("new-arrival") || currentTags.includes("new_arrival") || Boolean(product.is_new_arrival);
-    const nextState = !isCurrentlyNew;
+    const prodIdNum = Number(product.id);
+    const isCurrentlyInDb = newArrivalDbIds.includes(prodIdNum);
+    const nextState = !isCurrentlyInDb;
 
-    setProducts(prev => prev.map(p => {
-      if (p.id === product.id || String(p.id) === String(product.id)) {
-        let updatedTags = Array.isArray(p.tags) ? [...p.tags] : [];
-        if (nextState) {
-          if (!updatedTags.includes("new-arrival")) updatedTags.push("new-arrival");
-        } else {
-          updatedTags = updatedTags.filter(t => t !== "new-arrival" && t !== "new_arrival");
-        }
-        return { ...p, tags: updatedTags, is_new_arrival: nextState };
-      }
-      return p;
-    }));
+    if (nextState) {
+      setNewArrivalDbIds(prev => [...prev, prodIdNum]);
+      setNewArrivalsDbProducts(prev => [...prev, product]);
+    } else {
+      setNewArrivalDbIds(prev => prev.filter(id => id !== prodIdNum));
+      setNewArrivalsDbProducts(prev => prev.filter(p => Number(p.id) !== prodIdNum));
+    }
 
-    const res = await toggleProductNewArrival(product.id, nextState);
+    const res = await toggleNewArrivalDB(product.id);
     if (res) {
       showNotification(
         nextState 
-          ? `✨ Product "${product.title}" added to New Arrivals!` 
-          : `Removed "${product.title}" from New Arrivals`
+          ? `✨ Product "${product.title}" saved to PostgreSQL new_arrivals table!` 
+          : `Removed "${product.title}" from PostgreSQL new_arrivals table`
       );
+      await loadNewArrivalsData();
     } else {
-      showNotification("Failed to update New Arrival status", "error");
-      await loadProducts();
+      showNotification("Failed to update new_arrivals DB table", "error");
+      await loadNewArrivalsData();
     }
   };
 
   useEffect(() => {
     loadProducts();
     loadCategories();
+    loadNewArrivalsData();
     if (typeof window !== "undefined") {
       try {
         const subCats = localStorage.getItem("skipd_subcategories");
@@ -1066,7 +1083,7 @@ export default function AdminProductsPage() {
                       const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
                       const itemOffPct = (comparePrice && comparePrice > price) ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
                       const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
-                      const isNewArrival = (p.tags || []).includes("new-arrival") || Boolean(p.is_new_arrival);
+                      const isNewArrival = newArrivalDbIds.includes(Number(p.id));
 
                       return (
                         <tr key={p.id} className="hover:bg-gray-50/80 transition group">
@@ -1083,18 +1100,17 @@ export default function AdminProductsPage() {
                                 <Link
                                   href={`/product/${p.handle}`}
                                   target="_blank"
-                                  className="text-[10px] text-emerald-700 font-bold hover:underline inline-flex items-center gap-0.5"
+                                  className="text-[10px] text-emerald-600 font-bold hover:underline"
                                 >
-                                  <span>View on Store</span>
-                                  <span>↗</span>
+                                  View on Store ↗
                                 </Link>
                               </div>
                             </div>
                           </td>
 
                           <td className="px-6 py-4">
-                            <span className="bg-gray-100 text-gray-700 border border-gray-200 px-2.5 py-1 rounded-lg font-bold text-[11px] capitalize">
-                              {p.category_slug || p.category?.slug || "general"}
+                            <span className="bg-gray-100 text-gray-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-gray-200 capitalize">
+                              {p.category_slug || p.category?.name || "General"}
                             </span>
                           </td>
 
@@ -1165,7 +1181,7 @@ export default function AdminProductsPage() {
                               </button>
                               <button
                                 onClick={() => setDeletingProductId(p.id)}
-                                className="bg-red-50 hover:bg-red-100 text-red-700 font-bold px-3 py-1.5 rounded-xl border border-red-200 transition cursor-pointer text-xs flex items-center gap-1"
+                                className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3 py-1.5 rounded-xl border border-rose-200 transition cursor-pointer text-xs flex items-center gap-1"
                               >
                                 🗑️ Delete
                               </button>
@@ -1178,13 +1194,13 @@ export default function AdminProductsPage() {
                 </table>
               </div>
 
-              {/* Pagination */}
-              <div className="bg-gray-50 border-t border-gray-100 p-4 px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-medium">
-                <div>
-                  Showing <span className="font-bold text-gray-900">{filteredProducts.length > 0 ? startIndex + 1 : 0}</span> to <span className="font-bold text-gray-900">{Math.min(startIndex + itemsPerPage, filteredProducts.length)}</span> of <span className="font-bold text-gray-900">{filteredProducts.length}</span> products
-                </div>
+              {/* Table Pagination Controls */}
+              <div className="p-4 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <p className="text-xs font-bold text-gray-500">
+                  Showing <span className="text-gray-900 font-black">{paginatedProducts.length}</span> of <span className="text-gray-900 font-black">{filteredProducts.length}</span> products
+                </p>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
                     <button
                       disabled={currentPage === 1}
@@ -1270,9 +1286,9 @@ export default function AdminProductsPage() {
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
               <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">ACTIVE NEW ARRIVALS</span>
               <p className="text-2xl font-black text-emerald-600">
-                {products.filter(p => (p.tags || []).includes("new-arrival") || p.is_new_arrival).length} Items
+                {newArrivalsDbProducts.length} Items
               </p>
-              <p className="text-[11px] text-emerald-700 font-bold">Live on Storefront /new-arrivals</p>
+              <p className="text-[11px] text-emerald-700 font-bold">PostgreSQL new_arrivals DB Table</p>
             </div>
 
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
@@ -1292,9 +1308,9 @@ export default function AdminProductsPage() {
           <div className="bg-white border border-gray-200/80 p-6 rounded-3xl shadow-2xs space-y-4">
             <div>
               <h3 className="text-sm font-black text-gray-900 flex items-center gap-2">
-                <span>➕ Add Catalog Product to New Arrivals</span>
+                <span>➕ Add Catalog Product to New Arrivals Table</span>
               </h3>
-              <p className="text-xs text-gray-500 font-medium">Select any product from your store catalog to tag it as a New Arrival drop</p>
+              <p className="text-xs text-gray-500 font-medium">Select any product from your store catalog to insert it into the new_arrivals PostgreSQL database table</p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -1304,7 +1320,7 @@ export default function AdminProductsPage() {
               >
                 <option value="">-- Select Product from Catalog --</option>
                 {products
-                  .filter(p => !((p.tags || []).includes("new-arrival") || p.is_new_arrival))
+                  .filter(p => !newArrivalDbIds.includes(Number(p.id)))
                   .map(p => (
                     <option key={p.id} value={p.id}>
                       {p.title} (ID: #{p.id} • ₹{p.price})
@@ -1325,7 +1341,7 @@ export default function AdminProductsPage() {
                 }}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-xl transition shadow-xs cursor-pointer w-full sm:w-auto shrink-0"
               >
-                + Add to New Arrivals
+                + Add to New Arrivals DB
               </button>
             </div>
           </div>
@@ -1334,43 +1350,41 @@ export default function AdminProductsPage() {
           <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <h3 className="text-sm font-black text-gray-900 flex items-center gap-2">
-                <span>✨ Active New Arrival Products ({products.filter(p => (p.tags || []).includes("new-arrival") || p.is_new_arrival).length})</span>
+                <span>✨ Active New Arrival Products ({newArrivalsDbProducts.length})</span>
               </h3>
               <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2.5 py-1 rounded-full uppercase">
-                Showing Live DB Drops
+                100% Live PostgreSQL Table
               </span>
             </div>
 
-            {products.filter(p => (p.tags || []).includes("new-arrival") || p.is_new_arrival).length === 0 ? (
+            {newArrivalsDbProducts.length === 0 ? (
               <div className="p-10 text-center text-gray-400 font-medium space-y-2 border-2 border-dashed border-gray-200 rounded-2xl">
                 <p className="text-3xl">✨</p>
-                <p className="text-xs font-bold text-gray-700">No products are currently tagged as New Arrivals.</p>
+                <p className="text-xs font-bold text-gray-700">No products are currently in the new_arrivals database table.</p>
                 <p className="text-[11px] text-gray-400">Select a product above or click "✨ New Drop ON" on any product in the Products tab!</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {products
-                  .filter(p => (p.tags || []).includes("new-arrival") || p.is_new_arrival)
-                  .map(p => {
-                    const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
-                    return (
-                      <div key={p.id} className="bg-gray-50/80 border border-gray-200 p-4 rounded-2xl flex items-center justify-between gap-3 shadow-2xs hover:border-emerald-300 transition">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <img src={image} alt={p.title} className="w-12 h-12 rounded-xl object-contain bg-white p-1 border border-gray-200 shrink-0" />
-                          <div className="min-w-0 space-y-0.5">
-                            <p className="font-bold text-xs text-gray-900 truncate">{p.title}</p>
-                            <p className="text-[11px] text-emerald-600 font-black">₹{Number(p.price || 0).toLocaleString("en-IN")}</p>
-                          </div>
+                {newArrivalsDbProducts.map(p => {
+                  const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
+                  return (
+                    <div key={p.id} className="bg-gray-50/80 border border-gray-200 p-4 rounded-2xl flex items-center justify-between gap-3 shadow-2xs hover:border-emerald-300 transition">
+                      <div className="flex items-center gap-3 min-w-0">
+                        <img src={image} alt={p.title} className="w-12 h-12 rounded-xl object-contain bg-white p-1 border border-gray-200 shrink-0" />
+                        <div className="min-w-0 space-y-0.5">
+                          <p className="font-bold text-xs text-gray-900 truncate">{p.title}</p>
+                          <p className="text-[11px] text-emerald-600 font-black">₹{Number(p.price || 0).toLocaleString("en-IN")}</p>
                         </div>
-                        <button
-                          onClick={() => handleToggleNewArrival(p)}
-                          className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[10px] px-3 py-1.5 rounded-xl border border-rose-200 cursor-pointer shrink-0 transition"
-                        >
-                          ✕ Remove
-                        </button>
                       </div>
-                    );
-                  })}
+                      <button
+                        onClick={() => handleToggleNewArrival(p)}
+                        className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[10px] px-3 py-1.5 rounded-xl border border-rose-200 cursor-pointer shrink-0 transition"
+                      >
+                        ✕ Remove
+                      </button>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

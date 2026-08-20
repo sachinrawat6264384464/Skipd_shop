@@ -1372,7 +1372,67 @@ export async function updateAdminProduct(id: number | string, payload: any) {
 }
 
 export async function toggleProductNewArrival(id: number | string, isNewArrival: boolean) {
-  return await updateAdminProduct(id, { is_new_arrival: isNewArrival });
+  return await toggleNewArrivalDB(id);
+}
+
+export async function fetchNewArrivalsDB(): Promise<Product[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/new-arrivals`, { cache: "no-store" });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.error("[API SDK] Fetch new arrivals from DB error:", e);
+  }
+  return [];
+}
+
+export async function fetchNewArrivalIdsDB(): Promise<number[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/new-arrivals/ids`, { cache: "no-store" });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.error("[API SDK] Fetch new arrival IDs error:", e);
+  }
+  return [];
+}
+
+export async function toggleNewArrivalDB(productId: number | string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/new-arrivals/toggle/${productId}`, {
+      method: "POST"
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.error("[API SDK] Toggle new arrival DB error:", e);
+  }
+  return null;
+}
+
+export async function addProductToNewArrivalsDB(productId: number | string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/new-arrivals/add/${productId}`, {
+      method: "POST"
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.error("[API SDK] Add new arrival DB error:", e);
+  }
+  return null;
+}
+
+export async function removeProductFromNewArrivalsDB(productId: number | string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/new-arrivals/remove/${productId}`, {
+      method: "DELETE"
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.error("[API SDK] Remove new arrival DB error:", e);
+  }
+  return null;
 }
 
 export async function deleteAdminProduct(id: number | string) {

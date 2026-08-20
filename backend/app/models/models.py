@@ -431,3 +431,14 @@ class StaffUser(Base):
 
     role_rel = relationship("Role", back_populates="staff_users")
 
+class NewArrival(Base):
+    __tablename__ = "new_arrivals"
+
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, ForeignKey("products.id"), unique=True, nullable=False, index=True)
+    position = Column(Integer, default=0)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    product = relationship("Product")
+
+

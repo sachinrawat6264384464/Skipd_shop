@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Product, Category, fetchProducts, fetchCategories } from "lib/api";
+import { Product, Category, fetchProducts, fetchCategories, fetchNewArrivalsDB } from "lib/api";
 import { AddToCartButton } from "components/cart/add-to-cart-button";
 
 export default function NewArrivalsPage() {
@@ -16,26 +16,17 @@ export default function NewArrivalsPage() {
     async function loadData() {
       setLoading(true);
       try {
-        const [prods, cats] = await Promise.all([
-          fetchProducts(),
+        const [dbNewArrivals, cats] = await Promise.all([
+          fetchNewArrivalsDB(),
           fetchCategories()
         ]);
         
-        // Filter products explicitly tagged as New Arrival by Admin
-        const taggedNewArrivals = prods.filter(p => 
-          p.is_new_arrival || (p.tags && (p.tags.includes("new-arrival") || p.tags.includes("new_arrival")))
-        );
+        let displayProducts = dbNewArrivals;
+        if (!displayProducts || displayProducts.length === 0) {
+          displayProducts = await fetchProducts();
+        }
 
-        // If explicitly tagged products exist, show them; otherwise show newest products
-        const finalProducts = taggedNewArrivals.length > 0 ? taggedNewArrivals : prods;
-
-        const sortedNewest = [...finalProducts].sort((a, b) => {
-          const dateA = a.created_at ? new Date(a.created_at).getTime() : a.id;
-          const dateB = b.created_at ? new Date(b.created_at).getTime() : b.id;
-          return dateB - dateA;
-        });
-
-        setProducts(sortedNewest);
+        setProducts(displayProducts);
         setCategories(cats);
       } catch (err) {
         console.error("Error loading new arrivals data:", err);

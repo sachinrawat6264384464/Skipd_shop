@@ -7,7 +7,7 @@ from app.models.models import (
     User, UserRole, Category, Product, ProductVariant, Order, OrderItem, OrderStatusHistory,
     PaymentTransaction, Shipment, SaleEvent, SaleProduct, HomepageSection,
     WishlistItem, CartItem, Address, Coupon, Review, GiftCard, InventoryLog,
-    Wallet, WalletTransaction, ReturnRequest, EmailLog
+    Wallet, WalletTransaction, ReturnRequest, EmailLog, Role, StaffUser, NewArrival
 )
 from app.core.security import get_password_hash
 
