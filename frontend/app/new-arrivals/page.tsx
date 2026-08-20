@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { fetchProducts, fetchCategories, Product, Category } from "lib/api";
-import { AddToCartButton } from "components/cart/add-to-cart-button";
+import { AddToCartButton } from "../../components/cart/add-to-cart-button";
 
 export default function NewArrivalsPage() {
   const [products, setProducts] = useState<Product[]>([]);
