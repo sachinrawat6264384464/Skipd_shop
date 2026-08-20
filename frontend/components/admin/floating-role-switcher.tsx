@@ -248,10 +248,22 @@ export default function FloatingAdminRoleSwitcher() {
     }, 600);
   };
 
+  const matchedRole = DEFAULT_SYSTEM_ROLES.find(r => r.name.toLowerCase() === activeRole.toLowerCase());
+  const currentRoleObj: RoleOption = matchedRole || DEFAULT_SYSTEM_ROLES[0] || {
+    id: "super_admin",
+    name: "Super Admin",
+    badge: "MASTER KEY",
+    icon: "👑",
+    color: "text-purple-400",
+    bgColor: "bg-purple-950/80",
+    borderColor: "border-purple-500/40",
+    description: "Full unrestricted access across all 16 admin modules",
+    primaryRoute: "/admin",
+    permissionsCount: 16
+  };
+
   // Hide on login page
   if (pathname === "/admin/login") return null;
-
-  const currentRoleObj = DEFAULT_SYSTEM_ROLES.find(r => r.name.toLowerCase() === activeRole.toLowerCase()) || DEFAULT_SYSTEM_ROLES[0];
 
   return (
     <>
