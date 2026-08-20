@@ -27,13 +27,8 @@ async def auto_seed_new_arrivals_if_empty(db: AsyncSession):
 
 @router.get("", response_model=List[ProductSchema])
 async def get_all_new_arrivals(db: AsyncSession = Depends(get_db)):
-    """Fetch all products marked as New Arrivals from dedicated PostgreSQL new_arrivals table."""
+    """Fetch all products marked as New Arrivals from dedicated PostgreSQL new_arrivals table (Always Direct DB Query)."""
     try:
-        cache_key = "products:new_arrivals:list"
-        cached_data = await get_cached_json(cache_key)
-        if cached_data is not None:
-            return cached_data
-
         await auto_seed_new_arrivals_if_empty(db)
 
         query = (
@@ -48,17 +43,10 @@ async def get_all_new_arrivals(db: AsyncSession = Depends(get_db)):
         entries = result.scalars().all()
 
         products = [e.product for e in entries if e.product is not None]
-
-        try:
-            serialized = [ProductSchema.model_validate(p).model_dump(mode="json") for p in products]
-            await set_cached_json(cache_key, serialized, expire_seconds=300)
-        except BaseException as cache_err:
-            print(f"[CACHE SERDE ERROR] {cache_err}")
-
         return products
     except Exception as err:
         print(f"[GET NEW ARRIVALS ERROR] {err}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch new arrivals: {str(err)}")
+        raise HTTPException(status_code=500, detail=f"Failed to fetch new arrivals from database: {str(err)}")
 
 
 @router.get("/ids", response_model=List[int])
