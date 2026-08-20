@@ -184,18 +184,15 @@ export default function Footer() {
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
           
           {/* Services Links */}
-          <div className="flex flex-wrap items-center gap-6">
-            <Link href="/services/seller" className="flex items-center gap-2 hover:text-emerald-700 transition font-extrabold text-gray-800">
-              <span>💼</span> Become a Seller
+          <div className="flex flex-wrap items-center gap-6 font-extrabold text-gray-800">
+            <Link href="/services/advertise" className="hover:text-emerald-700 transition">
+              Advertise
             </Link>
-            <Link href="/services/advertise" className="flex items-center gap-2 hover:text-emerald-700 transition font-extrabold text-gray-800">
-              <span>⭐</span> Advertise
+            <Link href="/gift-cards" className="hover:text-emerald-700 transition">
+              Gift Cards
             </Link>
-            <Link href="/gift-cards" className="flex items-center gap-2 hover:text-emerald-700 transition font-extrabold text-gray-800">
-              <span>🎁</span> Gift Cards
-            </Link>
-            <Link href="/help" className="flex items-center gap-2 hover:text-emerald-700 transition font-extrabold text-gray-800">
-              <span>❓</span> Help Center
+            <Link href="/help" className="hover:text-emerald-700 transition">
+              Help Center
             </Link>
           </div>
 
