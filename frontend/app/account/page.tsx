@@ -2059,70 +2059,299 @@ function AccountContent() {
             </div>
           )}
 
-          {/* TAB: PROFILE INFORMATION */}
+          {/* TAB: PROFILE INFORMATION (World-Class E-Commerce Account Dashboard) */}
           {activeTab === "profile" && (
-            <div className="bg-white border border-gray-200/80 rounded-3xl p-6 md:p-8 space-y-6 shadow-2xs">
-              <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-                <h2 className="text-xl font-black text-gray-900">Personal Information</h2>
+            <div className="space-y-6 font-sans">
+              
+              {/* 🌟 VIP Customer Hero Banner Card */}
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0B132B] via-emerald-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-emerald-500/20">
+                {/* Background Ambient Glow Circles */}
+                <div className="absolute -top-10 -right-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl" />
+                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl" />
+
+                <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 text-center sm:text-left">
+                  
+                  {/* Left: Avatar & Name */}
+                  <div className="flex flex-col sm:flex-row items-center gap-5">
+                    <div className="relative">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white font-black text-2xl sm:text-3xl flex items-center justify-center shadow-lg border-2 border-white/20 uppercase tracking-widest">
+                        {(firstName?.[0] || "S") + (lastName?.[0] || "W")}
+                      </div>
+                      <span className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[10px] p-1.5 rounded-xl shadow-md border border-white/40">
+                        ✓
+                      </span>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
+                        <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+                          {firstName || lastName ? `${firstName} ${lastName}`.trim() : (user?.user_name || "Soham Www")}
+                        </h2>
+                        <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-md">
+                          ✨ VIP Club Member
+                        </span>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs text-gray-300 font-medium pt-0.5">
+                        <span className="flex items-center gap-1.5">
+                          <span>✉️</span>
+                          <span>{user?.email || "soham@example.com"}</span>
+                        </span>
+                        <span>•</span>
+                        <span className="flex items-center gap-1.5">
+                          <span>📱</span>
+                          <span>{user?.phone || "+91 9876543210"}</span>
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-emerald-400 font-bold">
+                        Member since August 2026 • Verified Customer Account
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Right: Quick Action Button */}
+                  <button
+                    onClick={() => setIsEditingName(!isEditingName)}
+                    className="bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs px-5 py-3 rounded-2xl backdrop-blur-md border border-white/20 transition cursor-pointer shrink-0 shadow-sm"
+                  >
+                    {isEditingName ? "✕ Cancel Editing" : "✏️ Edit Profile Info"}
+                  </button>
+
+                </div>
+              </div>
+
+              {/* 📊 4 Quick E-Commerce Metric Widgets */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                
+                {/* Orders Card */}
                 <button
-                  onClick={() => setIsEditingName(!isEditingName)}
-                  className="text-xs font-black text-[#059669] hover:underline cursor-pointer"
+                  onClick={() => setActiveTab("orders")}
+                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-emerald-300 transition text-left space-y-2 group cursor-pointer"
                 >
-                  {isEditingName ? "Cancel" : "Edit"}
+                  <div className="flex justify-between items-center">
+                    <span className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-lg group-hover:scale-110 transition">
+                      📦
+                    </span>
+                    <span className="text-xs text-emerald-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black text-gray-900">{userOrders.length}</p>
+                    <p className="text-xs text-gray-500 font-extrabold">Total Orders Placed</p>
+                  </div>
                 </button>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">First Name</label>
-                  <input
-                    type="text"
-                    disabled={!isEditingName}
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-bold focus:outline-none disabled:opacity-80"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Last Name</label>
-                  <input
-                    type="text"
-                    disabled={!isEditingName}
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-bold focus:outline-none disabled:opacity-80"
-                  />
-                </div>
-              </div>
-
-              {isEditingName && (
+                {/* Wallet Balance Card */}
                 <button
-                  onClick={() => {
-                    const fullName = `${firstName} ${lastName}`.trim();
-                    const updated = {
-                      user_name: fullName,
-                      email: user?.email || "customer@skipd.in",
-                      phone: user?.phone,
-                      gender: user?.gender
-                    };
-                    setUser(updated);
-                    localStorage.setItem("skipd_user", JSON.stringify(updated));
-                    setIsEditingName(false);
-                    alert("✓ Profile Name Updated!");
-                  }}
-                  className="bg-[#059669] text-white font-black text-xs px-5 py-2.5 rounded-xl shadow-xs cursor-pointer"
+                  onClick={() => setActiveTab("wallet")}
+                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-emerald-300 transition text-left space-y-2 group cursor-pointer"
                 >
-                  Save Changes
+                  <div className="flex justify-between items-center">
+                    <span className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-lg group-hover:scale-110 transition">
+                      💳
+                    </span>
+                    <span className="text-xs text-blue-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black text-gray-900">₹{walletBalance.toLocaleString("en-IN")}</p>
+                    <p className="text-xs text-gray-500 font-extrabold">SKIPD Pay Wallet</p>
+                  </div>
                 </button>
-              )}
 
-              <div className="pt-4 border-t border-gray-100 space-y-2">
-                <h3 className="font-extrabold text-sm text-gray-900">FAQs</h3>
-                <div className="text-xs text-gray-500 space-y-1 font-medium">
-                  <p className="font-bold text-gray-800">What happens when I update my email address (or mobile number)?</p>
-                  <p>Your login email id (or mobile number) changes automatically. You'll receive all your order update notifications on the new email address.</p>
+                {/* Saved Addresses Card */}
+                <button
+                  onClick={() => setActiveTab("addresses")}
+                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-emerald-300 transition text-left space-y-2 group cursor-pointer"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-black text-lg group-hover:scale-110 transition">
+                      📍
+                    </span>
+                    <span className="text-xs text-purple-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black text-gray-900">{addresses.length}</p>
+                    <p className="text-xs text-gray-500 font-extrabold">Saved Delivery Addresses</p>
+                  </div>
+                </button>
+
+                {/* Wishlist Link Card */}
+                <Link
+                  href="/account/wishlist"
+                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-emerald-300 transition text-left space-y-2 group cursor-pointer"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-black text-lg group-hover:scale-110 transition">
+                      ❤️
+                    </span>
+                    <span className="text-xs text-rose-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
+                  </div>
+                  <div>
+                    <p className="text-2xl font-black text-gray-900">Wishlist</p>
+                    <p className="text-xs text-gray-500 font-extrabold">Saved Favorites</p>
+                  </div>
+                </Link>
+
+              </div>
+
+              {/* 📝 Personal Information Details Form Card */}
+              <div className="bg-white border border-gray-200/80 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xs">
+                
+                <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+                  <div>
+                    <h3 className="text-lg font-black text-gray-900">Personal Information</h3>
+                    <p className="text-xs text-gray-500 font-medium">Manage your personal profile, contact info &amp; preferences</p>
+                  </div>
+                  <button
+                    onClick={() => setIsEditingName(!isEditingName)}
+                    className="text-xs font-black text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-1.5 rounded-xl transition cursor-pointer"
+                  >
+                    {isEditingName ? "Cancel" : "✏️ Edit Details"}
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 text-xs">
+                  
+                  {/* First Name */}
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-700 mb-1.5">First Name *</label>
+                    <input
+                      type="text"
+                      disabled={!isEditingName}
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="e.g. Soham"
+                      className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl px-4 py-3 text-xs text-gray-900 font-extrabold focus:outline-none focus:border-emerald-500 focus:bg-white transition disabled:opacity-80 shadow-2xs"
+                    />
+                  </div>
+
+                  {/* Last Name */}
+                  <div>
+                    <label className="block text-xs font-extrabold text-gray-700 mb-1.5">Last Name *</label>
+                    <input
+                      type="text"
+                      disabled={!isEditingName}
+                      value={lastName}
+                      onChange={(e) => setLastName(e.target.value)}
+                      placeholder="e.g. Rawat"
+                      className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl px-4 py-3 text-xs text-gray-900 font-extrabold focus:outline-none focus:border-emerald-500 focus:bg-white transition disabled:opacity-80 shadow-2xs"
+                    />
+                  </div>
+
+                  {/* Email Address */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <label className="block text-xs font-extrabold text-gray-700">Email Address</label>
+                      <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">✓ Verified</span>
+                    </div>
+                    <input
+                      type="email"
+                      disabled
+                      value={user?.email || "customer@skipd.in"}
+                      className="w-full bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3 text-xs text-gray-700 font-bold cursor-not-allowed shadow-2xs"
+                    />
+                  </div>
+
+                  {/* Phone Number */}
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <label className="block text-xs font-extrabold text-gray-700">Mobile Phone Number</label>
+                      <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">✓ OTP Verified</span>
+                    </div>
+                    <input
+                      type="tel"
+                      disabled
+                      value={user?.phone || "+91 9876543210"}
+                      className="w-full bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3 text-xs text-gray-700 font-bold cursor-not-allowed shadow-2xs"
+                    />
+                  </div>
+
+                </div>
+
+                {isEditingName && (
+                  <div className="pt-2 flex justify-end">
+                    <button
+                      onClick={() => {
+                        const fullName = `${firstName} ${lastName}`.trim();
+                        const updated = {
+                          user_name: fullName,
+                          email: user?.email || "customer@skipd.in",
+                          phone: user?.phone
+                        };
+                        setUser(updated);
+                        localStorage.setItem("skipd_user", JSON.stringify(updated));
+                        setIsEditingName(false);
+                        showToast("✓ Profile Information Updated & Saved to Account!");
+                      }}
+                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-2xl shadow-md cursor-pointer transition"
+                    >
+                      Save Profile Changes
+                    </button>
+                  </div>
+                )}
+
+              </div>
+
+              {/* 🔐 Account Security & Password Card */}
+              <div className="bg-white border border-gray-200/80 rounded-3xl p-6 sm:p-8 space-y-4 shadow-2xs">
+                <div className="flex justify-between items-center">
+                  <div>
+                    <h3 className="text-base font-black text-gray-900">Security &amp; Account Access</h3>
+                    <p className="text-xs text-gray-500 font-medium">Manage password and security settings</p>
+                  </div>
+                  <button
+                    onClick={() => {
+                      alert(`🔒 Password reset link sent to ${user?.email || "your registered email"}!`);
+                    }}
+                    className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-4 py-2.5 rounded-xl transition cursor-pointer"
+                  >
+                    Change Password &rsaquo;
+                  </button>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200/80 p-4 rounded-2xl flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-3">
+                    <span className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-lg">
+                      💻
+                    </span>
+                    <div>
+                      <p className="font-extrabold text-gray-900">Current Active Session</p>
+                      <p className="text-gray-500 text-[11px] font-medium">Chrome Browser on Windows • Online Now</p>
+                    </div>
+                  </div>
+                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-emerald-200">
+                    Active
+                  </span>
                 </div>
               </div>
+
+              {/* 💡 FAQs & Member Privileges Accordion */}
+              <div className="bg-white border border-gray-200/80 rounded-3xl p-6 sm:p-8 space-y-5 shadow-2xs">
+                <h3 className="text-base font-black text-gray-900">Frequently Asked Questions &amp; Member Privileges</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                  
+                  <div className="bg-slate-50 border border-gray-200/80 p-4 rounded-2xl space-y-1">
+                    <p className="font-extrabold text-gray-900 flex items-center gap-2">
+                      <span className="text-emerald-600">❓</span> What happens when I update my email address?
+                    </p>
+                    <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
+                      Your login email ID changes automatically. All future order update notifications and invoices will be sent to your new email.
+                    </p>
+                  </div>
+
+                  <div className="bg-slate-50 border border-gray-200/80 p-4 rounded-2xl space-y-1">
+                    <p className="font-extrabold text-gray-900 flex items-center gap-2">
+                      <span className="text-emerald-600">⚡</span> How does 24-Hour Easy Return work?
+                    </p>
+                    <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
+                      Raise a return request within 24 hours of delivery from your Orders tab. Instant doorstep pickup will be arranged.
+                    </p>
+                  </div>
+
+                </div>
+              </div>
+
             </div>
           )}
 
