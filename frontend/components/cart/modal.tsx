@@ -72,7 +72,7 @@ export default function CartModal() {
   return (
     <>
       <button aria-label="Open cart" onClick={openCart} className="relative cursor-pointer">
-        <OpenCart quantity={totalQuantity} />
+        <OpenCart quantity={totalQuantity} total={subtotal} />
       </button>
       <Transition show={isOpen}>
         <Dialog onClose={closeCart} className="relative z-50">

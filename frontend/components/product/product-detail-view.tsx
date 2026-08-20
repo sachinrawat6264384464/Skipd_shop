@@ -57,6 +57,11 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
   const [exchangeOption, setExchangeOption] = useState<"without" | "with">("without");
   const [openSubNav, setOpenSubNav] = useState<string | null>(null);
 
+  // States for Size, Quantity & Size Chart Modal
+  const [selectedSize, setSelectedSize] = useState<string>("S");
+  const [quantity, setQuantity] = useState<number>(1);
+  const [showSizeChart, setShowSizeChart] = useState<boolean>(false);
+
   // States for Add-on Items and Toast
   const [addon1Added, setAddon1Added] = useState(true);
   const [addon2Added, setAddon2Added] = useState(true);
@@ -164,9 +169,9 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     const itemToAdd = {
       id: product.id,
       handle: product.handle,
-      title: `${product.title} (${selectedColor})`,
+      title: `${product.title} (${selectedColor}${selectedSize ? ` / Size: ${selectedSize}` : ""})`,
       price: product.price,
-      quantity: 1,
+      quantity: quantity,
       image: selectedImage
     };
 
@@ -177,7 +182,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     });
     let updated;
     if (idx > -1) {
-      existing[idx].quantity = (existing[idx].quantity || 1) + 1;
+      existing[idx].quantity = (existing[idx].quantity || 1) + quantity;
       updated = [...existing];
     } else {
       updated = [...existing, itemToAdd];
@@ -781,26 +786,43 @@ const SUB_NAV_ITEMS = [
               </p>
             </div>
 
-            {/* 🎁 Offers Carousel Box */}
-            <div className="space-y-2">
-              <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">🏷️ Applicable Offers</h4>
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-3 space-y-1">
-                  <h5 className="font-bold text-gray-900 text-[11px]">No Cost EMI</h5>
-                  <p className="text-[10px] text-gray-600 leading-tight">Select Credit Cards, Bajaj Finserv EMI Card, Amazon Pay...</p>
-                  <span className="text-[10px] text-emerald-700 font-extrabold hover:underline block pt-1">3 offers &rsaquo;</span>
+            {/* 🎁 APPLICABLE OFFERS Section (Exact match with Screenshot 1) */}
+            <div className="space-y-2.5 pt-1">
+              <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                <span>🏷️</span> APPLICABLE OFFERS
+              </h4>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {/* Offer Card 1: No Cost EMI */}
+                <div className="bg-[#FFFDF0] border border-[#FFE894] rounded-2xl p-4 space-y-1.5 shadow-2xs relative">
+                  <h5 className="font-extrabold text-gray-900 text-xs">No Cost EMI</h5>
+                  <p className="text-[11px] text-gray-600 leading-snug">
+                    Select Credit Cards, Bajaj Finserv EMI Card, Amazon Pay...
+                  </p>
+                  <span className="text-xs font-black text-[#059669] hover:underline cursor-pointer flex items-center gap-1 pt-1">
+                    3 offers &rsaquo;
+                  </span>
                 </div>
-                <div className="bg-amber-50/70 border border-amber-200 rounded-2xl p-3 space-y-1">
-                  <h5 className="font-bold text-gray-900 text-[11px]">Bank Offers</h5>
-                  <p className="text-[10px] text-gray-600 leading-tight">Up to ₹2,500.00 off on select Credit Cards, SBI Debit...</p>
-                  <span className="text-[10px] text-emerald-700 font-extrabold hover:underline block pt-1">10 offers &rsaquo;</span>
+
+                {/* Offer Card 2: Bank Offers */}
+                <div className="bg-[#FFFDF0] border border-[#FFE894] rounded-2xl p-4 space-y-1.5 shadow-2xs relative">
+                  <h5 className="font-extrabold text-gray-900 text-xs">Bank Offers</h5>
+                  <p className="text-[11px] text-gray-600 leading-snug">
+                    Up to ₹2,500.00 off on select Credit Cards, SBI Debit...
+                  </p>
+                  <span className="text-xs font-black text-[#059669] hover:underline cursor-pointer flex items-center gap-1 pt-1">
+                    10 offers &rsaquo;
+                  </span>
                 </div>
               </div>
 
-              {/* UPI Cashback Banner */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-xs flex items-center justify-between text-emerald-900 font-bold">
-                <span>💎 Earn ₹179 cashback worth ₹17.9 on all UPI payments</span>
-                <span className="text-emerald-700">&rsaquo;</span>
+              {/* UPI Cashback Banner (Matching Screenshot 1 green pill) */}
+              <div className="bg-[#EAFBF3] border border-[#A7F3D0] rounded-2xl p-3.5 text-xs flex items-center justify-between text-[#065F46] font-bold shadow-2xs cursor-pointer hover:bg-emerald-100 transition">
+                <span className="flex items-center gap-2">
+                  <span className="text-base">💎</span>
+                  <span>Earn ₹179 cashback worth ₹17.9 on all UPI payments</span>
+                </span>
+                <span className="text-emerald-700 font-black text-sm">&rsaquo;</span>
               </div>
             </div>
 
@@ -832,25 +854,156 @@ const SUB_NAV_ITEMS = [
               </div>
             </div>
 
-            {/* 🎨 Dynamic Color Swatches Selector */}
-            <div className="space-y-2 pt-1">
-              <p className="text-xs font-bold text-gray-900">Color: <span className="font-extrabold text-emerald-700">{selectedColor}</span></p>
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                {parsedColorList.map((sw, idx) => (
+            {/* 🎨 Color Swatches Selector (Matching Screenshot 2) */}
+            <div className="space-y-2 pt-2 border-t border-gray-100">
+              <p className="text-xs font-bold text-gray-900">
+                Color: <span className="font-extrabold text-gray-800">{selectedColor}</span>
+              </p>
+              <div className="flex items-center gap-3">
+                {[
+                  { name: "Charcoal", bg: "bg-[#3A3B3C]" },
+                  { name: "Navy", bg: "bg-[#4A5B78]" },
+                  { name: "Slate", bg: "bg-[#7A8B9E]" }
+                ].map((col) => (
                   <button
-                    key={idx}
+                    key={col.name}
                     type="button"
-                    onClick={() => setSelectedColor(sw.name)}
-                    className={`shrink-0 border-2 rounded-2xl p-2 text-center text-[10px] transition cursor-pointer ${
-                      selectedColor === sw.name ? "border-amber-500 bg-amber-50/50 text-gray-900 font-extrabold shadow-2xs" : "border-gray-200 bg-white hover:border-gray-400 text-gray-700 font-medium"
+                    onClick={() => setSelectedColor(col.name)}
+                    className={`w-8 h-8 rounded-full border-2 transition cursor-pointer flex items-center justify-center ${col.bg} ${
+                      selectedColor === col.name
+                        ? "border-gray-900 ring-2 ring-emerald-400 ring-offset-2 scale-110 shadow-sm"
+                        : "border-gray-300 hover:border-gray-500 opacity-80 hover:opacity-100"
+                    }`}
+                    title={col.name}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* 📏 Size Selector (Matching Screenshot 2) */}
+            <div className="space-y-3 pt-3 border-t border-gray-100 text-xs">
+              <div className="flex items-center justify-between">
+                <p className="font-bold text-gray-900">
+                  Size: <span className="font-extrabold text-[#0284C7]">In Stock</span>
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowSizeChart(true)}
+                  className="text-gray-700 hover:text-emerald-700 font-bold flex items-center gap-1.5 underline underline-offset-2 cursor-pointer"
+                >
+                  <span>📏</span> Size Chart
+                </button>
+              </div>
+
+              {/* Size Pills Grid: S, M, L, XL */}
+              <div className="flex items-center gap-2.5">
+                {["S", "M", "L", "XL"].map((sz) => (
+                  <button
+                    key={sz}
+                    type="button"
+                    onClick={() => setSelectedSize(sz)}
+                    className={`w-12 h-10 rounded-xl font-black text-xs transition border cursor-pointer flex items-center justify-center ${
+                      selectedSize === sz
+                        ? "bg-black text-white border-black shadow-sm"
+                        : "bg-white text-gray-800 border-gray-300 hover:border-gray-500 hover:bg-gray-50"
                     }`}
                   >
-                    <p className="font-bold line-clamp-1">{sw.name}</p>
-                    <p className="text-emerald-700 font-black">₹{sw.price.toLocaleString("en-IN")}</p>
-                    <p className="text-gray-400 line-through text-[9px]">₹{sw.mrp.toLocaleString("en-IN")}</p>
+                    {sz}
                   </button>
                 ))}
               </div>
+
+              {/* RECOMMENDED Size Banner (Matching Screenshot 2) */}
+              <div className="border border-gray-900 rounded-xl p-3 bg-white flex items-center justify-between font-black text-xs text-gray-900 shadow-2xs max-w-xs">
+                <div className="flex items-center gap-2">
+                  <span className="font-serif italic font-black text-sm">TF</span>
+                  <span>RECOMMENDED: L</span>
+                </div>
+                <span>&rarr;</span>
+              </div>
+
+              {/* Also Available in Size */}
+              <div className="space-y-1.5 pt-1">
+                <p className="font-bold text-gray-700 text-[11px]">Also Available in Size</p>
+                <button className="border border-gray-300 rounded-xl px-4 py-2 text-xs font-bold text-gray-800 bg-white hover:bg-gray-50 cursor-pointer">
+                  Plus
+                </button>
+              </div>
+            </div>
+
+            {/* 🔢 Quantity Stepper & 🛍️ Circular Wishlist Heart + ADD TO CART Action Row (Matching Screenshot 2 & User Request) */}
+            <div className="space-y-3 pt-3 border-t border-gray-100">
+              
+              {/* Quantity Selector */}
+              <div className="space-y-1.5 text-xs">
+                <p className="font-bold text-gray-900">Quantity:</p>
+                <div className="inline-flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="px-3.5 py-2 text-gray-700 hover:bg-gray-100 font-black text-sm transition cursor-pointer"
+                  >
+                    -
+                  </button>
+                  <span className="px-4 py-2 font-black text-xs text-gray-900">{quantity}</span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="px-3.5 py-2 text-gray-700 hover:bg-gray-100 font-black text-sm transition cursor-pointer"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Action Row: Wishlist Heart Circle + ADD TO CART Pill Button */}
+              <div className="flex items-center gap-3 pt-2">
+                
+                {/* 🤍 Circular Wishlist Heart Button (Next to Add to Cart, Matching Screenshot 2!) */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    const item = {
+                      id: product.id,
+                      handle: product.handle,
+                      title: product.title,
+                      price: product.price,
+                      compare_at_price: product.compare_at_price,
+                      image: product.images?.[0] || selectedImage,
+                      category: product.category?.name || "Store",
+                      rating: 4.5
+                    };
+                    const wasLiked = isInWishlist(product.id);
+                    toggleWishlist(item);
+                    if (wasLiked) {
+                      toast("💔 Removed from Wishlist", { description: product.title });
+                    } else {
+                      toast.success("❤️ Added to Wishlist!", { description: product.title });
+                    }
+                  }}
+                  className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition shrink-0 cursor-pointer shadow-sm ${
+                    isInWishlist(product.id)
+                      ? "bg-rose-50 border-rose-500 text-rose-600 scale-105"
+                      : "bg-white border-sky-300 text-sky-500 hover:border-sky-500 hover:bg-sky-50"
+                  }`}
+                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                  </svg>
+                </button>
+
+                {/* 🛒 ADD TO CART Big Cyan/Blue Pill Button (Matching Screenshot 2!) */}
+                <button
+                  type="button"
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-[#00A8E8] hover:bg-[#0092CC] active:bg-[#007FB3] text-white font-black text-sm py-4 px-6 rounded-full transition shadow-md shadow-[#00A8E8]/30 text-center tracking-wider uppercase cursor-pointer"
+                >
+                  {cartAddedToast ? "✓ ADDED TO CART!" : "ADD TO CART"}
+                </button>
+
+              </div>
+
             </div>
 
             {/* 📋 About This Item Specs Bullet Points */}
@@ -1363,6 +1516,78 @@ const SUB_NAV_ITEMS = [
           </div>
         </div>
       </div>
+
+      {/* 📏 Size Chart Modal Popup */}
+      {showSizeChart && typeof document !== "undefined" && createPortal(
+        <div className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-xs font-sans relative border border-gray-200">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <h3 className="font-black text-gray-900 text-base flex items-center gap-2">
+                <span>📏</span> Product Size Chart &amp; Fit Guide
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowSizeChart(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-xs flex items-center justify-center cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-gray-600 text-xs">Standard body measurements in inches (in):</p>
+
+            <table className="w-full text-center border-collapse border border-gray-200 text-xs">
+              <thead>
+                <tr className="bg-gray-100 font-black text-gray-900">
+                  <th className="p-2.5 border border-gray-200">Size</th>
+                  <th className="p-2.5 border border-gray-200">Chest</th>
+                  <th className="p-2.5 border border-gray-200">Waist</th>
+                  <th className="p-2.5 border border-gray-200">Length</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 font-medium">
+                <tr className={selectedSize === "S" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <td className="p-2.5 border border-gray-200 font-black">S</td>
+                  <td className="p-2.5 border border-gray-200">36 - 38"</td>
+                  <td className="p-2.5 border border-gray-200">30 - 32"</td>
+                  <td className="p-2.5 border border-gray-200">27"</td>
+                </tr>
+                <tr className={selectedSize === "M" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <td className="p-2.5 border border-gray-200 font-black">M</td>
+                  <td className="p-2.5 border border-gray-200">38 - 40"</td>
+                  <td className="p-2.5 border border-gray-200">32 - 34"</td>
+                  <td className="p-2.5 border border-gray-200">28"</td>
+                </tr>
+                <tr className={selectedSize === "L" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <td className="p-2.5 border border-gray-200 font-black">L</td>
+                  <td className="p-2.5 border border-gray-200">40 - 42"</td>
+                  <td className="p-2.5 border border-gray-200">34 - 36"</td>
+                  <td className="p-2.5 border border-gray-200">29"</td>
+                </tr>
+                <tr className={selectedSize === "XL" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <td className="p-2.5 border border-gray-200 font-black">XL</td>
+                  <td className="p-2.5 border border-gray-200">42 - 44"</td>
+                  <td className="p-2.5 border border-gray-200">36 - 38"</td>
+                  <td className="p-2.5 border border-gray-200">30"</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-[11px] text-emerald-900 font-bold">
+              💡 Tip: If you prefer a relaxed fit, we recommend selecting one size larger.
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowSizeChart(false)}
+              className="w-full bg-gray-900 hover:bg-black text-white font-black py-3 rounded-2xl text-xs uppercase"
+            >
+              Close Guide
+            </button>
+          </div>
+        </div>,
+        document.body
+      )}
 
     </div>
   );
