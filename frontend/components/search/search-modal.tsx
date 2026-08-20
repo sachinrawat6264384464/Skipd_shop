@@ -86,27 +86,38 @@ export function InstantSearchModal() {
 
   return (
     <>
-      {/* Search Trigger Button in Navbar */}
+      {/* 🔍 Search Trigger Button in Navbar (Sleek Circular Vector Icon Button) */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-600 px-3.5 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer border border-gray-200"
-        title="Instant Search (Cmd + K)"
+        className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gray-100/90 hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 border border-gray-200/80 hover:border-emerald-300 transition-all duration-200 cursor-pointer shadow-2xs hover:scale-105 group"
+        title="Search store (Cmd + K)"
+        aria-label="Search Store"
       >
-        <span>🔍</span>
-        <span className="hidden sm:inline">Search store...</span>
-        <kbd className="hidden lg:inline-block bg-white text-gray-500 text-[10px] font-mono px-1.5 py-0.5 rounded border border-gray-300 shadow-2xs">
-          ⌘K
-        </kbd>
+        <svg
+          className="w-5 h-5 text-gray-700 group-hover:text-emerald-600 transition-colors"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2.2}
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
       </button>
 
-      {/* Glassmorphism Modal */}
+      {/* 🪟 Glassmorphism Search Modal Container */}
       {isOpen && (
         <div className="fixed inset-0 bg-black/65 backdrop-blur-md flex items-start justify-center pt-16 px-4 z-50 animate-in fade-in duration-150">
           <div className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl space-y-4 border border-gray-200">
             
             {/* Search Input Bar */}
             <div className="relative flex items-center border-b border-gray-100 pb-3">
-              <span className="text-xl text-gray-400 absolute left-1">🔍</span>
+              <svg className="w-5 h-5 text-emerald-600 absolute left-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
               <input
                 type="text"
                 autoFocus
@@ -117,9 +128,9 @@ export function InstantSearchModal() {
               />
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-400 hover:text-gray-700 font-bold text-xl cursor-pointer absolute right-1"
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-500 hover:text-gray-900 font-black text-sm flex items-center justify-center cursor-pointer absolute right-1 transition"
               >
-                &times;
+                ✕
               </button>
             </div>
 
@@ -132,7 +143,7 @@ export function InstantSearchModal() {
                     <button
                       key={tag}
                       onClick={() => setQuery(tag)}
-                      className="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 font-semibold px-3 py-1.5 rounded-xl border border-gray-200 transition cursor-pointer"
+                      className="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 font-semibold px-3.5 py-1.5 rounded-xl border border-gray-200 transition cursor-pointer"
                     >
                       {tag}
                     </button>
