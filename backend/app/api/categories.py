@@ -134,11 +134,15 @@ async def create_admin_category(payload: CategoryCreate, db: AsyncSession = Depe
     if existing:
         slug = f"{slug}-{int(func.random() * 1000)}"
 
+    img_url = payload.image_url
+    if not img_url and payload.icon and (payload.icon.startswith("data:") or payload.icon.startswith("http") or payload.icon.startswith("/")):
+        img_url = payload.icon
+
     category = Category(
         name=payload.name,
         slug=slug,
         description=payload.description,
-        image_url=payload.image_url,
+        image_url=img_url,
         icon=payload.icon or "📁",
         status=payload.status or "Active"
     )
@@ -165,6 +169,8 @@ async def update_admin_category(category_id: int, payload: CategoryUpdate, db: A
         category.image_url = payload.image_url
     if payload.icon is not None:
         category.icon = payload.icon
+        if payload.icon.startswith("data:") or payload.icon.startswith("http") or payload.icon.startswith("/"):
+            category.image_url = payload.icon
     if payload.status is not None:
         category.status = payload.status
 

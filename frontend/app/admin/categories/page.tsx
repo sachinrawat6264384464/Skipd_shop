@@ -55,7 +55,8 @@ export default function AdminCategoriesPage() {
     const res = await createAdminCategory({
       name: formState.name,
       slug: formState.slug || formState.name.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      icon: formState.icon || "📁",
+      image_url: formState.icon,
+      icon: formState.icon,
       status: formState.status
     });
 
@@ -74,6 +75,7 @@ export default function AdminCategoriesPage() {
     const res = await updateAdminCategory(editingCategory.id, {
       name: formState.name,
       slug: formState.slug,
+      image_url: formState.icon,
       icon: formState.icon,
       status: formState.status
     });
@@ -168,7 +170,7 @@ export default function AdminCategoriesPage() {
                       <button
                         onClick={() => {
                           setEditingCategory(cat);
-                          setFormState({ name: cat.name, slug: cat.slug, icon: cat.icon || "📁", status: cat.status || "Active" });
+                          setFormState({ name: cat.name, slug: cat.slug, icon: cat.image_url || cat.icon || "📁", status: cat.status || "Active" });
                           setShowEditModal(true);
                         }}
                         className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer"
