@@ -22,6 +22,7 @@ from app.api.categories import router as categories_router
 from app.api.users import router as users_router
 from app.api.cart import router as cart_router
 from app.api.wishlist import router as wishlist_router
+from app.api.roles import router as roles_router
 from app.api.addresses import router as addresses_router
 from app.api.coupons import router as coupons_router
 from app.api.reviews import router as reviews_router
@@ -249,6 +250,7 @@ app.include_router(categories_router, prefix=settings.API_V1_STR)
 app.include_router(users_router, prefix=settings.API_V1_STR)
 app.include_router(queries_router, prefix=settings.API_V1_STR)
 app.include_router(wishlist_router, prefix=settings.API_V1_STR)
+app.include_router(roles_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():

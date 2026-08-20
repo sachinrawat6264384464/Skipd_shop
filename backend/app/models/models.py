@@ -400,3 +400,34 @@ class ProductQuery(Base):
     product = relationship("Product")
     user = relationship("User")
     order = relationship("Order")
+
+class Role(Base):
+    __tablename__ = "roles"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    slug = Column(String(100), unique=True, index=True, nullable=False)
+    description = Column(Text, nullable=True)
+    permissions = Column(JSON, default=list)
+    is_system = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    staff_users = relationship("StaffUser", back_populates="role_rel")
+
+class StaffUser(Base):
+    __tablename__ = "staff_users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(150), nullable=False)
+    email = Column(String(150), unique=True, index=True, nullable=False)
+    password_hash = Column(String(255), nullable=True)
+    role = Column(String(100), default="Store Manager")
+    role_id = Column(Integer, ForeignKey("roles.id"), nullable=True)
+    status = Column(String(50), default="Active")
+    avatar = Column(Text, nullable=True)
+    last_active = Column(String(100), default="Just now")
+    permissions = Column(JSON, default=list)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    role_rel = relationship("Role", back_populates="staff_users")
+

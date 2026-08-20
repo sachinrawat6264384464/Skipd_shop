@@ -1,6 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {
+  fetchAdminRoles,
+  fetchAdminStaff,
+  createAdminStaff,
+  updateAdminStaff,
+  deleteAdminStaff,
+  createAdminRole,
+  RoleData,
+  StaffUserData
+} from "lib/api";
 
 interface SidebarModule {
   id: string;
@@ -10,6 +20,7 @@ interface SidebarModule {
 }
 
 const SIDEBAR_MODULES: SidebarModule[] = [
+  { id: "dashboard", name: "Dashboard Overview", category: "Overview", icon: "🏠" },
   { id: "analytics", name: "Analytics & Insights", category: "Overview", icon: "📊" },
   { id: "orders", name: "Orders & Fulfillment", category: "Commerce & Catalog", icon: "📦" },
   { id: "products", name: "Products & Catalog", category: "Commerce & Catalog", icon: "🏷️" },
@@ -22,92 +33,79 @@ const SIDEBAR_MODULES: SidebarModule[] = [
   { id: "homepage", name: "Content & CMS", category: "Growth & Content", icon: "📝" },
   { id: "tickets", name: "Support & Tickets", category: "Growth & Content", icon: "🎧" },
   { id: "queries", name: "Product Queries & Returns", category: "Growth & Content", icon: "🔄" },
-  { id: "settings", name: "Store System Settings", category: "Administration", icon: "⚙️" }
-];
-
-interface StaffUser {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  status: "Active" | "Inactive" | "Suspended";
-  avatar: string;
-  lastActive: string;
-  permissions: string[];
-}
-
-const INITIAL_STAFF: StaffUser[] = [
-  {
-    id: 1,
-    name: "Sachin Rawat",
-    email: "admin@skipd.com",
-    role: "Super Admin",
-    status: "Active",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100",
-    lastActive: "Just now (Online)",
-    permissions: SIDEBAR_MODULES.map(m => m.id)
-  }
+  { id: "users", name: "Staff Users & Roles", category: "Administration", icon: "🛡️" },
+  { id: "settings", name: "Store System Settings", category: "Administration", icon: "⚙️" },
+  { id: "logs", name: "Security & Audit Logs", category: "Administration", icon: "🔐" }
 ];
 
 export default function AdminUsersRolesPage() {
   const [activeTab, setActiveTab] = useState<"staff" | "roles">("staff");
-  const [staffList, setStaffList] = useState<StaffUser[]>(INITIAL_STAFF);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingStaffId, setEditingStaffId] = useState<number | null>(null);
+  const [staffList, setStaffList] = useState<StaffUserData[]>([]);
+  const [rolesList, setRolesList] = useState<RoleData[]>([]);
+  const [loading, setLoading] = useState(true);
 
+  // Modals & UI state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isRoleModalOpen, setIsRoleModalOpen] = useState(false);
+  const [editingStaffId, setEditingStaffId] = useState<number | null>(null);
   const [toastMessage, setToastMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
-  // Modal Form State
+  // Staff Modal Form State
   const [formName, setFormName] = useState("");
   const [formEmail, setFormEmail] = useState("");
   const [formPassword, setFormPassword] = useState("");
   const [formRole, setFormRole] = useState("Store Manager");
   const [formPermissions, setFormPermissions] = useState<string[]>([]);
 
-  // Load persisted staff on mount
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem("skipd_staff_users");
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setStaffList(parsed);
-          }
-        }
-      } catch (e) {}
-    }
-  }, []);
+  // New Role Modal Form State
+  const [roleName, setRoleName] = useState("");
+  const [roleDesc, setRoleDesc] = useState("");
+  const [rolePerms, setRolePerms] = useState<string[]>([]);
 
   const showToast = (text: string, type: "success" | "error" = "success") => {
     setToastMessage({ text, type });
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const saveToLocalStorage = (updated: StaffUser[]) => {
-    setStaffList(updated);
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("skipd_staff_users", JSON.stringify(updated));
-      } catch (e) {}
+  // Load Data from PostgreSQL Database
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const [fetchedRoles, fetchedStaff] = await Promise.all([
+        fetchAdminRoles(),
+        fetchAdminStaff()
+      ]);
+      if (Array.isArray(fetchedRoles)) setRolesList(fetchedRoles);
+      if (Array.isArray(fetchedStaff)) setStaffList(fetchedStaff);
+    } catch (e) {
+      console.warn("Failed to load staff and roles from PostgreSQL DB:", e);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Pre-select module permissions based on role presets
-  const handleRolePresetChange = (role: string) => {
-    setFormRole(role);
-    if (role === "Super Admin") {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  // Handle preset role change in create/edit modal
+  const handleRolePresetChange = (roleName: string) => {
+    setFormRole(roleName);
+    const matchedRole = rolesList.find(r => r.name === roleName);
+    if (matchedRole && matchedRole.permissions && matchedRole.permissions.length > 0) {
+      setFormPermissions(matchedRole.permissions);
+    } else if (roleName === "Super Admin") {
       setFormPermissions(SIDEBAR_MODULES.map(m => m.id));
-    } else if (role === "Store Manager") {
-      setFormPermissions(["analytics", "orders", "products", "inventory", "customers", "delivery"]);
-    } else if (role === "Logistics Manager") {
-      setFormPermissions(["orders", "inventory", "delivery", "queries"]);
-    } else if (role === "Support Executive") {
-      setFormPermissions(["customers", "tickets", "queries"]);
-    } else if (role === "Marketing Specialist") {
-      setFormPermissions(["analytics", "sales", "engagement", "homepage"]);
+    } else if (roleName === "Store Manager") {
+      setFormPermissions(["dashboard", "analytics", "orders", "products", "inventory", "customers", "payments", "delivery"]);
+    } else if (roleName === "Logistics Manager") {
+      setFormPermissions(["dashboard", "orders", "inventory", "delivery", "queries"]);
+    } else if (roleName === "Support Executive") {
+      setFormPermissions(["dashboard", "customers", "tickets", "queries"]);
+    } else if (roleName === "Marketing Specialist") {
+      setFormPermissions(["dashboard", "analytics", "sales", "engagement", "homepage"]);
     } else {
-      setFormPermissions(["orders", "products"]);
+      setFormPermissions(["dashboard", "orders", "products"]);
     }
   };
 
@@ -116,18 +114,20 @@ export default function AdminUsersRolesPage() {
     setFormName("");
     setFormEmail("");
     setFormPassword("• • • • • • • •");
-    setFormRole("Store Manager");
-    setFormPermissions(["analytics", "orders", "products", "inventory", "customers", "delivery"]);
+    setFormRole(rolesList[1]?.name || "Store Manager");
+    
+    const defaultPerms = rolesList[1]?.permissions || ["dashboard", "orders", "products", "inventory", "customers", "delivery"];
+    setFormPermissions(defaultPerms);
     setIsModalOpen(true);
   };
 
-  const openEditModal = (staff: StaffUser) => {
+  const openEditModal = (staff: StaffUserData) => {
     setEditingStaffId(staff.id);
     setFormName(staff.name);
     setFormEmail(staff.email);
     setFormPassword("••••••••");
     setFormRole(staff.role);
-    setFormPermissions(staff.permissions);
+    setFormPermissions(staff.permissions || []);
     setIsModalOpen(true);
   };
 
@@ -147,7 +147,7 @@ export default function AdminUsersRolesPage() {
     setFormPermissions([]);
   };
 
-  const handleSubmitStaffForm = (e: React.FormEvent) => {
+  const handleSubmitStaffForm = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formName.trim() || !formEmail.trim()) {
       showToast("Please provide staff name & email address", "error");
@@ -155,53 +155,86 @@ export default function AdminUsersRolesPage() {
     }
 
     if (editingStaffId !== null) {
-      // Update existing staff
-      const updated = staffList.map(s => s.id === editingStaffId ? {
-        ...s,
+      // Update existing staff user in PostgreSQL DB
+      const res = await updateAdminStaff(editingStaffId, {
         name: formName,
         email: formEmail,
         role: formRole,
         permissions: formPermissions
-      } : s);
-      saveToLocalStorage(updated);
-      showToast(`🎉 Staff user ${formName} permissions updated successfully!`);
+      });
+      if (res) {
+        setStaffList(staffList.map(s => s.id === editingStaffId ? res : s));
+        showToast(`🎉 Staff user ${formName} updated in PostgreSQL database!`);
+      } else {
+        showToast("Failed to update staff user in database", "error");
+      }
     } else {
-      // Create new staff
-      const newStaff: StaffUser = {
-        id: Date.now(),
+      // Create new staff user in PostgreSQL DB
+      const res = await createAdminStaff({
         name: formName,
         email: formEmail,
+        password: formPassword,
         role: formRole,
         status: "Active",
         avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(formName)}`,
-        lastActive: "Just added",
         permissions: formPermissions
-      };
-      saveToLocalStorage([newStaff, ...staffList]);
-      showToast(`🎉 Staff user ${formName} created with ${formPermissions.length} sidebar service permissions!`);
+      });
+      if (res) {
+        setStaffList([res, ...staffList]);
+        showToast(`🎉 Staff user ${formName} saved to PostgreSQL database!`);
+      } else {
+        showToast("Failed to create staff user in database", "error");
+      }
     }
 
     setIsModalOpen(false);
   };
 
-  const handleDeleteStaff = (id: number, name: string) => {
-    if (confirm(`Are you sure you want to remove staff account "${name}"?`)) {
-      const updated = staffList.filter(s => s.id !== id);
-      saveToLocalStorage(updated);
-      showToast(`Staff account "${name}" deleted`, "error");
+  const handleDeleteStaff = async (id: number, name: string) => {
+    if (confirm(`Are you sure you want to permanently delete staff account "${name}" from PostgreSQL database?`)) {
+      const ok = await deleteAdminStaff(id);
+      if (ok) {
+        setStaffList(staffList.filter(s => s.id !== id));
+        showToast(`Staff account "${name}" deleted from database`, "error");
+      } else {
+        showToast(`Cannot delete staff account "${name}"`, "error");
+      }
     }
   };
 
-  const handleToggleStatus = (id: number) => {
-    const updated = staffList.map(s => {
-      if (s.id === id) {
-        const nextStatus = s.status === "Active" ? "Inactive" : "Active";
-        return { ...s, status: nextStatus as any };
-      }
-      return s;
+  const handleToggleStatus = async (staff: StaffUserData) => {
+    const nextStatus = staff.status === "Active" ? "Inactive" : "Active";
+    const res = await updateAdminStaff(staff.id, { status: nextStatus });
+    if (res) {
+      setStaffList(staffList.map(s => s.id === staff.id ? { ...s, status: nextStatus as any } : s));
+      showToast(`Staff user status changed to ${nextStatus}!`);
+    }
+  };
+
+  // Submit New Custom Role Form
+  const handleCreateCustomRole = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!roleName.trim()) {
+      showToast("Please enter a role name", "error");
+      return;
+    }
+
+    const created = await createAdminRole({
+      name: roleName,
+      description: roleDesc || `Custom access role for ${roleName}`,
+      permissions: rolePerms.length > 0 ? rolePerms : ["dashboard", "orders"]
     });
-    saveToLocalStorage(updated);
-    showToast("Staff status updated!");
+
+    if (created) {
+      setRolesList([...rolesList, created]);
+      showToast(`🛡️ Custom role "${roleName}" saved to database!`);
+      setIsRoleModalOpen(false);
+      setRoleName("");
+      setRoleDesc("");
+      setRolePerms([]);
+    } else {
+      showToast("Role with this name already exists", "error");
+    }
   };
 
   return (
@@ -225,16 +258,25 @@ export default function AdminUsersRolesPage() {
             <span>👤 Staff Users &amp; Admin Roles</span>
           </h1>
           <p className="text-xs text-gray-500 font-medium mt-0.5">
-            Manage administrative accounts, role permissions &amp; sidebar service access control
+            Manage administrative accounts, role permissions &amp; complete sidebar service access control (PostgreSQL DB)
           </p>
         </div>
-        <button
-          onClick={openCreateModal}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-2 shrink-0"
-        >
-          <span>+</span>
-          <span>Add Staff Account</span>
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsRoleModalOpen(true)}
+            className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-4 py-3 rounded-xl transition cursor-pointer border border-gray-300 flex items-center gap-1.5"
+          >
+            <span>🛡️</span>
+            <span>+ Create Custom Role</span>
+          </button>
+          <button
+            onClick={openCreateModal}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-2 shrink-0"
+          >
+            <span>+</span>
+            <span>Add Staff Account</span>
+          </button>
+        </div>
       </div>
 
       {/* 4 Stat KPI Cards */}
@@ -242,22 +284,22 @@ export default function AdminUsersRolesPage() {
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
           <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">TOTAL STAFF ACCOUNTS</span>
           <p className="text-2xl font-black text-gray-900">{staffList.length}</p>
-          <p className="text-[11px] text-emerald-600 font-bold">Active admin users</p>
+          <p className="text-[11px] text-emerald-600 font-bold">100% Live DB Accounts</p>
+        </div>
+        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
+          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">SYSTEM ROLES</span>
+          <p className="text-2xl font-black text-emerald-700">{rolesList.length}</p>
+          <p className="text-[11px] text-gray-500 font-medium">Configured in DB</p>
         </div>
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
           <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">SUPER ADMINS</span>
-          <p className="text-2xl font-black text-emerald-700">{staffList.filter(s => s.role === "Super Admin").length}</p>
+          <p className="text-2xl font-black text-purple-700">{staffList.filter(s => s.role === "Super Admin").length}</p>
           <p className="text-[11px] text-gray-500 font-medium">Master access keys</p>
         </div>
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">STORE MANAGERS</span>
-          <p className="text-2xl font-black text-indigo-700">{staffList.filter(s => s.role === "Store Manager" || s.role === "Logistics Manager").length}</p>
-          <p className="text-[11px] text-gray-500 font-medium">Catalog &amp; Order leads</p>
-        </div>
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
-          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">SIDEBAR MODULES</span>
+          <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">ALL SIDEBAR SERVICES</span>
           <p className="text-2xl font-black text-amber-600">{SIDEBAR_MODULES.length}</p>
-          <p className="text-[11px] text-gray-500 font-medium">Granular service controls</p>
+          <p className="text-[11px] text-gray-500 font-medium">Complete module matrix</p>
         </div>
       </div>
 
@@ -277,173 +319,205 @@ export default function AdminUsersRolesPage() {
             activeTab === "roles" ? "bg-emerald-600 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
-          🛡️ Role &amp; Permission Matrix
+          🛡️ Role &amp; Permission Matrix ({rolesList.length})
         </button>
       </div>
 
-      {/* TAB 1: STAFF ACCOUNTS LISTING */}
-      {activeTab === "staff" && (
-        <div className="bg-white border border-gray-200/80 rounded-2xl shadow-2xs overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-gray-50 border-b border-gray-100 text-gray-400 font-bold uppercase text-[10px]">
-                <tr>
-                  <th className="px-6 py-4">Staff User</th>
-                  <th className="px-6 py-4">Primary Role</th>
-                  <th className="px-6 py-4">Sidebar Service Access</th>
-                  <th className="px-6 py-4">Status</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 font-medium text-gray-800">
-                {staffList.map((staff) => (
-                  <tr key={staff.id} className="hover:bg-gray-50/80 transition">
-                    
-                    {/* User Info */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <img
-                          src={staff.avatar}
-                          alt={staff.name}
-                          className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 shadow-2xs"
-                        />
-                        <div>
-                          <p className="font-bold text-gray-900 text-sm">{staff.name}</p>
-                          <p className="text-[11px] text-gray-400 font-mono">{staff.email}</p>
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Role */}
-                    <td className="px-6 py-4">
-                      <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase border ${
-                        staff.role === "Super Admin"
-                          ? "bg-purple-100 text-purple-900 border-purple-300"
-                          : staff.role === "Store Manager"
-                          ? "bg-indigo-100 text-indigo-900 border-indigo-300"
-                          : staff.role === "Logistics Manager"
-                          ? "bg-blue-100 text-blue-900 border-blue-300"
-                          : "bg-amber-100 text-amber-900 border-amber-300"
-                      }`}>
-                        {staff.role}
-                      </span>
-                    </td>
-
-                    {/* Service Access Badges */}
-                    <td className="px-6 py-4">
-                      <div className="flex flex-wrap gap-1 max-w-md">
-                        {staff.permissions.length === SIDEBAR_MODULES.length ? (
-                          <span className="bg-emerald-100 text-emerald-800 font-black text-[10px] px-2.5 py-0.5 rounded-md border border-emerald-200">
-                            ⚡ FULL UNRESTRICTED ACCESS (All 13 Modules)
-                          </span>
-                        ) : (
-                          staff.permissions.map((permId) => {
-                            const mod = SIDEBAR_MODULES.find(m => m.id === permId);
-                            return (
-                              <span key={permId} className="bg-gray-100 text-gray-700 font-bold text-[10px] px-2 py-0.5 rounded-md border border-gray-200">
-                                {mod?.icon} {mod?.name}
-                              </span>
-                            );
-                          })
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Status */}
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleToggleStatus(staff.id)}
-                        className={`px-3 py-1 rounded-full text-[10px] font-black border transition cursor-pointer ${
-                          staff.status === "Active"
-                            ? "bg-emerald-100 text-emerald-800 border-emerald-300"
-                            : "bg-red-100 text-red-800 border-red-300"
-                        }`}
-                      >
-                        {staff.status}
-                      </button>
-                    </td>
-
-                    {/* Actions */}
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          onClick={() => openEditModal(staff)}
-                          className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-3 py-1.5 rounded-xl transition cursor-pointer border border-gray-200"
-                        >
-                          ✏️ Edit Services
-                        </button>
-                        {staff.role !== "Super Admin" && (
-                          <button
-                            onClick={() => handleDeleteStaff(staff.id, staff.name)}
-                            className="bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs px-3 py-1.5 rounded-xl transition cursor-pointer border border-red-200"
-                          >
-                            🗑️ Delete
-                          </button>
-                        )}
-                      </div>
-                    </td>
-
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+      {loading ? (
+        <div className="bg-white border border-gray-200 p-12 rounded-2xl text-center space-y-3">
+          <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-xs font-bold text-gray-500">Loading staff accounts &amp; roles from PostgreSQL DB...</p>
         </div>
-      )}
+      ) : (
+        <>
+          {/* TAB 1: STAFF ACCOUNTS LISTING */}
+          {activeTab === "staff" && (
+            <div className="bg-white border border-gray-200/80 rounded-2xl shadow-2xs overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-gray-50 border-b border-gray-100 text-gray-400 font-bold uppercase text-[10px]">
+                    <tr>
+                      <th className="px-6 py-4">Staff User</th>
+                      <th className="px-6 py-4">Primary Role</th>
+                      <th className="px-6 py-4">Sidebar Service Access</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100 font-medium text-gray-800">
+                    {staffList.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-8 text-center text-gray-400 font-medium">
+                          No staff accounts found in database. Click "+ Add Staff Account" to create one.
+                        </td>
+                      </tr>
+                    ) : (
+                      staffList.map((staff) => (
+                        <tr key={staff.id} className="hover:bg-gray-50/80 transition">
+                          
+                          {/* User Info */}
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={staff.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.name}`}
+                                alt={staff.name}
+                                className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 shadow-2xs bg-emerald-50"
+                              />
+                              <div>
+                                <p className="font-bold text-gray-900 text-sm">{staff.name}</p>
+                                <p className="text-[11px] text-gray-400 font-mono">{staff.email}</p>
+                              </div>
+                            </div>
+                          </td>
 
-      {/* TAB 2: ROLE & PERMISSION MATRIX */}
-      {activeTab === "roles" && (
-        <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-6">
-          <div className="border-b pb-4">
-            <h2 className="text-base font-black text-gray-900">🛡️ System Roles &amp; Default Sidebar Permissions</h2>
-            <p className="text-xs text-gray-500 font-medium">Standard role configurations and module access matrix across the admin dashboard</p>
-          </div>
+                          {/* Role */}
+                          <td className="px-6 py-4">
+                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase border ${
+                              staff.role === "Super Admin"
+                                ? "bg-purple-100 text-purple-900 border-purple-300"
+                                : staff.role === "Store Manager"
+                                ? "bg-indigo-100 text-indigo-900 border-indigo-300"
+                                : staff.role === "Logistics Manager"
+                                ? "bg-blue-100 text-blue-900 border-blue-300"
+                                : "bg-amber-100 text-amber-900 border-amber-300"
+                            }`}>
+                              {staff.role}
+                            </span>
+                          </td>
 
-          <div className="space-y-4 text-xs">
-            {["Super Admin", "Store Manager", "Logistics Manager", "Support Executive", "Marketing Specialist"].map((roleName) => (
-              <div key={roleName} className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-black text-gray-900 text-sm">{roleName}</h3>
-                  <span className="text-emerald-700 font-bold text-[11px]">
-                    {staffList.filter(s => s.role === roleName).length} active members
-                  </span>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {SIDEBAR_MODULES.map((mod) => {
-                    const isAllowed = roleName === "Super Admin" || 
-                      (roleName === "Store Manager" && ["analytics", "orders", "products", "inventory", "customers", "delivery"].includes(mod.id)) ||
-                      (roleName === "Logistics Manager" && ["orders", "inventory", "delivery", "queries"].includes(mod.id)) ||
-                      (roleName === "Support Executive" && ["customers", "tickets", "queries"].includes(mod.id)) ||
-                      (roleName === "Marketing Specialist" && ["analytics", "sales", "engagement", "homepage"].includes(mod.id));
-                    return (
-                      <span
-                        key={mod.id}
-                        className={`px-2.5 py-1 rounded-xl text-[10px] font-extrabold border ${
-                          isAllowed ? "bg-emerald-100 text-emerald-900 border-emerald-300" : "bg-gray-200/60 text-gray-400 border-gray-300 opacity-50"
-                        }`}
-                      >
-                        {isAllowed ? "✓" : "✕"} {mod.icon} {mod.name}
-                      </span>
-                    );
-                  })}
-                </div>
+                          {/* Service Access Badges */}
+                          <td className="px-6 py-4">
+                            <div className="flex flex-wrap gap-1 max-w-md">
+                              {(staff.permissions || []).length === SIDEBAR_MODULES.length ? (
+                                <span className="bg-emerald-100 text-emerald-800 font-black text-[10px] px-2.5 py-0.5 rounded-md border border-emerald-200">
+                                  ⚡ FULL UNRESTRICTED ACCESS (All {SIDEBAR_MODULES.length} Sidebar Modules)
+                                </span>
+                              ) : (
+                                (staff.permissions || []).map((permId) => {
+                                  const mod = SIDEBAR_MODULES.find(m => m.id === permId);
+                                  return (
+                                    <span key={permId} className="bg-gray-100 text-gray-700 font-bold text-[10px] px-2 py-0.5 rounded-md border border-gray-200">
+                                      {mod?.icon} {mod?.name || permId}
+                                    </span>
+                                  );
+                                })
+                              )}
+                            </div>
+                          </td>
+
+                          {/* Status */}
+                          <td className="px-6 py-4">
+                            <button
+                              onClick={() => handleToggleStatus(staff)}
+                              className={`px-3 py-1 rounded-full text-[10px] font-black border transition cursor-pointer ${
+                                staff.status === "Active"
+                                  ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                  : "bg-red-100 text-red-800 border-red-300"
+                              }`}
+                            >
+                              {staff.status}
+                            </button>
+                          </td>
+
+                          {/* Actions */}
+                          <td className="px-6 py-4 text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <button
+                                onClick={() => openEditModal(staff)}
+                                className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-3 py-1.5 rounded-xl transition cursor-pointer border border-gray-200"
+                              >
+                                ✏️ Edit Services
+                              </button>
+                              {staff.role !== "Super Admin" && (
+                                <button
+                                  onClick={() => handleDeleteStaff(staff.id, staff.name)}
+                                  className="bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs px-3 py-1.5 rounded-xl transition cursor-pointer border border-red-200"
+                                >
+                                  🗑️ Delete
+                                </button>
+                              )}
+                            </div>
+                          </td>
+
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          )}
+
+          {/* TAB 2: ROLE & PERMISSION MATRIX */}
+          {activeTab === "roles" && (
+            <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-6">
+              <div className="flex justify-between items-center border-b pb-4">
+                <div>
+                  <h2 className="text-base font-black text-gray-900">🛡️ System &amp; Custom Roles Matrix</h2>
+                  <p className="text-xs text-gray-500 font-medium">PostgreSQL Database Role definitions &amp; assigned sidebar service modules</p>
+                </div>
+                <button
+                  onClick={() => setIsRoleModalOpen(true)}
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs cursor-pointer"
+                >
+                  + Add Custom Role
+                </button>
+              </div>
+
+              <div className="space-y-4 text-xs">
+                {rolesList.map((role) => (
+                  <div key={role.id} className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1">
+                      <div>
+                        <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
+                          <span>{role.name}</span>
+                          {role.is_system && (
+                            <span className="bg-purple-100 text-purple-800 text-[9px] font-black px-2 py-0.5 rounded-md uppercase">
+                              SYSTEM ROLE
+                            </span>
+                          )}
+                        </h3>
+                        <p className="text-[11px] text-gray-500 font-medium mt-0.5">{role.description}</p>
+                      </div>
+                      <span className="text-emerald-700 font-bold text-[11px] bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                        {staffList.filter(s => s.role === role.name).length} staff members assigned
+                      </span>
+                    </div>
+
+                    <div className="flex flex-wrap gap-1.5 pt-1">
+                      {SIDEBAR_MODULES.map((mod) => {
+                        const isAllowed = (role.permissions || []).includes(mod.id);
+                        return (
+                          <span
+                            key={mod.id}
+                            className={`px-2.5 py-1 rounded-xl text-[10px] font-extrabold border transition ${
+                              isAllowed ? "bg-emerald-100 text-emerald-900 border-emerald-300 shadow-2xs" : "bg-gray-200/50 text-gray-400 border-gray-200 opacity-40"
+                            }`}
+                          >
+                            {isAllowed ? "✓" : "✕"} {mod.icon} {mod.name}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
-      {/* 📝 EDIT / ADD STAFF MODAL WITH SIDEBAR SERVICES CHECKLIST */}
+      {/* 📝 EDIT / ADD STAFF MODAL WITH ALL 16 SIDEBAR SERVICES */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
-          <div className="bg-white border border-gray-200 rounded-3xl p-6 md:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl text-xs">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 md:p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl text-xs">
             
             <div className="flex justify-between items-center border-b pb-4">
               <div>
                 <h2 className="text-lg font-black text-gray-900">
-                  {editingStaffId !== null ? "✏️ Edit Staff Account &amp; Module Access" : "➕ Create New Staff Account"}
+                  {editingStaffId !== null ? "✏️ Edit Staff Account & Module Access" : "➕ Create New Staff Account"}
                 </h2>
-                <p className="text-xs text-gray-500 font-medium">Assign staff credentials and select accessible sidebar services</p>
+                <p className="text-xs text-gray-500 font-medium">Assign staff credentials and select accessible sidebar services (Saved in PostgreSQL DB)</p>
               </div>
               <button
                 onClick={() => setIsModalOpen(false)}
@@ -492,28 +566,32 @@ export default function AdminUsersRolesPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-700 font-bold block mb-1">Primary Role Preset</label>
+                  <label className="text-gray-700 font-bold block mb-1">Primary Role Preset (Loaded from DB)</label>
                   <select
                     value={formRole}
                     onChange={(e) => handleRolePresetChange(e.target.value)}
                     className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none cursor-pointer"
                   >
-                    <option value="Super Admin">Super Admin (Full Access)</option>
-                    <option value="Store Manager">Store Manager (Catalog &amp; Orders)</option>
-                    <option value="Logistics Manager">Logistics Manager (Shipments &amp; Stock)</option>
-                    <option value="Support Executive">Support Executive (Tickets &amp; Returns)</option>
-                    <option value="Marketing Specialist">Marketing Specialist (Sales &amp; CMS)</option>
-                    <option value="Custom Role">Custom Access Role</option>
+                    {rolesList.map((r) => (
+                      <option key={r.id} value={r.name}>
+                        {r.name} ({r.permissions?.length || 0} Modules)
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>
 
-              {/* SIDEBAR SERVICES PERMISSIONS CHECKLIST */}
+              {/* SIDEBAR SERVICES PERMISSIONS CHECKLIST (ALL 16 MODULES) */}
               <div className="space-y-3 pt-2 border-t border-gray-100">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h3 className="font-black text-gray-900 text-sm">📋 Sidebar Services &amp; Module Permissions</h3>
-                    <p className="text-[11px] text-gray-500">Check the admin sidebar modules this staff user is authorized to manage</p>
+                    <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
+                      <span>📋 Sidebar Services &amp; Module Permissions</span>
+                      <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                        {formPermissions.length} of {SIDEBAR_MODULES.length} Selected
+                      </span>
+                    </h3>
+                    <p className="text-[11px] text-gray-500">Check all admin sidebar modules this staff user is authorized to view &amp; manage</p>
                   </div>
                   <div className="flex gap-2">
                     <button
@@ -521,7 +599,7 @@ export default function AdminUsersRolesPage() {
                       onClick={handleSelectAllPermissions}
                       className="text-[10px] font-bold text-emerald-700 hover:underline cursor-pointer"
                     >
-                      Select All
+                      Select All ({SIDEBAR_MODULES.length})
                     </button>
                     <span className="text-gray-300">|</span>
                     <button
@@ -534,7 +612,7 @@ export default function AdminUsersRolesPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-2">
                   {SIDEBAR_MODULES.map((mod) => {
                     const isChecked = formPermissions.includes(mod.id);
                     return (
@@ -553,7 +631,7 @@ export default function AdminUsersRolesPage() {
                           className="w-4 h-4 accent-emerald-600 rounded cursor-pointer shrink-0"
                         />
                         <span className="text-base">{mod.icon}</span>
-                        <div className="leading-tight">
+                        <div className="leading-tight min-w-0">
                           <span className="block text-[11px] truncate">{mod.name}</span>
                           <span className="text-[9px] text-gray-400 font-normal">{mod.category}</span>
                         </div>
@@ -580,6 +658,96 @@ export default function AdminUsersRolesPage() {
                 </button>
               </div>
 
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* 🛡️ CREATE CUSTOM ROLE MODAL */}
+      {isRoleModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl text-xs">
+            
+            <div className="flex justify-between items-center border-b pb-4">
+              <div>
+                <h2 className="text-lg font-black text-gray-900">🛡️ Create Custom Role Preset</h2>
+                <p className="text-xs text-gray-500 font-medium">Define a new system role and default sidebar service permissions in PostgreSQL DB</p>
+              </div>
+              <button
+                onClick={() => setIsRoleModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-sm flex items-center justify-center cursor-pointer transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateCustomRole} className="space-y-5">
+              <div>
+                <label className="text-gray-700 font-bold block mb-1">Role Title</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Catalog Specialist"
+                  value={roleName}
+                  onChange={(e) => setRoleName(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-gray-700 font-bold block mb-1">Description</label>
+                <input
+                  type="text"
+                  placeholder="Briefly describe the responsibilities of this role..."
+                  value={roleDesc}
+                  onChange={(e) => setRoleDesc(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-medium focus:border-emerald-500 focus:outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="text-gray-700 font-bold block mb-2">Default Accessible Sidebar Services</label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {SIDEBAR_MODULES.map((mod) => {
+                    const isChecked = rolePerms.includes(mod.id);
+                    return (
+                      <label
+                        key={mod.id}
+                        className={`flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer select-none text-[11px] ${
+                          isChecked ? "bg-emerald-50 border-emerald-300 font-bold text-emerald-900" : "bg-gray-50 border-gray-200 text-gray-600"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => {
+                            if (isChecked) setRolePerms(rolePerms.filter(id => id !== mod.id));
+                            else setRolePerms([...rolePerms, mod.id]);
+                          }}
+                          className="accent-emerald-600 rounded"
+                        />
+                        <span>{mod.icon} {mod.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setIsRoleModalOpen(false)}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-5 py-2.5 rounded-xl transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+                >
+                  Save Role to Database
+                </button>
+              </div>
             </form>
           </div>
         </div>

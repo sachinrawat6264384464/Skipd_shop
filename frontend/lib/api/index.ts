@@ -1753,6 +1753,114 @@ export async function createAdminUser(payload: { name?: string; full_name?: stri
   return null;
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 🛡️ ROLES & STAFF MANAGEMENT — Live PostgreSQL DB APIs
+// ─────────────────────────────────────────────────────────────────────────────
+
+export interface RoleData {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  permissions: string[];
+  is_system: boolean;
+  created_at: string;
+}
+
+export interface StaffUserData {
+  id: number;
+  name: string;
+  email: string;
+  password?: string;
+  role: string;
+  role_id?: number;
+  status: "Active" | "Inactive" | "Suspended";
+  avatar?: string;
+  last_active?: string;
+  permissions: string[];
+  created_at?: string;
+}
+
+export async function fetchAdminRoles(): Promise<RoleData[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/roles`, { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) return data;
+    }
+  } catch (e) {
+    console.warn("[API SDK] fetchAdminRoles warning:", e);
+  }
+  return [];
+}
+
+export async function createAdminRole(payload: Partial<RoleData>): Promise<RoleData | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/roles`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] createAdminRole warning:", e);
+  }
+  return null;
+}
+
+export async function fetchAdminStaff(): Promise<StaffUserData[]> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/staff`, { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data)) return data;
+    }
+  } catch (e) {
+    console.warn("[API SDK] fetchAdminStaff warning:", e);
+  }
+  return [];
+}
+
+export async function createAdminStaff(payload: Partial<StaffUserData>): Promise<StaffUserData | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/staff`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] createAdminStaff warning:", e);
+  }
+  return null;
+}
+
+export async function updateAdminStaff(staffId: number, payload: Partial<StaffUserData>): Promise<StaffUserData | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/staff/${staffId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] updateAdminStaff warning:", e);
+  }
+  return null;
+}
+
+export async function deleteAdminStaff(staffId: number): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/staff/${staffId}`, {
+      method: "DELETE"
+    });
+    return res.ok;
+  } catch (e) {
+    console.warn("[API SDK] deleteAdminStaff warning:", e);
+  }
+  return false;
+}
+
 
 
 
