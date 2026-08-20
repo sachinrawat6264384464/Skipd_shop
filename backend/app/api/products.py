@@ -310,8 +310,8 @@ async def admin_update_product(product_id: int, payload: dict = Body(...), db: A
         product.title = payload["title"]
     if "price" in payload:
         product.price = float(payload["price"])
-    if "compare_at_price" in payload and payload["compare_at_price"]:
-        product.compare_at_price = float(payload["compare_at_price"])
+    if "compare_at_price" in payload:
+        product.compare_at_price = float(payload["compare_at_price"]) if payload["compare_at_price"] else None
     if "description" in payload:
         product.description = payload["description"]
     if "featured" in payload:
@@ -321,13 +321,34 @@ async def admin_update_product(product_id: int, payload: dict = Body(...), db: A
     if "stock_quantity" in payload:
         product.stock_quantity = int(payload["stock_quantity"])
 
+    if "tags" in payload:
+        if isinstance(payload["tags"], list):
+            product.tags = payload["tags"]
+        elif isinstance(payload["tags"], str):
+            product.tags = [t.strip() for t in payload["tags"].split(",") if t.strip()]
+
+    if "is_new_arrival" in payload:
+        current_tags = list(product.tags) if isinstance(product.tags, list) else []
+        is_new = bool(payload["is_new_arrival"])
+        if is_new:
+            if "new-arrival" not in current_tags:
+                current_tags.append("new-arrival")
+        else:
+            current_tags = [t for t in current_tags if t not in ["new-arrival", "new_arrival"]]
+        product.tags = current_tags
+
     await db.commit()
     try:
         await invalidate_cache_pattern("products:*")
     except BaseException as cache_err:
         print(f"[CACHE BYPASS WARNING] {cache_err}")
 
-    return {"message": "Product updated successfully", "id": product.id}
+    return {
+        "message": "Product updated successfully",
+        "id": product.id,
+        "tags": product.tags,
+        "is_new_arrival": "new-arrival" in (product.tags or [])
+    }
 
 
 @router.delete("/admin/{product_id}")

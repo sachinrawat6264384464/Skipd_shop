@@ -29,6 +29,7 @@ export interface Product {
   price: number;
   compare_at_price?: number;
   featured: boolean;
+  is_new_arrival?: boolean;
   images: string[];
   tags: string[];
   stock_quantity?: number;  // 0 = Out of Stock
@@ -1368,6 +1369,10 @@ export async function updateAdminProduct(id: number | string, payload: any) {
     console.error("[API SDK] Update product offline:", e);
   }
   return null;
+}
+
+export async function toggleProductNewArrival(id: number | string, isNewArrival: boolean) {
+  return await updateAdminProduct(id, { is_new_arrival: isNewArrival });
 }
 
 export async function deleteAdminProduct(id: number | string) {

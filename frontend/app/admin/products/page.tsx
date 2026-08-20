@@ -7,6 +7,7 @@ import {
   createAdminProduct,
   updateAdminProduct,
   deleteAdminProduct,
+  toggleProductNewArrival,
   seedCatalogProducts,
   fetchAdminCategories,
   createAdminCategory,
@@ -529,6 +530,7 @@ export default function AdminProductsPage() {
 
   const tabs = [
     "Products",
+    "New Arrivals",
     "Add Product",
     "Categories",
     "Sub Categories",
@@ -537,6 +539,37 @@ export default function AdminProductsPage() {
     "Product Variants",
     "Reviews"
   ];
+
+  const handleToggleNewArrival = async (product: any) => {
+    const currentTags = Array.isArray(product.tags) ? product.tags : [];
+    const isCurrentlyNew = currentTags.includes("new-arrival") || currentTags.includes("new_arrival") || Boolean(product.is_new_arrival);
+    const nextState = !isCurrentlyNew;
+
+    setProducts(prev => prev.map(p => {
+      if (p.id === product.id || String(p.id) === String(product.id)) {
+        let updatedTags = Array.isArray(p.tags) ? [...p.tags] : [];
+        if (nextState) {
+          if (!updatedTags.includes("new-arrival")) updatedTags.push("new-arrival");
+        } else {
+          updatedTags = updatedTags.filter(t => t !== "new-arrival" && t !== "new_arrival");
+        }
+        return { ...p, tags: updatedTags, is_new_arrival: nextState };
+      }
+      return p;
+    }));
+
+    const res = await toggleProductNewArrival(product.id, nextState);
+    if (res) {
+      showNotification(
+        nextState 
+          ? `✨ Product "${product.title}" added to New Arrivals!` 
+          : `Removed "${product.title}" from New Arrivals`
+      );
+    } else {
+      showNotification("Failed to update New Arrival status", "error");
+      await loadProducts();
+    }
+  };
 
   useEffect(() => {
     loadProducts();
@@ -1019,6 +1052,7 @@ export default function AdminProductsPage() {
                       <th className="px-6 py-4">Category</th>
                       <th className="px-6 py-4">Price &amp; Off %</th>
                       <th className="px-6 py-4">Stock Level</th>
+                      <th className="px-6 py-4">New Arrival Drop</th>
                       <th className="px-6 py-4">Status</th>
                       <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
@@ -1032,6 +1066,7 @@ export default function AdminProductsPage() {
                       const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
                       const itemOffPct = (comparePrice && comparePrice > price) ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
                       const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
+                      const isNewArrival = (p.tags || []).includes("new-arrival") || Boolean(p.is_new_arrival);
 
                       return (
                         <tr key={p.id} className="hover:bg-gray-50/80 transition group">
@@ -1087,6 +1122,21 @@ export default function AdminProductsPage() {
                             }`}>
                               {stock} units
                             </span>
+                          </td>
+
+                          {/* ⚡ NEW ARRIVAL TOGGLE SWITCH BUTTON */}
+                          <td className="px-6 py-4">
+                            <button
+                              onClick={() => handleToggleNewArrival(p)}
+                              className={`px-3 py-1.5 rounded-xl text-[10px] font-black border transition cursor-pointer flex items-center gap-1.5 ${
+                                isNewArrival
+                                  ? "bg-emerald-500 text-white border-emerald-400 shadow-md shadow-emerald-500/20"
+                                  : "bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
+                              }`}
+                              title={isNewArrival ? "Click to remove from New Arrivals" : "Click to add to New Arrivals"}
+                            >
+                              <span>{isNewArrival ? "✨ New Drop ON" : "⚪ Normal Item"}</span>
+                            </button>
                           </td>
 
                           <td className="px-6 py-4">
@@ -1185,6 +1235,146 @@ export default function AdminProductsPage() {
 
             </div>
           )}
+        </div>
+      ) : activeTab === "New Arrivals" ? (
+        /* 🟢 NEW ARRIVALS MANAGEMENT SECTION */
+        <div className="space-y-6">
+          
+          {/* Hero Banner Header */}
+          <div className="bg-gradient-to-r from-[#041510] via-[#0B2E24] to-[#041510] text-white p-6 rounded-3xl border border-emerald-500/30 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div className="space-y-1">
+              <div className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+                <span>✨ CATALOG DROP CONTROL</span>
+              </div>
+              <h2 className="text-xl font-black text-white flex items-center gap-2">
+                <span>🔥 New Arrivals &amp; Fresh Drops Management</span>
+              </h2>
+              <p className="text-xs text-gray-300">
+                Products marked here will immediately appear on the storefront <span className="text-emerald-400 font-bold">/new-arrivals</span> page. Toggle ON/OFF or add products manually.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Link
+                href="/new-arrivals"
+                target="_blank"
+                className="bg-[#00E676] hover:bg-[#00C853] text-gray-950 font-black text-xs px-5 py-2.5 rounded-xl transition shadow-lg flex items-center gap-1.5"
+              >
+                <span>↗ View Live Storefront Drops</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
+              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">ACTIVE NEW ARRIVALS</span>
+              <p className="text-2xl font-black text-emerald-600">
+                {products.filter(p => (p.tags || []).includes("new-arrival") || p.is_new_arrival).length} Items
+              </p>
+              <p className="text-[11px] text-emerald-700 font-bold">Live on Storefront /new-arrivals</p>
+            </div>
+
+            <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
+              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">TOTAL CATALOG PRODUCTS</span>
+              <p className="text-2xl font-black text-gray-900">{products.length} Items</p>
+              <p className="text-[11px] text-gray-500 font-medium">PostgreSQL Database Sync</p>
+            </div>
+
+            <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
+              <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">QUICK DROP TOGGLE</span>
+              <p className="text-2xl font-black text-purple-700">1-Click Toggle</p>
+              <p className="text-[11px] text-gray-500 font-medium">Real-Time Database Sync</p>
+            </div>
+          </div>
+
+          {/* Add Product To New Arrivals Dropdown Card */}
+          <div className="bg-white border border-gray-200/80 p-6 rounded-3xl shadow-2xs space-y-4">
+            <div>
+              <h3 className="text-sm font-black text-gray-900 flex items-center gap-2">
+                <span>➕ Add Catalog Product to New Arrivals</span>
+              </h3>
+              <p className="text-xs text-gray-500 font-medium">Select any product from your store catalog to tag it as a New Arrival drop</p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <select
+                id="new-arrival-select"
+                className="flex-1 w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+              >
+                <option value="">-- Select Product from Catalog --</option>
+                {products
+                  .filter(p => !((p.tags || []).includes("new-arrival") || p.is_new_arrival))
+                  .map(p => (
+                    <option key={p.id} value={p.id}>
+                      {p.title} (ID: #{p.id} • ₹{p.price})
+                    </option>
+                  ))}
+              </select>
+
+              <button
+                onClick={() => {
+                  const selectEl = document.getElementById("new-arrival-select") as HTMLSelectElement;
+                  if (selectEl && selectEl.value) {
+                    const prod = products.find(p => String(p.id) === selectEl.value);
+                    if (prod) handleToggleNewArrival(prod);
+                    selectEl.value = "";
+                  } else {
+                    showNotification("Please select a product from the dropdown", "error");
+                  }
+                }}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-xl transition shadow-xs cursor-pointer w-full sm:w-auto shrink-0"
+              >
+                + Add to New Arrivals
+              </button>
+            </div>
+          </div>
+
+          {/* Active New Arrivals Listing Grid */}
+          <div className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs space-y-4">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <h3 className="text-sm font-black text-gray-900 flex items-center gap-2">
+                <span>✨ Active New Arrival Products ({products.filter(p => (p.tags || []).includes("new-arrival") || p.is_new_arrival).length})</span>
+              </h3>
+              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2.5 py-1 rounded-full uppercase">
+                Showing Live DB Drops
+              </span>
+            </div>
+
+            {products.filter(p => (p.tags || []).includes("new-arrival") || p.is_new_arrival).length === 0 ? (
+              <div className="p-10 text-center text-gray-400 font-medium space-y-2 border-2 border-dashed border-gray-200 rounded-2xl">
+                <p className="text-3xl">✨</p>
+                <p className="text-xs font-bold text-gray-700">No products are currently tagged as New Arrivals.</p>
+                <p className="text-[11px] text-gray-400">Select a product above or click "✨ New Drop ON" on any product in the Products tab!</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {products
+                  .filter(p => (p.tags || []).includes("new-arrival") || p.is_new_arrival)
+                  .map(p => {
+                    const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
+                    return (
+                      <div key={p.id} className="bg-gray-50/80 border border-gray-200 p-4 rounded-2xl flex items-center justify-between gap-3 shadow-2xs hover:border-emerald-300 transition">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img src={image} alt={p.title} className="w-12 h-12 rounded-xl object-contain bg-white p-1 border border-gray-200 shrink-0" />
+                          <div className="min-w-0 space-y-0.5">
+                            <p className="font-bold text-xs text-gray-900 truncate">{p.title}</p>
+                            <p className="text-[11px] text-emerald-600 font-black">₹{Number(p.price || 0).toLocaleString("en-IN")}</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleToggleNewArrival(p)}
+                          className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-extrabold text-[10px] px-3 py-1.5 rounded-xl border border-rose-200 cursor-pointer shrink-0 transition"
+                        >
+                          ✕ Remove
+                        </button>
+                      </div>
+                    );
+                  })}
+              </div>
+            )}
+          </div>
+
         </div>
       ) : activeTab === "Categories" ? (
         /* 🟢 TAB 3: CATEGORIES MANAGER VIEW */

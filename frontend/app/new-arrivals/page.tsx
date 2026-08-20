@@ -21,8 +21,15 @@ export default function NewArrivalsPage() {
           fetchCategories()
         ]);
         
-        // Sort products by created_at or id descending for latest new arrivals
-        const sortedNewest = [...prods].sort((a, b) => {
+        // Filter products explicitly tagged as New Arrival by Admin
+        const taggedNewArrivals = prods.filter(p => 
+          p.is_new_arrival || (p.tags && (p.tags.includes("new-arrival") || p.tags.includes("new_arrival")))
+        );
+
+        // If explicitly tagged products exist, show them; otherwise show newest products
+        const finalProducts = taggedNewArrivals.length > 0 ? taggedNewArrivals : prods;
+
+        const sortedNewest = [...finalProducts].sort((a, b) => {
           const dateA = a.created_at ? new Date(a.created_at).getTime() : a.id;
           const dateB = b.created_at ? new Date(b.created_at).getTime() : b.id;
           return dateB - dateA;
