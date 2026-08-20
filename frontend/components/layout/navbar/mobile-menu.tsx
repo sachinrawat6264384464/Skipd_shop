@@ -184,19 +184,21 @@ export default function MobileMenu() {
                   <span className="bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full uppercase">HOT</span>
                 </Link>
 
-                <Link
-                  href="/gift-cards"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-amber-50 text-amber-900 transition"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 13C10.832 21 2 20 2 12c0-3.5 1.5-6.5 4-8.5M12 21c1.168 0 10-1 10-9 0-3.5-1.5-6.5-4-8.5" />
-                    </svg>
-                    <span>Gift Cards &amp; Rewards</span>
-                  </div>
-                  <span className="text-xs text-gray-400">&rsaquo;</span>
-                </Link>
+                {user && (
+                  <Link
+                    href="/gift-cards"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-amber-50 text-amber-900 transition"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V6a2 2 0 10-2 2h2zm0 13C10.832 21 2 20 2 12c0-3.5 1.5-6.5 4-8.5M12 21c1.168 0 10-1 10-9 0-3.5-1.5-6.5-4-8.5" />
+                      </svg>
+                      <span>Gift Cards &amp; Rewards</span>
+                    </div>
+                    <span className="text-xs text-gray-400">&rsaquo;</span>
+                  </Link>
+                )}
               </div>
 
               {/* POPULAR PRODUCT CATEGORIES */}

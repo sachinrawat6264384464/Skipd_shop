@@ -14,33 +14,37 @@ export default function CartModal() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [cartItems, setCartItems] = useState<any[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
 
-  const loadCart = () => {
+  const loadCartAndAuth = () => {
     try {
       const items = getCartStore();
       setCartItems(items);
     } catch (e) {
       setCartItems([]);
     }
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const user = typeof window !== "undefined" ? localStorage.getItem("skipd_user") : null;
+    setIsLoggedIn(!!(token || user));
   };
 
   useEffect(() => {
-    loadCart();
+    loadCartAndAuth();
 
-    const handleCartSync = () => loadCart();
-    window.addEventListener("storage", handleCartSync);
-    window.addEventListener("skipd_cart_updated", handleCartSync);
-    window.addEventListener("skipd_cart_changed", handleCartSync);
-    window.addEventListener("skipd_auth_changed", handleCartSync);
+    const handleSync = () => loadCartAndAuth();
+    window.addEventListener("storage", handleSync);
+    window.addEventListener("skipd_cart_updated", handleSync);
+    window.addEventListener("skipd_cart_changed", handleSync);
+    window.addEventListener("skipd_auth_changed", handleSync);
 
     return () => {
-      window.removeEventListener("storage", handleCartSync);
-      window.removeEventListener("skipd_cart_updated", handleCartSync);
-      window.removeEventListener("skipd_cart_changed", handleCartSync);
-      window.removeEventListener("skipd_auth_changed", handleCartSync);
+      window.removeEventListener("storage", handleSync);
+      window.removeEventListener("skipd_cart_updated", handleSync);
+      window.removeEventListener("skipd_cart_changed", handleSync);
+      window.removeEventListener("skipd_auth_changed", handleSync);
     };
   }, []);
 
@@ -72,7 +76,7 @@ export default function CartModal() {
   return (
     <>
       <button aria-label="Open cart" onClick={openCart} className="relative cursor-pointer">
-        <OpenCart quantity={totalQuantity} total={subtotal} />
+        <OpenCart quantity={totalQuantity} total={subtotal} isLoggedIn={isLoggedIn} />
       </button>
       <Transition show={isOpen}>
         <Dialog onClose={closeCart} className="relative z-50">
