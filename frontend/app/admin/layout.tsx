@@ -28,6 +28,68 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const searchInputRef = useRef<HTMLInputElement>(null);
   const headerControlsRef = useRef<HTMLDivElement>(null);
 
+  // Active Admin Role & Permission Filter State
+  const ALL_MODULES = [
+    "dashboard", "analytics", "orders", "products", "inventory", 
+    "customers", "payments", "delivery", "sales", "engagement", 
+    "homepage", "tickets", "queries", "users", "settings", "logs"
+  ];
+  const [activeRoleName, setActiveRoleName] = useState<string>("Super Admin");
+  const [activePermissions, setActivePermissions] = useState<string[]>(ALL_MODULES);
+
+  const loadActiveRoleState = () => {
+    if (typeof window !== "undefined") {
+      const role = localStorage.getItem("skipd_admin_role") || "Super Admin";
+      const permsStr = localStorage.getItem("skipd_admin_permissions");
+      setActiveRoleName(role);
+
+      if (role.toLowerCase() === "super admin") {
+        setActivePermissions(ALL_MODULES);
+      } else if (permsStr) {
+        try {
+          const parsed = JSON.parse(permsStr);
+          if (Array.isArray(parsed)) {
+            setActivePermissions(parsed);
+          } else {
+            setActivePermissions([]);
+          }
+        } catch (e) {
+          setActivePermissions([]);
+        }
+      } else {
+        setActivePermissions([]);
+      }
+    }
+  };
+
+  useEffect(() => {
+    loadActiveRoleState();
+    window.addEventListener("skipd_role_changed", loadActiveRoleState);
+    return () => window.removeEventListener("skipd_role_changed", loadActiveRoleState);
+  }, []);
+
+  const getModuleIdForPath = (path: string): string => {
+    switch (path) {
+      case "/admin": return "dashboard";
+      case "/admin/analytics": return "analytics";
+      case "/admin/orders": return "orders";
+      case "/admin/products": return "products";
+      case "/admin/inventory": return "inventory";
+      case "/admin/customers": return "customers";
+      case "/admin/payments": return "payments";
+      case "/admin/delivery": return "delivery";
+      case "/admin/sales": return "sales";
+      case "/admin/engagement": return "engagement";
+      case "/admin/homepage": return "homepage";
+      case "/admin/tickets": return "tickets";
+      case "/admin/queries": return "queries";
+      case "/admin/users": return "users";
+      case "/admin/settings": return "settings";
+      case "/admin/logs": return "logs";
+      default: return "dashboard";
+    }
+  };
+
   // Close all header dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -62,7 +124,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // Load Real-Time PostgreSQL DB Notifications & Messages
   const loadHeaderData = async () => {
     try {
-      // 1. Fetch Queries from DB
       const queries = await fetchAdminQueries();
       if (Array.isArray(queries)) {
         setLiveMessages(queries);
@@ -70,7 +131,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setUnreadMsgs(pendingCount);
       }
 
-      // 2. Fetch Orders from DB for Notifications
       const orders = await fetchAdminOrders();
       const notifs: any[] = [];
 
@@ -223,6 +283,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   ];
 
+  // Dynamically filter navGroups by active role's permissions
+  const filteredNavGroups = navGroups.map(group => {
+    const links = group.links.filter(link => {
+      if (activeRoleName.toLowerCase() === "super admin") return true;
+      const modId = getModuleIdForPath(link.href);
+      return activePermissions.includes(modId);
+    });
+    return { ...group, links };
+  }).filter(group => group.links.length > 0);
+
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
@@ -275,46 +345,54 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"
-                alt="Sachin Rawat"
+                alt={adminUser?.name || "Sachin Rawat"}
                 className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500"
               />
               <span className="w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0B1329] absolute bottom-0 right-0"></span>
             </div>
             <div className="text-xs leading-tight">
-              <p className="font-bold text-white truncate max-w-[120px]">Sachin Rawat</p>
-              <p className="text-[10px] text-emerald-400 font-medium">Super Admin</p>
+              <p className="font-bold text-white truncate max-w-[120px]">{adminUser?.name || "Sachin Rawat"}</p>
+              <p className="text-[10px] text-emerald-400 font-extrabold truncate max-w-[120px]" title={activeRoleName}>
+                🛡️ {activeRoleName}
+              </p>
             </div>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links (Filtered dynamically by active role permissions) */}
           <nav className="space-y-4 text-xs font-medium">
-            {navGroups.map((group, idx) => (
-              <div key={idx} className="space-y-1">
-                <p className="text-[9px] uppercase font-black text-slate-500 px-3 mb-1.5 tracking-widest">
-                  {group.group}
-                </p>
-                {group.links.map((link) => {
-                  const active = isActive(link.href);
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      onClick={() => setMobileOpen(false)}
-                      className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition duration-150 ${
-                        active
-                          ? "bg-emerald-600/90 text-white font-bold shadow-lg shadow-emerald-600/20"
-                          : "hover:bg-slate-800/80 text-slate-400 hover:text-white"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className={active ? "text-white" : "text-slate-400"}>{renderNavIcon(link.href)}</span>
-                        <span className="text-xs">{link.title}</span>
-                      </div>
-                    </Link>
-                  );
-                })}
+            {filteredNavGroups.length === 0 ? (
+              <div className="p-4 bg-slate-900/60 rounded-xl text-center text-slate-400 text-xs">
+                No accessible services for this role.
               </div>
-            ))}
+            ) : (
+              filteredNavGroups.map((group, idx) => (
+                <div key={idx} className="space-y-1">
+                  <p className="text-[9px] uppercase font-black text-slate-500 px-3 mb-1.5 tracking-widest">
+                    {group.group}
+                  </p>
+                  {group.links.map((link) => {
+                    const active = isActive(link.href);
+                    return (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition duration-150 ${
+                          active
+                            ? "bg-emerald-600/90 text-white font-bold shadow-lg shadow-emerald-600/20"
+                            : "hover:bg-slate-800/80 text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className={active ? "text-white" : "text-slate-400"}>{renderNavIcon(link.href)}</span>
+                          <span className="text-xs">{link.title}</span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              ))
+            )}
           </nav>
 
         </div>

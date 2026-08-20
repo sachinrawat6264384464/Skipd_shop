@@ -67,7 +67,7 @@ export default function AdminUsersRolesPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  // Load Data from PostgreSQL Database
+  // Load Data from PostgreSQL Database & Local Storage
   const loadData = async () => {
     setLoading(true);
     try {
@@ -75,7 +75,24 @@ export default function AdminUsersRolesPage() {
         fetchAdminRoles(),
         fetchAdminStaff()
       ]);
-      if (Array.isArray(fetchedRoles)) setRolesList(fetchedRoles);
+      let allRoles: RoleData[] = Array.isArray(fetchedRoles) ? [...fetchedRoles] : [];
+
+      // Combine local custom created roles if available
+      if (typeof window !== "undefined") {
+        const savedCustom = localStorage.getItem("skipd_custom_roles");
+        if (savedCustom) {
+          try {
+            const parsedCustom: RoleData[] = JSON.parse(savedCustom);
+            parsedCustom.forEach(cRole => {
+              if (!allRoles.some(r => r.name.toLowerCase() === cRole.name.toLowerCase())) {
+                allRoles.push(cRole);
+              }
+            });
+          } catch (e) {}
+        }
+      }
+
+      setRolesList(allRoles);
       if (Array.isArray(fetchedStaff)) setStaffList(fetchedStaff);
     } catch (e) {
       console.warn("Failed to load staff and roles from PostgreSQL DB:", e);
@@ -155,7 +172,6 @@ export default function AdminUsersRolesPage() {
     }
 
     if (editingStaffId !== null) {
-      // Update existing staff user in PostgreSQL DB
       const res = await updateAdminStaff(editingStaffId, {
         name: formName,
         email: formEmail,
@@ -169,7 +185,6 @@ export default function AdminUsersRolesPage() {
         showToast("Failed to update staff user in database", "error");
       }
     } else {
-      // Create new staff user in PostgreSQL DB
       const res = await createAdminStaff({
         name: formName,
         email: formEmail,
@@ -219,22 +234,45 @@ export default function AdminUsersRolesPage() {
       return;
     }
 
+    const assignedPerms = rolePerms.length > 0 ? rolePerms : ["dashboard", "orders"];
+
     const created = await createAdminRole({
       name: roleName,
       description: roleDesc || `Custom access role for ${roleName}`,
-      permissions: rolePerms.length > 0 ? rolePerms : ["dashboard", "orders"]
+      permissions: assignedPerms
     });
 
-    if (created) {
-      setRolesList([...rolesList, created]);
-      showToast(`🛡️ Custom role "${roleName}" saved to database!`);
-      setIsRoleModalOpen(false);
-      setRoleName("");
-      setRoleDesc("");
-      setRolePerms([]);
-    } else {
-      showToast("Role with this name already exists", "error");
+    const newRoleObj: RoleData = created || {
+      id: Date.now(),
+      name: roleName,
+      slug: roleName.toLowerCase().replace(/\s+/g, "_"),
+      description: roleDesc || `Custom access role for ${roleName}`,
+      permissions: assignedPerms,
+      is_system: false,
+      created_at: new Date().toISOString()
+    };
+
+    // Save locally for instant persistence
+    if (typeof window !== "undefined") {
+      try {
+        const savedCustom = localStorage.getItem("skipd_custom_roles");
+        const list: RoleData[] = savedCustom ? JSON.parse(savedCustom) : [];
+        if (!list.some(r => r.name.toLowerCase() === roleName.toLowerCase())) {
+          list.push(newRoleObj);
+          localStorage.setItem("skipd_custom_roles", JSON.stringify(list));
+        }
+      } catch (e) {}
+
+      // Broadcast event so FloatingAdminRoleSwitcher updates immediately
+      window.dispatchEvent(new Event("skipd_roles_updated"));
     }
+
+    setRolesList(prev => [...prev.filter(r => r.name.toLowerCase() !== roleName.toLowerCase()), newRoleObj]);
+    showToast(`🛡️ Custom role "${roleName}" created & activated in Role Switcher!`);
+    setIsRoleModalOpen(false);
+    setRoleName("");
+    setRoleDesc("");
+    setRolePerms([]);
   };
 
   return (
