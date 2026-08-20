@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { BrowseCategoriesGrid } from "./browse-categories-grid";
 
 export default function Footer() {
   return (
     <footer className="bg-white border-t border-gray-200/80 text-gray-700 text-xs font-sans relative overflow-hidden">
+      
+      {/* 🖼️ Browse Categories Grid Section (Placed right above footer content) */}
+      <BrowseCategoriesGrid />
       
       {/* 🚀 Top Trust Perks Ribbon (Royal White Style) */}
       <div className="border-b border-gray-100 py-8 px-4 sm:px-6 bg-slate-50/50">

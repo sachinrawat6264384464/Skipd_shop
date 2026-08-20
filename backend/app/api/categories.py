@@ -9,34 +9,83 @@ from app.schemas.schemas import CategorySchema, CategoryCreate, CategoryUpdate
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
 DEFAULT_CATEGORIES_DATA = [
-    {"name": "Electronics", "slug": "electronics", "icon": "⚡", "description": "Gadgets, audio, power banks and electronics accessories"},
-    {"name": "Mobiles & Tablets", "slug": "mobiles", "icon": "📱", "description": "Smartphones, flagship phones, and tablets"},
-    {"name": "Laptops & Computers", "slug": "laptops", "icon": "💻", "description": "Laptops, MacBooks, PC accessories"},
-    {"name": "Fashion & Apparel", "slug": "fashion", "icon": "👕", "description": "Ethnic wear, graphic tees, jackets and clothing"},
-    {"name": "Footwear & Shoes", "slug": "footwear", "icon": "👟", "description": "Sneakers, formal shoes and footwear"},
-    {"name": "Watches & Smartwear", "slug": "watches", "icon": "⌚", "description": "Smartwatches, analog chronographs and wearables"},
-    {"name": "Home & Living", "slug": "home", "icon": "🏡", "description": "Cushion covers, home decor and kitchen items"}
+    {
+        "name": "Electronics",
+        "slug": "electronics",
+        "icon": "⚡",
+        "image_url": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
+        "description": "Gadgets, audio, power banks and electronics accessories"
+    },
+    {
+        "name": "Mobiles & Tablets",
+        "slug": "mobiles",
+        "icon": "📱",
+        "image_url": "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
+        "description": "Smartphones, flagship phones, and tablets"
+    },
+    {
+        "name": "Laptops & Computers",
+        "slug": "laptops",
+        "icon": "💻",
+        "image_url": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
+        "description": "Laptops, MacBooks, PC accessories"
+    },
+    {
+        "name": "Fashion & Apparel",
+        "slug": "fashion",
+        "icon": "👕",
+        "image_url": "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
+        "description": "Ethnic wear, graphic tees, jackets and clothing"
+    },
+    {
+        "name": "Footwear & Shoes",
+        "slug": "footwear",
+        "icon": "👟",
+        "image_url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
+        "description": "Sneakers, formal shoes and footwear"
+    },
+    {
+        "name": "Watches & Smartwear",
+        "slug": "watches",
+        "icon": "⌚",
+        "image_url": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
+        "description": "Smartwatches, analog chronographs and wearables"
+    },
+    {
+        "name": "Home & Living",
+        "slug": "home",
+        "icon": "🏡",
+        "image_url": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
+        "description": "Cushion covers, home decor and kitchen items"
+    }
 ]
 
 async def ensure_default_categories(db: AsyncSession):
-    """Ensure all 7 primary store categories exist in PostgreSQL database."""
+    """Ensure all 7 primary store categories exist in PostgreSQL database with image URLs."""
     try:
         existing_res = await db.execute(select(Category))
         existing_cats = existing_res.scalars().all()
-        existing_slugs = {c.slug for c in existing_cats}
+        existing_map = {c.slug: c for c in existing_cats}
         
-        added = False
+        added_or_updated = False
         for item in DEFAULT_CATEGORIES_DATA:
-            if item["slug"] not in existing_slugs:
+            cat_obj = existing_map.get(item["slug"])
+            if not cat_obj:
                 db.add(Category(
                     name=item["name"],
                     slug=item["slug"],
                     icon=item["icon"],
+                    image_url=item["image_url"],
                     description=item["description"],
                     status="Active"
                 ))
-                added = True
-        if added:
+                added_or_updated = True
+            elif not cat_obj.image_url:
+                cat_obj.image_url = item["image_url"]
+                db.add(cat_obj)
+                added_or_updated = True
+                
+        if added_or_updated:
             await db.commit()
     except Exception as e:
         print(f"[Categories API Warning] Auto-seed error: {e}")
