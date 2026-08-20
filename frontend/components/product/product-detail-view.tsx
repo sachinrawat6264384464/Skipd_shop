@@ -783,33 +783,7 @@ const SUB_NAV_ITEMS = [
               <p className="text-[11px] text-gray-600">Inclusive of all taxes</p>
             </div>
 
-            {/* 🛡️ Service & Guarantee Icons Bar */}
-            <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-gray-100 text-center text-[10px] font-semibold text-gray-700">
-              <div className="space-y-1 p-2 bg-gray-50 rounded-xl">
-                <span className="text-lg block">🔄</span>
-                <span>10 Days Replacement</span>
-              </div>
-              <div className="space-y-1 p-2 bg-gray-50 rounded-xl">
-                <span className="text-lg block">🚚</span>
-                <span>Free Delivery</span>
-              </div>
-              <div className="space-y-1 p-2 bg-gray-50 rounded-xl">
-                <span className="text-lg block">🛡️</span>
-                <span>1 Year Warranty</span>
-              </div>
-              <div className="space-y-1 p-2 bg-gray-50 rounded-xl">
-                <span className="text-lg block">💵</span>
-                <span>Pay on Delivery</span>
-              </div>
-              <div className="space-y-1 p-2 bg-gray-50 rounded-xl">
-                <span className="text-lg block">🏆</span>
-                <span>Top Brand</span>
-              </div>
-              <div className="space-y-1 p-2 bg-gray-50 rounded-xl">
-                <span className="text-lg block">📦</span>
-                <span>SKIPD Fulfilled</span>
-              </div>
-            </div>
+
 
             {/* 🎨 Color Swatches Selector (Matching Screenshot 2) */}
             <div className="space-y-2 pt-2 border-t border-gray-100">
@@ -940,8 +914,8 @@ const SUB_NAV_ITEMS = [
                   }}
                   className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition shrink-0 cursor-pointer shadow-sm ${
                     isInWishlist(product.id)
-                      ? "bg-rose-50 border-rose-500 text-rose-600 scale-105"
-                      : "bg-white border-sky-300 text-sky-500 hover:border-sky-500 hover:bg-sky-50"
+                      ? "bg-emerald-50 border-emerald-500 text-emerald-600 scale-105"
+                      : "bg-white border-emerald-400 text-emerald-500 hover:border-emerald-600 hover:bg-emerald-50"
                   }`}
                   title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                 >
@@ -950,11 +924,11 @@ const SUB_NAV_ITEMS = [
                   </svg>
                 </button>
 
-                {/* 🛒 ADD TO CART Big Cyan/Blue Pill Button (Matching Screenshot 2!) */}
+                {/* 🛒 ADD TO CART Big Green Pill Button */}
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="flex-1 bg-[#00A8E8] hover:bg-[#0092CC] active:bg-[#007FB3] text-white font-black text-sm py-4 px-6 rounded-full transition shadow-md shadow-[#00A8E8]/30 text-center tracking-wider uppercase cursor-pointer"
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-sm py-4 px-6 rounded-full transition shadow-md shadow-emerald-600/30 text-center tracking-wider uppercase cursor-pointer"
                 >
                   {cartAddedToast ? "✓ ADDED TO CART!" : "ADD TO CART"}
                 </button>
