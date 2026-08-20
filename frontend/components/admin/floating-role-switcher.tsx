@@ -169,6 +169,7 @@ export default function FloatingAdminRoleSwitcher() {
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    if (!e.touches || !e.touches[0]) return;
     const touch = e.touches[0];
     setIsDragging(true);
     dragStartRef.current = {
@@ -193,7 +194,7 @@ export default function FloatingAdminRoleSwitcher() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (!isDragging) return;
+      if (!isDragging || !e.touches || !e.touches[0]) return;
       const touch = e.touches[0];
       const deltaX = dragStartRef.current.startX - touch.clientX;
       const deltaY = dragStartRef.current.startY - touch.clientY;
