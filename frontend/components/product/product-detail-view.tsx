@@ -162,9 +162,23 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     });
   }
 
-  // Add to Cart handler (Supports transient guest cart with refresh auto-reset & persistent logged-in cart)
+  // Add to Cart handler (Requires Login)
   const handleAddToCart = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
+
+    // 🔒 REQUIRE LOGIN FOR ADD TO CART
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    if (!token) {
+      toast.error("🔒 Please sign in to add items to your cart", {
+        description: "Redirecting you to the login page...",
+        duration: 2500
+      });
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 500);
+      return;
+    }
+
     const existing = getCartStore();
     const itemToAdd = {
       id: product.id,

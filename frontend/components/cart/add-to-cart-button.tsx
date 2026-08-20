@@ -1,16 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Product } from "lib/api";
 import { getCartStore, saveCartStore } from "lib/utils";
 import { toast } from "sonner";
 
 export function AddToCartButton({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
+  const router = useRouter();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // 🔒 REQUIRE LOGIN FOR ADD TO CART
+    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    if (!token) {
+      toast.error("🔒 Please sign in to add items to your cart", {
+        description: "Redirecting you to the login page...",
+        duration: 2500
+      });
+      setTimeout(() => {
+        router.push("/auth/login");
+      }, 500);
+      return;
+    }
 
     const existing = getCartStore();
     const image = (product.images && product.images[0]) || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800";
