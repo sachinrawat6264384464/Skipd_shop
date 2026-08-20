@@ -3,7 +3,6 @@ import Link from "next/link";
 import { Suspense } from "react";
 import Search, { SearchSkeleton } from "./search";
 import { UserAccountDropdown } from "./user-dropdown";
-import { DeliveryLocationPicker } from "./delivery-location";
 import MobileMenu from "./mobile-menu";
 
 import { WishlistNavButton } from "./wishlist-nav-button";
@@ -15,7 +14,7 @@ export async function Navbar() {
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-gray-200/80 px-3 sm:px-4 lg:px-6 py-2.5 flex items-center justify-between shadow-xs transition-all">
       <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto gap-2 sm:gap-4">
         
-        {/* Left Section: Mobile Menu, Brand Logo, Top Links & Location */}
+        {/* Left Section: Mobile Menu, Brand Logo & Top Links */}
         <div className="flex items-center gap-2 sm:gap-4 lg:gap-6 shrink-0 min-w-0">
           <MobileMenu />
 
@@ -78,14 +77,14 @@ export async function Navbar() {
             </li>
 
             <li>
-              <Link href="/search" className="px-3 py-1.5 rounded-xl hover:bg-gray-100/80 hover:text-black transition">
-                New Arrivals
+              <Link href="/new-arrivals" className="px-3 py-1.5 rounded-xl text-gray-900 font-extrabold hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center gap-1.5">
+                <span>New Arrivals</span>
+                <span className="bg-emerald-600 text-white font-black text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
+                  NEW
+                </span>
               </Link>
             </li>
           </ul>
-
-          {/* 📍 Delivery Location Picker */}
-          <DeliveryLocationPicker />
         </div>
 
         {/* Right Section: Action Buttons */}
