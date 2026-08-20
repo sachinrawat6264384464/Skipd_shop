@@ -21,13 +21,8 @@ export default function NewArrivalsPage() {
           fetchCategories()
         ]);
         
-        let displayProducts = dbNewArrivals;
-        if (!displayProducts || displayProducts.length === 0) {
-          displayProducts = await fetchProducts();
-        }
-
-        setProducts(displayProducts);
-        setCategories(cats);
+        setProducts(dbNewArrivals || []);
+        setCategories(cats || []);
       } catch (err) {
         console.error("Error loading new arrivals data:", err);
       } finally {
@@ -147,7 +142,7 @@ export default function NewArrivalsPage() {
                 <div className="absolute bottom-6 left-6 z-20 bg-black/60 backdrop-blur-md border border-white/15 p-3 rounded-2xl text-xs space-y-1.5 shadow-xl">
                   <div className="flex items-center gap-2 text-white font-extrabold">
                     <span>🛍️</span>
-                    <span>21+ NEW PRODUCTS</span>
+                    <span>{products.length} NEW DROPS</span>
                   </div>
                   <div className="h-px bg-white/20 w-full" />
                   <div className="flex items-center gap-2 text-emerald-400 text-[11px] font-bold">
