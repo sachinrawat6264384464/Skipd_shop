@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { fetchAdminQueries, fetchAdminOrders } from "lib/api";
+import FloatingAdminRoleSwitcher from "components/admin/floating-role-switcher";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -597,6 +598,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {children}
         </div>
       </main>
+
+      {/* Movable Floating Admin Role Switcher Widget */}
+      <FloatingAdminRoleSwitcher />
 
     </div>
   );
