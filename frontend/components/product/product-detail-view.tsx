@@ -781,49 +781,6 @@ const SUB_NAV_ITEMS = [
                 <span>a</span> Fulfilled
               </div>
               <p className="text-[11px] text-gray-600">Inclusive of all taxes</p>
-              <p className="text-xs font-semibold text-gray-800">
-                EMI starts at ₹1,564. No-cost EMI available. <span className="text-emerald-700 font-bold cursor-pointer hover:underline">EMI Options ▾</span>
-              </p>
-            </div>
-
-            {/* 🎁 APPLICABLE OFFERS Section (Exact match with Screenshot 1) */}
-            <div className="space-y-2.5 pt-1">
-              <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-                <span>🏷️</span> APPLICABLE OFFERS
-              </h4>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {/* Offer Card 1: No Cost EMI */}
-                <div className="bg-[#FFFDF0] border border-[#FFE894] rounded-2xl p-4 space-y-1.5 shadow-2xs relative">
-                  <h5 className="font-extrabold text-gray-900 text-xs">No Cost EMI</h5>
-                  <p className="text-[11px] text-gray-600 leading-snug">
-                    Select Credit Cards, Bajaj Finserv EMI Card, Amazon Pay...
-                  </p>
-                  <span className="text-xs font-black text-[#059669] hover:underline cursor-pointer flex items-center gap-1 pt-1">
-                    3 offers &rsaquo;
-                  </span>
-                </div>
-
-                {/* Offer Card 2: Bank Offers */}
-                <div className="bg-[#FFFDF0] border border-[#FFE894] rounded-2xl p-4 space-y-1.5 shadow-2xs relative">
-                  <h5 className="font-extrabold text-gray-900 text-xs">Bank Offers</h5>
-                  <p className="text-[11px] text-gray-600 leading-snug">
-                    Up to ₹2,500.00 off on select Credit Cards, SBI Debit...
-                  </p>
-                  <span className="text-xs font-black text-[#059669] hover:underline cursor-pointer flex items-center gap-1 pt-1">
-                    10 offers &rsaquo;
-                  </span>
-                </div>
-              </div>
-
-              {/* UPI Cashback Banner (Matching Screenshot 1 green pill) */}
-              <div className="bg-[#EAFBF3] border border-[#A7F3D0] rounded-2xl p-3.5 text-xs flex items-center justify-between text-[#065F46] font-bold shadow-2xs cursor-pointer hover:bg-emerald-100 transition">
-                <span className="flex items-center gap-2">
-                  <span className="text-base">💎</span>
-                  <span>Earn ₹179 cashback worth ₹17.9 on all UPI payments</span>
-                </span>
-                <span className="text-emerald-700 font-black text-sm">&rsaquo;</span>
-              </div>
             </div>
 
             {/* 🛡️ Service & Guarantee Icons Bar */}
