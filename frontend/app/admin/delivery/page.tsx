@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fetchAdminShipments, updateOrderStatusGlobal } from "lib/api";
+import { fetchAdminShipments, updateOrderStatusGlobal, createAdminShipmentAPI } from "lib/api";
 
 // Import Chart.js & react-chartjs-2
 import {
@@ -176,16 +176,31 @@ export default function AdminDeliveryPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleCreateShipment = (e: React.FormEvent) => {
+  const handleCreateShipment = async (e: React.FormEvent) => {
     e.preventDefault();
+    const payload = {
+      order_id: newOrderId,
+      awb_code: newAwb || `SR-${Math.floor(1000000 + Math.random() * 9000000)}`,
+      courier_name: newCourier,
+      destination: newDestination,
+      pin_code: newPin,
+      est_delivery_date: newEstDate,
+      customer_name: "Sachin Rawat",
+      customer_email: "sachin@skipd.in",
+      customer_phone: "+91 62643 84464"
+    };
+
+    const res = await createAdminShipmentAPI(payload);
+    const finalAwb = res?.awb_code || payload.awb_code;
+
     const newShipment = {
-      id: shipments.length + 1,
-      awbCode: newAwb || `SR-${Math.floor(1000000 + Math.random() * 9000000)}`,
+      id: res?.shipment_id || shipments.length + 1,
+      awbCode: finalAwb,
       orderId: newOrderId,
       customerName: "Sachin Rawat",
       customerEmail: "sachin@skipd.in",
       customerPhone: "+91 62643 84464",
-      courierName: newCourier,
+      courierName: res?.courier_name || newCourier,
       courierBadge: "D",
       courierBadgeBg: "bg-black text-white",
       destination: newDestination,
@@ -198,7 +213,7 @@ export default function AdminDeliveryPage() {
 
     setShipments([newShipment, ...shipments]);
     setShowCreateModal(false);
-    showToast(`Shipment ${newShipment.awbCode} created successfully!`);
+    showToast(`Shipment ${newShipment.awbCode} created & synced with Shiprocket successfully!`);
   };
 
   // Filtered Shipments Dataset

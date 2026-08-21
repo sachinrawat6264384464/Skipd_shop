@@ -40,22 +40,35 @@ async def get_all_admin_shipments(db: AsyncSession = Depends(get_db)):
 
 @router.post("/admin/create")
 async def create_admin_shipment(payload: dict, db: AsyncSession = Depends(get_db)):
-    """Create a new shipment manually or via Shiprocket integration."""
-    awb = payload.get("awb_code") or f"SR-{int(import_time())}"
+    """Create a new shipment manually or via Shiprocket API integration."""
+    # Register/create shipment via Shiprocket service
+    sr_res = await shiprocket_svc.create_shipment(payload)
+    
+    awb = sr_res.get("awb_code") or payload.get("awb_code") or f"SR-{int(import_time())}"
+    courier = sr_res.get("courier_name") or payload.get("courier_name") or "Delhivery Surface"
+    
     shipment = Shipment(
         order_id=payload.get("order_id", 1),
         awb_code=awb,
-        courier_name=payload.get("courier_name", "Delhivery Surface"),
+        courier_name=courier,
         status=payload.get("status", "IN TRANSIT"),
         destination=payload.get("destination", "New Delhi, Delhi"),
-        pin_code=payload.get("pin_code", "110001"),
-        est_delivery_date=payload.get("est_delivery_date", "May 28, 2026"),
-        current_location=payload.get("current_location", "Main Hub Processing")
+        pin_code=str(payload.get("pin_code") or payload.get("pinCode") or "110001"),
+        est_delivery_date=payload.get("est_delivery_date", "Within 2-3 Business Days"),
+        current_location=payload.get("current_location", "Shiprocket Fulfillment Center")
     )
     db.add(shipment)
     await db.commit()
     await db.refresh(shipment)
-    return {"status": "success", "message": "Shipment created successfully!", "shipment_id": shipment.id}
+    
+    return {
+        "status": "success",
+        "message": "Shipment created & synced with Shiprocket successfully!",
+        "shipment_id": shipment.id,
+        "awb_code": awb,
+        "courier_name": courier,
+        "shiprocket_details": sr_res
+    }
 
 def import_time():
     import time
@@ -89,7 +102,7 @@ async def _process_tracking(tracking_id: str, db: AsyncSession):
             shipment = shipment_res.scalars().first()
 
     awb_to_use = shipment.awb_code if shipment else tracking_id
-    live_tracking_data = await shiprocket_svc.get_live_tracking(awb_code=awb_to_use)
+    live_tracking_data = await shiprocket_svc.get_live_tracking(awb_code=awb_to_use, shipment_record=shipment)
     return live_tracking_data
 
 @router.get("/serviceability")
@@ -97,15 +110,6 @@ async def check_pincode_serviceability(pincode: str):
     if len(pincode) != 6 or not pincode.isdigit():
         raise HTTPException(status_code=400, detail="Invalid Indian 6-digit Pincode")
     
-    is_metro = pincode.startswith(("11", "40", "56", "70", "60", "50"))
-    estimated_days = "1-2 Business Days" if is_metro else "3-4 Business Days"
-    
-    return {
-        "pincode": pincode,
-        "serviceable": True,
-        "courier_partner": "BlueDart Express / Delhivery",
-        "estimated_delivery": estimated_days,
-        "cod_available": True,
-        "prepaid_available": True,
-        "express_shipping": is_metro
-    }
+    # Query Shiprocket Serviceability API
+    return await shiprocket_svc.check_serviceability(delivery_postcode=pincode)
+

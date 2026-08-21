@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { checkPincodeServiceabilityAPI } from "lib/api";
 
 export function PincodeChecker() {
   const [pincode, setPincode] = useState("");
@@ -10,24 +11,28 @@ export function PincodeChecker() {
     estimated_delivery: string;
     express_shipping: boolean;
     cod_available: boolean;
+    courier_partner?: string;
   } | null>(null);
 
-  const handleCheck = (e: React.FormEvent) => {
+  const handleCheck = async (e: React.FormEvent) => {
     e.preventDefault();
     if (pincode.length !== 6) return;
     setLoading(true);
     
-    // Simulate real-time API call to Shiprocket Serviceability
-    setTimeout(() => {
-      const isMetro = ["11", "40", "56", "70", "60", "50"].some(prefix => pincode.startsWith(prefix));
+    try {
+      const data = await checkPincodeServiceabilityAPI(pincode);
       setResult({
-        serviceable: true,
-        estimated_delivery: isMetro ? "Express 1-2 Business Days" : "Standard 3-4 Business Days",
-        express_shipping: isMetro,
-        cod_available: true
+        serviceable: data.serviceable ?? true,
+        estimated_delivery: data.estimated_delivery || "Standard 3-4 Business Days",
+        express_shipping: !!data.express_shipping,
+        cod_available: data.cod_available ?? true,
+        courier_partner: data.courier_partner
       });
+    } catch (err) {
+      console.error("Pincode check error:", err);
+    } finally {
       setLoading(false);
-    }, 400);
+    }
   };
 
   return (
