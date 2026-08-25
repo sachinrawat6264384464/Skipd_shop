@@ -12,7 +12,7 @@ interface RecGridProps {
 }
 
 export function RecommendedProductsGrid({ productId, title = "You Might Also Like" }: RecGridProps) {
-  const { addItem } = useCart();
+  const { addCartItem } = useCart();
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<any[]>([]);
 
@@ -33,6 +33,37 @@ export function RecommendedProductsGrid({ productId, title = "You Might Also Lik
       setLoading(false);
     }
   }
+
+  const handleQuickAdd = (prod: any) => {
+    const imgUrl = prod.image || getProductImageByTitle(prod.title);
+    const variant = {
+      id: String(prod.id),
+      title: "Default",
+      availableForSale: true,
+      selectedOptions: [{ name: "Title", value: "Default" }],
+      price: { amount: String(prod.price), currencyCode: "INR" }
+    };
+    const product = {
+      id: String(prod.id),
+      handle: prod.handle || `product-${prod.id}`,
+      title: prod.title,
+      featuredImage: { url: imgUrl, altText: prod.title, width: 800, height: 800 },
+      variants: [variant],
+      images: [{ url: imgUrl, altText: prod.title, width: 800, height: 800 }],
+      availableForSale: true,
+      description: "",
+      descriptionHtml: "",
+      options: [],
+      priceRange: {
+        maxVariantPrice: { amount: String(prod.price), currencyCode: "INR" },
+        minVariantPrice: { amount: String(prod.price), currencyCode: "INR" }
+      },
+      seo: { title: prod.title, description: "" },
+      tags: [],
+      updatedAt: ""
+    };
+    addCartItem(variant, product);
+  };
 
   if (loading) {
     return (
@@ -120,16 +151,7 @@ export function RecommendedProductsGrid({ productId, title = "You Might Also Lik
                 </div>
 
                 <button
-                  onClick={() =>
-                    addItem({
-                      id: String(prod.id),
-                      title: prod.title,
-                      price: prod.price,
-                      image: imgUrl,
-                      quantity: 1,
-                      handle: prod.handle
-                    })
-                  }
+                  onClick={() => handleQuickAdd(prod)}
                   className="bg-slate-900 hover:bg-emerald-600 text-white font-bold text-[10px] px-2.5 py-1.5 rounded-lg transition shrink-0 cursor-pointer"
                   title="Quick Add"
                 >
