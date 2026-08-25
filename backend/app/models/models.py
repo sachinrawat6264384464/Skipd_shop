@@ -441,4 +441,17 @@ class NewArrival(Base):
 
     product = relationship("Product")
 
+class UserView(Base):
+    __tablename__ = "user_views"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    session_id = Column(String(100), nullable=True, index=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    product = relationship("Product")
+    user = relationship("User")
+
+
 

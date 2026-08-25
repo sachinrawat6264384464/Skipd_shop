@@ -7,7 +7,7 @@ from app.models.models import (
     User, UserRole, Category, Product, ProductVariant, Order, OrderItem, OrderStatusHistory,
     PaymentTransaction, Shipment, SaleEvent, SaleProduct, HomepageSection,
     WishlistItem, CartItem, Address, Coupon, Review, GiftCard, InventoryLog,
-    Wallet, WalletTransaction, ReturnRequest, EmailLog, Role, StaffUser, NewArrival
+    Wallet, WalletTransaction, ReturnRequest, EmailLog, Role, StaffUser, NewArrival, UserView
 )
 from app.core.security import get_password_hash
 
@@ -45,6 +45,19 @@ async def initialize_and_migrate_all_tables():
         await conn.execute(text("ALTER TABLE shipments ADD COLUMN IF NOT EXISTS est_delivery_date VARCHAR(100) DEFAULT 'May 27, 2026';"))
         await conn.execute(text("ALTER TABLE shipments ADD COLUMN IF NOT EXISTS current_location VARCHAR(255) DEFAULT 'Bhopal Sort Center';"))
         
+        # Ensure user_views table exists for recommendation tracking
+        await conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS user_views (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                session_id VARCHAR(100),
+                product_id INTEGER NOT NULL REFERENCES products(id),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS ix_user_views_product_id ON user_views(product_id);"))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS ix_user_views_user_id ON user_views(user_id);"))
+
         print("[SUCCESS] Schema alterations & column migrations verified!")
 
 
@@ -95,7 +108,21 @@ async def initialize_and_migrate_all_tables():
                 Category(name="Watches", slug="watches", description="Luxury Chronograph & Smartwatches")
             ]
             session.add_all(cats)
+            await session.flush()
             print("[SUCCESS] 5 Core Product Categories seeded!")
+
+        # Seed Default Products if empty
+        prod_count_res = await session.execute(select(func.count(Product.id)))
+        if (prod_count_res.scalar() or 0) == 0:
+            prods = [
+                Product(id=1, title="Minimalist Graphic Tee", handle="minimalist-graphic-tee", description="100% Organic cotton breathable t-shirt for daily comfort.", price=999.00, compare_at_price=1499.00, category_id=2, is_active=True, stock_quantity=50, images=["https://images.unsplash.com/photo-1521572267360-ee0c2909d518"], tags=["t-shirt", "cotton", "apparel"]),
+                Product(id=2, title="OnePlus Nord 6 5G", handle="oneplus-nord-6", description="Snapdragon 8 Gen 2, 120Hz AMOLED display, 100W SuperVOOC fast charging.", price=29999.00, compare_at_price=34999.00, category_id=1, is_active=True, stock_quantity=30, images=["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"], tags=["smartphone", "5g", "oneplus"]),
+                Product(id=3, title="Active ANC Wireless Headphones", handle="active-anc-headphones", description="Active Noise Cancellation over-ear headphones with 40-hour battery life.", price=4999.00, compare_at_price=7999.00, category_id=1, is_active=True, stock_quantity=40, images=["https://images.unsplash.com/photo-1505740420928-5e560c06d30e"], tags=["audio", "headphones", "bluetooth"]),
+                Product(id=4, title="Nike Air Max Sneakers", handle="nike-air-max-sneakers", description="Lightweight cushioned running shoes with maximum air bounce.", price=6499.00, compare_at_price=8999.00, category_id=4, is_active=True, stock_quantity=25, images=["https://images.unsplash.com/photo-1542291026-7eec264c27ff"], tags=["shoes", "nike", "running"]),
+                Product(id=5, title="Pro Chronograph Smartwatch", handle="pro-chronograph-smartwatch", description="Stainless steel Amoled smartwatch with heart rate & SpO2 tracking.", price=8999.00, compare_at_price=12999.00, category_id=5, is_active=True, stock_quantity=20, images=["https://images.unsplash.com/photo-1523275335684-37898b6baf30"], tags=["watch", "smartwatch", "fitness"])
+            ]
+            session.add_all(prods)
+            print("[SUCCESS] 5 Core Products seeded!")
 
         await session.commit()
         print("\n" + "=" * 70)

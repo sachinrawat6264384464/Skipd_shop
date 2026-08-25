@@ -232,10 +232,14 @@ app.add_middleware(
 )
 
 # Mount Router
+from app.api.recommendations import router as recommendations_router
 from app.api.search import router as search_router
+from app.api.chatbot import router as chatbot_router
 
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(products_router, prefix=settings.API_V1_STR)
+app.include_router(recommendations_router, prefix=settings.API_V1_STR)
+app.include_router(chatbot_router, prefix=settings.API_V1_STR)
 app.include_router(search_router, prefix=settings.API_V1_STR)
 app.include_router(orders_router, prefix=settings.API_V1_STR)
 app.include_router(payments_router, prefix=settings.API_V1_STR)

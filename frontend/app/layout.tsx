@@ -17,25 +17,25 @@ const siteBaseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
 export const metadata = {
   metadataBase: new URL(siteBaseUrl),
   title: {
-    default: "SKIPD Commerce | Next-Gen E-Commerce & Personal Tech",
-    template: "%s | SKIPD Commerce",
+    default: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
+    template: "%s | E-COM Commerce",
   },
-  description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones, 4K Smart TVs & smart wearables on SKIPD Commerce.",
+  description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones, 4K Smart TVs & smart wearables on E-COM Commerce.",
   robots: {
     follow: true,
     index: true,
   },
   openGraph: {
-    title: "SKIPD Commerce | Next-Gen E-Commerce & Personal Tech",
+    title: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
     description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones & smart wearables with 24-hour express delivery.",
     url: "https://skipd-shop.vercel.app",
-    siteName: "SKIPD Commerce",
+    siteName: "E-COM Commerce",
     images: [
       {
         url: "https://skipd-shop.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "SKIPD Commerce Storefront Preview"
+        alt: "E-COM Commerce Storefront Preview"
       }
     ],
     locale: "en_US",
@@ -43,8 +43,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "SKIPD Commerce | Next-Gen E-Commerce & Personal Tech",
-    description: "Upgrade your daily setup with studio ANC headphones, gaming phones & smart wearables on SKIPD Commerce.",
+    title: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
+    description: "Upgrade your daily setup with studio ANC headphones, gaming phones & smart wearables on E-COM Commerce.",
     images: ["https://skipd-shop.vercel.app/og-image.png"]
   }
 };
@@ -56,6 +56,7 @@ import { WishlistProvider } from "components/wishlist/wishlist-context";
 import { NavbarWrapper } from "components/layout/navbar/navbar-wrapper";
 import { ClearLegacyStorage } from "components/layout/clear-legacy-storage";
 import { EmailToastListener } from "components/email/email-toast-listener";
+import FloatingChatbot from "components/chatbot/FloatingChatbot";
 
 export default async function RootLayout({
   children,
@@ -81,6 +82,7 @@ export default async function RootLayout({
                   <Toaster closeButton />
                   <WelcomeToast />
                   <EmailToastListener />
+                  <FloatingChatbot />
                 </main>
               </CartProvider>
             </WishlistProvider>

@@ -666,6 +666,7 @@ export function getProductImageByTitle(title?: string): string {
   return "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800";
 }
 
+
 export async function fetchUserOrders(): Promise<UserOrder[]> {
   try {
     const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
@@ -1966,6 +1967,35 @@ export async function createAdminShipmentAPI(payload: any) {
   }
   return null;
 }
+
+export async function fetchSimilarProductsAPI(productId: number, limit: number = 6) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/recommendations/products/${productId}/similar?limit=${limit}`, {
+      cache: "no-store"
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK] fetchSimilarProductsAPI failed:", e);
+  }
+  return [];
+}
+
+export async function fetchFrequentlyBoughtTogetherAPI(productId: number) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/recommendations/products/${productId}/frequently-bought-together`, {
+      cache: "no-store"
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK] fetchFrequentlyBoughtTogetherAPI failed:", e);
+  }
+  return null;
+}
+
 
 
 

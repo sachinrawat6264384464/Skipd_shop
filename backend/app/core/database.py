@@ -17,16 +17,26 @@ if "ssl=require" in db_url or "sslmode=require" in db_url or "neon.tech" in db_u
     db_url = db_url.replace("?ssl=require", "").replace("&ssl=require", "").replace("?sslmode=require", "").replace("&sslmode=require", "")
     connect_args = {"ssl": True}
 
-engine = create_async_engine(
-    db_url,
-    connect_args=connect_args,
-    echo=settings.ENVIRONMENT == "development",
-    future=True,
-    pool_size=20,
-    max_overflow=30,
-    pool_recycle=1800,
-    pool_pre_ping=True
-)
+import os
+from sqlalchemy.pool import NullPool
+
+engine_kwargs = {
+    "connect_args": connect_args,
+    "echo": settings.ENVIRONMENT == "development",
+    "future": True,
+}
+
+if "PYTEST_CURRENT_TEST" in os.environ or os.getenv("TESTING") == "1":
+    engine_kwargs["poolclass"] = NullPool
+else:
+    engine_kwargs.update({
+        "pool_size": 20,
+        "max_overflow": 30,
+        "pool_recycle": 1800,
+        "pool_pre_ping": True
+    })
+
+engine = create_async_engine(db_url, **engine_kwargs)
 
 AsyncSessionLocal = async_sessionmaker(
     bind=engine,

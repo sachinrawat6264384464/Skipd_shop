@@ -11,6 +11,8 @@ import { BuyNowButton } from "components/auth/buy-now-button";
 import { ProductZoomMagnifier } from "./product-zoom-magnifier";
 import { toast } from "sonner";
 import { useWishlist } from "components/wishlist/wishlist-context";
+import { FrequentlyBoughtTogether } from "./frequently-bought-together";
+import { RecommendedProductsGrid } from "./recommended-products-grid";
 
 interface ProductDetailViewProps {
   product: {
@@ -1331,6 +1333,12 @@ const SUB_NAV_ITEMS = [
         </div>
       </div>
 
+
+      {/* ⚡ Machine Learning Recommendation System (Frequently Bought Together & Similar Products) */}
+      <div className="max-w-[1536px] mx-auto px-4 lg:px-8">
+        <FrequentlyBoughtTogether productId={product.id} />
+        <RecommendedProductsGrid productId={product.id} title="You Might Also Like" />
+      </div>
 
       {/* 📦 Sponsored Products Section */}
       <div className="max-w-[1536px] mx-auto px-4 lg:px-8 pt-6">

@@ -134,21 +134,42 @@ export default function AboutPage() {
         {activeTab === "careers" && (
           <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-10 shadow-2xs space-y-6 animate-in fade-in duration-300">
             <div>
-              <h2 className="text-2xl font-black text-gray-900">Work With Us at SKIPD</h2>
-              <p className="text-xs text-gray-500 mt-1 font-medium">We are hiring passionate engineers, product designers, and e-commerce leaders!</p>
+              <h2 className="text-2xl font-black text-gray-900">Work With Us — Botmartz AI Solutions</h2>
+              <p className="text-xs text-gray-500 mt-1 font-medium">We are hiring interns and community leaders to grow our AI Engineering ecosystem! Applications go to <span className="text-emerald-700 font-bold font-mono">soham@botmartz.com</span>.</p>
             </div>
 
             <div className="space-y-4">
               {[
-                { title: "Senior Full Stack Engineer (Next.js / FastAPI)", location: "Bengaluru / Remote", type: "Full-Time" },
-                { title: "E-Commerce Logistics & Operations Manager", location: "Bengaluru, KA", type: "Full-Time" },
-                { title: "UI/UX Product Designer (Design Systems)", location: "Remote", type: "Full-Time" },
-                { title: "Customer Success Lead", location: "Bengaluru, KA", type: "Full-Time" }
+                {
+                  title: "Brand & Community Intern",
+                  focus: "Grow Botmartz brand & AI Engineering community (LinkedIn, Discord, Workshops, AI Frontier)",
+                  location: "Remote / Hybrid",
+                  type: "Internship / Community",
+                  skills: "Communication, Content Creation, Social Media, AI Interest"
+                },
+                {
+                  title: "Partnerships & Community Growth Intern",
+                  focus: "Build ecosystem relationships with tech companies, universities, AI groups & sponsors",
+                  location: "Remote / Hybrid",
+                  type: "Internship / Community",
+                  skills: "Outreach, Research, Networking, Partnership CRM"
+                },
+                {
+                  title: "Developer Relations (DevRel) Intern",
+                  focus: "Build developer ecosystem around PyTorch, LangGraph, LangChain, Transformers, RAG & AI Agents",
+                  location: "Remote / Hybrid",
+                  type: "Technical Internship",
+                  skills: "Python, AI/ML Interest, GitHub Open-Source, Technical Content"
+                }
               ].map((job, idx) => (
                 <div key={idx} className="border border-gray-200 rounded-2xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-emerald-500 transition">
-                  <div>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="bg-emerald-50 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-emerald-200">{job.type}</span>
+                    </div>
                     <h3 className="font-extrabold text-sm text-gray-900">{job.title}</h3>
-                    <p className="text-xs text-gray-500 font-medium">{job.location} &bull; {job.type}</p>
+                    <p className="text-xs text-emerald-700 font-medium">{job.focus}</p>
+                    <p className="text-[11px] text-gray-500 font-medium">{job.location} &bull; Skills: {job.skills}</p>
                   </div>
                   <button
                     onClick={() => setApplyJobTitle(job.title)}
@@ -232,16 +253,22 @@ export default function AboutPage() {
                   <button onClick={() => { setApplyJobTitle(null); setApplicantApplied(false); }} className="bg-emerald-600 text-white font-bold text-xs px-5 py-2 rounded-xl">Close</button>
                 </div>
               ) : (
-                <form onSubmit={(e) => { e.preventDefault(); setApplicantApplied(true); }} className="space-y-3 text-xs">
+                <form onSubmit={(e) => { 
+                  e.preventDefault(); 
+                  setApplicantApplied(true);
+                  const subject = encodeURIComponent(`Application for ${applyJobTitle}: ${applicantName}`);
+                  const body = encodeURIComponent(`Name: ${applicantName}\nEmail: ${applicantEmail}\nApplying for: ${applyJobTitle}`);
+                  window.location.href = `mailto:soham@botmartz.com?subject=${subject}&body=${body}`;
+                }} className="space-y-3 text-xs">
                   <div>
                     <label className="font-bold text-gray-700 block mb-1">Your Full Name</label>
-                    <input type="text" required placeholder="e.g. Sachin Rawat" value={applicantName} onChange={(e) => setApplicantName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none" />
+                    <input type="text" required placeholder="e.g. Alex Sharma" value={applicantName} onChange={(e) => setApplicantName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none" />
                   </div>
                   <div>
                     <label className="font-bold text-gray-700 block mb-1">Email Address</label>
-                    <input type="email" required placeholder="e.g. sachin@gmail.com" value={applicantEmail} onChange={(e) => setApplicantEmail(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none" />
+                    <input type="email" required placeholder="e.g. alex@gmail.com" value={applicantEmail} onChange={(e) => setApplicantEmail(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:outline-none" />
                   </div>
-                  <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-xl uppercase tracking-wider">Submit Application</button>
+                  <button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-xl uppercase tracking-wider">Send Application to soham@botmartz.com</button>
                 </form>
               )}
             </div>
