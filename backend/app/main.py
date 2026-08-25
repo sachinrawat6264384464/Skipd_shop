@@ -235,6 +235,7 @@ app.add_middleware(
 from app.api.recommendations import router as recommendations_router
 from app.api.search import router as search_router
 from app.api.chatbot import router as chatbot_router
+from app.api.abandoned_reminders import router as abandoned_reminders_router
 
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(products_router, prefix=settings.API_V1_STR)
@@ -257,6 +258,7 @@ app.include_router(queries_router, prefix=settings.API_V1_STR)
 app.include_router(wishlist_router, prefix=settings.API_V1_STR)
 app.include_router(roles_router, prefix=settings.API_V1_STR)
 app.include_router(new_arrivals_router, prefix=settings.API_V1_STR)
+app.include_router(abandoned_reminders_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():

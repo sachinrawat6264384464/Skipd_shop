@@ -57,6 +57,7 @@ import { NavbarWrapper } from "components/layout/navbar/navbar-wrapper";
 import { ClearLegacyStorage } from "components/layout/clear-legacy-storage";
 import { EmailToastListener } from "components/email/email-toast-listener";
 import FloatingChatbot from "components/chatbot/FloatingChatbot";
+import { AbandonedReminderModal } from "components/modals/AbandonedReminderModal";
 
 export default async function RootLayout({
   children,
@@ -83,6 +84,7 @@ export default async function RootLayout({
                   <WelcomeToast />
                   <EmailToastListener />
                   <FloatingChatbot />
+                  <AbandonedReminderModal />
                 </main>
               </CartProvider>
             </WishlistProvider>

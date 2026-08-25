@@ -351,3 +351,71 @@ def send_welcome_account_email(to_email: str, full_name: str, raw_password: str)
     """
     return send_email_notification(to_email, subject, html_content)
 
+
+def send_abandoned_reminder_email(
+    to_email: str,
+    customer_name: str,
+    product_title: str,
+    product_price: float,
+    image_url: str,
+    item_type: str = "cart",
+    product_handle: str = ""
+):
+    """Send Rich HTML Abandoned Cart/Wishlist Reminder Email with product image and direct link."""
+    site_domain = os.getenv("SITE_URL", "http://localhost:3002")
+    product_url = f"{site_domain}/product/{product_handle}" if product_handle else f"{site_domain}/cart"
+    
+    badge_title = "🛒 Items Waiting in Your Cart!" if item_type == "cart" else "❤️ Saved in Your Wishlist!"
+    subject = f"{badge_title} Complete your purchase - E-COM"
+    
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }}
+        .card {{ max-width: 550px; margin: 0 auto; background: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }}
+        .header {{ background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); padding: 32px 24px; text-align: center; color: #ffffff; }}
+        .badge {{ background: #10b981; color: #ffffff; font-weight: 800; font-size: 11px; padding: 4px 12px; border-radius: 99px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 8px; }}
+        .header h1 {{ margin: 0; font-size: 22px; font-weight: 900; }}
+        .body {{ padding: 28px 24px; color: #1e293b; line-height: 1.6; }}
+        .product-card {{ background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin: 20px 0; display: flex; items-center; gap: 16px; }}
+        .product-img {{ width: 90px; height: 90px; object-fit: cover; border-radius: 12px; border: 1px solid #cbd5e1; }}
+        .product-info {{ flex: 1; }}
+        .product-title {{ font-size: 15px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0; }}
+        .product-price {{ font-size: 18px; font-weight: 900; color: #059669; margin: 0; }}
+        .btn {{ display: inline-block; background: #10b981; color: #ffffff !important; font-weight: 900; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 14px; text-align: center; margin: 20px 0 10px 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3); text-transform: uppercase; letter-spacing: 0.5px; }}
+        .footer {{ background: #f1f5f9; border-top: 1px solid #e2e8f0; padding: 20px; text-align: center; font-size: 11px; color: #64748b; }}
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="header">
+          <div class="badge">{badge_title}</div>
+          <h1>Don't Miss Out on Your Favorites 👋</h1>
+        </div>
+        <div class="body">
+          <p style="font-size: 14px; color: #475569; margin-top: 0;">
+            Hi <strong>{customer_name}</strong>, we noticed you left an item in your {item_type} over a minute ago. Stock is limited, finish your order before it sells out!
+          </p>
+          <div class="product-card">
+            <div class="product-info">
+              <h3 class="product-title">{product_title}</h3>
+              <p class="product-price">₹{product_price:,.2f}</p>
+            </div>
+          </div>
+          <div style="text-align: center;">
+            <a href="{product_url}" class="btn">⚡ Finish Order &rsaquo;</a>
+          </div>
+        </div>
+        <div class="footer">
+          <p style="margin: 0;">E-COM Commerce Inc. • 24x7 Customer Support</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    """
+    return send_email_notification(to_email, subject, html_content)
+
+

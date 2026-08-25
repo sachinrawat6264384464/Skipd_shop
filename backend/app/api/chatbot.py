@@ -183,11 +183,34 @@ async def chatbot_recommend_route(
 
     else:
         # General similarity or keyword query
-        res = await db.execute(
-            select(Product).options(selectinload(Product.category)).where(Product.is_active == True)
-        )
-        all_matched = res.scalars().all()
-        intro_text = "✨ Based on your request, here are top recommended products for you:"
+        # 1. First attempt keyword ILIKE search for 100% accurate keyword recommendations
+        stopwords = {"show", "give", "me", "the", "top", "trending", "best", "for", "with", "find", "get", "some", "product", "products", "item", "items"}
+        search_terms = [w for w in re.findall(r'\b\w+\b', user_message.lower()) if len(w) >= 3 and w not in stopwords]
+        
+        kw_matched = []
+        if search_terms:
+            conditions = []
+            for term in search_terms:
+                conditions.append(Product.title.ilike(f"%{term}%"))
+                conditions.append(Product.description.ilike(f"%{term}%"))
+            
+            kw_res = await db.execute(
+                select(Product).options(selectinload(Product.category)).where(
+                    and_(Product.is_active == True, or_(*conditions))
+                ).limit(6)
+            )
+            kw_matched = list(kw_res.scalars().all())
+
+        if kw_matched:
+            all_matched = kw_matched
+            exact_match = True
+            intro_text = f"✨ Here are top recommended {user_message} for you:"
+        else:
+            res = await db.execute(
+                select(Product).options(selectinload(Product.category)).where(Product.is_active == True)
+            )
+            all_matched = res.scalars().all()
+            intro_text = "✨ Based on your request, here are top recommended products for you:"
 
     # Guarantee all_matched is not empty if DB has products
     if not all_matched:

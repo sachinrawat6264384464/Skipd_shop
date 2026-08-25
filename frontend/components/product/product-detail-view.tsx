@@ -181,6 +181,14 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       return;
     }
 
+    if (product.stock_quantity === 0) {
+      toast.error("🚫 This product is currently out of stock", {
+        description: "Please check back later or select another item.",
+        duration: 2500
+      });
+      return;
+    }
+
     const existing = getCartStore();
     const itemToAdd = {
       id: product.id,
@@ -219,6 +227,13 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
   // Buy Now handler (Requires Login)
   const handleBuyNow = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
+    if (product.stock_quantity === 0) {
+      toast.error("🚫 This product is currently out of stock", {
+        description: "Please check back later or select another item.",
+        duration: 2500
+      });
+      return;
+    }
     requireAuth(() => {
       const mainItem = {
         id: product.id,
@@ -693,7 +708,7 @@ const SUB_NAV_ITEMS = [
               </div>
             </div>
 
-            {/* 🌟 SKIPD Assured Store Guarantee & Highlights Card */}
+            {/* 🌟 E-COM Assured Store Guarantee & Highlights Card */}
             <div className="bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/40 border border-emerald-200/80 rounded-3xl p-5 shadow-sm space-y-4 text-xs">
               
               {/* Header Badge */}
@@ -769,7 +784,7 @@ const SUB_NAV_ITEMS = [
               <h1 className="text-lg md:text-xl font-bold text-gray-900 leading-snug">
                 {product.title}
               </h1>
-              <p className="text-xs text-emerald-700 font-bold mt-1 hover:underline cursor-pointer">Visit the SKIPD Official Store</p>
+              <p className="text-xs text-emerald-700 font-bold mt-1 hover:underline cursor-pointer">Visit the E-COM Official Store</p>
 
               {/* Rating */}
               <div className="flex items-center gap-2 mt-2 text-xs">
@@ -831,7 +846,9 @@ const SUB_NAV_ITEMS = [
             <div className="space-y-3 pt-3 border-t border-gray-100 text-xs">
               <div className="flex items-center justify-between">
                 <p className="font-bold text-gray-900">
-                  Size: <span className="font-extrabold text-[#0284C7]">In Stock</span>
+                  Size: <span className={`font-extrabold ${product.stock_quantity === 0 ? "text-red-600" : "text-[#0284C7]"}`}>
+                    {product.stock_quantity === 0 ? "Out of Stock / Unavailable" : "In Stock"}
+                  </span>
                 </p>
                 <button
                   type="button"
@@ -943,10 +960,15 @@ const SUB_NAV_ITEMS = [
                 {/* 🛒 ADD TO CART Big Green Pill Button */}
                 <button
                   type="button"
+                  disabled={product.stock_quantity === 0}
                   onClick={handleAddToCart}
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-sm py-4 px-6 rounded-full transition shadow-md shadow-emerald-600/30 text-center tracking-wider uppercase cursor-pointer"
+                  className={`flex-1 font-black text-sm py-4 px-6 rounded-full transition text-center tracking-wider uppercase ${
+                    product.stock_quantity === 0
+                      ? "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed opacity-80"
+                      : "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-md shadow-emerald-600/30 cursor-pointer"
+                  }`}
                 >
-                  {cartAddedToast ? "✓ ADDED TO CART!" : "ADD TO CART"}
+                  {product.stock_quantity === 0 ? "🚫 OUT OF STOCK" : (cartAddedToast ? "✓ ADDED TO CART!" : "ADD TO CART")}
                 </button>
 
               </div>
@@ -1027,11 +1049,11 @@ const SUB_NAV_ITEMS = [
                 <p className="font-bold text-emerald-700">FREE delivery Saturday, Aug 15.</p>
                 <p className="text-[11px] text-gray-500">📍 Deliver to Gwalior 474001</p>
                 {product.stock_quantity === 0 ? (
-                  <p className="text-red-600 font-black text-sm pt-1 uppercase tracking-wider animate-pulse">🚫 OUT OF STOCK</p>
+                  <p className="text-red-600 font-black text-sm pt-1 uppercase tracking-wider">🚫 Out of Stock (Unavailable)</p>
                 ) : (
-                  <p className="text-emerald-600 font-extrabold text-sm pt-1">In Stock ({product.stock_quantity ?? 50} units available)</p>
+                  <p className="text-emerald-600 font-extrabold text-sm pt-1">In Stock ({product.stock_quantity ?? 40} units available)</p>
                 )}
-                <p className="text-[10px] text-gray-500">Ships from and sold by SKIPD Official Retail.</p>
+                <p className="text-[10px] text-gray-500">Ships from and sold by E-COM Official Retail.</p>
               </div>
 
               {/* 🛒 Add to Cart (White) & ⚡ Buy Now (Brand Emerald Logo Color) Buttons */}
@@ -1039,9 +1061,9 @@ const SUB_NAV_ITEMS = [
                 {product.stock_quantity === 0 ? (
                   <button
                     disabled
-                    className="w-full bg-red-50 border-2 border-red-500 text-red-600 font-black text-xs py-3.5 rounded-2xl text-center uppercase tracking-wider cursor-not-allowed opacity-90 flex items-center justify-center gap-1.5 shadow-xs"
+                    className="w-full bg-gray-100 border-2 border-gray-300 text-gray-400 font-black text-xs py-3.5 rounded-2xl text-center uppercase tracking-wider cursor-not-allowed opacity-80 flex items-center justify-center gap-1.5 shadow-xs"
                   >
-                    🚫 Currently Out of Stock
+                    🚫 Unavailable / Out of Stock
                   </button>
                 ) : (
                   <>
@@ -1103,7 +1125,7 @@ const SUB_NAV_ITEMS = [
             }`}>
               <div className="flex items-center justify-between">
                 <span className="font-extrabold text-gray-900 flex items-center gap-1.5">
-                  <span>🛡️</span> SKIPD Protect Plan
+                  <span>🛡️</span> E-COM Protect Plan
                 </span>
                 <span className="text-emerald-700 font-black text-sm">₹199</span>
               </div>
@@ -1135,10 +1157,10 @@ const SUB_NAV_ITEMS = [
             <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-2xl bg-gray-900 text-white font-black text-xs flex items-center justify-center">
-                  S
+                  E
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">SKIPD Official Retail Hub</p>
+                  <p className="font-bold text-gray-900">E-COM Official Retail Hub</p>
                   <p className="text-[10px] text-emerald-600 font-bold">4.9 ★ 98% Positive Feedback</p>
                 </div>
               </div>
