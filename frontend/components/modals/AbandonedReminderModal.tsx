@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { getProductImageByTitle } from "lib/api";
+import { getProductImageByTitle, getApiBaseUrl } from "lib/api";
 
 export function AbandonedReminderModal() {
   const router = useRouter();
@@ -14,11 +14,20 @@ export function AbandonedReminderModal() {
 
   useEffect(() => {
     checkAbandonedReminder();
+
+    // Poll every 15 seconds to trigger abandoned modal while user browses
+    const interval = setInterval(() => {
+      checkAbandonedReminder();
+    }, 15000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const checkAbandonedReminder = async () => {
-    // Check if user is logged in
-    const token = typeof window !== "undefined" ? localStorage.getItem("user_token") : null;
+    if (typeof window === "undefined") return;
+
+    // Check all possible token keys stored upon login
+    const token = localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token");
     if (!token) return;
 
     // Check if snoozed
@@ -28,7 +37,7 @@ export function AbandonedReminderModal() {
     }
 
     try {
-      const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1").replace(/\/+$/, "");
+      const apiBase = getApiBaseUrl().replace(/\/+$/, "");
       const res = await fetch(`${apiBase}/abandoned-reminders/active`, {
         headers: {
           Authorization: `Bearer ${token}`
@@ -63,12 +72,14 @@ export function AbandonedReminderModal() {
   };
 
   const handleRemoveItem = async () => {
-    const token = localStorage.getItem("user_token");
+    const token = typeof window !== "undefined"
+      ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
+      : null;
     if (!token || !reminderData) return;
 
     setRemoving(true);
     try {
-      const apiBase = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1").replace(/\/+$/, "");
+      const apiBase = getApiBaseUrl().replace(/\/+$/, "");
       await fetch(`${apiBase}/abandoned-reminders/remove`, {
         method: "DELETE",
         headers: {
