@@ -79,7 +79,10 @@ export default function FloatingChatbot() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'}/api/v1/chatbot/recommend`, {
+      const apiBase = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1').replace(/\/+$/, '');
+      const endpoint = apiBase.endsWith('/chatbot') ? apiBase : `${apiBase}/chatbot/recommend`;
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

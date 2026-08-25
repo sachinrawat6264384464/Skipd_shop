@@ -62,8 +62,6 @@ class Settings(BaseSettings):
     SHIPROCKET_EMAIL: str = "demo@skipd.in"
     SHIPROCKET_PASSWORD: str = "demo_password"
 
-    OPENAI_API_KEY: str = ""
-
     class Config:
         case_sensitive = True
         env_file = ".env"
