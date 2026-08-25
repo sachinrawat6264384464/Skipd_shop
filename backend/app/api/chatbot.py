@@ -220,6 +220,7 @@ async def chatbot_recommend_route(
 
     # 7. Format Top 6 Small Rectangular Product Cards (100% Real PostgreSQL Data)
     formatted_cards = []
+    prod_titles = []
     for prod in final_products:
         image_url = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300"
         if prod.images:
@@ -228,6 +229,7 @@ async def chatbot_recommend_route(
             elif isinstance(prod.images, str) and len(prod.images) > 5:
                 image_url = prod.images
 
+        prod_titles.append(f"{prod.title} (₹{float(prod.price):,.2f})")
         formatted_cards.append({
             "id": prod.id,
             "title": prod.title,
@@ -236,8 +238,35 @@ async def chatbot_recommend_route(
             "formatted_price": f"₹{float(prod.price):,.2f}",
             "image_url": image_url,
             "rating": 4.8,
-            "category_name": prod.category.name if prod.category else "SKIPD Collection"
+            "category_name": prod.category.name if prod.category else "E-COM Collection"
         })
+
+    # 8. Optional OpenAI API Integration if OPENAI_API_KEY is provided
+    from app.core.config import settings
+    if settings.OPENAI_API_KEY and len(settings.OPENAI_API_KEY) > 10 and not settings.OPENAI_API_KEY.startswith("sk-proj-xxx"):
+        try:
+            import httpx
+            prompt_context = f"User asked: '{user_message}'. Top recommended products: {', '.join(prod_titles)}."
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                res_ai = await client.post(
+                    "https://api.openai.com/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {settings.OPENAI_API_KEY}"},
+                    json={
+                        "model": "gpt-4o-mini",
+                        "messages": [
+                            {"role": "system", "content": "You are E-COM AI Sales Recommender. Briefly introduce the recommended products in 1-2 friendly sentences in Hinglish or English."},
+                            {"role": "user", "content": prompt_context}
+                        ],
+                        "max_tokens": 80
+                    }
+                )
+                if res_ai.status_code == 200:
+                    ai_json = res_ai.json()
+                    openai_msg = ai_json["choices"][0]["message"]["content"].strip()
+                    if openai_msg:
+                        intro_text = f"✨ {openai_msg}"
+        except Exception as e:
+            print(f"[OPENAI WARN] Falling back to local TF-IDF matcher: {e}")
 
     return {
         "response_text": intro_text,
