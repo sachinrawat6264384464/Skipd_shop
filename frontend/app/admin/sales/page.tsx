@@ -44,6 +44,50 @@ export default function AdminSalesPage() {
   // Dynamic Campaigns Dataset
   const [campaigns, setCampaigns] = useState<any[]>([]);
 
+  // ⚡ Live Flash Sale Deals Dataset for Homepage FlashSaleBanner
+  const [flashSaleDeals, setFlashSaleDeals] = useState<any[]>([
+    {
+      id: 101,
+      title: "boAt Rockerz 450 Pro Bluetooth Headphones",
+      handle: "boat-rockerz-450-pro",
+      price: 1499,
+      compare_at_price: 3990,
+      discount_percent: 62,
+      image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400",
+      sold_percent: 84
+    },
+    {
+      id: 104,
+      title: "Nike Air Force 1 07 Triple White Sneakers",
+      handle: "nike-air-force-1",
+      price: 7495,
+      compare_at_price: 8995,
+      discount_percent: 17,
+      image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400",
+      sold_percent: 71
+    },
+    {
+      id: 106,
+      title: "Noise ColorFit Pro 5 Smartwatch Jet Black",
+      handle: "noise-colorfit-pro-5",
+      price: 3499,
+      compare_at_price: 5999,
+      discount_percent: 41,
+      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
+      sold_percent: 92
+    },
+    {
+      id: 108,
+      title: "Minimalist Heavyweight Graphic Tee 240 GSM",
+      handle: "minimalist-graphic-tee",
+      price: 1299,
+      compare_at_price: 1999,
+      discount_percent: 35,
+      image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400",
+      sold_percent: 65
+    }
+  ]);
+
   useEffect(() => {
     loadData();
   }, []);
@@ -646,6 +690,126 @@ export default function AdminSalesPage() {
           </div>
         </div>
 
+      </div>
+
+      {/* ⚡ LIVE FLASH SALE DEALS MANAGER CARD */}
+      <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-red-950 border border-red-900/50 rounded-3xl p-6 shadow-2xl text-white space-y-5">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <div className="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/40 px-3 py-1 rounded-full text-red-400 font-black text-[10px] uppercase tracking-wider mb-1">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+              <span>⚡ Storefront Flash Sale Control</span>
+            </div>
+            <h2 className="text-xl font-black text-white">Live Flash Sale &amp; Lightning Deals Products</h2>
+            <p className="text-xs text-slate-400 font-medium">Select products, edit offer prices &amp; discount percentages appearing on storefront homepage</p>
+          </div>
+
+          <button
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                localStorage.setItem("skipd_flash_sale_products", JSON.stringify(flashSaleDeals));
+                window.dispatchEvent(new Event("skipd_flash_sale_updated"));
+              }
+              showToast("⚡ Live Flash Sale deals published & updated on storefront!");
+            }}
+            className="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs px-5 py-3 rounded-2xl transition shadow-lg cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
+          >
+            <span>⚡ Save &amp; Publish Live Deals</span>
+          </button>
+        </div>
+
+        {/* 4 Editable Flash Sale Deal Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
+          {flashSaleDeals.map((deal, idx) => (
+            <div key={deal.id || idx} className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+              
+              <div className="flex items-center justify-between text-[10px] font-black text-slate-400 border-b border-slate-800 pb-2">
+                <span>SLOT #{idx + 1}</span>
+                <span className="bg-red-600 text-white px-2 py-0.5 rounded font-bold uppercase">
+                  -{deal.discount_percent}% OFF
+                </span>
+              </div>
+
+              {/* Product Title Select or Input */}
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-slate-400">Product Title &amp; Handle</label>
+                <input
+                  type="text"
+                  value={deal.title}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    const updated = [...flashSaleDeals];
+                    updated[idx] = {
+                      ...deal,
+                      title: val,
+                      handle: val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+                    };
+                    setFlashSaleDeals(updated);
+                  }}
+                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-amber-500"
+                />
+              </div>
+
+              {/* Price & Discount Inputs */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-0.5">Deal Price (₹)</label>
+                  <input
+                    type="number"
+                    value={deal.price}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value) || 0;
+                      const updated = [...flashSaleDeals];
+                      const mrp = deal.compare_at_price || val * 1.5;
+                      const offPct = mrp > val && mrp > 0 ? Math.round(((mrp - val) / mrp) * 100) : 30;
+                      updated[idx] = { ...deal, price: val, discount_percent: offPct };
+                      setFlashSaleDeals(updated);
+                    }}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 font-black text-amber-400 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-bold text-slate-400 block mb-0.5">M.R.P Price (₹)</label>
+                  <input
+                    type="number"
+                    value={deal.compare_at_price}
+                    onChange={(e) => {
+                      const val = parseFloat(e.target.value) || 0;
+                      const updated = [...flashSaleDeals];
+                      const offPct = val > deal.price && val > 0 ? Math.round(((val - deal.price) / val) * 100) : 30;
+                      updated[idx] = { ...deal, compare_at_price: val, discount_percent: offPct };
+                      setFlashSaleDeals(updated);
+                    }}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 font-bold text-slate-300 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Sold % Slider */}
+              <div className="space-y-1 pt-1">
+                <div className="flex justify-between text-[10px] font-bold text-slate-400">
+                  <span>Stock Claimed</span>
+                  <span className="text-amber-400 font-extrabold">{deal.sold_percent}% Sold</span>
+                </div>
+                <input
+                  type="range"
+                  min="10"
+                  max="99"
+                  value={deal.sold_percent}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 50;
+                    const updated = [...flashSaleDeals];
+                    updated[idx] = { ...deal, sold_percent: val };
+                    setFlashSaleDeals(updated);
+                  }}
+                  className="w-full accent-amber-500 cursor-pointer"
+                />
+              </div>
+
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* 📦 CREATE CAMPAIGN MODAL */}

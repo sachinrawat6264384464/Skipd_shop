@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { getCartStore, saveCartStore } from "lib/utils";
 
 interface FlashSaleItem {
   id: number;
@@ -15,6 +18,7 @@ interface FlashSaleItem {
 }
 
 export function FlashSaleBanner() {
+  const router = useRouter();
   const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 12 });
 
   const [flashItems, setFlashItems] = useState<FlashSaleItem[]>([
@@ -61,13 +65,23 @@ export function FlashSaleBanner() {
   ]);
 
   useEffect(() => {
-    // Fetch live sales/products from PostgreSQL Database
+    // Fetch live sales/products from localStorage & PostgreSQL Database
     async function loadDbDeals() {
       try {
+        if (typeof window !== "undefined") {
+          const customFlashSales = localStorage.getItem("skipd_flash_sale_products");
+          if (customFlashSales) {
+            const parsed = JSON.parse(customFlashSales);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              setFlashItems(parsed);
+              return;
+            }
+          }
+        }
+
         const { getApiBaseUrl } = await import("lib/api");
         const apiBase = getApiBaseUrl().replace(/\/+$/, "");
         
-        // 1. Try fetching active sales events with 2.5s timeout
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 2500);
 
@@ -97,6 +111,14 @@ export function FlashSaleBanner() {
     }
 
     loadDbDeals();
+
+    const handleSync = () => loadDbDeals();
+    window.addEventListener("skipd_flash_sale_updated", handleSync);
+    window.addEventListener("storage", handleSync);
+    return () => {
+      window.removeEventListener("skipd_flash_sale_updated", handleSync);
+      window.removeEventListener("storage", handleSync);
+    };
   }, []);
 
   useEffect(() => {
@@ -111,6 +133,50 @@ export function FlashSaleBanner() {
 
     return () => clearInterval(timer);
   }, []);
+
+  const handleClaimDeal = (e: React.MouseEvent, item: FlashSaleItem) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      const existing = getCartStore();
+      const itemToAdd = {
+        id: item.id,
+        handle: item.handle,
+        title: item.title,
+        price: item.price,
+        compare_at_price: item.compare_at_price,
+        quantity: 1,
+        image: item.image
+      };
+
+      const idx = existing.findIndex((i: any) => String(i.id) === String(item.id) || i.handle === item.handle);
+      let updated;
+      if (idx > -1) {
+        existing[idx].quantity = (existing[idx].quantity || 1) + 1;
+        updated = [...existing];
+      } else {
+        updated = [...existing, itemToAdd];
+      }
+
+      saveCartStore(updated);
+
+      // Dispatch real cart sync events
+      window.dispatchEvent(new Event("skipd_cart_updated"));
+      window.dispatchEvent(new Event("skipd_cart_changed"));
+
+      toast.success(`⚡ Flash Deal Claimed!`, {
+        description: `Added ${item.title} to cart at ₹${item.price.toLocaleString("en-IN")}. Opening product...`,
+        duration: 3000
+      });
+
+      setTimeout(() => {
+        router.push(`/product/${item.handle}`);
+      }, 500);
+    } catch (err) {
+      router.push(`/product/${item.handle}`);
+    }
+  };
 
   const formatDigit = (num: number) => String(num).padStart(2, "0");
 
@@ -162,7 +228,7 @@ export function FlashSaleBanner() {
           >
             <div>
               {/* Product Image + Discount Pill */}
-              <div className="relative aspect-square rounded-xl overflow-hidden bg-slate-950 mb-3 border border-slate-800">
+              <Link href={`/product/${item.handle}`} className="block relative aspect-square rounded-xl overflow-hidden bg-slate-950 mb-3 border border-slate-800 cursor-pointer">
                 <img
                   src={item.image}
                   alt={item.title}
@@ -171,10 +237,10 @@ export function FlashSaleBanner() {
                 <span className="absolute top-2 left-2 bg-red-600 text-white font-black text-[10px] px-2 py-0.5 rounded-md shadow-md uppercase">
                   -{item.discount_percent}% OFF
                 </span>
-              </div>
+              </Link>
 
               <h3 className="font-extrabold text-white text-xs truncate group-hover:text-amber-400 transition">
-                {item.title}
+                <Link href={`/product/${item.handle}`}>{item.title}</Link>
               </h3>
 
               {/* Price Row */}
@@ -201,12 +267,12 @@ export function FlashSaleBanner() {
                 />
               </div>
 
-              <Link
-                href={`/product/${item.handle}`}
-                className="block w-full py-2 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md"
+              <button
+                onClick={(e) => handleClaimDeal(e, item)}
+                className="w-full py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1 active:scale-95"
               >
-                Claim Deal &rsaquo;
-              </Link>
+                ⚡ Claim Deal &rsaquo;
+              </button>
             </div>
 
           </div>

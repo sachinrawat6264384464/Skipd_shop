@@ -43,23 +43,21 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
   // 1. Initial Load from LocalStorage + DB Sync
   const loadWishlist = useCallback(async () => {
-    let localItems: WishlistItem[] = [];
-    if (typeof window !== "undefined") {
-      try {
-        const stored = localStorage.getItem("skipd_wishlist_items") || localStorage.getItem("skipd_guest_wishlist");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) localItems = parsed;
-        }
-      } catch (e) {}
+    const token = getToken();
+
+    // 🔒 UNAUTHENTICATED / LOGGED OUT: Reset Wishlist to empty array []
+    if (!token) {
+      setWishlist([]);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("skipd_wishlist_items");
+          localStorage.removeItem("skipd_guest_wishlist");
+        } catch (e) {}
+      }
+      return;
     }
 
-    setWishlist(localItems);
-
-    const token = getToken();
-    if (!token) return;
-
-    // Sync with PostgreSQL DB when logged in
+    // 🔓 LOGGED IN: Fetch real user wishlist items from PostgreSQL DB
     try {
       const res = await fetch(`${getApiBase()}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -77,22 +75,16 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           category: w.category || undefined
         }));
 
-        // Merge DB items with LocalStorage items cleanly
-        const mergedMap = new Map<string, WishlistItem>();
-        [...localItems, ...dbItems].forEach(it => {
-          if (it && it.id) {
-            mergedMap.set(String(it.id), it);
-          }
-        });
-        const finalWishlist = Array.from(mergedMap.values());
-        setWishlist(finalWishlist);
-
+        setWishlist(dbItems);
         if (typeof window !== "undefined") {
-          localStorage.setItem("skipd_wishlist_items", JSON.stringify(finalWishlist));
+          localStorage.setItem(`skipd_wishlist_${token.slice(0, 15)}`, JSON.stringify(dbItems));
         }
+      } else {
+        setWishlist([]);
       }
     } catch (e) {
-      console.warn("[Wishlist] DB load fallback to local storage:", e);
+      console.warn("[Wishlist] DB load error:", e);
+      setWishlist([]);
     }
   }, []);
 

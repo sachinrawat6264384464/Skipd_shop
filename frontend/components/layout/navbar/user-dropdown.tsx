@@ -38,8 +38,13 @@ export function UserAccountDropdown() {
   const handleLogout = () => {
     localStorage.removeItem("skipd_token");
     localStorage.removeItem("skipd_user");
+    localStorage.removeItem("skipd_wishlist_items");
+    localStorage.removeItem("skipd_guest_wishlist");
     setUser(null);
     setIsOpen(false);
+    window.dispatchEvent(new Event("skipd_auth_changed"));
+    window.dispatchEvent(new Event("skipd_wishlist_updated"));
+    window.dispatchEvent(new Event("skipd_wishlist_changed"));
     window.location.href = "/";
   };
 
