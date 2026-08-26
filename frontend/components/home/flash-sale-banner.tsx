@@ -17,7 +17,7 @@ interface FlashSaleItem {
 export function FlashSaleBanner() {
   const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 12 });
 
-  const flashItems: FlashSaleItem[] = [
+  const [flashItems, setFlashItems] = useState<FlashSaleItem[]>([
     {
       id: 101,
       title: "boAt Rockerz 450 Pro Bluetooth Headphones",
@@ -58,7 +58,64 @@ export function FlashSaleBanner() {
       image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400",
       sold_percent: 65
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    // Fetch live sales/products from PostgreSQL Database
+    async function loadDbDeals() {
+      try {
+        const { getApiBaseUrl } = await import("lib/api");
+        const apiBase = getApiBaseUrl().replace(/\/+$/, "");
+        
+        // 1. Try fetching active sales events
+        const salesRes = await fetch(`${apiBase}/sales`);
+        if (salesRes.ok) {
+          const salesData = await salesRes.json();
+          if (Array.isArray(salesData) && salesData.length > 0 && salesData[0].products?.length > 0) {
+            const dbDealItems: FlashSaleItem[] = salesData[0].products.slice(0, 4).map((sp: any, idx: number) => ({
+              id: sp.product_id || idx + 1,
+              title: sp.title,
+              handle: sp.handle || `product-${sp.product_id}`,
+              price: sp.sale_price || 999,
+              compare_at_price: sp.original_price || sp.sale_price * 1.4,
+              discount_percent: Math.round(((sp.original_price - sp.sale_price) / (sp.original_price || 1)) * 100) || 30,
+              image: sp.image,
+              sold_percent: 75 + (idx * 5)
+            }));
+            setFlashItems(dbDealItems);
+            return;
+          }
+        }
+
+        // 2. Fallback to querying top discount products from DB
+        const prodRes = await fetch(`${apiBase}/products`);
+        if (prodRes.ok) {
+          const prods = await prodRes.json();
+          if (Array.isArray(prods) && prods.length > 0) {
+            const dbDeals: FlashSaleItem[] = prods.slice(0, 4).map((p: any, idx: number) => {
+              const orig = p.compare_at_price || Math.round(p.price * 1.35);
+              const disc = Math.round(((orig - p.price) / orig) * 100);
+              return {
+                id: p.id,
+                title: p.title,
+                handle: p.handle || `product-${p.id}`,
+                price: p.price,
+                compare_at_price: orig,
+                discount_percent: disc > 0 ? disc : 25,
+                image: (p.images && p.images[0]) || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
+                sold_percent: 65 + (idx * 7)
+              };
+            });
+            setFlashItems(dbDeals);
+          }
+        }
+      } catch (e) {
+        console.warn("Using fallback flash sale deals:", e);
+      }
+    }
+
+    loadDbDeals();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {

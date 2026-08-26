@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, or_
 from pydantic import BaseModel
 
 from app.core.database import get_db
@@ -143,26 +143,29 @@ async def remove_abandoned_item(
     if payload.item_type == "cart":
         res = await db.execute(
             select(CartItem).where(
-                CartItem.id == payload.item_id,
-                CartItem.user_id == current_user.id
+                CartItem.user_id == current_user.id,
+                or_(CartItem.id == payload.item_id, CartItem.product_id == payload.item_id)
             )
         )
-        item = res.scalars().first()
-        if item:
+        items = res.scalars().all()
+        for item in items:
             await db.delete(item)
+        if items:
             await db.commit()
             return {"success": True, "message": "Item removed from cart successfully"}
+
     elif payload.item_type == "wishlist":
         res = await db.execute(
             select(WishlistItem).where(
-                WishlistItem.id == payload.item_id,
-                WishlistItem.user_id == current_user.id
+                WishlistItem.user_id == current_user.id,
+                or_(WishlistItem.id == payload.item_id, WishlistItem.product_id == payload.item_id)
             )
         )
-        item = res.scalars().first()
-        if item:
+        items = res.scalars().all()
+        for item in items:
             await db.delete(item)
+        if items:
             await db.commit()
             return {"success": True, "message": "Item removed from wishlist successfully"}
 
-    raise HTTPException(status_code=404, detail="Item not found or already removed")
+    return {"success": True, "message": "Item removed"}

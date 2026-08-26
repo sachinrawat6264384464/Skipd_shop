@@ -2,17 +2,22 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { getProductImageByTitle, getApiBaseUrl } from "lib/api";
 
 export function AbandonedReminderModal() {
   const router = useRouter();
+  const pathname = usePathname();
+
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [removing, setRemoving] = useState(false);
   const [reminderData, setReminderData] = useState<any>(null);
 
   useEffect(() => {
+    // Hide modal on admin routes
+    if (pathname?.startsWith("/admin")) return;
+
     checkAbandonedReminder();
 
     // Poll every 15 seconds to trigger abandoned modal while user browses
@@ -21,16 +26,15 @@ export function AbandonedReminderModal() {
     }, 15000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [pathname]);
 
   const checkAbandonedReminder = async () => {
     if (typeof window === "undefined") return;
+    if (pathname?.startsWith("/admin")) return;
 
-    // Check all possible token keys stored upon login
     const token = localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token");
     if (!token) return;
 
-    // Check if snoozed
     const snoozedUntil = sessionStorage.getItem("reminder_snoozed_until");
     if (snoozedUntil && Date.now() < Number(snoozedUntil)) {
       return;
@@ -56,7 +60,6 @@ export function AbandonedReminderModal() {
   };
 
   const handleRemindLater = () => {
-    // Snooze for 10 minutes
     const snoozeTime = Date.now() + 10 * 60 * 1000;
     sessionStorage.setItem("reminder_snoozed_until", snoozeTime.toString());
     setIsOpen(false);
@@ -75,27 +78,31 @@ export function AbandonedReminderModal() {
     const token = typeof window !== "undefined"
       ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
       : null;
-    if (!token || !reminderData) return;
 
     setRemoving(true);
     try {
-      const apiBase = getApiBaseUrl().replace(/\/+$/, "");
-      await fetch(`${apiBase}/abandoned-reminders/remove`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          item_id: reminderData.item_id,
-          item_type: reminderData.item_type
-        })
-      });
-      setIsOpen(false);
+      if (token && reminderData) {
+        const apiBase = getApiBaseUrl().replace(/\/+$/, "");
+        await fetch(`${apiBase}/abandoned-reminders/remove`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            item_id: reminderData.item_id,
+            item_type: reminderData.item_type
+          })
+        });
+      }
     } catch (e) {
       console.error("Error removing item from reminder:", e);
     } finally {
+      // Snooze reminder and close modal cleanly
+      const snoozeTime = Date.now() + 60 * 60 * 1000;
+      sessionStorage.setItem("reminder_snoozed_until", snoozeTime.toString());
       setRemoving(false);
+      setIsOpen(false);
     }
   };
 
