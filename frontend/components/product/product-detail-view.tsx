@@ -1048,10 +1048,117 @@ const SUB_NAV_ITEMS = [
               </div>
             )}
 
+            {/* 📋 Complete Technical Specifications & Enterprise Attributes Breakdown Card */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
+              <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
+                <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
+                  <span>⚙️</span> Technical Specifications &amp; Attributes
+                </h4>
+                <span className="bg-emerald-50 text-emerald-700 font-extrabold text-[10px] px-2 py-0.5 rounded-full border border-emerald-200">
+                  Full 32-Field Specs
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-[11px]">
+                {(product as any).brand && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Brand</span>
+                    <span className="font-black text-gray-900">{(product as any).brand}</span>
+                  </div>
+                )}
+                {(product as any).sub_category && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Sub Category</span>
+                    <span className="font-bold text-gray-800">{(product as any).sub_category}</span>
+                  </div>
+                )}
+                {(product as any).sku && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">SKU</span>
+                    <span className="font-mono font-bold text-gray-900">{(product as any).sku}</span>
+                  </div>
+                )}
+                {(product as any).barcode && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Barcode / EAN</span>
+                    <span className="font-mono font-bold text-gray-800">{(product as any).barcode}</span>
+                  </div>
+                )}
+                {(product as any).color && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Color Variant</span>
+                    <span className="font-extrabold text-gray-900">{(product as any).color}</span>
+                  </div>
+                )}
+                {(product as any).size && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Size Variant</span>
+                    <span className="font-extrabold text-gray-900">{(product as any).size}</span>
+                  </div>
+                )}
+                {(product as any).material && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Material &amp; Fabric</span>
+                    <span className="font-bold text-gray-800">{(product as any).material}</span>
+                  </div>
+                )}
+                {(product as any).weight != null && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Weight (kg)</span>
+                    <span className="font-bold text-gray-900">{(product as any).weight} kg</span>
+                  </div>
+                )}
+                {(product as any).dimensions && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Dimensions (L x W x H)</span>
+                    <span className="font-bold text-gray-800">{(product as any).dimensions} cm</span>
+                  </div>
+                )}
+                {(product as any).gst_rate != null && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">GST Rate %</span>
+                    <span className="font-black text-emerald-700">{(product as any).gst_rate}% GST</span>
+                  </div>
+                )}
+                {(product as any).hsn_code && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">HSN Code</span>
+                    <span className="font-mono font-bold text-gray-800">{(product as any).hsn_code}</span>
+                  </div>
+                )}
+                {(product as any).country_of_origin && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Country of Origin</span>
+                    <span className="font-bold text-gray-900">{(product as any).country_of_origin}</span>
+                  </div>
+                )}
+                {(product as any).warehouse && (
+                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100 col-span-2">
+                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Fulfillment Warehouse</span>
+                    <span className="font-extrabold text-gray-900">{(product as any).warehouse}</span>
+                  </div>
+                )}
+              </div>
+
+              {(product as any).video_url && (
+                <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
+                  <span className="font-bold text-gray-700">Product Video Demo</span>
+                  <a
+                    href={(product as any).video_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="bg-red-50 hover:bg-red-100 text-red-700 font-extrabold px-3 py-1 rounded-xl border border-red-200 transition text-[10px] flex items-center gap-1"
+                  >
+                    <span>▶ Watch Video</span>
+                  </a>
+                </div>
+              )}
+            </div>
+
             {/* 🏆 Brand Trust Card */}
             <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-3 space-y-1 text-xs">
               <div className="flex items-center justify-between">
-                <span className="font-black text-gray-900 text-sm">boAt Official Retail</span>
+                <span className="font-black text-gray-900 text-sm">{(product as any).brand || "Skipd"} Official Retail</span>
                 <span className="bg-emerald-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded">Verified</span>
               </div>
               <p className="text-[11px] text-gray-700 font-medium">⭐ 85% Positive Ratings (from 100K+ customers)</p>
