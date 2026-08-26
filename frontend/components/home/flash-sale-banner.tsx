@@ -67,8 +67,13 @@ export function FlashSaleBanner() {
         const { getApiBaseUrl } = await import("lib/api");
         const apiBase = getApiBaseUrl().replace(/\/+$/, "");
         
-        // 1. Try fetching active sales events
-        const salesRes = await fetch(`${apiBase}/sales`);
+        // 1. Try fetching active sales events with 2.5s timeout
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 2500);
+
+        const salesRes = await fetch(`${apiBase}/sales`, { signal: controller.signal });
+        clearTimeout(timer);
+
         if (salesRes.ok) {
           const salesData = await salesRes.json();
           if (Array.isArray(salesData) && salesData.length > 0 && salesData[0].products?.length > 0) {
@@ -84,29 +89,6 @@ export function FlashSaleBanner() {
             }));
             setFlashItems(dbDealItems);
             return;
-          }
-        }
-
-        // 2. Fallback to querying top discount products from DB
-        const prodRes = await fetch(`${apiBase}/products`);
-        if (prodRes.ok) {
-          const prods = await prodRes.json();
-          if (Array.isArray(prods) && prods.length > 0) {
-            const dbDeals: FlashSaleItem[] = prods.slice(0, 4).map((p: any, idx: number) => {
-              const orig = p.compare_at_price || Math.round(p.price * 1.35);
-              const disc = Math.round(((orig - p.price) / orig) * 100);
-              return {
-                id: p.id,
-                title: p.title,
-                handle: p.handle || `product-${p.id}`,
-                price: p.price,
-                compare_at_price: orig,
-                discount_percent: disc > 0 ? disc : 25,
-                image: (p.images && p.images[0]) || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-                sold_percent: 65 + (idx * 7)
-              };
-            });
-            setFlashItems(dbDeals);
           }
         }
       } catch (e) {
