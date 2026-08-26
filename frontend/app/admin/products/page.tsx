@@ -1065,55 +1065,65 @@ export default function AdminProductsPage() {
                 <table className="w-full text-left text-xs text-gray-700">
                   <thead className="bg-gray-50 text-gray-400 font-extrabold uppercase text-[10px] border-b border-gray-100 tracking-wider">
                     <tr>
-                      <th className="px-6 py-4">Product Info</th>
-                      <th className="px-6 py-4">Category</th>
-                      <th className="px-6 py-4">Price &amp; Off %</th>
-                      <th className="px-6 py-4">Stock Level</th>
-                      <th className="px-6 py-4">New Arrival Drop</th>
-                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4">Product Info &amp; SKU</th>
+                      <th className="px-6 py-4">Category &amp; Brand</th>
+                      <th className="px-6 py-4">Price &amp; Cost</th>
+                      <th className="px-6 py-4">Stock &amp; Warehouse</th>
+                      <th className="px-6 py-4">Variant &amp; Tax</th>
+                      <th className="px-6 py-4">New Drop &amp; Status</th>
                       <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 font-medium">
                     {paginatedProducts.map((p) => {
                       const stock = p.stock_quantity ?? 100;
+                      const lowStockLimit = p.low_stock_threshold ?? 10;
                       const isOutOfStock = stock <= 0;
-                      const isLowStock = stock > 0 && stock <= 15;
+                      const isLowStock = stock > 0 && stock <= lowStockLimit;
                       const price = Number(p.price || 0);
                       const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
+                      const costPrice = p.cost_price ? Number(p.cost_price) : null;
                       const itemOffPct = (comparePrice && comparePrice > price) ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
                       const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
                       const isNewArrival = newArrivalDbIds.includes(Number(p.id));
 
                       return (
                         <tr key={p.id} className="hover:bg-gray-50/80 transition group">
+                          {/* Product Info & SKU / Barcode */}
                           <td className="px-6 py-4 flex items-center gap-3.5">
                             <img
                               src={image}
                               alt={p.title}
                               className="w-12 h-12 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0 group-hover:scale-105 transition"
                             />
-                            <div className="space-y-0.5">
-                              <p className="font-black text-gray-900 text-sm leading-tight">{p.title}</p>
-                              <div className="flex items-center gap-2">
-                                <span className="text-[10px] text-gray-400 font-mono">ID: #{p.id}</span>
-                                <Link
-                                  href={`/product/${p.handle}`}
-                                  target="_blank"
-                                  className="text-[10px] text-emerald-600 font-bold hover:underline"
-                                >
-                                  View on Store ↗
-                                </Link>
+                            <div className="space-y-0.5 min-w-0">
+                              <p className="font-black text-gray-900 text-sm leading-tight truncate max-w-[200px]" title={p.title}>{p.title}</p>
+                              <div className="flex items-center gap-2 text-[10px] font-mono text-gray-400">
+                                <span>SKU: {p.sku || `SKU-${p.id}`}</span>
+                                {p.barcode && <span>• Barcode: {p.barcode}</span>}
                               </div>
+                              <Link
+                                href={`/product/${p.handle}`}
+                                target="_blank"
+                                className="text-[10px] text-emerald-600 font-bold hover:underline block"
+                              >
+                                View on Store ↗
+                              </Link>
                             </div>
                           </td>
 
+                          {/* Category, Sub Category & Brand */}
                           <td className="px-6 py-4">
-                            <span className="bg-gray-100 text-gray-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-gray-200 capitalize">
-                              {p.category_slug || p.category?.name || "General"}
-                            </span>
+                            <div className="space-y-1">
+                              <span className="bg-gray-100 text-gray-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-gray-200 capitalize block w-fit">
+                                {p.category_slug || p.category?.name || "General"}
+                              </span>
+                              {p.sub_category && <p className="text-[10px] text-gray-500 font-medium">{p.sub_category}</p>}
+                              {p.brand && <p className="text-[10px] font-black text-emerald-700">🏷️ {p.brand}</p>}
+                            </div>
                           </td>
 
+                          {/* Price, Compare Price & Cost Price */}
                           <td className="px-6 py-4">
                             <div>
                               <div className="flex items-center gap-2">
@@ -1129,22 +1139,51 @@ export default function AdminProductsPage() {
                                   MRP: ₹{comparePrice.toLocaleString("en-IN")}.00
                                 </p>
                               )}
+                              {costPrice && (
+                                <p className="text-[10px] text-gray-500 font-semibold mt-0.5">
+                                  Cost: ₹{costPrice.toLocaleString("en-IN")}
+                                </p>
+                              )}
                             </div>
                           </td>
 
+                          {/* Stock Level, Low Stock Threshold & Warehouse */}
                           <td className="px-6 py-4">
-                            <span className={`font-black text-xs ${
-                              isOutOfStock ? "text-red-600" : isLowStock ? "text-amber-600" : "text-gray-900"
-                            }`}>
-                              {stock} units
-                            </span>
+                            <div className="space-y-0.5">
+                              <span className={`font-black text-xs block ${
+                                isOutOfStock ? "text-red-600" : isLowStock ? "text-amber-600" : "text-gray-900"
+                              }`}>
+                                {stock} units
+                              </span>
+                              <p className="text-[10px] text-gray-400 font-medium">Alert &lt; {lowStockLimit}</p>
+                              <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200 font-bold block w-fit">
+                                🏬 {p.warehouse || "Main FC"}
+                              </span>
+                            </div>
                           </td>
 
-                          {/* ⚡ NEW ARRIVAL TOGGLE SWITCH BUTTON */}
+                          {/* Variant Attributes (Color/Size) & Tax (GST/HSN) */}
                           <td className="px-6 py-4">
+                            <div className="space-y-0.5 text-[11px]">
+                              {(p.color || p.size) ? (
+                                <p className="font-bold text-gray-800">
+                                  🎨 {p.color || "-"} {p.size ? `/ ${p.size}` : ""}
+                                </p>
+                              ) : (
+                                <p className="text-gray-400 text-[10px]">Standard Variant</p>
+                              )}
+                              <p className="text-[10px] text-gray-500 font-mono">
+                                HSN: {p.hsn_code || "8518"} | GST: {p.gst_rate || 18}%
+                              </p>
+                              {p.weight && <p className="text-[10px] text-gray-400">Weight: {p.weight} kg</p>}
+                            </div>
+                          </td>
+
+                          {/* New Arrival Drop & Status */}
+                          <td className="px-6 py-4 space-y-1.5">
                             <button
                               onClick={() => handleToggleNewArrival(p)}
-                              className={`px-3 py-1.5 rounded-xl text-[10px] font-black border transition cursor-pointer flex items-center gap-1.5 ${
+                              className={`px-3 py-1 rounded-xl text-[10px] font-black border transition cursor-pointer flex items-center gap-1.5 ${
                                 isNewArrival
                                   ? "bg-emerald-500 text-white border-emerald-400 shadow-md shadow-emerald-500/20"
                                   : "bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
@@ -1153,19 +1192,17 @@ export default function AdminProductsPage() {
                             >
                               <span>{isNewArrival ? "✨ New Drop ON" : "⚪ Normal Item"}</span>
                             </button>
-                          </td>
 
-                          <td className="px-6 py-4">
                             {isOutOfStock ? (
-                              <span className="bg-red-100 text-red-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-red-200">
+                              <span className="bg-red-100 text-red-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-red-200 block w-fit">
                                 🚫 OUT OF STOCK
                               </span>
                             ) : isLowStock ? (
-                              <span className="bg-amber-100 text-amber-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-amber-200">
+                              <span className="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-amber-200 block w-fit">
                                 ⚠️ LOW STOCK ({stock})
                               </span>
                             ) : (
-                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-emerald-200">
+                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-emerald-200 block w-fit">
                                 ✓ IN STOCK
                               </span>
                             )}
