@@ -546,8 +546,8 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           ✕
         </button>
 
-        {/* 📘 Left Blue Hero Panel (Compact on Mobile, Full on Tablet/Desktop) */}
-        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white p-4 sm:p-6 md:p-8 md:w-2/5 flex flex-col justify-between relative overflow-hidden shrink-0">
+        {/* 🟢 Left Emerald Hero Panel */}
+        <div className="bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white p-4 sm:p-6 md:p-8 md:w-2/5 flex flex-col justify-between relative overflow-hidden shrink-0">
           <div className="space-y-2 sm:space-y-3 z-10">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-black leading-tight">
               {isForgotView
@@ -562,7 +562,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 ? "Create Account"
                 : "Login"}
             </h2>
-            <p className="text-blue-100 text-[11px] sm:text-xs md:text-sm leading-relaxed font-medium">
+            <p className="text-emerald-100 text-[11px] sm:text-xs md:text-sm leading-relaxed font-medium">
               {isForgotView
                 ? forgotStep === 1
                   ? "Step 1: Enter your registered Email to receive OTP"
@@ -572,7 +572,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 : step === 2
                 ? `6-digit verification code sent to ${emailOrPhone}`
                 : isRegisterView
-                ? "Sign up with mobile or email for E-COM Store"
+                ? "Sign up with mobile or email for Skipd Store"
                 : "Get access to your Orders, Wishlist & Tracking"}
             </p>
           </div>
@@ -582,10 +582,10 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
               <span className="bg-emerald-400 text-black font-extrabold text-[10px] px-2 py-0.5 rounded uppercase">
                 ✓ VERIFIED CUSTOMER AUTH
               </span>
-              <p className="text-[11px] text-blue-100 font-medium">🔒 256-bit Encrypted SSL Commerce Portal</p>
+              <p className="text-[11px] text-emerald-100 font-medium">🔒 256-bit Encrypted SSL Commerce Portal</p>
             </div>
             <div className="w-14 h-14 md:w-20 md:h-20 mx-auto opacity-90 flex items-center justify-center text-3xl md:text-4xl">
-              📦
+              🛍️
             </div>
           </div>
         </div>
@@ -818,7 +818,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition shadow-sm cursor-pointer uppercase tracking-wider"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition shadow-md shadow-emerald-600/20 cursor-pointer uppercase tracking-wider"
               >
                 {loading
                   ? "Processing..."
