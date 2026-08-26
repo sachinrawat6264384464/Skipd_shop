@@ -1129,9 +1129,7 @@ export async function fetchAdminOrders() {
   try {
     const res = await fetch(`${API_BASE_URL}/admin/orders`, { cache: "no-store" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Fetch admin orders offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1139,9 +1137,7 @@ export async function fetchAdminCustomers() {
   try {
     const res = await fetch(`${API_BASE_URL}/users/admin/all`, { cache: "no-store" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Fetch admin customers offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1152,9 +1148,7 @@ export async function fetchAdminQueries() {
       const data = await res.json();
       return Array.isArray(data) ? data : (data.queries || []);
     }
-  } catch (e) {
-    console.warn("[API SDK] Fetch admin queries offline fallback");
-  }
+  } catch (e) { }
   return [];
 }
 
@@ -1166,9 +1160,7 @@ export async function submitCustomerQuery(queryData: any) {
       body: JSON.stringify(queryData)
     });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Submit customer query offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1180,9 +1172,7 @@ export async function updateQueryStatus(id: number | string, status: string) {
       body: JSON.stringify({ status })
     });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Update query status offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1194,12 +1184,8 @@ export async function deleteAdminUser(id: number | string, email?: string) {
       purgeLocalCustomerData(email || String(id));
       return data;
     }
-  } catch (e) {
-    console.warn("[API SDK] Delete admin user offline fallback");
-  }
-
-  purgeLocalCustomerData(email || String(id));
-  return { status: "success", message: `User #${id} and all schema data deleted` };
+  } catch (e) { }
+  return null;
 }
 
 export function purgeLocalCustomerData(emailOrId: string) {
@@ -1266,9 +1252,7 @@ export async function fetchAdminReviews() {
   try {
     const res = await fetch(`${API_BASE_URL}/reviews/admin/all`, { cache: "no-store" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Fetch admin reviews offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1276,10 +1260,8 @@ export async function deleteAdminReview(id: number) {
   try {
     const res = await fetch(`${API_BASE_URL}/reviews/admin/${id}`, { method: "DELETE" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Delete admin review offline fallback");
-  }
-  return { status: "success" };
+  } catch (e) { }
+  return null;
 }
 
 export async function loginCustomerUser(email: string, password?: string) {
@@ -1300,9 +1282,7 @@ export async function fetchAdminPayments() {
   try {
     const res = await fetch(`${API_BASE_URL}/payments/admin/all`, { cache: "no-store" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Fetch admin payments offline fallback");
-  }
+  } catch (e) { }
   return [];
 }
 
@@ -1310,9 +1290,7 @@ export async function fetchAdminShipments() {
   try {
     const res = await fetch(`${API_BASE_URL}/shipping/admin/all`, { cache: "no-store" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Fetch admin shipments offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1320,9 +1298,7 @@ export async function fetchCoupons() {
   try {
     const res = await fetch(`${API_BASE_URL}/coupons/all`, { cache: "no-store" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Fetch coupons offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1334,9 +1310,7 @@ export async function createCoupon(data: any) {
       body: JSON.stringify(data)
     });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Create coupon offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1399,9 +1373,7 @@ export async function fetchAdminGiftCards() {
   try {
     const res = await fetch(`${API_BASE_URL}/gift-cards/admin/all`, { cache: "no-store" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Fetch admin gift cards offline fallback");
-  }
+  } catch (e) { }
   return [];
 }
 
@@ -1413,9 +1385,7 @@ export async function createAdminGiftCard(payload: { code?: string; amount: numb
       body: JSON.stringify(payload)
     });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Create gift card offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
@@ -1423,9 +1393,7 @@ export async function fetchAdminRewardsUsers() {
   try {
     const res = await fetch(`${API_BASE_URL}/rewards/admin/all-users`, { cache: "no-store" });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Fetch rewards users offline fallback");
-  }
+  } catch (e) { }
   return [];
 }
 
@@ -1437,9 +1405,7 @@ export async function creditUserSuperCoins(email: string, coins: number) {
       body: JSON.stringify({ email, coins })
     });
     if (res.ok) return await res.json();
-  } catch (e) {
-    console.warn("[API SDK] Credit user coins offline fallback");
-  }
+  } catch (e) { }
   return null;
 }
 
