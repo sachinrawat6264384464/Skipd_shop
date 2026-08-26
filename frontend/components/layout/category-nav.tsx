@@ -37,27 +37,49 @@ export function CategoryNav() {
   const [categories, setCategories] = useState<{ name: string; slug: string; image_url: string }[]>([]);
 
   useEffect(() => {
-    async function loadActiveCategories() {
+    async function loadActiveCategoriesWithProducts() {
       try {
-        const activeMap = new Map<string, { name: string; slug: string; image_url: string }>();
+        // 1. Fetch active products to identify categories that ACTUALLY contain items
+        const prods = await fetchProducts().catch(() => []);
+        const categoriesWithProducts = new Set<string>();
 
-        // 1. Fetch categories directly from PostgreSQL DB
-        const dbCats = await fetchCategories().catch(() => []);
-        if (Array.isArray(dbCats) && dbCats.length > 0) {
-          dbCats.forEach((c: any) => {
-            if (c.status !== "Inactive" && c.slug) {
-              activeMap.set(c.slug, {
-                name: c.name,
-                slug: c.slug,
-                image_url: getCategoryImageUrl(c)
-              });
+        if (Array.isArray(prods) && prods.length > 0) {
+          prods.forEach((p: any) => {
+            const catName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category);
+            const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
+            if (catSlug) {
+              const lowerSlug = String(catSlug).toLowerCase();
+              categoriesWithProducts.add(lowerSlug);
+              categoriesWithProducts.add(lowerSlug.split("-")[0]);
             }
           });
         }
 
-        // 2. Fetch products to include any active categories
-        const prods = await fetchProducts().catch(() => []);
-        if (Array.isArray(prods) && prods.length > 0) {
+        // 2. Fetch categories from PostgreSQL DB
+        const dbCats = await fetchCategories().catch(() => []);
+        const activeMap = new Map<string, { name: string; slug: string; image_url: string }>();
+
+        if (Array.isArray(dbCats) && dbCats.length > 0) {
+          dbCats.forEach((c: any) => {
+            if (c.status !== "Inactive" && c.slug) {
+              const lowerSlug = String(c.slug).toLowerCase();
+              const prefix = lowerSlug.split("-")[0];
+              const hasCount = typeof c.count === "number" ? c.count > 0 : false;
+
+              // ONLY INCLUDE IF CATEGORY HAS AT LEAST 1 PRODUCT
+              if (categoriesWithProducts.has(lowerSlug) || categoriesWithProducts.has(prefix) || hasCount) {
+                activeMap.set(c.slug, {
+                  name: c.name,
+                  slug: c.slug,
+                  image_url: getCategoryImageUrl(c)
+                });
+              }
+            }
+          });
+        }
+
+        // 3. Fallback: if DB categories list is loading, populate from products map
+        if (activeMap.size === 0 && Array.isArray(prods) && prods.length > 0) {
           prods.forEach((p: any) => {
             const catName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category_slug || p.category);
             const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
@@ -76,7 +98,7 @@ export function CategoryNav() {
       } catch (e) {}
     }
 
-    loadActiveCategories();
+    loadActiveCategoriesWithProducts();
   }, []);
 
   if (categories.length === 0) return null;

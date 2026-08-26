@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { fetchCategories } from "lib/api";
+import { fetchCategories, fetchProducts } from "lib/api";
 
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
   mobiles: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
@@ -22,30 +22,38 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   toys: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800"
 };
 
-const DEFAULT_FULL_CATEGORIES = [
-  { name: "Mobiles & Accessories", slug: "mobiles", image_url: CATEGORY_IMAGE_MAP.mobiles },
-  { name: "Electronics & Audio", slug: "electronics", image_url: CATEGORY_IMAGE_MAP.electronics },
-  { name: "Luxury Watches", slug: "watches", image_url: CATEGORY_IMAGE_MAP.watches },
-  { name: "Fashion & Apparel", slug: "fashion", image_url: CATEGORY_IMAGE_MAP.fashion },
-  { name: "Footwear & Sneakers", slug: "footwear", image_url: CATEGORY_IMAGE_MAP.footwear },
-  { name: "Laptops & Tech", slug: "laptops", image_url: CATEGORY_IMAGE_MAP.laptops },
-  { name: "Home & Living", slug: "home-living", image_url: CATEGORY_IMAGE_MAP["home-living"] },
-  { name: "Sports & Fitness", slug: "sports", image_url: CATEGORY_IMAGE_MAP.sports },
-  { name: "Artisan & Crafts", slug: "artisan", image_url: CATEGORY_IMAGE_MAP.artisan },
-  { name: "Beauty & Care", slug: "beauty", image_url: CATEGORY_IMAGE_MAP.beauty }
-];
-
 export function BrowseCategoriesGrid() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function load() {
+    async function loadActiveCategoriesWithProducts() {
       try {
-        const data = await fetchCategories();
-        if (data && Array.isArray(data) && data.length > 0) {
-          const activeOnly = data.filter((c: any) => c.status !== "Inactive");
-          setCategories(activeOnly);
+        const prods = await fetchProducts().catch(() => []);
+        const categoriesWithProducts = new Set<string>();
+
+        if (Array.isArray(prods) && prods.length > 0) {
+          prods.forEach((p: any) => {
+            const catName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category);
+            const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
+            if (catSlug) {
+              const lowerSlug = String(catSlug).toLowerCase();
+              categoriesWithProducts.add(lowerSlug);
+              categoriesWithProducts.add(lowerSlug.split("-")[0]);
+            }
+          });
+        }
+
+        const data = await fetchCategories().catch(() => []);
+        if (Array.isArray(data) && data.length > 0) {
+          const activeWithProds = data.filter((c: any) => {
+            if (c.status === "Inactive") return false;
+            const lowerSlug = (c.slug || c.name || "").toLowerCase();
+            const prefix = lowerSlug.split("-")[0];
+            const hasCount = typeof c.count === "number" ? c.count > 0 : false;
+            return categoriesWithProducts.has(lowerSlug) || categoriesWithProducts.has(prefix) || hasCount;
+          });
+          setCategories(activeWithProds);
         }
       } catch (e) {
         console.error("Failed to load browse categories:", e);
@@ -53,18 +61,18 @@ export function BrowseCategoriesGrid() {
         setLoading(false);
       }
     }
-    load();
+    loadActiveCategoriesWithProducts();
   }, []);
 
   if (loading) {
     return (
-      <section className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-100">
+      <section className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-100 font-sans">
         <div className="max-w-[1440px] mx-auto space-y-6">
           <h2 className="text-2xl sm:text-3xl font-black text-gray-900 text-center tracking-tight">
             Browse Categories
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+            {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="h-64 sm:h-72 lg:h-80 bg-gray-100 animate-pulse rounded-2xl" />
             ))}
           </div>
@@ -73,33 +81,7 @@ export function BrowseCategoriesGrid() {
     );
   }
 
-  // Build complete 10-category list by merging DB categories with default seed
-  const dbMap = new Map<string, any>();
-  if (categories && categories.length > 0) {
-    categories.forEach((c: any) => {
-      const slug = (c.slug || c.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-      dbMap.set(slug, c);
-      dbMap.set(slug.split("-")[0], c);
-    });
-  }
-
-  const displayList = DEFAULT_FULL_CATEGORIES.map((def) => {
-    const mainSlug = def.slug || "";
-    const prefix = mainSlug.split("-")[0] || mainSlug;
-    const dbMatch = dbMap.get(mainSlug) || dbMap.get(prefix);
-    if (dbMatch) {
-      const rawImg = dbMatch.image_url || dbMatch.icon;
-      const isValidUrl = rawImg && (rawImg.startsWith("http://") || rawImg.startsWith("https://") || rawImg.startsWith("/"));
-      return {
-        ...def,
-        id: dbMatch.id || def.slug,
-        name: dbMatch.name || def.name,
-        slug: dbMatch.slug || def.slug,
-        image_url: isValidUrl ? rawImg : def.image_url
-      };
-    }
-    return def;
-  });
+  if (categories.length === 0) return null;
 
   return (
     <section className="w-full bg-white py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-t border-gray-200/80 font-sans">
@@ -111,13 +93,13 @@ export function BrowseCategoriesGrid() {
             Browse Categories
           </h2>
           <p className="text-xs sm:text-sm text-gray-500 font-bold">
-            Explore curated collections from across our store catalog ({displayList.length} Categories)
+            Explore active collections from across our catalog ({categories.length} Categories)
           </p>
         </div>
 
-        {/* 🖼️ 5-Column Grid of Category Tiles */}
+        {/* 🖼️ Grid of Category Tiles */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-          {displayList.map((cat: any, idx) => {
+          {categories.map((cat: any, idx) => {
             const rawUrl = cat.image_url || cat.icon || "";
             const isPlaceholder = !rawUrl || rawUrl.includes("via.placeholder") || rawUrl.includes("open-shop") || rawUrl.includes("OPEN");
             
