@@ -121,66 +121,69 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [pathname, router]);
 
-  // Load Real-Time PostgreSQL DB Notifications & Messages
   const loadHeaderData = async () => {
     try {
-      const queries = await fetchAdminQueries();
-      if (Array.isArray(queries)) {
-        setLiveMessages(queries);
-        const pendingCount = queries.filter((q: any) => (q.status || "PENDING").toUpperCase() === "PENDING").length;
+      const [queries, orders] = await Promise.allSettled([
+        fetchAdminQueries(),
+        fetchAdminOrders()
+      ]);
+
+      const queriesData = queries.status === "fulfilled" && Array.isArray(queries.value) ? queries.value : [];
+      const ordersData = orders.status === "fulfilled" && Array.isArray(orders.value) ? orders.value : [];
+
+      if (queriesData.length > 0) {
+        setLiveMessages(queriesData);
+        const pendingCount = queriesData.filter((q: any) => (q.status || "PENDING").toUpperCase() === "PENDING").length;
         setUnreadMsgs(pendingCount);
       }
 
-      const orders = await fetchAdminOrders();
       const notifs: any[] = [];
-
-      if (Array.isArray(queries)) {
-        queries.slice(0, 5).forEach((q: any) => {
-          notifs.push({
-            id: `q-${q.id}`,
-            title: `📩 ${q.query_type || "Customer Query"}: ${q.subject || "Inquiry"}`,
-            subtitle: `From: ${q.customer_name || "Customer"} (${q.customer_email || ""})`,
-            date: q.created_at ? new Date(q.created_at).toLocaleDateString() : "Just now",
-            href: "/admin/queries",
-            isNew: (q.status || "PENDING").toUpperCase() === "PENDING"
-          });
+      queriesData.slice(0, 5).forEach((q: any) => {
+        notifs.push({
+          id: `q-${q.id}`,
+          title: `📩 ${q.query_type || "Customer Query"}: ${q.subject || "Inquiry"}`,
+          subtitle: `From: ${q.customer_name || "Customer"} (${q.customer_email || ""})`,
+          date: q.created_at ? new Date(q.created_at).toLocaleDateString() : "Just now",
+          href: "/admin/queries",
+          isNew: (q.status || "PENDING").toUpperCase() === "PENDING"
         });
-      }
-
-      if (Array.isArray(orders)) {
-        orders.slice(0, 5).forEach((o: any) => {
-          notifs.push({
-            id: `o-${o.id}`,
-            title: `🛒 Order #${o.order_number} (${o.status || "PAID"})`,
-            subtitle: `Customer: ${o.customer_name} • ₹${o.total_amount}`,
-            date: o.created_at ? new Date(o.created_at).toLocaleDateString() : "Recently",
-            href: "/admin/orders",
-            isNew: true
-          });
+      });
+      ordersData.slice(0, 5).forEach((o: any) => {
+        notifs.push({
+          id: `o-${o.id}`,
+          title: `🛒 Order #${o.order_number} (${o.status || "PAID"})`,
+          subtitle: `Customer: ${o.customer_name} • ₹${o.total_amount}`,
+          date: o.created_at ? new Date(o.created_at).toLocaleDateString() : "Recently",
+          href: "/admin/orders",
+          isNew: true
         });
-      }
+      });
 
       setLiveNotifications(notifs);
       setUnreadNotifs(notifs.filter(n => n.isNew).length);
     } catch (e) {
-      console.warn("Failed to load live header notifications:", e);
+      // Silently ignore — backend may be waking up
     }
   };
 
   useEffect(() => {
-    if (isAdminAuthenticated) {
-      loadHeaderData();
-      const interval = setInterval(loadHeaderData, 15000);
-      window.addEventListener("ecom_new_query", loadHeaderData);
-      window.addEventListener("ecom_new_order", loadHeaderData);
+    if (!isAdminAuthenticated) return;
 
-      return () => {
-        clearInterval(interval);
-        window.removeEventListener("ecom_new_query", loadHeaderData);
-        window.removeEventListener("ecom_new_order", loadHeaderData);
-      };
-    }
+    // Initial load
+    loadHeaderData();
+
+    // Poll every 60s (not 15s) — reduces console spam when backend is slow
+    const interval = setInterval(loadHeaderData, 60000);
+    window.addEventListener("ecom_new_query", loadHeaderData);
+    window.addEventListener("ecom_new_order", loadHeaderData);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("ecom_new_query", loadHeaderData);
+      window.removeEventListener("ecom_new_order", loadHeaderData);
+    };
   }, [isAdminAuthenticated]);
+
 
   // Keyboard shortcut Ctrl + / or Cmd + / to focus search
   useEffect(() => {
