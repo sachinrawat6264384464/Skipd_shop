@@ -220,12 +220,21 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Set CORS origins
-origins = settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
+# Always include production domain in allowed origins
+ALWAYS_ALLOWED_ORIGINS = [
+    "https://ecom.botmartz.com",
+    "https://www.ecom.botmartz.com",
+    "https://botmartz.com",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+]
+
+cors_origins_env = settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
+all_allowed_origins = list(set(cors_origins_env + ALWAYS_ALLOWED_ORIGINS))
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if settings.ENVIRONMENT == "development" else origins,
+    allow_origins=["*"],   # Allow all origins — public storefront API
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
