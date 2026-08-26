@@ -23,7 +23,7 @@ async def get_active_abandoned_reminder(
 ):
     """
     Check if current user has any CartItem or WishlistItem added >= 1 minute ago.
-    Returns product info for modal popup and triggers email notification.
+    Returns product info for ALL saved items for modal popup and triggers multi-item email notification.
     """
     if not current_user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
@@ -39,24 +39,43 @@ async def get_active_abandoned_reminder(
         )
         .order_by(CartItem.created_at.desc())
     )
-    cart_item = cart_res.scalars().first()
+    cart_items = cart_res.scalars().all()
 
-    if cart_item:
-        prod_res = await db.execute(select(Product).where(Product.id == cart_item.product_id))
-        product = prod_res.scalars().first()
-        if product:
-            img_url = product.images[0] if (product.images and len(product.images) > 0) else ""
-            
-            # Send Email Notification
+    if cart_items and len(cart_items) > 0:
+        cart_product_ids = [c.product_id for c in cart_items]
+        prods_res = await db.execute(select(Product).where(Product.id.in_(cart_product_ids)))
+        prods_map = {p.id: p for p in prods_res.scalars().all()}
+        
+        items_list = []
+        for c_item in cart_items:
+            prod = prods_map.get(c_item.product_id)
+            if prod:
+                img_url = prod.images[0] if (prod.images and len(prod.images) > 0) else ""
+                items_list.append({
+                    "item_id": c_item.id,
+                    "product_id": prod.id,
+                    "id": prod.id,
+                    "title": prod.title,
+                    "handle": prod.handle,
+                    "price": float(prod.price or 0),
+                    "compare_at_price": float(prod.compare_at_price or prod.price or 0),
+                    "image": img_url,
+                    "stock_quantity": prod.stock_quantity if prod.stock_quantity is not None else 12,
+                    "category": "Electronics"
+                })
+
+        if len(items_list) > 0:
+            first_prod = items_list[0]
             try:
                 send_abandoned_reminder_email(
                     to_email=current_user.email,
                     customer_name=current_user.full_name,
-                    product_title=product.title,
-                    product_price=float(product.price or 0),
-                    image_url=img_url,
+                    product_title=first_prod["title"],
+                    product_price=first_prod["price"],
+                    image_url=first_prod["image"],
                     item_type="cart",
-                    product_handle=product.handle
+                    product_handle=first_prod["handle"],
+                    items_list=items_list
                 )
             except Exception as e:
                 print(f"[ABANDONED EMAIL ERROR] {e}")
@@ -64,18 +83,11 @@ async def get_active_abandoned_reminder(
             return {
                 "has_abandoned_item": True,
                 "item_type": "cart",
-                "item_id": cart_item.id,
-                "quantity": cart_item.quantity,
-                "created_at": cart_item.created_at.isoformat() if cart_item.created_at else "",
-                "product": {
-                    "id": product.id,
-                    "title": product.title,
-                    "handle": product.handle,
-                    "price": float(product.price or 0),
-                    "compare_at_price": float(product.compare_at_price or product.price or 0),
-                    "image": img_url,
-                    "category": "Electronics"
-                }
+                "total_count": len(items_list),
+                "item_id": cart_items[0].id,
+                "created_at": cart_items[0].created_at.isoformat() if cart_items[0].created_at else "",
+                "product": first_prod,
+                "items": items_list
             }
 
     # 2. Check Wishlist Items
@@ -87,24 +99,43 @@ async def get_active_abandoned_reminder(
         )
         .order_by(WishlistItem.created_at.desc())
     )
-    wishlist_item = wish_res.scalars().first()
+    wishlist_items = wish_res.scalars().all()
 
-    if wishlist_item:
-        prod_res = await db.execute(select(Product).where(Product.id == wishlist_item.product_id))
-        product = prod_res.scalars().first()
-        if product:
-            img_url = product.images[0] if (product.images and len(product.images) > 0) else ""
-            
-            # Send Email Notification
+    if wishlist_items and len(wishlist_items) > 0:
+        wish_product_ids = [w.product_id for w in wishlist_items]
+        prods_res = await db.execute(select(Product).where(Product.id.in_(wish_product_ids)))
+        prods_map = {p.id: p for p in prods_res.scalars().all()}
+        
+        items_list = []
+        for w_item in wishlist_items:
+            prod = prods_map.get(w_item.product_id)
+            if prod:
+                img_url = prod.images[0] if (prod.images and len(prod.images) > 0) else ""
+                items_list.append({
+                    "item_id": w_item.id,
+                    "product_id": prod.id,
+                    "id": prod.id,
+                    "title": prod.title,
+                    "handle": prod.handle,
+                    "price": float(prod.price or 0),
+                    "compare_at_price": float(prod.compare_at_price or prod.price or 0),
+                    "image": img_url,
+                    "stock_quantity": prod.stock_quantity if prod.stock_quantity is not None else 12,
+                    "category": "Electronics"
+                })
+
+        if len(items_list) > 0:
+            first_prod = items_list[0]
             try:
                 send_abandoned_reminder_email(
                     to_email=current_user.email,
                     customer_name=current_user.full_name,
-                    product_title=product.title,
-                    product_price=float(product.price or 0),
-                    image_url=img_url,
+                    product_title=first_prod["title"],
+                    product_price=first_prod["price"],
+                    image_url=first_prod["image"],
                     item_type="wishlist",
-                    product_handle=product.handle
+                    product_handle=first_prod["handle"],
+                    items_list=items_list
                 )
             except Exception as e:
                 print(f"[ABANDONED EMAIL ERROR] {e}")
@@ -112,17 +143,11 @@ async def get_active_abandoned_reminder(
             return {
                 "has_abandoned_item": True,
                 "item_type": "wishlist",
-                "item_id": wishlist_item.id,
-                "created_at": wishlist_item.created_at.isoformat() if wishlist_item.created_at else "",
-                "product": {
-                    "id": product.id,
-                    "title": product.title,
-                    "handle": product.handle,
-                    "price": float(product.price or 0),
-                    "compare_at_price": float(product.compare_at_price or product.price or 0),
-                    "image": img_url,
-                    "category": "Electronics"
-                }
+                "total_count": len(items_list),
+                "item_id": wishlist_items[0].id,
+                "created_at": wishlist_items[0].created_at.isoformat() if wishlist_items[0].created_at else "",
+                "product": first_prod,
+                "items": items_list
             }
 
     return {"has_abandoned_item": False}

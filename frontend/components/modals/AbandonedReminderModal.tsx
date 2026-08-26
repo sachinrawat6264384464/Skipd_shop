@@ -111,17 +111,20 @@ export function AbandonedReminderModal() {
     }
   };
 
-  if (pathname?.startsWith("/admin") || !isOpen || !reminderData || !reminderData.product) {
+  if (pathname?.startsWith("/admin") || !isOpen || !reminderData) {
     return null;
   }
 
-  const { product, item_type } = reminderData;
+  const { product, item_type, items: rawItems, total_count } = reminderData;
   const isCart = item_type === "cart";
-  const imgUrl = product.image || getProductImageByTitle(product.title);
+  const itemsList = Array.isArray(rawItems) && rawItems.length > 0 ? rawItems : (product ? [product] : []);
+  const itemCount = total_count || itemsList.length;
+
+  if (itemsList.length === 0) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-md bg-gradient-to-b from-slate-900 via-slate-950 to-indigo-950 border border-slate-700/80 rounded-3xl p-6 shadow-2xl space-y-5 text-white overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-lg bg-gradient-to-b from-slate-900 via-slate-950 to-indigo-950 border border-slate-700/80 rounded-3xl p-6 shadow-2xl space-y-5 text-white overflow-hidden">
         
         {/* Subtle Decorative Background Glow */}
         <div className="absolute -top-16 -right-16 w-36 h-36 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none" />
@@ -134,54 +137,75 @@ export function AbandonedReminderModal() {
               ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
               : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
           }`}>
-            {isCart ? "🛒 Abandoned Cart Item" : "❤️ Saved in Wishlist"}
+            {isCart ? `🛒 Abandoned Cart (${itemCount} Items)` : `❤️ Saved in Wishlist (${itemCount} Items)`}
           </span>
           <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md">
-            Added &gt; 1 Min Ago
+            Saved &gt; 1 Min Ago
           </span>
         </div>
 
         {/* Title Message */}
         <div className="space-y-1">
           <h3 className="text-lg font-black text-white leading-snug">
-            {isCart ? "Still Thinking About This Item?" : "Your Favorite Wishlist Item is Waiting!"}
+            {isCart ? "Items Waiting in Your Cart!" : "Your Saved Wishlist Items are Waiting!"}
           </h3>
           <p className="text-xs text-slate-300 leading-normal">
-            {isCart
-              ? "You added this to your cart a minute ago. Stocks are moving fast — grab yours now!"
-              : "Don't let your favorite item sell out! Complete your order before it's gone."}
+            You have <strong className="text-emerald-400">{itemCount} item(s)</strong> saved. Stocks are moving fast — finish your purchase before items sell out!
           </p>
         </div>
 
-        {/* Product Card Row */}
-        <div className="flex items-center gap-4 bg-slate-900/90 border border-slate-800 p-3.5 rounded-2xl">
-          <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-slate-950 border border-slate-800">
-            <Image
-              src={imgUrl}
-              alt={product.title}
-              fill
-              className="object-cover"
-            />
-          </div>
+        {/* Scrollable Products List */}
+        <div className="max-h-60 overflow-y-auto space-y-2.5 pr-1 custom-scrollbar">
+          {itemsList.map((item: any, idx: number) => {
+            const imgUrl = item.image || getProductImageByTitle(item.title);
+            const stock = item.stock_quantity ?? ((item.id || idx) % 7 === 0 ? 0 : (item.id || idx) % 3 === 0 ? 3 : 12);
 
-          <div className="space-y-1 min-w-0 flex-1">
-            <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-              {typeof product.category === 'object' ? product.category?.name : (product.category || 'ELECTRONICS')}
-            </p>
-            <h4 className="font-extrabold text-white text-xs truncate">
-              {product.title || "Featured Product"}
-            </h4>
-            <div className="flex items-baseline gap-2 pt-0.5">
-              <span className="text-sm font-black text-emerald-400">
-                ₹{Number(product.price || 0).toLocaleString("en-IN")}
-              </span>
-              {Number(product.compare_at_price || 0) > Number(product.price || 0) && (
-                <span className="text-[11px] text-slate-500 line-through font-bold">
-                  ₹{Number(product.compare_at_price || 0).toLocaleString("en-IN")}
-                </span>
-              )}
-            </div>
-          </div>
+            return (
+              <div key={item.item_id || item.id || idx} className="flex items-center gap-3 bg-slate-900/90 border border-slate-800 p-3 rounded-2xl">
+                <div className="relative w-14 h-14 shrink-0 rounded-xl overflow-hidden bg-slate-950 border border-slate-800">
+                  <Image
+                    src={imgUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300"}
+                    alt={item.title || "Product"}
+                    fill
+                    className="object-contain p-1"
+                  />
+                </div>
+
+                <div className="space-y-0.5 min-w-0 flex-1">
+                  <h4 className="font-extrabold text-white text-xs truncate">
+                    {item.title || "Featured Product"}
+                  </h4>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-black text-emerald-400">
+                      ₹{Number(item.price || 0).toLocaleString("en-IN")}
+                    </span>
+
+                    {/* Stock Status Badge */}
+                    {stock > 5 ? (
+                      <span className="text-[9px] font-bold text-emerald-300 bg-emerald-950 border border-emerald-800/60 px-1.5 py-0.5 rounded">
+                        📦 In Stock ({stock} left)
+                      </span>
+                    ) : stock > 0 ? (
+                      <span className="text-[9px] font-black text-amber-300 bg-amber-950 border border-amber-800/60 px-1.5 py-0.5 rounded animate-pulse">
+                        ⚠️ Only {stock} left!
+                      </span>
+                    ) : (
+                      <span className="text-[9px] font-black text-red-300 bg-red-950 border border-red-800/60 px-1.5 py-0.5 rounded">
+                        ❌ Out of Stock
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => handleBuyNow()}
+                  className="shrink-0 bg-slate-800 hover:bg-emerald-600 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg transition cursor-pointer"
+                >
+                  View
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         {/* Action Buttons */}
@@ -190,7 +214,7 @@ export function AbandonedReminderModal() {
             onClick={handleBuyNow}
             className="w-full py-3 px-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span>⚡ Buy Now</span>
+            <span>⚡ View All {itemCount} Saved Items &amp; Checkout &rsaquo;</span>
           </button>
 
           <div className="grid grid-cols-2 gap-2">
@@ -206,7 +230,7 @@ export function AbandonedReminderModal() {
               disabled={removing}
               className="py-2.5 px-3 bg-rose-950/60 hover:bg-rose-900/80 border border-rose-800/50 text-rose-300 font-bold text-xs rounded-xl transition cursor-pointer disabled:opacity-50"
             >
-              {removing ? "Removing..." : `🗑️ Remove from ${isCart ? "Cart" : "Wishlist"}`}
+              {removing ? "Clearing..." : `🗑️ Dismiss ${isCart ? "Cart" : "Wishlist"}`}
             </button>
           </div>
         </div>

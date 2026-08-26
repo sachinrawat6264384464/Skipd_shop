@@ -366,20 +366,58 @@ def send_welcome_account_email(to_email: str, full_name: str, raw_password: str)
 
 def send_abandoned_reminder_email(
     to_email: str,
-    customer_name: str,
-    product_title: str,
-    product_price: float,
-    image_url: str,
-    item_type: str = "cart",
-    product_handle: str = ""
+    customer_name: str = "Valued Customer",
+    product_title: str = "Featured Product",
+    product_price: float = 0.0,
+    image_url: str = "",
+    item_type: str = "wishlist",
+    product_handle: str = "",
+    items_list: list = None
 ):
-    """Send Rich HTML Abandoned Cart/Wishlist Reminder Email with product image and direct link."""
-    site_domain = os.getenv("SITE_URL", "http://localhost:3002")
-    product_url = f"{site_domain}/product/{product_handle}" if product_handle else f"{site_domain}/cart"
+    """Send Rich Abandoned Wishlist/Cart Email with single or multi-item support."""
+    site_domain = os.getenv("SITE_URL", "https://ecom.botmartz.com")
+    is_cart = item_type == "cart"
     
-    badge_title = "🛒 Items Waiting in Your Cart!" if item_type == "cart" else "❤️ Saved in Your Wishlist!"
-    subject = f"{badge_title} Complete your purchase - E-COM"
+    # Determine item count
+    count = len(items_list) if items_list and len(items_list) > 0 else 1
+    badge_title = f"🛒 {count} Items Waiting in Your Cart!" if is_cart else f"❤️ {count} Saved Items in Your Wishlist!"
+    subject = f"{badge_title} Complete your purchase — E-COM"
     
+    # Build HTML for list of products
+    products_html = ""
+    if items_list and len(items_list) > 0:
+        for item in items_list:
+            t_title = item.get("title", "Product")
+            t_price = float(item.get("price", 0.0))
+            t_img = item.get("image") or image_url or "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300"
+            t_handle = item.get("handle") or product_handle
+            t_url = f"{site_domain}/product/{t_handle}" if t_handle else f"{site_domain}/account/wishlist"
+            
+            products_html += f"""
+            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;">
+              <img src="{t_img}" alt="{t_title}" style="width: 70px; height: 70px; object-fit: contain; border-radius: 12px; background: #f8fafc; border: 1px solid #f1f5f9;" />
+              <div style="flex: 1; min-width: 0;">
+                <h4 style="font-size: 14px; font-weight: 800; color: #0f172a; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{t_title}</h4>
+                <div style="font-size: 15px; font-weight: 900; color: #059669;">₹{t_price:,.2f}</div>
+              </div>
+              <a href="{t_url}" style="background: #ecfdf5; color: #047857; text-decoration: none; font-size: 11px; font-weight: 800; padding: 8px 14px; border-radius: 10px; border: 1px solid #a7f3d0; text-transform: uppercase;">View</a>
+            </div>
+            """
+    else:
+        product_url = f"{site_domain}/product/{product_handle}" if product_handle else f"{site_domain}/cart"
+        img_src = image_url if image_url else "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300"
+        products_html = f"""
+        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin: 16px 0; display: flex; align-items: center; gap: 16px;">
+          <img src="{img_src}" alt="{product_title}" style="width: 80px; height: 80px; object-fit: contain; border-radius: 12px; background: #f8fafc; border: 1px solid #f1f5f9;" />
+          <div style="flex: 1;">
+            <h4 style="font-size: 15px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0;">{product_title}</h4>
+            <div style="font-size: 18px; font-weight: 900; color: #059669;">₹{product_price:,.2f}</div>
+          </div>
+        </div>
+        """
+
+    cta_url = f"{site_domain}/cart" if is_cart else f"{site_domain}/account/wishlist"
+
     html_content = f"""
     <!DOCTYPE html>
     <html>
@@ -387,42 +425,36 @@ def send_abandoned_reminder_email(
       <meta charset="utf-8">
       <style>
         body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }}
-        .card {{ max-width: 550px; margin: 0 auto; background: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }}
+        .card {{ max-width: 580px; margin: 0 auto; background: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px rgba(0,0,0,0.06); }}
         .header {{ background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%); padding: 32px 24px; text-align: center; color: #ffffff; }}
-        .badge {{ background: #10b981; color: #ffffff; font-weight: 800; font-size: 11px; padding: 4px 12px; border-radius: 99px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 8px; }}
+        .badge {{ background: #10b981; color: #ffffff; font-weight: 800; font-size: 11px; padding: 5px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 10px; }}
         .header h1 {{ margin: 0; font-size: 22px; font-weight: 900; }}
-        .body {{ padding: 28px 24px; color: #1e293b; line-height: 1.6; }}
-        .product-card {{ background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; margin: 20px 0; display: flex; items-center; gap: 16px; }}
-        .product-img {{ width: 90px; height: 90px; object-fit: cover; border-radius: 12px; border: 1px solid #cbd5e1; }}
-        .product-info {{ flex: 1; }}
-        .product-title {{ font-size: 15px; font-weight: 800; color: #0f172a; margin: 0 0 6px 0; }}
-        .product-price {{ font-size: 18px; font-weight: 900; color: #059669; margin: 0; }}
-        .btn {{ display: inline-block; background: #10b981; color: #ffffff !important; font-weight: 900; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 14px; text-align: center; margin: 20px 0 10px 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3); text-transform: uppercase; letter-spacing: 0.5px; }}
-        .footer {{ background: #f1f5f9; border-top: 1px solid #e2e8f0; padding: 20px; text-align: center; font-size: 11px; color: #64748b; }}
+        .body {{ padding: 28px 24px; color: #1e293b; line-height: 1.6; background-color: #fafafa; }}
+        .btn {{ display: block; background: #10b981; color: #ffffff !important; font-weight: 900; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 14px; text-align: center; margin: 24px 0 10px 0; box-shadow: 0 4px 12px rgba(16,185,129,0.3); text-transform: uppercase; letter-spacing: 0.5px; }}
+        .footer {{ background: #ffffff; border-top: 1px solid #e2e8f0; padding: 20px; text-align: center; font-size: 11px; color: #64748b; }}
       </style>
     </head>
     <body>
       <div class="card">
         <div class="header">
           <div class="badge">{badge_title}</div>
-          <h1>Don't Miss Out on Your Favorites 👋</h1>
+          <h1>Don't Miss Out on Your Saved Items 👋</h1>
         </div>
         <div class="body">
-          <p style="font-size: 14px; color: #475569; margin-top: 0;">
-            Hi <strong>{customer_name}</strong>, we noticed you left an item in your {item_type} over a minute ago. Stock is limited, finish your order before it sells out!
+          <p style="font-size: 14px; color: #334155; margin-top: 0;">
+            Hi <strong>{customer_name}</strong>, we noticed you have <strong>{count} item(s)</strong> saved in your {item_type} over a minute ago. Stock is limited — finish your purchase before items sell out!
           </p>
-          <div class="product-card">
-            <div class="product-info">
-              <h3 class="product-title">{product_title}</h3>
-              <p class="product-price">₹{product_price:,.2f}</p>
-            </div>
+          
+          <div style="margin: 20px 0;">
+            {products_html}
           </div>
+
           <div style="text-align: center;">
-            <a href="{product_url}" class="btn">⚡ Finish Order &rsaquo;</a>
+            <a href="{cta_url}" class="btn">⚡ View All {count} Saved Items &amp; Checkout &rsaquo;</a>
           </div>
         </div>
         <div class="footer">
-          <p style="margin: 0;">E-COM Commerce Inc. • 24x7 Customer Support</p>
+          <p style="margin: 0;">E-COM Commerce Inc. • 24x7 Customer Care Support</p>
         </div>
       </div>
     </body>

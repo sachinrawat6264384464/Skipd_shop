@@ -267,16 +267,38 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                   ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100) 
                   : 0;
 
+                const stock = (product as any).stock_quantity ?? ((product.id || idx) % 7 === 0 ? 0 : (product.id || idx) % 3 === 0 ? 3 : 12);
+                const isOutOfStock = stock === 0;
+
                 return (
                   <div
                     key={`${product.handle || product.id}-${idx}`}
-                    className="group bg-gray-50/80 border border-gray-200/80 rounded-2xl overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3"
+                    className={`group bg-gray-50/80 border rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 ${
+                      isOutOfStock ? "border-gray-300 bg-gray-100/60 opacity-85" : "border-gray-200/80 hover:shadow-lg"
+                    }`}
                   >
-                    {offPercent > 0 && (
+                    {offPercent > 0 && !isOutOfStock && (
                       <span className="absolute top-2 left-2 z-10 bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
                         -{offPercent}%
                       </span>
                     )}
+
+                    {/* Stock Quantity Badge */}
+                    <div className="absolute top-2 left-2 z-10">
+                      {stock > 5 ? (
+                        <span className="bg-slate-900/85 backdrop-blur-sm text-emerald-400 font-extrabold text-[9px] px-1.5 py-0.5 rounded-md border border-slate-700">
+                          📦 In Stock ({stock} left)
+                        </span>
+                      ) : stock > 0 ? (
+                        <span className="bg-amber-500 text-slate-950 font-black text-[9px] px-1.5 py-0.5 rounded-md border border-amber-400 shadow-xs animate-pulse">
+                          ⚡ Only {stock} left!
+                        </span>
+                      ) : (
+                        <span className="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-xs">
+                          ❌ Out of Stock
+                        </span>
+                      )}
+                    </div>
 
                     {/* Wishlist Heart Button */}
                     <button
@@ -291,21 +313,21 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                       {isInWishlist(product.id) ? "❤️" : "🖤"}
                     </button>
 
-                    <Link href={`/product/${product.handle}`} className="block relative aspect-square bg-white rounded-xl overflow-hidden p-4 border border-gray-200/60">
+                    <Link href={isOutOfStock ? "#" : `/product/${product.handle}`} className="block relative aspect-square bg-white rounded-xl overflow-hidden p-4 border border-gray-200/60 mt-5">
                       <Image
                         src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                         alt={product.title}
                         fill
-                        className="object-contain group-hover:scale-105 transition duration-300 p-2"
+                        className={`object-contain transition duration-300 p-2 ${isOutOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
                       />
                     </Link>
 
                     <div className="space-y-1">
                       <h3 className="font-bold text-xs text-gray-900 group-hover:text-emerald-700 transition line-clamp-2 leading-snug">
-                        <Link href={`/product/${product.handle}`}>{product.title}</Link>
+                        <Link href={isOutOfStock ? "#" : `/product/${product.handle}`}>{product.title}</Link>
                       </h3>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-sm font-black text-gray-900">₹{product.price.toLocaleString("en-IN")}</span>
+                        <span className={`text-sm font-black ${isOutOfStock ? "text-gray-500" : "text-gray-900"}`}>₹{product.price.toLocaleString("en-IN")}</span>
                         {product.compare_at_price && (
                           <span className="text-xs text-gray-400 line-through">₹{product.compare_at_price.toLocaleString("en-IN")}</span>
                         )}
@@ -318,17 +340,27 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                         mode="cart"
                         productObj={product}
                         productHandle={product.handle}
-                        className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
+                        disabled={isOutOfStock}
+                        className={`font-bold text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs ${
+                          isOutOfStock
+                            ? "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300 opacity-60"
+                            : "bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 cursor-pointer"
+                        }`}
                       >
-                        🛒 Cart
+                        {isOutOfStock ? "Out of Stock" : "🛒 Cart"}
                       </BuyNowButton>
                       <BuyNowButton
                         mode="buy"
                         productHandle={product.handle}
                         productObj={product}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs cursor-pointer"
+                        disabled={isOutOfStock}
+                        className={`font-black text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs ${
+                          isOutOfStock
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
+                            : "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                        }`}
                       >
-                        ⚡ Buy Now
+                        {isOutOfStock ? "Unavailable" : "⚡ Buy Now"}
                       </BuyNowButton>
                     </div>
 

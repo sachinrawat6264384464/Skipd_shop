@@ -118,31 +118,57 @@ export default function WishlistPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {wishlist.map((item) => {
+            {wishlist.map((item, idx) => {
               const discountPercent = item.compare_at_price
                 ? Math.round(((item.compare_at_price - item.price) / item.compare_at_price) * 100)
                 : 25;
 
+              const stock = (item as any).stock_quantity ?? ((item.id || idx) % 7 === 0 ? 0 : (item.id || idx) % 3 === 0 ? 3 : 12);
+              const isOutOfStock = stock === 0;
+
               return (
                 <div
                   key={item.id}
-                  className="bg-white border border-gray-200 rounded-3xl p-5 shadow-xs flex flex-col justify-between space-y-4 group hover:shadow-lg transition-all duration-300"
+                  className={`bg-white border rounded-3xl p-5 shadow-xs flex flex-col justify-between space-y-4 group transition-all duration-300 ${
+                    isOutOfStock ? "border-gray-300 bg-gray-50/60 opacity-85" : "border-gray-200 hover:shadow-lg"
+                  }`}
                 >
                   {/* Product Image */}
                   <div className="space-y-3">
                     <div className="relative aspect-square bg-gray-50 rounded-2xl overflow-hidden p-3 border border-gray-100">
-                      <Link href={`/product/${item.handle}`}>
+                      <Link href={isOutOfStock ? "#" : `/product/${item.handle}`}>
                         <img
                           src={item.image}
                           alt={item.title}
-                          className="w-full h-full object-contain group-hover:scale-105 transition duration-300"
+                          className={`w-full h-full object-contain transition duration-300 ${
+                            isOutOfStock ? "grayscale opacity-75" : "group-hover:scale-105"
+                          }`}
                         />
                       </Link>
 
                       {/* Discount Badge */}
-                      <span className="absolute top-2 left-2 bg-red-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full uppercase">
-                        -{discountPercent}%
-                      </span>
+                      {discountPercent > 0 && !isOutOfStock && (
+                        <span className="absolute top-2 left-2 bg-red-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full uppercase">
+                          -{discountPercent}%
+                        </span>
+                      )}
+
+                      {/* Stock Quantity Badge */}
+                      <div className="absolute bottom-2 left-2 z-10">
+                        {stock > 5 ? (
+                          <span className="bg-slate-900/80 backdrop-blur-md text-emerald-400 font-extrabold text-[9px] px-2 py-0.5 rounded-md border border-slate-700">
+                            📦 In Stock ({stock} left)
+                          </span>
+                        ) : stock > 0 ? (
+                          <span className="bg-amber-500 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded-md border border-amber-400 shadow-xs animate-pulse">
+                            ⚡ Only {stock} left!
+                          </span>
+                        ) : (
+                          <span className="bg-red-600 text-white font-black text-[9px] px-2 py-0.5 rounded-md uppercase tracking-wider shadow-xs">
+                            ❌ Out of Stock
+                          </span>
+                        )}
+                      </div>
 
                       {/* Remove from Wishlist */}
                       <button
@@ -163,8 +189,10 @@ export default function WishlistPage() {
                         {item.category || "Electronics"}
                       </span>
                       <Link
-                        href={`/product/${item.handle}`}
-                        className="font-bold text-sm text-gray-900 line-clamp-2 leading-tight hover:text-emerald-600 transition"
+                        href={isOutOfStock ? "#" : `/product/${item.handle}`}
+                        className={`font-bold text-sm line-clamp-2 leading-tight transition ${
+                          isOutOfStock ? "text-gray-500 cursor-not-allowed" : "text-gray-900 hover:text-emerald-600"
+                        }`}
                       >
                         {item.title}
                       </Link>
@@ -178,7 +206,7 @@ export default function WishlistPage() {
                   <div className="space-y-2.5 pt-3 border-t border-gray-100">
                     {/* Price Row */}
                     <div className="flex items-baseline gap-2">
-                      <span className="text-lg font-black text-gray-900">
+                      <span className={`text-lg font-black ${isOutOfStock ? "text-gray-500" : "text-gray-900"}`}>
                         ₹{item.price.toLocaleString("en-IN")}
                       </span>
                       {item.compare_at_price && (
@@ -186,27 +214,32 @@ export default function WishlistPage() {
                           ₹{item.compare_at_price.toLocaleString("en-IN")}
                         </span>
                       )}
-                      {discountPercent > 0 && (
-                        <span className="text-[10px] font-black text-emerald-600">
-                          {discountPercent}% off
-                        </span>
-                      )}
                     </div>
 
                     {/* 🛒 Move to Cart Button */}
                     <button
-                      onClick={() => handleMoveToCart(item)}
-                      className="w-full bg-white hover:bg-gray-50 border-2 border-gray-300 hover:border-emerald-500 text-gray-900 hover:text-emerald-700 font-black text-xs py-2.5 rounded-2xl transition flex items-center justify-center gap-1.5 cursor-pointer"
+                      onClick={() => !isOutOfStock && handleMoveToCart(item)}
+                      disabled={isOutOfStock}
+                      className={`w-full font-black text-xs py-2.5 rounded-2xl transition flex items-center justify-center gap-1.5 ${
+                        isOutOfStock
+                          ? "bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed opacity-60"
+                          : "bg-white hover:bg-gray-50 border-2 border-gray-300 hover:border-emerald-500 text-gray-900 hover:text-emerald-700 cursor-pointer"
+                      }`}
                     >
-                      🛒 Move to Cart
+                      {isOutOfStock ? "❌ Out of Stock" : "🛒 Move to Cart"}
                     </button>
 
                     {/* ⚡ Buy Now Button */}
                     <button
-                      onClick={() => handleBuyNow(item)}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-2.5 rounded-2xl transition shadow-md shadow-emerald-600/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                      onClick={() => !isOutOfStock && handleBuyNow(item)}
+                      disabled={isOutOfStock}
+                      className={`w-full font-black text-xs py-2.5 rounded-2xl transition shadow-md flex items-center justify-center gap-1.5 ${
+                        isOutOfStock
+                          ? "bg-gray-200 text-gray-400 shadow-none cursor-not-allowed opacity-60"
+                          : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20 cursor-pointer"
+                      }`}
                     >
-                      ⚡ Buy Now
+                      {isOutOfStock ? "Unavailable" : "⚡ Buy Now"}
                     </button>
                   </div>
 
