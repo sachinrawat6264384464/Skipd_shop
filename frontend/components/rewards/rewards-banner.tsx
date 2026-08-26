@@ -4,11 +4,11 @@ import { useState } from "react";
 
 export function RewardsBanner() {
   const [modalOpen, setModalOpen] = useState(false);
-  const referralCode = "SKIPD-REF-9842";
+  const referralCode = "ECOM-REF-9842";
   const [copied, setCopied] = useState(false);
 
   const copyReferral = () => {
-    navigator.clipboard.writeText(`Use my referral code ${referralCode} to get ₹250 OFF on SKIPD Commerce! https://skipd.vercel.app`);
+    navigator.clipboard.writeText(`Use my referral code ${referralCode} to get ₹250 OFF on E-COM Commerce! https://ecom.botmartz.com`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -21,7 +21,7 @@ export function RewardsBanner() {
             🪙
           </div>
           <div>
-            <h4 className="font-bold text-sm text-gray-900">SKIPD Rewards &amp; Wallet Club</h4>
+            <h4 className="font-bold text-sm text-gray-900">E-COM Rewards &amp; Wallet Club</h4>
             <p className="text-xs text-gray-600">Earn 5% cashback coins on every purchase + Give ₹250, Get ₹250</p>
           </div>
         </div>

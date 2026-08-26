@@ -151,12 +151,23 @@ export function CategoryNav() {
     loadActiveCategories();
   }, []);
 
-  if (categories.length === 0) return null;
+  const displayCategories = categories.length > 0 ? categories : [
+    { name: "Mobiles", slug: "mobiles", bg: "bg-blue-50/80 border-blue-200/80 shadow-2xs" },
+    { name: "Electronics", slug: "electronics", bg: "bg-purple-50/80 border-purple-200/80 shadow-2xs" },
+    { name: "Watches", slug: "watches", bg: "bg-emerald-50/80 border-emerald-200/80 shadow-2xs" },
+    { name: "Fashion", slug: "fashion", bg: "bg-rose-50/80 border-rose-200/80 shadow-2xs" },
+    { name: "Home & Living", slug: "home", bg: "bg-teal-50/80 border-teal-200/80 shadow-2xs" },
+    { name: "Sports", slug: "sports", bg: "bg-emerald-50/80 border-emerald-200/80 shadow-2xs" },
+    { name: "Artisan", slug: "artisan", bg: "bg-amber-50/80 border-amber-200/80 shadow-2xs" },
+    { name: "Laptops", slug: "laptops", bg: "bg-slate-100/80 border-slate-300/80 shadow-2xs" },
+    { name: "Footwear", slug: "footwear", bg: "bg-amber-50/80 border-amber-200/80 shadow-2xs" },
+    { name: "Lifestyle", slug: "lifestyle", bg: "bg-teal-50/80 border-teal-200/80 shadow-2xs" }
+  ];
 
   return (
     <nav className="bg-white border-b border-gray-200/80 py-4 px-4 overflow-x-auto no-scrollbar font-sans">
       <div className="max-w-[1440px] mx-auto flex items-center justify-start sm:justify-center gap-6 md:gap-10 min-w-max">
-        {categories.map((cat) => (
+        {displayCategories.map((cat) => (
           <Link
             key={cat.slug}
             href={`/search/${cat.slug}`}

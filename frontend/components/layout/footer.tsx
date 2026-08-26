@@ -62,7 +62,7 @@ export default function Footer() {
         <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center lg:text-left">
             <h3 className="text-lg md:text-xl font-black text-gray-900 tracking-tight flex items-center justify-center lg:justify-start gap-2">
-              <span className="text-emerald-600">✨</span> Join the SKIPD VIP Club
+              <span className="text-emerald-600">✨</span> Join the E-COM VIP Club
             </h3>
             <p className="text-xs text-gray-600 font-medium">
               Get exclusive deals, early flash sale access, and <span className="text-emerald-700 font-extrabold">₹500 instant discount</span> on your first order.
@@ -98,7 +98,7 @@ export default function Footer() {
             <li><Link href="/contact" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Contact Us</Link></li>
             <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">About Us</Link></li>
             <li><Link href="/about#careers" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Careers</Link></li>
-            <li><Link href="/about#stories" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Stories</Link></li>
+            <li><Link href="/about#stories" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">E-COM Stories</Link></li>
             <li><Link href="/about#press" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Press Releases</Link></li>
             <li><Link href="/about#corporate" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Corporate Info</Link></li>
           </ul>
@@ -111,9 +111,9 @@ export default function Footer() {
             GROUP BRANDS
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><Link href="/search?collection=fashion" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Apparel</Link></li>
-            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Audio</Link></li>
-            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">SKIPD Tech</Link></li>
+            <li><Link href="/search?collection=fashion" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">E-COM Apparel</Link></li>
+            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">E-COM Audio</Link></li>
+            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">E-COM Tech</Link></li>
             <li><Link href="/track-order" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Express Courier</Link></li>
           </ul>
         </div>
@@ -154,7 +154,7 @@ export default function Footer() {
             MAIL US:
           </h4>
           <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
-            SKIPD Commerce Pvt Ltd,<br />
+            E-COM Commerce Pvt Ltd,<br />
             Buildings Alyssa, Begonia &amp;<br />
             Clove Embassy Tech Village,<br />
             Outer Ring Road, Bengaluru, 560103,<br />
@@ -169,11 +169,11 @@ export default function Footer() {
             REGISTERED OFFICE:
           </h4>
           <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
-            SKIPD Commerce Pvt Ltd,<br />
+            E-COM Commerce Pvt Ltd,<br />
             Outer Ring Road, Bengaluru, 560103,<br />
             Karnataka, India<br />
             CIN: U51109KA2012PTC066107<br />
-            Toll-Free: <a href="tel:1800754733" className="text-emerald-700 font-black hover:underline">1800-SKIPD-COMMERCE</a>
+            Toll-Free: <a href="tel:1800754733" className="text-emerald-700 font-black hover:underline">1800-ECOM-COMMERCE</a>
           </p>
         </div>
 
@@ -199,7 +199,7 @@ export default function Footer() {
           {/* Copyright */}
           <div>
             <p className="text-gray-500 font-semibold text-[11px]">
-              &copy; 2007-2026 SKIPD Commerce Pvt Ltd. All rights reserved.
+              &copy; 2007-2026 E-COM Commerce Pvt Ltd. All rights reserved.
             </p>
           </div>
 
