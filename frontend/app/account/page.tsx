@@ -668,14 +668,12 @@ function AccountContent() {
     const key = getUserOrdersKey();
     const existing = JSON.parse(localStorage.getItem(key) || "[]");
     
-    const sampleProducts = [
-      { productName: "OnePlus Nord 4 5G", specs: "Obsidian Midnight, 8GB RAM, 256GB Storage", price: 24499, image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300" },
-      { productName: "Saree Premium Silk", specs: "Pure Mulberry Kanjivaram Silk, Gold Zari", price: 598, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=300" },
-      { productName: "Sony WH-1000XM5 ANC Headphones", specs: "Silver, 30h Battery, Noise Cancelling", price: 29990, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300" }
-    ];
-
-    const randomProd = sampleProducts[Math.floor(Math.random() * sampleProducts.length)];
+    const dbProds = await fetchProducts();
     const newOrderId = `#E-COM-${Math.floor(10000 + Math.random() * 90000)}`;
+
+    const randomProd = dbProds.length > 0 
+      ? dbProds[Math.floor(Math.random() * dbProds.length)]
+      : { title: "Store Order Item", price: 999, handle: "store-item", images: ["https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=300"] };
 
     if (!randomProd) return;
 
@@ -688,10 +686,10 @@ function AccountContent() {
       totalPrice: randomProd.price,
       items: [
         {
-          title: randomProd.productName,
-          variant: randomProd.specs,
-          price: randomProd.price,
-          featuredImage: { url: randomProd.image }
+          title: (randomProd as any).title || (randomProd as any).productName || "Ordered Product",
+          variant: (randomProd as any).specs || "Standard Variant",
+          price: randomProd.price || 999,
+          featuredImage: { url: randomProd.images?.[0] || (randomProd as any).image || "" }
         }
       ]
     };

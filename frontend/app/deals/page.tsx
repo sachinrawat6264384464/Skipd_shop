@@ -2,72 +2,67 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import Footer from "components/layout/footer";
-import { fetchActiveSales } from "lib/api";
+import { fetchActiveSales, fetchProducts } from "lib/api";
 import { BuyNowButton } from "components/auth/buy-now-button";
 
 export default function DealsPage() {
   const [sale, setSale] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [featuredOffers, setFeaturedOffers] = useState<any[]>([]);
+  const [productsToDisplay, setProductsToDisplay] = useState<any[]>([]);
 
   useEffect(() => {
-    // Load admin-set featured offer products from localStorage
-    try {
-      const stored = localStorage.getItem("ecom_featured_offers");
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setFeaturedOffers(parsed);
+    async function loadDealsData() {
+      setLoading(true);
+      
+      // 1. Check for admin-set featured offers in localStorage
+      let offers: any[] = [];
+      try {
+        const stored = localStorage.getItem("ecom_featured_offers");
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            offers = parsed;
+          }
         }
-      }
-    } catch {}
+      } catch {}
 
-    async function loadSale() {
+      // 2. Fetch active sale from backend DB
       const sales = await fetchActiveSales();
+      let activeSaleObj = null;
       if (sales && sales.length > 0) {
-        setSale(sales[0]);
+        activeSaleObj = sales[0];
+        setSale(activeSaleObj);
       }
+
+      // 3. Priority: admin-set offers > active sale products > real DB products
+      if (offers.length > 0) {
+        setProductsToDisplay(offers);
+      } else if (activeSaleObj?.products?.length > 0) {
+        setProductsToDisplay(activeSaleObj.products);
+      } else {
+        const dbProducts = await fetchProducts();
+        const dealsList = dbProducts.map((p) => ({
+          id: p.id,
+          title: p.title,
+          handle: p.handle,
+          price: p.price,
+          image: p.images?.[0] || "",
+          easyShip: true,
+          weight: "<500gm",
+          earlier: p.compare_at_price || Math.round(p.price * 1.25),
+          now: p.price,
+          save: (p.compare_at_price || Math.round(p.price * 1.25)) - p.price,
+          stock_quantity: p.stock_quantity
+        }));
+        setProductsToDisplay(dealsList);
+      }
+
       setLoading(false);
     }
-    loadSale();
+
+    loadDealsData();
   }, []);
-
-  const sampleDealProducts = [
-    { id: 101, title: "Saree Premium Silk", handle: "saree-premium-silk", price: 299, image: "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=500", easyShip: true, weight: "<500gm", earlier: 599, now: 299, save: 300 },
-    { id: 102, title: "Cold Pressed Oil 1L", handle: "cold-pressed-oil-1l", price: 249, image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=500", easyShip: true, weight: "1kg-2kg", earlier: 499, now: 249, save: 250 },
-    { id: 103, title: "Velvet Cushion Cover", handle: "velvet-cushion-cover", price: 800, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=500", easyShip: false, weight: "<500gm", earlier: 1500, now: 800, save: 700 },
-    { id: 104, title: "20000mAh Power Bank", handle: "20000mah-power-bank", price: 999, image: "https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=500", easyShip: true, weight: "500gm-1kg", earlier: 1999, now: 999, save: 1000 },
-    { id: 105, title: "Nike Running Shoe", handle: "nike-running-shoe", price: 700, image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500", easyShip: true, weight: "500gm-1kg", earlier: 1400, now: 700, save: 700 },
-    { id: 106, title: "Leather Jacket", handle: "leather-jacket", price: 999, image: "https://images.unsplash.com/photo-1544441893-675973e31985?w=500", easyShip: false, weight: "1kg-2kg", earlier: 1999, now: 999, save: 1000 },
-    { id: 107, title: "FPV Toy Drone", handle: "fpv-toy-drone", price: 999, image: "https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=500", easyShip: true, weight: "500gm-1kg", earlier: 2499, now: 999, save: 1500 },
-    { id: 108, title: "Pro Headphones", handle: "pro-headphones", price: 950, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500", easyShip: false, weight: "500gm-1kg", earlier: 4999, now: 950, save: 4049 },
-  ];
-
-  // Priority: admin-set featured offers > sale products > sample fallback
-  let productsToDisplay: any[] = [];
-  if (featuredOffers.length > 0) {
-    productsToDisplay = featuredOffers;
-  } else if (sale?.products?.length > 0) {
-    productsToDisplay = sale.products.map((p: any, i: number) => {
-      const fallback = sampleDealProducts[i % sampleDealProducts.length];
-      return {
-        id: p.id || fallback?.id || i + 1,
-        title: p.title,
-        handle: p.handle || fallback?.handle || "nike-running-shoe",
-        price: p.sale_price || fallback?.price || 700,
-        image: p.image || fallback?.image || "",
-        easyShip: p.shipping_type === "Easy Ship",
-        weight: p.weight_range || "<500gm",
-        earlier: p.original_price || fallback?.earlier || 1400,
-        now: p.sale_price || fallback?.now || 700,
-        save: p.savings || fallback?.save || 700
-      };
-    });
-  } else {
-    productsToDisplay = sampleDealProducts;
-  }
 
   return (
     <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
@@ -112,7 +107,7 @@ export default function DealsPage() {
             <div className="bg-amber-50/60 border border-orange-200 rounded-3xl p-6 shadow-xs text-center space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-orange-500/20">📍</div>
               <h3 className="font-black text-base text-gray-900">Reach Every Corner of India</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">Get your products in front of customers across 100% of India's serviceable pin codes with Shiprocket logistics.</p>
+              <p className="text-xs text-gray-600 leading-relaxed">Get your products in front of customers across 100% of India&apos;s serviceable pin codes with Shiprocket logistics.</p>
             </div>
             <div className="bg-amber-50/60 border border-orange-200 rounded-3xl p-6 shadow-xs text-center space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-orange-500/20">🧮</div>
@@ -127,35 +122,6 @@ export default function DealsPage() {
           </div>
         </div>
 
-        {/* 🖤 Zero Referral Fees */}
-        <div className="bg-[#0f172a] text-white py-12 px-6 shadow-lg">
-          <div className="max-w-5xl mx-auto text-center space-y-8">
-            <h2 className="text-2xl md:text-3xl font-black tracking-tight">With Zero Referral Fees, Every Sale Event Order Delivers More</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-4 text-xs">
-              <div className="space-y-2 flex flex-col items-center">
-                <div className="w-14 h-14 rounded-full bg-orange-500 text-white font-black text-xs flex items-center justify-center shadow-lg shadow-orange-500/30">Zero</div>
-                <h4 className="font-extrabold text-orange-400 text-sm">Zero Referral Fee</h4>
-                <p className="text-gray-400 text-[11px]">(Under ₹1000 Products)</p>
-              </div>
-              <div className="space-y-2 flex flex-col items-center">
-                <div className="w-14 h-14 rounded-full bg-amber-500 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-amber-500/30">📦</div>
-                <h4 className="font-extrabold text-amber-400 text-sm">Save ₹15 per order</h4>
-                <p className="text-gray-400 text-[11px]">(Easy Ship under ₹300 Products)</p>
-              </div>
-              <div className="space-y-2 flex flex-col items-center">
-                <div className="w-14 h-14 rounded-full bg-emerald-500 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">📉</div>
-                <h4 className="font-extrabold text-emerald-400 text-sm">4%–9.5% Lower Fees</h4>
-                <p className="text-gray-400 text-[11px]">(Products above ₹1,000)</p>
-              </div>
-              <div className="space-y-2 flex flex-col items-center">
-                <div className="w-14 h-14 rounded-full bg-blue-500 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-blue-500/30">🚚</div>
-                <h4 className="font-extrabold text-blue-400 text-sm">Lower Closing Fees</h4>
-                <p className="text-gray-400 text-[11px]">(₹20–₹26 per order Self Ship)</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* 🛍️ Featured Freedom Sale Deals - Clickable Cards */}
         <div className="max-w-6xl mx-auto px-4 pt-4">
           <div className="flex justify-between items-center mb-6">
@@ -166,97 +132,105 @@ export default function DealsPage() {
             <Link href="/search" className="text-xs font-bold text-orange-600 hover:underline">View All Offers &rarr;</Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {productsToDisplay.map((item: any) => {
-              const isOutOfStock = item.stock_quantity === 0;
-              return (
-                <div
-                  key={item.id}
-                  className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition duration-300 flex flex-col group relative"
-                >
-                  {/* Clickable area — image + info → product page */}
-                  <Link href={`/product/${item.handle || item.id}`} className="block p-4 space-y-3 flex-1 cursor-pointer">
-                    {/* Product Image */}
-                    <div className="relative aspect-square w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 p-3">
-                      <img
-                        src={item.image}
-                        alt={item.title}
-                        className={`w-full h-full object-cover rounded-xl transition duration-300 ${
-                          isOutOfStock ? "grayscale opacity-60" : "group-hover:scale-105"
-                        }`}
-                      />
-                      <div className="absolute top-2 right-2 bg-orange-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
-                        ₹{item.price}
-                      </div>
-
-                      {/* 🚫 OUT OF STOCK STAMP IN CENTER */}
-                      {isOutOfStock && (
-                        <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] flex items-center justify-center p-2">
-                          <div className="border-4 border-red-600 text-red-600 font-black text-sm px-3 py-1.5 rounded-xl transform -rotate-12 uppercase tracking-widest bg-white/95 shadow-xl text-center">
-                            OUT OF STOCK
-                          </div>
+          {productsToDisplay.length === 0 ? (
+            <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center text-gray-500 shadow-xs">
+              <div className="text-5xl mb-4">🏷️</div>
+              <p className="text-lg font-bold text-gray-900">No active sale products added yet</p>
+              <p className="text-xs mt-1 text-gray-500">Products added to the database will automatically appear here.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {productsToDisplay.map((item: any) => {
+                const isOutOfStock = item.stock_quantity === 0;
+                return (
+                  <div
+                    key={item.id}
+                    className="bg-white border border-gray-200 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition duration-300 flex flex-col group relative"
+                  >
+                    {/* Clickable area — image + info → product page */}
+                    <Link href={`/product/${item.handle || item.id}`} className="block p-4 space-y-3 flex-1 cursor-pointer">
+                      {/* Product Image */}
+                      <div className="relative aspect-square w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 p-3">
+                        <img
+                          src={item.image}
+                          alt={item.title}
+                          className={`w-full h-full object-cover rounded-xl transition duration-300 ${
+                            isOutOfStock ? "grayscale opacity-60" : "group-hover:scale-105"
+                          }`}
+                        />
+                        <div className="absolute top-2 right-2 bg-orange-600 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-xs">
+                          ₹{item.price}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Info & Badges */}
-                    <div className="space-y-2">
-                      <h3 className="font-black text-base text-gray-900 group-hover:text-orange-600 transition truncate">
-                        {item.title}
-                      </h3>
-                      <div className="flex items-center gap-1.5 text-[10px]">
-                        {isOutOfStock ? (
-                          <span className="bg-red-100 text-red-700 border border-red-300 font-black px-2 py-0.5 rounded-md uppercase">
-                            🚫 Out of Stock
-                          </span>
-                        ) : (
-                          <>
-                            <span className="bg-orange-100 text-orange-800 border border-orange-200 font-bold px-2 py-0.5 rounded-md">
-                              {item.easyShip ? "🚚 Easy Ship" : "🏬 FC"}
-                            </span>
-                            <span className="bg-gray-100 text-gray-700 border border-gray-200 font-semibold px-2 py-0.5 rounded-md">
-                              {item.weight}
-                            </span>
-                          </>
+                        {/* 🚫 OUT OF STOCK STAMP IN CENTER */}
+                        {isOutOfStock && (
+                          <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] flex items-center justify-center p-2">
+                            <div className="border-4 border-red-600 text-red-600 font-black text-sm px-3 py-1.5 rounded-xl transform -rotate-12 uppercase tracking-widest bg-white/95 shadow-xl text-center">
+                              OUT OF STOCK
+                            </div>
+                          </div>
                         )}
                       </div>
-                      <div className="flex items-center justify-between text-[11px] pt-1">
-                        <span className="bg-gray-800 text-white font-bold px-2 py-0.5 rounded">Earlier ₹{item.earlier}</span>
-                        <span className="bg-emerald-600 text-white font-bold px-2 py-0.5 rounded">Now ₹{item.now}</span>
-                      </div>
-                    </div>
-                  </Link>
 
-                  {/* Save Button — or Disabled Out of Stock Button */}
-                  <div className="px-4 pb-4">
-                    {isOutOfStock ? (
-                      <button
-                        disabled
-                        className="w-full bg-red-50 border border-red-300 text-red-600 text-xs font-black py-2.5 rounded-2xl text-center cursor-not-allowed opacity-90 uppercase tracking-wider"
-                      >
-                        🚫 Out of Stock
-                      </button>
-                    ) : (
-                      <BuyNowButton
-                        productObj={{
-                          id: item.id,
-                          handle: item.handle,
-                          title: item.title,
-                          price: item.price,
-                          image: item.image
-                        }}
-                        productHandle={item.handle}
-                        productTitle={item.title}
-                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black py-2.5 rounded-2xl text-center transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
-                      >
-                        <span>🪙</span> Save ₹{item.save} / unit
-                      </BuyNowButton>
-                    )}
+                      {/* Info & Badges */}
+                      <div className="space-y-2">
+                        <h3 className="font-black text-base text-gray-900 group-hover:text-orange-600 transition truncate">
+                          {item.title}
+                        </h3>
+                        <div className="flex items-center gap-1.5 text-[10px]">
+                          {isOutOfStock ? (
+                            <span className="bg-red-100 text-red-700 border border-red-300 font-black px-2 py-0.5 rounded-md uppercase">
+                              🚫 Out of Stock
+                            </span>
+                          ) : (
+                            <>
+                              <span className="bg-orange-100 text-orange-800 border border-orange-200 font-bold px-2 py-0.5 rounded-md">
+                                {item.easyShip ? "🚚 Easy Ship" : "🏬 FC"}
+                              </span>
+                              <span className="bg-gray-100 text-gray-700 border border-gray-200 font-semibold px-2 py-0.5 rounded-md">
+                                {item.weight}
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] pt-1">
+                          <span className="bg-gray-800 text-white font-bold px-2 py-0.5 rounded">Earlier ₹{item.earlier}</span>
+                          <span className="bg-emerald-600 text-white font-bold px-2 py-0.5 rounded">Now ₹{item.now}</span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Save Button — or Disabled Out of Stock Button */}
+                    <div className="px-4 pb-4">
+                      {isOutOfStock ? (
+                        <button
+                          disabled
+                          className="w-full bg-red-50 border border-red-300 text-red-600 text-xs font-black py-2.5 rounded-2xl text-center cursor-not-allowed opacity-90 uppercase tracking-wider"
+                        >
+                          🚫 Out of Stock
+                        </button>
+                      ) : (
+                        <BuyNowButton
+                          productObj={{
+                            id: item.id,
+                            handle: item.handle,
+                            title: item.title,
+                            price: item.price,
+                            image: item.image
+                          }}
+                          productHandle={item.handle}
+                          productTitle={item.title}
+                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black py-2.5 rounded-2xl text-center transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                        >
+                          <span>🪙</span> Save ₹{item.save} / unit
+                        </BuyNowButton>
+                      )}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
       </div>
