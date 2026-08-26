@@ -84,6 +84,24 @@ export default function AdminDashboardPage() {
     setTimeout(() => setRestockMsg(null), 3500);
   };
 
+  const handleTriggerWeeklyReport = async () => {
+    try {
+      const { getApiBaseUrl } = await import("lib/api");
+      const apiBase = getApiBaseUrl().replace(/\/+$/, "");
+      const res = await fetch(`${apiBase}/admin/send-weekly-report`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ admin_email: "sachinrawat6264384464@gmail.com" })
+      });
+      if (res.ok) {
+        setRestockMsg("📧 7-Day Weekly Performance Digest sent to sachinrawat6264384464@gmail.com!");
+        setTimeout(() => setRestockMsg(null), 4000);
+      }
+    } catch (e) {
+      console.error("Error triggering weekly report:", e);
+    }
+  };
+
   const handleResetStore = async () => {
     if (!confirm("Are you sure you want to reset all test orders and revenue history to ₹0?")) return;
     setLoading(true);
@@ -259,6 +277,13 @@ export default function AdminDashboardPage() {
               This Year
             </button>
           </div>
+
+          <button
+            onClick={handleTriggerWeeklyReport}
+            className="bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold text-xs px-3.5 py-2 rounded-xl hover:bg-emerald-100 transition cursor-pointer shadow-2xs"
+          >
+            📧 Send 7-Day Weekly Report
+          </button>
 
           <button
             onClick={handleSeedData}

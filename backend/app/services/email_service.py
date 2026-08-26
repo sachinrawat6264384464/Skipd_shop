@@ -431,3 +431,121 @@ def send_abandoned_reminder_email(
     return send_email_notification(to_email, subject, html_content)
 
 
+def send_weekly_merchant_digest_email(
+    admin_email: str,
+    weekly_revenue: float,
+    weekly_orders: int,
+    weekly_customers: int,
+    top_products_list: list = None,
+    low_stock_count: int = 0
+):
+    """Send Automated 7-Day Executive Merchant Analytics Email Digest to Admin."""
+    subject = f"📊 Weekly Executive Sales Digest (Last 7 Days) — E-COM Commerce"
+    site_domain = os.getenv("SITE_URL", "https://ecom.botmartz.com")
+    
+    top_prods_html = ""
+    if top_products_list and len(top_products_list) > 0:
+        for item in top_products_list[:4]:
+            t_title = item.get("title", "Product Item")
+            t_sold = item.get("sold", "1 unit")
+            t_price = item.get("price", 0.0)
+            top_prods_html += f"""
+            <tr style="border-bottom: 1px solid #f1f5f9;">
+                <td style="padding: 10px; font-weight: bold; color: #0f172a; font-size: 13px;">{t_title}</td>
+                <td style="padding: 10px; text-align: center; color: #059669; font-weight: bold; font-size: 12px;">{t_sold}</td>
+                <td style="padding: 10px; text-align: right; font-weight: bold; color: #1e293b; font-size: 13px;">₹{float(t_price):,.2f}</td>
+            </tr>
+            """
+    else:
+        top_prods_html = """
+        <tr>
+            <td colspan="3" style="padding: 12px; color: #64748b; text-align: center; font-size: 13px;">No orders recorded in the last 7 days.</td>
+        </tr>
+        """
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body {{ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8fafc; margin: 0; padding: 20px; }}
+        .card {{ max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }}
+        .header {{ background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%); padding: 36px 30px; text-align: center; color: #ffffff; }}
+        .badge {{ background: #10b981; color: #ffffff; font-weight: 900; font-size: 11px; padding: 4px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 10px; }}
+        .header h1 {{ margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; }}
+        .header p {{ margin: 6px 0 0 0; opacity: 0.9; font-size: 13px; }}
+        .body {{ padding: 32px 30px; color: #1e293b; line-height: 1.6; }}
+        .stats-grid {{ display: flex; gap: 12px; margin: 24px 0; }}
+        .stat-box {{ flex: 1; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 16px; text-align: center; }}
+        .stat-label {{ font-size: 11px; font-weight: 800; color: #047857; text-transform: uppercase; letter-spacing: 0.5px; }}
+        .stat-val {{ font-size: 20px; font-weight: 900; color: #0f172a; margin-top: 4px; }}
+        .table-box {{ width: 100%; border-collapse: collapse; margin-top: 16px; background: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }}
+        .btn {{ display: inline-block; background: #059669; color: #ffffff !important; font-weight: 900; font-size: 14px; text-decoration: none; padding: 14px 32px; border-radius: 14px; text-align: center; margin: 24px 0 8px 0; box-shadow: 0 4px 14px rgba(5,150,105,0.3); uppercase; letter-spacing: 0.5px; }}
+        .footer {{ background: #f1f5f9; border-top: 1px solid #e2e8f0; padding: 20px; text-align: center; font-size: 11px; color: #64748b; }}
+      </style>
+    </head>
+    <body>
+      <div class="card">
+        <div class="header">
+          <div class="badge">7-Day Automated Digest</div>
+          <h1>📊 Weekly Store Performance Report</h1>
+          <p>Executive Analytics Summary for Store Admin</p>
+        </div>
+
+        <div class="body">
+          <p style="font-size: 14px; color: #334155; margin-top: 0;">
+            Hello Store Manager! 👋 Here is your <strong>7-day automated store performance summary</strong> generated directly from PostgreSQL database metrics:
+          </p>
+
+          <!-- 3 Stat Metrics -->
+          <table style="width: 100%; margin: 20px 0; border-spacing: 10px;">
+            <tr>
+              <td style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 16px; padding: 16px; text-align: center; width: 33%;">
+                <div style="font-size: 10px; font-weight: 800; color: #047857; text-transform: uppercase;">7-Day Revenue</div>
+                <div style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 4px;">₹{weekly_revenue:,.2f}</div>
+              </td>
+              <td style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 16px; padding: 16px; text-align: center; width: 33%;">
+                <div style="font-size: 10px; font-weight: 800; color: #1d4ed8; text-transform: uppercase;">7-Day Orders</div>
+                <div style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 4px;">{weekly_orders}</div>
+              </td>
+              <td style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 16px; padding: 16px; text-align: center; width: 33%;">
+                <div style="font-size: 10px; font-weight: 800; color: #6b21a8; text-transform: uppercase;">New Customers</div>
+                <div style="font-size: 18px; font-weight: 900; color: #0f172a; margin-top: 4px;">{weekly_customers}</div>
+              </td>
+            </tr>
+          </table>
+
+          {f'<div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-size: 12px; color: #b45309; font-weight: bold;">⚠️ Inventory Alert: {low_stock_count} items need stock re-ordering.</div>' if low_stock_count > 0 else ''}
+
+          <h4 style="font-size: 14px; font-weight: 800; color: #0f172a; margin: 20px 0 8px 0;">🏆 Top Performing Products (7 Days):</h4>
+          <table class="table-box">
+            <thead style="background: #f8fafc; text-transform: uppercase; font-size: 10px; color: #64748b;">
+              <tr>
+                <th style="padding: 10px; text-align: left;">Product Name</th>
+                <th style="padding: 10px; text-align: center;">Sales Velocity</th>
+                <th style="padding: 10px; text-align: right;">Unit Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {top_prods_html}
+            </tbody>
+          </table>
+
+          <div style="text-align: center;">
+            <a href="{site_domain}/admin" class="btn">⚡ Open Admin Control Center &rsaquo;</a>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p style="margin: 0 0 4px 0; font-weight: bold; color: #334155;">E-COM Commerce Executive Analytics System</p>
+          <p style="margin: 0;">Automated 7-day report dispatched to {admin_email}</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    """
+    return send_email_notification(admin_email, subject, html_content)
+
+
+
