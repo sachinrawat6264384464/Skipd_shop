@@ -107,8 +107,7 @@ export default function FloatingChatbot() {
   ]);
 
   useEffect(() => {
-    // Check user auth token (NO localStorage used for guest count tracking)
-    const token = localStorage.getItem('user_token') || localStorage.getItem('token');
+    const token = localStorage.getItem('skipd_token') || localStorage.getItem('user_token') || localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
     }
@@ -122,9 +121,24 @@ export default function FloatingChatbot() {
     const queryText = (textToSend || inputMessage).trim();
     if (!queryText || loading) return;
 
-    if (!isLoggedIn && guestCount >= 10) {
+    if (!isLoggedIn && guestCount >= 3) {
+      const limitMsg: Message = {
+        id: `limit-${Date.now()}`,
+        sender: 'ai',
+        text: '🔒 Guest prompt limit reached! (Max 3 free prompts for guests). Please sign in to continue chatting with AI assistant!',
+        isGuestLimit: true,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, limitMsg]);
       setShowLoginModal(true);
+      setTimeout(() => {
+        router.push('/login');
+      }, 1500);
       return;
+    }
+
+    if (!isLoggedIn) {
+      setGuestCount(prev => prev + 1);
     }
 
     const userMsgObj: Message = {
