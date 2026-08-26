@@ -267,7 +267,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                   ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100) 
                   : 0;
 
-                const stock = (product as any).stock_quantity ?? ((product.id || idx) % 7 === 0 ? 0 : (product.id || idx) % 3 === 0 ? 3 : 12);
+                const numId = typeof product.id === "number" ? product.id : (parseInt(String(product.id || "").replace(/[^0-9]/g, "")) || idx);
+                const stock = (product as any).stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
                 const isOutOfStock = stock === 0;
 
                 return (
