@@ -43,6 +43,8 @@ export default function AdminSalesPage() {
 
   // Dynamic Campaigns Dataset
   const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [viewModalCampaign, setViewModalCampaign] = useState<any | null>(null);
+  const [isEditingModal, setIsEditingModal] = useState(false);
 
   // ⚡ Live Flash Sale Deals Dataset for Homepage FlashSaleBanner
   const [flashSaleDeals, setFlashSaleDeals] = useState<any[]>([
@@ -94,103 +96,115 @@ export default function AdminSalesPage() {
 
   async function loadData() {
     setLoading(true);
-    let raw: any[] = [];
-
-    const defaultSeedCampaigns = [
-      {
-        id: 1,
-        icon: "⚡",
-        iconBg: "bg-red-50 text-red-500",
-        title: "Grand Flash Sale 2026",
-        subtitle: "Live Lightning Deals on Electronics & Apparel",
-        type: "Flash Sale",
-        typeBg: "bg-red-50 text-red-600 border-red-100",
-        discountOffer: "Up to 70% OFF",
-        startDate: "May 24, 2026 10:00 AM",
-        endDate: "May 30, 2026 11:59 PM",
-        status: "Active",
-        statusBg: "bg-emerald-100 text-emerald-800",
-        priority: "High",
-        priorityBg: "bg-red-50 text-red-600 border-red-200"
-      },
-      {
-        id: 2,
-        icon: "🏷️",
-        iconBg: "bg-emerald-50 text-emerald-600",
-        title: "New Customer Welcome Voucher",
-        subtitle: "Flat ₹500 discount for first-time signups",
-        type: "Promo Code",
-        typeBg: "bg-emerald-50 text-emerald-700 border-emerald-100",
-        discountOffer: "Flat ₹500 OFF (Code: WELCOME500)",
-        startDate: "May 01, 2026 12:00 AM",
-        endDate: "Dec 31, 2026 11:59 PM",
-        status: "Active",
-        statusBg: "bg-emerald-100 text-emerald-800",
-        priority: "High",
-        priorityBg: "bg-red-50 text-red-600 border-red-200"
-      },
-      {
-        id: 3,
-        icon: "✉️",
-        iconBg: "bg-teal-50 text-teal-600",
-        title: "Weekend Tech Blowout Mailer",
-        subtitle: "Promotional email digest sent to all customers",
-        type: "Email",
-        typeBg: "bg-teal-50 text-teal-700 border-teal-100",
-        discountOffer: "Extra 15% OFF Audio Gear",
-        startDate: "May 25, 2026 09:00 AM",
-        endDate: "May 28, 2026 11:59 PM",
-        status: "Active",
-        statusBg: "bg-emerald-100 text-emerald-800",
-        priority: "Medium",
-        priorityBg: "bg-amber-50 text-amber-700 border-amber-200"
-      }
-    ];
+    let formattedFromDb: any[] = [];
 
     try {
-      if (typeof window !== "undefined") {
-        const saved = localStorage.getItem("skipd_marketing_campaigns");
-        if (saved !== null) {
-          const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            raw = parsed;
-          }
-        }
-      }
-
       const dbSales = await fetchAdminAllSales();
       if (dbSales && Array.isArray(dbSales) && dbSales.length > 0) {
-        const formattedFromDb = dbSales.map((s: any, idx: number) => ({
+        formattedFromDb = dbSales.map((s: any, idx: number) => ({
           id: s.id || Date.now() + idx,
           icon: s.badge_text?.includes("LIVE") ? "⚡" : "🎁",
           iconBg: "bg-red-50 text-red-500",
           title: s.title || "Flash Sale Event",
-          subtitle: s.badge_text || "LIVE NOW",
+          subtitle: s.subtitle || s.badge_text || "LIVE NOW",
           type: "Flash Sale",
           typeBg: "bg-red-50 text-red-600 border-red-100",
           discountOffer: s.badge_text || "Up to 50% OFF",
-          startDate: s.start_date ? new Date(s.start_date).toLocaleDateString() : "May 24, 2026 10:00 AM",
-          endDate: s.end_date ? new Date(s.end_date).toLocaleDateString() : "May 30, 2026 11:59 PM",
-          status: s.status === "ACTIVE" ? "Active" : "Draft",
+          startDate: s.start_date ? new Date(s.start_date).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "May 24, 2026",
+          endDate: s.end_date ? new Date(s.end_date).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "May 30, 2026",
+          status: s.status === "ACTIVE" ? "Active" : s.status === "DRAFT" ? "Draft" : "Active",
           statusBg: s.status === "ACTIVE" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700",
           priority: "High",
           priorityBg: "bg-red-50 text-red-600 border-red-200"
         }));
-
-        const existingIds = new Set(raw.map((r: any) => r.id));
-        formattedFromDb.forEach((f: any) => {
-          if (!existingIds.has(f.id)) raw.unshift(f);
-        });
       }
     } catch (e) {
-      console.warn("Failed to fetch DB sales, using defaults:", e);
-    } finally {
-      if (!raw || raw.length === 0) {
-        raw = defaultSeedCampaigns;
-      }
-      setCampaigns(raw);
-      setLoading(false);
+      console.warn("Failed to fetch DB sales:", e);
     }
+
+    let localExtra: any[] = [];
+    if (typeof window !== "undefined") {
+      try {
+        const saved = localStorage.getItem("skipd_marketing_campaigns");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) localExtra = parsed;
+        }
+      } catch (e) {}
+    }
+
+    // Clean Deduplication by ID & Title
+    const map = new Map<string, any>();
+
+    // DB Sales first
+    formattedFromDb.forEach(item => {
+      const key = `${item.id}-${(item.title || "").toLowerCase()}`;
+      map.set(key, item);
+    });
+
+    // Local extra campaigns
+    localExtra.forEach(item => {
+      const key = `${item.id}-${(item.title || "").toLowerCase()}`;
+      if (!map.has(key)) map.set(key, item);
+    });
+
+    // Fallback seed campaigns if DB empty
+    if (map.size === 0) {
+      const defaultSeedCampaigns = [
+        {
+          id: 1001,
+          icon: "⚡",
+          iconBg: "bg-red-50 text-red-500",
+          title: "Grand Flash Sale 2026",
+          subtitle: "Live Lightning Deals on Electronics & Apparel",
+          type: "Flash Sale",
+          typeBg: "bg-red-50 text-red-600 border-red-100",
+          discountOffer: "Up to 70% OFF",
+          startDate: "May 24, 2026 10:00 AM",
+          endDate: "May 30, 2026 11:59 PM",
+          status: "Active",
+          statusBg: "bg-emerald-100 text-emerald-800",
+          priority: "High",
+          priorityBg: "bg-red-50 text-red-600 border-red-200"
+        },
+        {
+          id: 1002,
+          icon: "🏷️",
+          iconBg: "bg-emerald-50 text-emerald-600",
+          title: "New Customer Welcome Voucher",
+          subtitle: "Flat ₹500 discount for first-time signups",
+          type: "Promo Code",
+          typeBg: "bg-emerald-50 text-emerald-700 border-emerald-100",
+          discountOffer: "Flat ₹500 OFF (Code: WELCOME500)",
+          startDate: "May 01, 2026 12:00 AM",
+          endDate: "Dec 31, 2026 11:59 PM",
+          status: "Active",
+          statusBg: "bg-emerald-100 text-emerald-800",
+          priority: "High",
+          priorityBg: "bg-red-50 text-red-600 border-red-200"
+        },
+        {
+          id: 1003,
+          icon: "✉️",
+          iconBg: "bg-teal-50 text-teal-600",
+          title: "Weekend Tech Blowout Mailer",
+          subtitle: "Promotional email digest sent to all customers",
+          type: "Email",
+          typeBg: "bg-teal-50 text-teal-700 border-teal-100",
+          discountOffer: "Extra 15% OFF Audio Gear",
+          startDate: "May 25, 2026 09:00 AM",
+          endDate: "May 28, 2026 11:59 PM",
+          status: "Active",
+          statusBg: "bg-emerald-100 text-emerald-800",
+          priority: "Medium",
+          priorityBg: "bg-amber-50 text-amber-700 border-amber-200"
+        }
+      ];
+      defaultSeedCampaigns.forEach(item => map.set(`${item.id}-${item.title}`, item));
+    }
+
+    setCampaigns(Array.from(map.values()));
+    setLoading(false);
   }
 
   const showToast = (text: string, type: "success" | "error" = "success") => {
@@ -198,7 +212,7 @@ export default function AdminSalesPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const handleCreateCampaign = (e: React.FormEvent) => {
+  const handleCreateCampaign = async (e: React.FormEvent) => {
     e.preventDefault();
     const created = {
       id: Date.now(),
@@ -226,28 +240,26 @@ export default function AdminSalesPage() {
       } catch (e) {}
     }
 
-    // 📧 Trigger Real Promotional Marketing Email dispatch to all customer emails!
+    // 📧 Trigger Real Promotional Email
     try {
       import("lib/services/email-service").then(({ sendCampaignPromotionalEmail }) => {
         sendCampaignPromotionalEmail(created);
       });
-    } catch (e) {
-      console.error("Failed to send campaign emails:", e);
-    }
+    } catch (e) {}
 
-    // Attempt DB API save
+    // Save to PostgreSQL DB via API
     try {
-      createAdminSale({
+      await createAdminSale({
         title: created.title,
         slug: created.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
         subtitle: created.subtitle,
         badge_text: created.discountOffer,
-        status: "ACTIVE"
+        status: created.status === "Active" ? "ACTIVE" : "DRAFT"
       });
     } catch (e) {}
 
     setShowCreateModal(false);
-    showToast(`🚀 Campaign "${created.title}" launched & emails sent to customers!`);
+    showToast(`🚀 Campaign "${created.title}" created & saved to DB!`);
     setNewCampaign({
       title: "",
       subtitle: "",
@@ -260,7 +272,31 @@ export default function AdminSalesPage() {
     });
   };
 
-  const handleDeleteCampaign = (id: number) => {
+  const handleToggleStatus = async (c: any) => {
+    const newStatus = c.status === "Active" ? "Draft" : "Active";
+    const newStatusBg = newStatus === "Active" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700";
+
+    const updated = campaigns.map(item => item.id === c.id ? { ...item, status: newStatus, statusBg: newStatusBg } : item);
+    setCampaigns(updated);
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(updated));
+      } catch (e) {}
+    }
+
+    try {
+      await updateAdminSale(c.id, { status: newStatus === "Active" ? "ACTIVE" : "DRAFT" });
+    } catch (e) {}
+
+    showToast(`⚡ Campaign status updated to ${newStatus}!`);
+  };
+
+  const handleDeleteCampaign = async (id: number) => {
+    try {
+      await deleteAdminSale(id);
+    } catch (e) {}
+
     const updated = campaigns.filter(c => c.id !== id);
     setCampaigns(updated);
 
@@ -270,6 +306,37 @@ export default function AdminSalesPage() {
       } catch (e) {}
     }
     showToast("🗑️ Campaign deleted successfully!");
+  };
+
+  const handleUpdateCampaignInModal = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!viewModalCampaign) return;
+
+    const updated = campaigns.map(item => item.id === viewModalCampaign.id ? {
+      ...viewModalCampaign,
+      statusBg: viewModalCampaign.status === "Active" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700"
+    } : item);
+
+    setCampaigns(updated);
+
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(updated));
+      } catch (e) {}
+    }
+
+    try {
+      await updateAdminSale(viewModalCampaign.id, {
+        title: viewModalCampaign.title,
+        subtitle: viewModalCampaign.subtitle,
+        badge_text: viewModalCampaign.discountOffer,
+        status: viewModalCampaign.status === "Active" ? "ACTIVE" : "DRAFT"
+      });
+    } catch (e) {}
+
+    setViewModalCampaign(null);
+    setIsEditingModal(false);
+    showToast(`✅ Campaign "${viewModalCampaign.title}" updated successfully!`);
   };
 
   // Filtered Campaigns
@@ -595,9 +662,13 @@ export default function AdminSalesPage() {
 
                     {/* STATUS */}
                     <td className="px-6 py-4">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${c.statusBg}`}>
+                      <button
+                        onClick={() => handleToggleStatus(c)}
+                        title="Click to toggle status (Active <-> Draft)"
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-black transition cursor-pointer hover:opacity-80 active:scale-95 ${c.statusBg}`}
+                      >
                         {c.status}
-                      </span>
+                      </button>
                     </td>
 
                     {/* PRIORITY */}
@@ -611,11 +682,24 @@ export default function AdminSalesPage() {
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
                         <button
-                          onClick={() => showToast(`Campaign Details: ${c.title}`)}
-                          title="View Campaign"
+                          onClick={() => {
+                            setViewModalCampaign(c);
+                            setIsEditingModal(false);
+                          }}
+                          title="View Campaign Details"
                           className="w-8 h-8 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 inline-flex items-center justify-center transition cursor-pointer text-xs font-bold"
                         >
                           👁️
+                        </button>
+                        <button
+                          onClick={() => {
+                            setViewModalCampaign(c);
+                            setIsEditingModal(true);
+                          }}
+                          title="Edit Campaign"
+                          className="w-8 h-8 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 inline-flex items-center justify-center transition cursor-pointer text-xs font-bold"
+                        >
+                          ✏️
                         </button>
                         <button
                           onClick={() => handleDeleteCampaign(c.id)}
@@ -899,6 +983,158 @@ export default function AdminSalesPage() {
                 Launch Campaign
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* 👁️ / ✏️ VIEW & EDIT CAMPAIGN MODAL */}
+      {viewModalCampaign && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-lg w-full space-y-5 shadow-2xl relative text-xs">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{viewModalCampaign.icon || "📢"}</span>
+                <div>
+                  <h3 className="text-lg font-black text-gray-900">
+                    {isEditingModal ? "Edit Campaign Details" : "Campaign Overview & Stats"}
+                  </h3>
+                  <p className="text-[10px] text-gray-400 font-bold">Campaign ID: #{viewModalCampaign.id}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setViewModalCampaign(null)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {isEditingModal ? (
+              <form onSubmit={handleUpdateCampaignInModal} className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 font-bold mb-1">Campaign Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={viewModalCampaign.title}
+                    onChange={(e) => setViewModalCampaign({ ...viewModalCampaign, title: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-gray-900 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-bold mb-1">Subtitle / Tagline</label>
+                  <input
+                    type="text"
+                    value={viewModalCampaign.subtitle || ""}
+                    onChange={(e) => setViewModalCampaign({ ...viewModalCampaign, subtitle: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-medium text-gray-900 focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-gray-700 font-bold mb-1">Discount Offer / Badge</label>
+                  <input
+                    type="text"
+                    required
+                    value={viewModalCampaign.discountOffer}
+                    onChange={(e) => setViewModalCampaign({ ...viewModalCampaign, discountOffer: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-emerald-700 focus:outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Status</label>
+                    <select
+                      value={viewModalCampaign.status}
+                      onChange={(e) => setViewModalCampaign({ ...viewModalCampaign, status: e.target.value })}
+                      className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-gray-800"
+                    >
+                      <option value="Active">Active</option>
+                      <option value="Draft">Draft</option>
+                      <option value="Completed">Completed</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-gray-700 font-bold mb-1">Priority</label>
+                    <select
+                      value={viewModalCampaign.priority}
+                      onChange={(e) => setViewModalCampaign({ ...viewModalCampaign, priority: e.target.value })}
+                      className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-gray-800"
+                    >
+                      <option value="High">🔥 High</option>
+                      <option value="Medium">● Medium</option>
+                      <option value="Low">● Low</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsEditingModal(false)}
+                    className="w-1/2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-2.5 rounded-xl transition text-xs cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl transition text-xs shadow-md cursor-pointer"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-gray-50 border border-gray-200/80 p-4 rounded-2xl space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Campaign Title</span>
+                    <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${viewModalCampaign.statusBg}`}>
+                      {viewModalCampaign.status}
+                    </span>
+                  </div>
+                  <h4 className="text-base font-black text-gray-900">{viewModalCampaign.title}</h4>
+                  <p className="text-xs text-gray-500 font-medium">{viewModalCampaign.subtitle}</p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
+                    <span className="text-[10px] font-bold text-emerald-600 uppercase block">Discount / Badge</span>
+                    <span className="text-sm font-black text-emerald-800">{viewModalCampaign.discountOffer}</span>
+                  </div>
+
+                  <div className="bg-purple-50 border border-purple-100 p-3 rounded-xl">
+                    <span className="text-[10px] font-bold text-purple-600 uppercase block">Campaign Type</span>
+                    <span className="text-sm font-black text-purple-800">{viewModalCampaign.type}</span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <span className="text-gray-400 font-bold block mb-0.5">Start Date</span>
+                    <span className="font-extrabold text-gray-800">{viewModalCampaign.startDate}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400 font-bold block mb-0.5">End Date</span>
+                    <span className="font-extrabold text-gray-800">{viewModalCampaign.endDate}</span>
+                  </div>
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <button
+                    onClick={() => setIsEditingModal(true)}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-xl transition text-xs shadow-md cursor-pointer flex items-center justify-center gap-1"
+                  >
+                    <span>✏️</span>
+                    <span>Edit This Campaign</span>
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       )}
