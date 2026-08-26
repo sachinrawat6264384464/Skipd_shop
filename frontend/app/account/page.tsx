@@ -14,7 +14,7 @@ import {
   getUserWalletBalanceKey,
   getUserSavedCardsKey
 } from "lib/utils";
-import { fetchUserOrders, UserOrder } from "lib/api";
+import { fetchUserOrders, fetchProducts, UserOrder } from "lib/api";
 
 interface TimelineStep {
   status: string;
