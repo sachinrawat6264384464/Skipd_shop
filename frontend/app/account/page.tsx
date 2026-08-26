@@ -664,7 +664,7 @@ function AccountContent() {
     return () => clearInterval(interval);
   }, [returnOrders]);
 
-  const handleSimulateReturnOrder = () => {
+  const handleSimulateReturnOrder = async () => {
     const key = getUserOrdersKey();
     const existing = JSON.parse(localStorage.getItem(key) || "[]");
     
