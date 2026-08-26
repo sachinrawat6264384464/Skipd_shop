@@ -205,6 +205,27 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         setSuccessMsg("🔥 Authenticated via Firebase Auth & synced to Database! Welcome back.");
         setTimeout(() => finishLogin(), 800);
       } catch (err: any) {
+        // 🚀 FALLBACK TO BACKEND DB LOGIN API
+        try {
+          const { loginUser } = await import("lib/api");
+          const dbRes = await loginUser(emailOrPhone.trim(), password);
+          if (dbRes && dbRes.access_token) {
+            const userObj = {
+              db_id: dbRes.id || 1,
+              user_name: dbRes.user_name || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "Customer"),
+              email: dbRes.email || emailOrPhone.trim(),
+              phone: dbRes.phone || ""
+            };
+            localStorage.setItem("skipd_token", dbRes.access_token);
+            localStorage.setItem("skipd_user", JSON.stringify(userObj));
+            window.dispatchEvent(new Event("skipd_auth_changed"));
+            setLoading(false);
+            setSuccessMsg(`🔥 Authenticated successfully! Welcome back ${userObj.user_name}.`);
+            setTimeout(() => finishLogin(), 800);
+            return;
+          }
+        } catch (apiErr: any) {}
+
         setLoading(false);
         let msg = err.message || "Failed to log in via Firebase";
         if (err.code === "auth/invalid-credential" || err.code === "auth/user-not-found" || err.code === "auth/wrong-password") {
