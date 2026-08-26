@@ -718,21 +718,42 @@ export default function AdminProductsPage() {
     const payload = {
       title: newProduct.title,
       handle: newProduct.handle || newProduct.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+      short_description: newProduct.short_description || "",
       description: newProduct.description || newProduct.short_description || "Premium quality product from SKIPD Commerce catalog.",
       price: parseFloat(newProduct.price),
       compare_at_price: newProduct.compare_at_price ? parseFloat(newProduct.compare_at_price) : undefined,
+      cost_price: newProduct.cost_per_item ? parseFloat(newProduct.cost_per_item) : undefined,
+      sku: newProduct.sku || "",
+      barcode: newProduct.barcode || "",
       stock_quantity: parseInt(newProduct.stock_quantity) || 0,
+      low_stock_threshold: parseInt(newProduct.low_stock_threshold) || 10,
       category_slug: newProduct.category_slug,
+      sub_category: newProduct.subcategory || "",
+      brand: newProduct.brand || "",
+      warehouse: newProduct.warehouse || "Main FC",
+      color: newProduct.variant_color || "",
+      size: newProduct.variant_size || "",
+      material: newProduct.material || "",
+      weight: newProduct.weight ? parseFloat(newProduct.weight) : undefined,
+      dimensions: newProduct.dimensions_length ? `${newProduct.dimensions_length}x${newProduct.dimensions_width}x${newProduct.dimensions_height}` : "",
+      gst_rate: newProduct.tax_rate ? parseFloat(newProduct.tax_rate.replace(/[^0-9.]/g, "")) : 18.0,
+      hsn_code: newProduct.hsn_code || "85183000",
+      country_of_origin: newProduct.country || "India",
       featured: newProduct.featured,
+      is_active: newProduct.status === "Active",
       images: [
         newProduct.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
         ...(newProduct.gallery_images.filter(Boolean))
       ],
+      gallery_images: newProduct.gallery_images.filter(Boolean),
+      video_url: newProduct.video_url || "",
       tags: newProduct.tags ? newProduct.tags.split(",").map(t => t.trim()) : ["bestseller"],
       highlights: (newProduct.highlights || []).filter(Boolean),
       box_contents: newProduct.box_items && newProduct.box_items.length > 0 
         ? newProduct.box_items.filter(b => b.title.trim().length > 0)
-        : (newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : [])
+        : (newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : []),
+      meta_title: newProduct.meta_title || "",
+      meta_description: newProduct.meta_desc || ""
     };
 
     if (editingProduct) {
@@ -1162,20 +1183,24 @@ export default function AdminProductsPage() {
                             </div>
                           </td>
 
-                          {/* Variant Attributes (Color/Size) & Tax (GST/HSN) */}
+                          {/* Variant Attributes (Color/Size/Material) & Tax (GST/HSN) */}
                           <td className="px-6 py-4">
-                            <div className="space-y-0.5 text-[11px]">
-                              {(p.color || p.size) ? (
-                                <p className="font-bold text-gray-800">
-                                  🎨 {p.color || "-"} {p.size ? `/ ${p.size}` : ""}
-                                </p>
-                              ) : (
-                                <p className="text-gray-400 text-[10px]">Standard Variant</p>
-                              )}
-                              <p className="text-[10px] text-gray-500 font-mono">
-                                HSN: {p.hsn_code || "8518"} | GST: {p.gst_rate || 18}%
+                            <div className="space-y-1 text-[11px]">
+                              <p className="font-extrabold text-gray-900 flex items-center gap-1">
+                                <span>🎨</span>
+                                <span>
+                                  {p.color || p.variant_color || (p.category_slug === "mobiles" ? "Pitch Black" : p.category_slug === "apparel" ? "Oversized Black" : "Standard Color")}
+                                  {(p.size || p.variant_size) ? ` • ${p.size || p.variant_size}` : ""}
+                                </span>
                               </p>
-                              {p.weight && <p className="text-[10px] text-gray-400">Weight: {p.weight} kg</p>}
+                              <p className="text-[10px] text-gray-600 font-mono bg-gray-50 px-2 py-0.5 rounded border border-gray-200 w-fit">
+                                HSN: {p.hsn_code || "85183000"} | GST: {p.gst_rate || 18}%
+                              </p>
+                              {(p.material || p.weight) && (
+                                <p className="text-[10px] text-gray-500 font-medium">
+                                  {p.material ? `Mat: ${p.material}` : ""} {p.weight ? `(${p.weight} kg)` : ""}
+                                </p>
+                              )}
                             </div>
                           </td>
 
