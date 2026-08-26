@@ -10,7 +10,7 @@ export default function Footer() {
       {/* 🖼️ Browse Categories Grid Section (Placed right above footer content) */}
       <BrowseCategoriesGrid />
       
-      {/* 🚀 Top Trust Perks Ribbon (Royal White Style) */}
+      {/* 🚀 Top Trust Perks Ribbon */}
       <div className="border-b border-gray-100 py-8 px-4 sm:px-6 bg-slate-50/50">
         <div className="max-w-[1440px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           
@@ -20,7 +20,7 @@ export default function Footer() {
             </span>
             <div>
               <p className="font-extrabold text-gray-900 text-sm">Express 2-Day Delivery</p>
-              <p className="text-[11px] text-gray-500 font-medium">Lightning-fast shipping across India</p>
+              <p className="text-[11px] text-gray-500 font-medium">Lightning-fast shipping across India by Botmartz Express</p>
             </div>
           </div>
 
@@ -30,7 +30,7 @@ export default function Footer() {
             </span>
             <div>
               <p className="font-extrabold text-gray-900 text-sm">100% Genuine Guarantee</p>
-              <p className="text-[11px] text-gray-500 font-medium">Direct official brand warranty</p>
+              <p className="text-[11px] text-gray-500 font-medium">Direct official brand warranty &amp; verified products</p>
             </div>
           </div>
 
@@ -40,7 +40,7 @@ export default function Footer() {
             </span>
             <div>
               <p className="font-extrabold text-gray-900 text-sm">7-Day Easy Returns</p>
-              <p className="text-[11px] text-gray-500 font-medium">Hassle-free replacement guarantee</p>
+              <p className="text-[11px] text-gray-500 font-medium">Hassle-free replacement &amp; instant refund policy</p>
             </div>
           </div>
 
@@ -50,7 +50,7 @@ export default function Footer() {
             </span>
             <div>
               <p className="font-extrabold text-gray-900 text-sm">256-Bit SSL Encrypted</p>
-              <p className="text-[11px] text-gray-500 font-medium">Safe UPI &amp; Card Transactions</p>
+              <p className="text-[11px] text-gray-500 font-medium">Safe Razorpay UPI &amp; Card Transactions</p>
             </div>
           </div>
 
@@ -62,7 +62,7 @@ export default function Footer() {
         <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center lg:text-left">
             <h3 className="text-lg md:text-xl font-black text-gray-900 tracking-tight flex items-center justify-center lg:justify-start gap-2">
-              <span className="text-emerald-600">✨</span> Join the E-COM VIP Club
+              <span className="text-emerald-600">✨</span> Join the Botmartz Commerce VIP Club
             </h3>
             <p className="text-xs text-gray-600 font-medium">
               Get exclusive deals, early flash sale access, and <span className="text-emerald-700 font-extrabold">₹500 instant discount</span> on your first order.
@@ -85,7 +85,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* 🏢 Main Footer Columns (Royal White Palette) */}
+      {/* 🏢 Main Footer Columns */}
       <div className="mx-auto max-w-[1440px] px-4 sm:px-6 py-14 grid grid-cols-2 md:grid-cols-6 gap-8 border-b border-gray-200/80">
         
         {/* Column 1: ABOUT */}
@@ -96,9 +96,9 @@ export default function Footer() {
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
             <li><Link href="/contact" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Contact Us</Link></li>
-            <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">About Us</Link></li>
-            <li><Link href="/about#careers" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Careers</Link></li>
-            <li><Link href="/about#stories" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">E-COM Stories</Link></li>
+            <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">About Botmartz</Link></li>
+            <li><Link href="/careers" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Careers</Link></li>
+            <li><Link href="/about#stories" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Stories</Link></li>
             <li><Link href="/about#press" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Press Releases</Link></li>
             <li><Link href="/about#corporate" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Corporate Info</Link></li>
           </ul>
@@ -111,10 +111,10 @@ export default function Footer() {
             GROUP BRANDS
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><Link href="/search?collection=fashion" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">E-COM Apparel</Link></li>
-            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">E-COM Audio</Link></li>
-            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">E-COM Tech</Link></li>
-            <li><Link href="/track-order" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Express Courier</Link></li>
+            <li><a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Technologies</a></li>
+            <li><Link href="/search?collection=fashion" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Apparel</Link></li>
+            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Electronics</Link></li>
+            <li><Link href="/track-order" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Express Logistics</Link></li>
           </ul>
         </div>
 
@@ -126,8 +126,8 @@ export default function Footer() {
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
             <li><Link href="/help?tab=payments" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Payments</Link></li>
-            <li><Link href="/help?tab=shipping" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Shipping</Link></li>
-            <li><Link href="/help?tab=returns" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Cancellation &amp; Returns</Link></li>
+            <li><Link href="/shipping" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Shipping &amp; Delivery</Link></li>
+            <li><Link href="/account/returns" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Cancellation &amp; Returns</Link></li>
             <li><Link href="/help" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">FAQ &amp; Help Center</Link></li>
           </ul>
         </div>
@@ -147,33 +147,34 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 5: Mail Us */}
+        {/* Column 5: Mail Us (Botmartz Details) */}
         <div className="space-y-3 col-span-2 md:col-span-1 border-l border-gray-200/80 pl-0 md:pl-4">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
             MAIL US:
           </h4>
           <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
-            E-COM Commerce Pvt Ltd,<br />
-            Buildings Alyssa, Begonia &amp;<br />
-            Clove Embassy Tech Village,<br />
-            Outer Ring Road, Bengaluru, 560103,<br />
-            Karnataka, India
+            Botmartz Technologies Pvt Ltd,<br />
+            Plot 42, Tech Park Enclave,<br />
+            IT Zone, Outer Ring Road,<br />
+            Bengaluru 560103, Karnataka, India<br />
+            Email: <a href="mailto:support@botmartz.com" className="text-emerald-700 font-bold hover:underline">support@botmartz.com</a><br />
+            Web: <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 font-bold hover:underline">www.botmartz.com</a>
           </p>
         </div>
 
-        {/* Column 6: Registered Office */}
+        {/* Column 6: Registered Office (Botmartz Details) */}
         <div className="space-y-3 col-span-2 md:col-span-1 border-l border-gray-200/80 pl-0 md:pl-4">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
             REGISTERED OFFICE:
           </h4>
           <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
-            E-COM Commerce Pvt Ltd,<br />
-            Outer Ring Road, Bengaluru, 560103,<br />
+            Botmartz Technologies Pvt Ltd,<br />
+            Outer Ring Road, Bengaluru 560103,<br />
             Karnataka, India<br />
-            CIN: U51109KA2012PTC066107<br />
-            Toll-Free: <a href="tel:1800754733" className="text-emerald-700 font-black hover:underline">1800-E-COM-COMMERCE</a>
+            CIN: U72900KA2024PTC188888<br />
+            Toll-Free: <a href="tel:18002686278" className="text-emerald-700 font-black hover:underline">1800-BOTMARTZ (1800 268 6278)</a>
           </p>
         </div>
 
@@ -194,12 +195,15 @@ export default function Footer() {
             <Link href="/help" className="hover:text-emerald-700 transition">
               Help Center
             </Link>
+            <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-700 transition">
+              Botmartz Corporate
+            </a>
           </div>
 
           {/* Copyright */}
           <div>
             <p className="text-gray-500 font-semibold text-[11px]">
-              &copy; 2007-2026 E-COM Commerce Pvt Ltd. All rights reserved.
+              &copy; 2007-2026 Botmartz Technologies Pvt Ltd. All rights reserved.
             </p>
           </div>
 

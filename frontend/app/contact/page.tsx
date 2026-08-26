@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { submitCustomerQuery } from "lib/api";
 import { toast } from "sonner";
+import Footer from "components/layout/footer";
 
 export default function ContactUsPage() {
   const [name, setName] = useState("");
@@ -24,7 +25,7 @@ export default function ContactUsPage() {
 
     setSubmitting(true);
     try {
-      const res = await submitCustomerQuery({
+      await submitCustomerQuery({
         customer_name: name,
         customer_email: email,
         customer_phone: phone,
@@ -36,7 +37,7 @@ export default function ContactUsPage() {
 
       setSubmitting(false);
       setSubmitted(true);
-      toast.success("✨ Your query has been submitted directly to our support team!");
+      toast.success("✨ Your query has been submitted directly to our Botmartz support team!");
     } catch (err) {
       setSubmitting(false);
       toast.error("Failed to submit inquiry. Please try again.");
@@ -44,19 +45,19 @@ export default function ContactUsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-gray-900 font-sans py-12 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto space-y-12">
+    <div className="min-h-screen bg-slate-50 text-gray-900 font-sans flex flex-col justify-between">
+      <div className="py-12 px-4 sm:px-6 max-w-6xl mx-auto space-y-12 w-full">
         
         {/* Header Hero Section */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
           <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">
-            24/7 Customer Support
+            24/7 Botmartz Support Desk
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 tracking-tight">
             We&apos;re Here to Help You
           </h1>
           <p className="text-sm text-gray-600 font-medium leading-relaxed">
-            Have questions about an order, shipping, or product details? Send us a message and our support team will get back to you within 2 hours.
+            Have questions about an order, shipping, or product details? Send us a message and our Botmartz support team will get back to you within 2 hours.
           </p>
         </div>
 
@@ -68,7 +69,7 @@ export default function ContactUsPage() {
             </div>
             <h3 className="font-black text-base text-gray-900">Toll-Free Helpline</h3>
             <p className="text-xs text-gray-500">Mon-Sat from 9:00 AM to 8:00 PM IST</p>
-            <p className="font-extrabold text-emerald-700 text-sm">1800-E-COM-COMMERCE</p>
+            <p className="font-extrabold text-emerald-700 text-sm">1800-BOTMARTZ (1800 268 6278)</p>
           </div>
 
           <div className="bg-white border border-gray-200/80 p-6 rounded-3xl shadow-2xs space-y-3 hover:border-emerald-500 transition duration-300">
@@ -77,7 +78,7 @@ export default function ContactUsPage() {
             </div>
             <h3 className="font-black text-base text-gray-900">Email Support</h3>
             <p className="text-xs text-gray-500">Send an email for order inquiries</p>
-            <p className="font-extrabold text-blue-700 text-sm">support@e-com.in</p>
+            <p className="font-extrabold text-blue-700 text-sm">support@botmartz.com</p>
           </div>
 
           <div className="bg-white border border-gray-200/80 p-6 rounded-3xl shadow-2xs space-y-3 hover:border-emerald-500 transition duration-300">
@@ -85,8 +86,8 @@ export default function ContactUsPage() {
               📍
             </div>
             <h3 className="font-black text-base text-gray-900">Corporate HQ</h3>
-            <p className="text-xs text-gray-500">Outer Ring Road, Bengaluru, 560103</p>
-            <p className="font-extrabold text-gray-800 text-sm">Karnataka, India</p>
+            <p className="text-xs text-gray-500">Plot 42, Tech Park Enclave, IT Zone</p>
+            <p className="font-extrabold text-gray-800 text-sm">Bengaluru, Karnataka 560103, India</p>
           </div>
         </div>
 
@@ -97,7 +98,7 @@ export default function ContactUsPage() {
           <div className="lg:col-span-7 space-y-6">
             <div>
               <h2 className="text-2xl font-black text-gray-900">Send Us a Direct Inquiry</h2>
-              <p className="text-xs text-gray-500 mt-1 font-medium">Your request will be logged directly into our support desk.</p>
+              <p className="text-xs text-gray-500 mt-1 font-medium">Your request will be logged directly into our Botmartz support desk.</p>
             </div>
 
             {submitted ? (
@@ -204,23 +205,24 @@ export default function ContactUsPage() {
             )}
           </div>
 
-          {/* Right HQ Info & Map placeholder (5 Cols) */}
-          <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-8 rounded-3xl flex flex-col justify-between space-y-6">
+          {/* Right HQ Info */}
+          <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-white p-8 rounded-3xl flex flex-col justify-between space-y-6 border border-emerald-900/40">
             <div className="space-y-4">
               <span className="bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px] px-2.5 py-1 rounded-md uppercase">
-                E-COM Headquarters
+                Botmartz Technologies HQ
               </span>
               <h3 className="text-2xl font-black leading-tight">Visit or Mail Us</h3>
               <p className="text-xs text-gray-300 leading-relaxed font-medium">
-                E-COM Commerce Pvt Ltd,<br />
-                Buildings Alyssa, Begonia &amp; Clove<br />
-                Embassy Tech Village, Outer Ring Road,<br />
-                Bengaluru, 560103, Karnataka, India
+                Botmartz Technologies Pvt Ltd,<br />
+                Plot 42, Tech Park Enclave,<br />
+                IT Zone, Outer Ring Road,<br />
+                Bengaluru 560103, Karnataka, India<br />
+                Email: support@botmartz.com
               </p>
             </div>
 
             <div className="space-y-3 border-t border-white/10 pt-4 text-xs font-medium">
-              <p className="text-gray-300">🏢 <strong>CIN:</strong> U51109KA2012PTC066107</p>
+              <p className="text-gray-300">🏢 <strong>CIN:</strong> U72900KA2024PTC188888</p>
               <p className="text-gray-300">⏰ <strong>Working Hours:</strong> Mon-Sat 9 AM - 8 PM IST</p>
               <p className="text-emerald-400 font-bold">⚡ Fast 2-Hour Response Time Guaranteed</p>
             </div>
@@ -235,6 +237,9 @@ export default function ContactUsPage() {
         </div>
 
       </div>
+
+      {/* Render Footer */}
+      <Footer />
     </div>
   );
 }

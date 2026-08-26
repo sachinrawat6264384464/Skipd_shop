@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { submitCustomerQuery } from "lib/api";
 import { toast } from "sonner";
+import Footer from "components/layout/footer";
 
 export default function HelpPage() {
   const [activeTab, setActiveTab] = useState<"all" | "payments" | "shipping" | "returns">("all");
@@ -27,17 +28,17 @@ export default function HelpPage() {
     {
       category: "payments",
       question: "What payment methods do you accept?",
-      answer: "We accept Google Pay, PhonePe, Paytm, BHIM UPI, Netbanking, Credit/Debit Cards (Visa, MasterCard, RuPay), and Cash on Delivery (COD)."
+      answer: "We accept Google Pay, PhonePe, Paytm, BHIM UPI, Netbanking, Credit/Debit Cards (Visa, MasterCard, RuPay), Botmartz Wallet, and Cash on Delivery (COD)."
     },
     {
       category: "returns",
       question: "What is the return & replacement policy?",
-      answer: "We offer a 7-day hassle-free doorstep pickup return and size replacement policy. You can initiate a return directly from your account page or by contacting support."
+      answer: "We offer a 7-day hassle-free doorstep pickup return and size replacement policy. You can initiate a return directly from your account page or by contacting support@botmartz.com."
     },
     {
       category: "payments",
       question: "When will I receive my refund for a returned item?",
-      answer: "Once the pickup courier collects your package and passes verification, refunds are instantly credited to your original payment method or wallet within 24-48 hours."
+      answer: "Once the pickup courier collects your package and passes verification, refunds are instantly credited to your original payment method or Botmartz Wallet within 24-48 hours."
     },
     {
       category: "shipping",
@@ -78,7 +79,7 @@ export default function HelpPage() {
       });
       setSubmitting(false);
       setSubmitted(true);
-      toast.success("✨ Support ticket created in PostgreSQL Database!");
+      toast.success("✨ Support ticket created in Botmartz Database!");
     } catch (e) {
       setSubmitting(false);
       toast.error("Failed to submit support ticket.");
@@ -86,13 +87,13 @@ export default function HelpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-gray-900 font-sans py-12 px-4 sm:px-6">
-      <div className="max-w-5xl mx-auto space-y-10">
+    <div className="min-h-screen bg-slate-50 text-gray-900 font-sans flex flex-col justify-between">
+      <div className="py-12 px-4 sm:px-6 max-w-5xl mx-auto space-y-10 w-full">
         
         {/* Header Hero Search */}
         <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-3xl p-8 sm:p-12 shadow-lg text-center space-y-6">
           <span className="bg-white/20 text-white font-extrabold text-xs px-3.5 py-1 rounded-full uppercase tracking-wider backdrop-blur-xs">
-            24/7 Help Center &amp; Support Hub
+            24/7 Help Center &amp; Support Hub &bull; Botmartz Technologies
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
             How Can We Help You?
@@ -123,7 +124,7 @@ export default function HelpPage() {
             </div>
             <h3 className="font-black text-lg text-gray-900">Payments &amp; Refunds</h3>
             <p className="text-xs text-gray-500 font-medium leading-relaxed">
-              Razorpay UPI, cards, netbanking, COD, and 24-hour instant refund timelines.
+              Razorpay UPI, cards, netbanking, COD, Botmartz Wallet, and 24-hour instant refund timelines.
             </p>
           </button>
 
@@ -200,14 +201,14 @@ export default function HelpPage() {
         <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 shadow-2xs space-y-6">
           <div>
             <h2 className="text-2xl font-black text-gray-900">Still Need Help? Submit a Ticket</h2>
-            <p className="text-xs text-gray-500 font-medium mt-1">Our support team will respond directly to your email.</p>
+            <p className="text-xs text-gray-500 font-medium mt-1">Our Botmartz support team will respond directly to your email.</p>
           </div>
 
           {submitted ? (
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center space-y-3">
               <div className="w-10 h-10 rounded-full bg-emerald-600 text-white font-black flex items-center justify-center mx-auto">✓</div>
               <h3 className="font-black text-emerald-900">Support Ticket Created!</h3>
-              <p className="text-xs text-emerald-800 font-medium">We have logged your ticket into our PostgreSQL database. Response will be sent to <strong>{email}</strong>.</p>
+              <p className="text-xs text-emerald-800 font-medium">We have logged your ticket into our Botmartz database. Response will be sent to <strong>{email}</strong>.</p>
             </div>
           ) : (
             <form onSubmit={handleTicketSubmit} className="space-y-4 text-xs font-medium">
@@ -245,6 +246,7 @@ export default function HelpPage() {
         </div>
 
       </div>
+      <Footer />
     </div>
   );
 }
