@@ -52,32 +52,68 @@ export default function AdminSalesPage() {
     setLoading(true);
     let raw: any[] = [];
 
-    // 1. Load from localStorage if available (filtering out old dummy items)
-    if (typeof window !== "undefined") {
-      try {
+    const defaultSeedCampaigns = [
+      {
+        id: 1,
+        icon: "⚡",
+        iconBg: "bg-red-50 text-red-500",
+        title: "Grand Flash Sale 2026",
+        subtitle: "Live Lightning Deals on Electronics & Apparel",
+        type: "Flash Sale",
+        typeBg: "bg-red-50 text-red-600 border-red-100",
+        discountOffer: "Up to 70% OFF",
+        startDate: "May 24, 2026 10:00 AM",
+        endDate: "May 30, 2026 11:59 PM",
+        status: "Active",
+        statusBg: "bg-emerald-100 text-emerald-800",
+        priority: "High",
+        priorityBg: "bg-red-50 text-red-600 border-red-200"
+      },
+      {
+        id: 2,
+        icon: "🏷️",
+        iconBg: "bg-emerald-50 text-emerald-600",
+        title: "New Customer Welcome Voucher",
+        subtitle: "Flat ₹500 discount for first-time signups",
+        type: "Promo Code",
+        typeBg: "bg-emerald-50 text-emerald-700 border-emerald-100",
+        discountOffer: "Flat ₹500 OFF (Code: WELCOME500)",
+        startDate: "May 01, 2026 12:00 AM",
+        endDate: "Dec 31, 2026 11:59 PM",
+        status: "Active",
+        statusBg: "bg-emerald-100 text-emerald-800",
+        priority: "High",
+        priorityBg: "bg-red-50 text-red-600 border-red-200"
+      },
+      {
+        id: 3,
+        icon: "✉️",
+        iconBg: "bg-teal-50 text-teal-600",
+        title: "Weekend Tech Blowout Mailer",
+        subtitle: "Promotional email digest sent to all customers",
+        type: "Email",
+        typeBg: "bg-teal-50 text-teal-700 border-teal-100",
+        discountOffer: "Extra 15% OFF Audio Gear",
+        startDate: "May 25, 2026 09:00 AM",
+        endDate: "May 28, 2026 11:59 PM",
+        status: "Active",
+        statusBg: "bg-emerald-100 text-emerald-800",
+        priority: "Medium",
+        priorityBg: "bg-amber-50 text-amber-700 border-amber-200"
+      }
+    ];
+
+    try {
+      if (typeof window !== "undefined") {
         const saved = localStorage.getItem("skipd_marketing_campaigns");
         if (saved !== null) {
           const parsed = JSON.parse(saved);
-          if (Array.isArray(parsed)) {
-            raw = parsed.filter((c: any) => 
-              !c.title?.includes("Great Freedom Sale") && 
-              !c.title?.includes("SKIPD Admin Special") && 
-              !c.title?.includes("New User Welcome") && 
-              !c.title?.includes("Push – Weekend") && 
-              !c.title?.includes("Email Campaign")
-            );
-            localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(raw));
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            raw = parsed;
           }
         }
-      } catch (e) {}
-    }
+      }
 
-    // 2. Initial seed dataset if first time (empty array by default)
-    if (!raw || !Array.isArray(raw)) {
-      raw = [];
-    }
-
-    try {
       const dbSales = await fetchAdminAllSales();
       if (dbSales && Array.isArray(dbSales) && dbSales.length > 0) {
         const formattedFromDb = dbSales.map((s: any, idx: number) => ({
@@ -88,9 +124,9 @@ export default function AdminSalesPage() {
           subtitle: s.badge_text || "LIVE NOW",
           type: "Flash Sale",
           typeBg: "bg-red-50 text-red-600 border-red-100",
-          discountOffer: "Up to 50% OFF",
-          startDate: "May 24, 2025 10:00 AM",
-          endDate: "May 26, 2025 11:59 PM",
+          discountOffer: s.badge_text || "Up to 50% OFF",
+          startDate: s.start_date ? new Date(s.start_date).toLocaleDateString() : "May 24, 2026 10:00 AM",
+          endDate: s.end_date ? new Date(s.end_date).toLocaleDateString() : "May 30, 2026 11:59 PM",
           status: s.status === "ACTIVE" ? "Active" : "Draft",
           statusBg: s.status === "ACTIVE" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700",
           priority: "High",
@@ -102,10 +138,15 @@ export default function AdminSalesPage() {
           if (!existingIds.has(f.id)) raw.unshift(f);
         });
       }
-    } catch (e) {}
-
-    setCampaigns(raw);
-    setLoading(false);
+    } catch (e) {
+      console.warn("Failed to fetch DB sales, using defaults:", e);
+    } finally {
+      if (!raw || raw.length === 0) {
+        raw = defaultSeedCampaigns;
+      }
+      setCampaigns(raw);
+      setLoading(false);
+    }
   }
 
   const showToast = (text: string, type: "success" | "error" = "success") => {
