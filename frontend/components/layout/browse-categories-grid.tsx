@@ -84,7 +84,9 @@ export function BrowseCategoriesGrid() {
   }
 
   const displayList = DEFAULT_FULL_CATEGORIES.map((def) => {
-    const dbMatch = dbMap.get(def.slug) || dbMap.get(def.slug.split("-")[0]);
+    const mainSlug = def.slug || "";
+    const prefix = mainSlug.split("-")[0] || mainSlug;
+    const dbMatch = dbMap.get(mainSlug) || dbMap.get(prefix);
     if (dbMatch) {
       const rawImg = dbMatch.image_url || dbMatch.icon;
       const isValidUrl = rawImg && (rawImg.startsWith("http://") || rawImg.startsWith("https://") || rawImg.startsWith("/"));

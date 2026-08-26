@@ -467,7 +467,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
     if (query?.featured !== undefined) params.append("featured", String(query.featured));
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2500);
+    const timer = setTimeout(() => controller.abort(), 8000); // 8s timeout to allow Render backend to wake up
 
     const res = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
       cache: "no-store",
@@ -486,10 +486,11 @@ export async function fetchProducts(query?: { category?: string; search?: string
     if (err && (err.$$typeof || err.message?.includes("postpone") || err.digest?.includes("NEXT_PRERENDER"))) {
       throw err;
     }
-    console.warn("[API SDK Warning] Backend offline or cold-starting. Serving fallback catalog instantly.", err);
+    console.warn("[API SDK Warning] Backend offline or cold-starting. Serving fallback catalog.", err);
   }
 
-  let list = isBackendOk ? backendProducts : MOCK_PRODUCTS;
+  // 🚀 Serve live PostgreSQL DB products when backend is OK; slice fallback to 30 items max
+  let list = isBackendOk ? backendProducts : MOCK_PRODUCTS.slice(0, 30);
 
   if (query?.featured) list = list.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
