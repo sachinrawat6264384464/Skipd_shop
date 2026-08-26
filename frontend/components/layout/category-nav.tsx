@@ -64,7 +64,7 @@ export function CategoryNav() {
           dbCats.forEach((c: any) => {
             if (c.status !== "Inactive" && c.slug) {
               const lowerSlug = String(c.slug).toLowerCase();
-              const prefix = lowerSlug.split("-")[0];
+              const prefix = lowerSlug.split("-")[0] || lowerSlug;
               const hasCount = typeof c.count === "number" ? c.count > 0 : false;
 
               // ONLY INCLUDE IF CATEGORY HAS AT LEAST 1 PRODUCT

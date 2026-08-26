@@ -50,7 +50,7 @@ export function BrowseCategoriesGrid() {
           const activeWithProds = data.filter((c: any) => {
             if (c.status === "Inactive") return false;
             const lowerSlug = (c.slug || c.name || "").toLowerCase();
-            const prefix = lowerSlug.split("-")[0];
+            const prefix = lowerSlug.split("-")[0] || lowerSlug;
             const hasCount = typeof c.count === "number" ? c.count > 0 : false;
             return categoriesWithProducts.has(lowerSlug) || categoriesWithProducts.has(prefix) || hasCount;
           });
