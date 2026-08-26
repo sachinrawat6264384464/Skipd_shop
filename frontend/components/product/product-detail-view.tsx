@@ -843,137 +843,168 @@ const SUB_NAV_ITEMS = [
             </div>
 
             {/* 📏 Size Selector (Matching Screenshot 2) */}
-            <div className="space-y-3 pt-3 border-t border-gray-100 text-xs">
-              <div className="flex items-center justify-between">
-                <p className="font-bold text-gray-900">
-                  Size: <span className={`font-extrabold ${product.stock_quantity === 0 ? "text-red-600" : "text-[#0284C7]"}`}>
-                    {product.stock_quantity === 0 ? "Out of Stock / Unavailable" : "In Stock"}
-                  </span>
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setShowSizeChart(true)}
-                  className="text-gray-700 hover:text-emerald-700 font-bold flex items-center gap-1.5 underline underline-offset-2 cursor-pointer"
-                >
-                  <span>📏</span> Size Chart
-                </button>
-              </div>
+            {(() => {
+              const numId = typeof product.id === "number" ? product.id : (parseInt(String(product.id || "").replace(/[^0-9]/g, "")) || 1);
+              const maxStock = product.stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+              const isOutOfStock = maxStock === 0;
 
-              {/* Size Pills Grid: S, M, L, XL */}
-              <div className="flex items-center gap-2.5">
-                {["S", "M", "L", "XL"].map((sz) => (
-                  <button
-                    key={sz}
-                    type="button"
-                    onClick={() => setSelectedSize(sz)}
-                    className={`w-12 h-10 rounded-xl font-black text-xs transition border cursor-pointer flex items-center justify-center ${
-                      selectedSize === sz
-                        ? "bg-black text-white border-black shadow-sm"
-                        : "bg-white text-gray-800 border-gray-300 hover:border-gray-500 hover:bg-gray-50"
-                    }`}
-                  >
-                    {sz}
-                  </button>
-                ))}
-              </div>
+              const handleIncreaseQty = () => {
+                if (maxStock > 0 && quantity >= maxStock) {
+                  toast.warning(`⚠️ Maximum available stock reached!`, {
+                    description: `Only ${maxStock} unit(s) of this item are in stock. No more items in stock!`,
+                    duration: 3000
+                  });
+                  return;
+                }
+                setQuantity(prev => prev + 1);
+              };
 
-              {/* RECOMMENDED Size Banner (Matching Screenshot 2) */}
-              <div className="border border-gray-900 rounded-xl p-3 bg-white flex items-center justify-between font-black text-xs text-gray-900 shadow-2xs max-w-xs">
-                <div className="flex items-center gap-2">
-                  <span className="font-serif italic font-black text-sm">TF</span>
-                  <span>RECOMMENDED: L</span>
-                </div>
-                <span>&rarr;</span>
-              </div>
+              return (
+                <>
+                  <div className="space-y-3 pt-3 border-t border-gray-100 text-xs">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-gray-900">
+                        Size: <span className={`font-extrabold ${isOutOfStock ? "text-red-600" : maxStock <= 5 ? "text-amber-600" : "text-[#0284C7]"}`}>
+                          {isOutOfStock ? "Out of Stock / Unavailable" : maxStock <= 5 ? `Only ${maxStock} Left!` : "In Stock"}
+                        </span>
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowSizeChart(true)}
+                        className="text-gray-700 hover:text-emerald-700 font-bold flex items-center gap-1.5 underline underline-offset-2 cursor-pointer"
+                      >
+                        <span>📏</span> Size Chart
+                      </button>
+                    </div>
 
-              {/* Also Available in Size */}
-              <div className="space-y-1.5 pt-1">
-                <p className="font-bold text-gray-700 text-[11px]">Also Available in Size</p>
-                <button className="border border-gray-300 rounded-xl px-4 py-2 text-xs font-bold text-gray-800 bg-white hover:bg-gray-50 cursor-pointer">
-                  Plus
-                </button>
-              </div>
-            </div>
+                    {/* Size Pills Grid: S, M, L, XL */}
+                    <div className="flex items-center gap-2.5">
+                      {["S", "M", "L", "XL"].map((sz) => (
+                        <button
+                          key={sz}
+                          type="button"
+                          onClick={() => setSelectedSize(sz)}
+                          className={`w-12 h-10 rounded-xl font-black text-xs transition border cursor-pointer flex items-center justify-center ${
+                            selectedSize === sz
+                              ? "bg-black text-white border-black shadow-sm"
+                              : "bg-white text-gray-800 border-gray-300 hover:border-gray-500 hover:bg-gray-50"
+                          }`}
+                        >
+                          {sz}
+                        </button>
+                      ))}
+                    </div>
 
-            {/* 🔢 Quantity Stepper & 🛍️ Circular Wishlist Heart + ADD TO CART Action Row (Matching Screenshot 2 & User Request) */}
-            <div className="space-y-3 pt-3 border-t border-gray-100">
-              
-              {/* Quantity Selector */}
-              <div className="space-y-1.5 text-xs">
-                <p className="font-bold text-gray-900">Quantity:</p>
-                <div className="inline-flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white shadow-2xs">
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="px-3.5 py-2 text-gray-700 hover:bg-gray-100 font-black text-sm transition cursor-pointer"
-                  >
-                    -
-                  </button>
-                  <span className="px-4 py-2 font-black text-xs text-gray-900">{quantity}</span>
-                  <button
-                    type="button"
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="px-3.5 py-2 text-gray-700 hover:bg-gray-100 font-black text-sm transition cursor-pointer"
-                  >
-                    +
-                  </button>
-                </div>
-              </div>
+                    {/* RECOMMENDED Size Banner (Matching Screenshot 2) */}
+                    <div className="border border-gray-900 rounded-xl p-3 bg-white flex items-center justify-between font-black text-xs text-gray-900 shadow-2xs max-w-xs">
+                      <div className="flex items-center gap-2">
+                        <span className="font-serif italic font-black text-sm">TF</span>
+                        <span>RECOMMENDED: L</span>
+                      </div>
+                      <span>&rarr;</span>
+                    </div>
 
-              {/* Action Row: Wishlist Heart Circle + ADD TO CART Pill Button */}
-              <div className="flex items-center gap-3 pt-2">
-                
-                {/* 🤍 Circular Wishlist Heart Button (Next to Add to Cart, Matching Screenshot 2!) */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    const item = {
-                      id: product.id,
-                      handle: product.handle,
-                      title: product.title,
-                      price: product.price,
-                      compare_at_price: product.compare_at_price,
-                      image: product.images?.[0] || selectedImage,
-                      category: product.category?.name || "Store",
-                      rating: 4.5
-                    };
-                    const wasLiked = isInWishlist(product.id);
-                    toggleWishlist(item);
-                    if (wasLiked) {
-                      toast("💔 Removed from Wishlist", { description: product.title });
-                    } else {
-                      toast.success("❤️ Added to Wishlist!", { description: product.title });
-                    }
-                  }}
-                  className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition shrink-0 cursor-pointer shadow-sm ${
-                    isInWishlist(product.id)
-                      ? "bg-emerald-50 border-emerald-500 text-emerald-600 scale-105"
-                      : "bg-white border-emerald-400 text-emerald-500 hover:border-emerald-600 hover:bg-emerald-50"
-                  }`}
-                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
-                >
-                  <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                  </svg>
-                </button>
+                    {/* Also Available in Size */}
+                    <div className="space-y-1.5 pt-1">
+                      <p className="font-bold text-gray-700 text-[11px]">Also Available in Size</p>
+                      <button className="border border-gray-300 rounded-xl px-4 py-2 text-xs font-bold text-gray-800 bg-white hover:bg-gray-50 cursor-pointer">
+                        Plus
+                      </button>
+                    </div>
+                  </div>
 
-                {/* 🛒 ADD TO CART Big Green Pill Button */}
-                <button
-                  type="button"
-                  disabled={product.stock_quantity === 0}
-                  onClick={handleAddToCart}
-                  className={`flex-1 font-black text-sm py-4 px-6 rounded-full transition text-center tracking-wider uppercase ${
-                    product.stock_quantity === 0
-                      ? "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed opacity-80"
-                      : "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-md shadow-emerald-600/30 cursor-pointer"
-                  }`}
-                >
-                  {product.stock_quantity === 0 ? "🚫 OUT OF STOCK" : (cartAddedToast ? "✓ ADDED TO CART!" : "ADD TO CART")}
-                </button>
+                  {/* 🔢 Quantity Stepper & 🛍️ Circular Wishlist Heart + ADD TO CART Action Row */}
+                  <div className="space-y-3 pt-3 border-t border-gray-100">
+                    
+                    {/* Quantity Selector */}
+                    <div className="space-y-1.5 text-xs">
+                      <div className="flex justify-between items-center">
+                        <p className="font-bold text-gray-900">Quantity:</p>
+                        {maxStock > 0 && (
+                          <span className={`text-[11px] font-black ${maxStock <= 5 ? "text-amber-700" : "text-emerald-700"}`}>
+                            (Max limit: {maxStock} available)
+                          </span>
+                        )}
+                      </div>
+                      <div className="inline-flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white shadow-2xs">
+                        <button
+                          type="button"
+                          disabled={isOutOfStock || quantity <= 1}
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                          className="px-3.5 py-2 text-gray-700 hover:bg-gray-100 font-black text-sm transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          -
+                        </button>
+                        <span className="px-4 py-2 font-black text-xs text-gray-900">{isOutOfStock ? 0 : quantity}</span>
+                        <button
+                          type="button"
+                          disabled={isOutOfStock || (maxStock > 0 && quantity >= maxStock)}
+                          onClick={handleIncreaseQty}
+                          className="px-3.5 py-2 text-gray-700 hover:bg-gray-100 font-black text-sm transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                          title={quantity >= maxStock ? "No more product in stock!" : "Add quantity"}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
 
-              </div>
+                    {/* Action Row: Wishlist Heart Circle + ADD TO CART Pill Button */}
+                    <div className="flex items-center gap-3 pt-2">
+                      
+                      {/* 🤍 Circular Wishlist Heart Button */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const item = {
+                            id: product.id,
+                            handle: product.handle,
+                            title: product.title,
+                            price: product.price,
+                            compare_at_price: product.compare_at_price,
+                            image: product.images?.[0] || selectedImage,
+                            category: product.category?.name || "Store",
+                            rating: 4.5
+                          };
+                          const wasLiked = isInWishlist(product.id);
+                          toggleWishlist(item);
+                          if (wasLiked) {
+                            toast("💔 Removed from Wishlist", { description: product.title });
+                          } else {
+                            toast.success("❤️ Added to Wishlist!", { description: product.title });
+                          }
+                        }}
+                        className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition shrink-0 cursor-pointer shadow-sm ${
+                          isInWishlist(product.id)
+                            ? "bg-emerald-50 border-emerald-500 text-emerald-600 scale-105"
+                            : "bg-white border-emerald-400 text-emerald-500 hover:border-emerald-600 hover:bg-emerald-50"
+                        }`}
+                        title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                      >
+                        <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                        </svg>
+                      </button>
 
-            </div>
+                      {/* 🛒 ADD TO CART Big Green Pill Button */}
+                      <button
+                        type="button"
+                        disabled={isOutOfStock}
+                        onClick={handleAddToCart}
+                        className={`flex-1 font-black text-sm py-4 px-6 rounded-full transition text-center tracking-wider uppercase ${
+                          isOutOfStock
+                            ? "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed opacity-80"
+                            : "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-md shadow-emerald-600/30 cursor-pointer"
+                        }`}
+                      >
+                        {isOutOfStock ? "🚫 OUT OF STOCK" : (cartAddedToast ? "✓ ADDED TO CART!" : "ADD TO CART")}
+                      </button>
+
+                    </div>
+
+                  </div>
+                </>
+              );
+            })()}
 
             {/* 📋 About This Item Specs Bullet Points */}
             {parsedHighlights.length > 0 && (
@@ -1048,11 +1079,17 @@ const SUB_NAV_ITEMS = [
               <div className="space-y-1 text-xs text-gray-700">
                 <p className="font-bold text-emerald-700">FREE delivery Saturday, Aug 15.</p>
                 <p className="text-[11px] text-gray-500">📍 Deliver to Gwalior 474001</p>
-                {product.stock_quantity === 0 ? (
-                  <p className="text-red-600 font-black text-sm pt-1 uppercase tracking-wider">🚫 Out of Stock (Unavailable)</p>
-                ) : (
-                  <p className="text-emerald-600 font-extrabold text-sm pt-1">In Stock ({product.stock_quantity ?? 40} units available)</p>
-                )}
+                {(() => {
+                  const numId = typeof product.id === "number" ? product.id : (parseInt(String(product.id || "").replace(/[^0-9]/g, "")) || 1);
+                  const maxStock = product.stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+                  if (maxStock === 0) {
+                    return <p className="text-red-600 font-black text-sm pt-1 uppercase tracking-wider flex items-center gap-1"><span>❌</span> Out of Stock (Unavailable)</p>;
+                  }
+                  if (maxStock <= 5) {
+                    return <p className="text-amber-900 font-black text-xs pt-1 bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg animate-pulse flex items-center gap-1"><span>⚡</span> Low Stock: Only {maxStock} left in stock!</p>;
+                  }
+                  return <p className="text-emerald-600 font-extrabold text-sm pt-1 flex items-center gap-1"><span>📦</span> In Stock ({maxStock} units available)</p>;
+                })()}
                 <p className="text-[10px] text-gray-500">Ships from and sold by E-COM Official Retail.</p>
               </div>
 
