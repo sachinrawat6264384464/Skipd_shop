@@ -149,16 +149,27 @@ export default function AdminCategoriesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 font-medium">
-                {categories.map((cat) => (
-                  <tr key={cat.id} className="hover:bg-gray-50 transition">
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      {cat.icon && (cat.icon.startsWith("data:") || cat.icon.startsWith("http") || cat.icon.startsWith("/")) ? (
-                        <img src={cat.icon} alt={cat.name} className="w-9 h-9 rounded-xl object-cover border border-gray-200 shadow-2xs" />
-                      ) : (
-                        <span className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-lg">{cat.icon || "📁"}</span>
-                      )}
-                      <span className="font-bold text-gray-900 text-sm">{cat.name}</span>
-                    </td>
+                {categories.map((cat) => {
+                  const rawUrl = cat.image_url || cat.icon || "";
+                  const isValidImg = rawUrl && (rawUrl.startsWith("data:") || rawUrl.startsWith("http") || rawUrl.startsWith("/"));
+                  const fallbackMap: Record<string, string> = {
+                    mobiles: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
+                    electronics: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
+                    watches: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
+                    fashion: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
+                    footwear: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
+                    laptops: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
+                    home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
+                    sports: "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800"
+                  };
+                  const catImg = isValidImg ? rawUrl : (fallbackMap[cat.slug] || fallbackMap[(cat.slug || "").split("-")[0]] || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800");
+
+                  return (
+                    <tr key={cat.id} className="hover:bg-gray-50 transition">
+                      <td className="px-6 py-4 flex items-center gap-3">
+                        <img src={catImg} alt={cat.name} className="w-10 h-10 rounded-xl object-cover border border-emerald-500/30 shadow-2xs" />
+                        <span className="font-bold text-gray-900 text-sm">{cat.name}</span>
+                      </td>
                     <td className="px-6 py-4 font-mono text-emerald-700 font-bold">/category/{cat.slug}</td>
                     <td className="px-6 py-4 font-bold text-gray-900">{cat.count || 0} Items</td>
                     <td className="px-6 py-4">
