@@ -196,7 +196,8 @@ export default function AdminCategoriesPage() {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>
