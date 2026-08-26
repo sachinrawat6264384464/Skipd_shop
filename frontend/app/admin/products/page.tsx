@@ -26,6 +26,7 @@ export default function AdminProductsPage() {
   const [newArrivalDbIds, setNewArrivalDbIds] = useState<number[]>([]);
   const [newArrivalsDbProducts, setNewArrivalsDbProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [viewProductSpecs, setViewProductSpecs] = useState<any | null>(null);
 
   // Search & Filter State
   const [searchQuery, setSearchQuery] = useState("");
@@ -1065,13 +1066,16 @@ export default function AdminProductsPage() {
                 <table className="w-full text-left text-xs text-gray-700">
                   <thead className="bg-gray-50 text-gray-400 font-extrabold uppercase text-[10px] border-b border-gray-100 tracking-wider">
                     <tr>
-                      <th className="px-6 py-4">Product Info</th>
-                      <th className="px-6 py-4">Category</th>
-                      <th className="px-6 py-4">Price &amp; Off %</th>
-                      <th className="px-6 py-4">Stock Level</th>
-                      <th className="px-6 py-4">New Arrival Drop</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4 text-right">Actions</th>
+                      <th className="px-5 py-4">Product Info</th>
+                      <th className="px-4 py-4">SKU / Barcode</th>
+                      <th className="px-4 py-4">Category &amp; Brand</th>
+                      <th className="px-4 py-4">Pricing &amp; Cost</th>
+                      <th className="px-4 py-4">Attributes (Color/Size/Mat)</th>
+                      <th className="px-4 py-4">Logistics (Wt/Dim/GST)</th>
+                      <th className="px-4 py-4">Stock &amp; Warehouse</th>
+                      <th className="px-4 py-4">New Drop</th>
+                      <th className="px-4 py-4">Status</th>
+                      <th className="px-5 py-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 font-medium">
@@ -1081,20 +1085,23 @@ export default function AdminProductsPage() {
                       const isLowStock = stock > 0 && stock <= 15;
                       const price = Number(p.price || 0);
                       const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
+                      const costPrice = p.cost_price ? Number(p.cost_price) : null;
                       const itemOffPct = (comparePrice && comparePrice > price) ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
-                      const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
+                      const image = p.images && p.images.length > 0 ? p.images[0] : (p.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200");
                       const isNewArrival = newArrivalDbIds.includes(Number(p.id));
 
                       return (
                         <tr key={p.id} className="hover:bg-gray-50/80 transition group">
-                          <td className="px-6 py-4 flex items-center gap-3.5">
+                          
+                          {/* PRODUCT INFO */}
+                          <td className="px-5 py-4 flex items-center gap-3.5 min-w-[220px]">
                             <img
                               src={image}
                               alt={p.title}
                               className="w-12 h-12 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0 group-hover:scale-105 transition"
                             />
                             <div className="space-y-0.5">
-                              <p className="font-black text-gray-900 text-sm leading-tight">{p.title}</p>
+                              <p className="font-black text-gray-900 text-xs leading-tight">{p.title}</p>
                               <div className="flex items-center gap-2">
                                 <span className="text-[10px] text-gray-400 font-mono">ID: #{p.id}</span>
                                 <Link
@@ -1102,91 +1109,133 @@ export default function AdminProductsPage() {
                                   target="_blank"
                                   className="text-[10px] text-emerald-600 font-bold hover:underline"
                                 >
-                                  View on Store ↗
+                                  View Store ↗
                                 </Link>
                               </div>
                             </div>
                           </td>
 
-                          <td className="px-6 py-4">
-                            <span className="bg-gray-100 text-gray-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-gray-200 capitalize">
-                              {p.category_slug || p.category?.name || "General"}
-                            </span>
+                          {/* SKU / BARCODE */}
+                          <td className="px-4 py-4 min-w-[130px]">
+                            <p className="font-mono font-bold text-gray-900 text-[11px]">{p.sku || p.handle || "N/A"}</p>
+                            <p className="text-[10px] text-gray-400 font-mono">{p.barcode ? `EAN: ${p.barcode}` : "No Barcode"}</p>
                           </td>
 
-                          <td className="px-6 py-4">
-                            <div>
-                              <div className="flex items-center gap-2">
-                                <p className="font-black text-gray-900 text-sm">₹{price.toLocaleString("en-IN")}.00</p>
-                                {itemOffPct > 0 && (
-                                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-1.5 py-0.5 rounded">
-                                    {itemOffPct}% OFF
-                                  </span>
-                                )}
-                              </div>
-                              {comparePrice && comparePrice > price && (
-                                <p className="text-[10px] text-gray-400 line-through">
-                                  MRP: ₹{comparePrice.toLocaleString("en-IN")}.00
-                                </p>
+                          {/* CATEGORY & BRAND */}
+                          <td className="px-4 py-4 min-w-[140px]">
+                            <span className="bg-gray-100 text-gray-800 text-[10px] font-bold px-2 py-0.5 rounded border border-gray-200 capitalize block w-max mb-1">
+                              {p.category_slug || p.category?.name || "General"}
+                            </span>
+                            <p className="text-[11px] font-extrabold text-emerald-700">{p.brand || "Skipd Store"}</p>
+                            {p.sub_category && <p className="text-[10px] text-gray-400">{p.sub_category}</p>}
+                          </td>
+
+                          {/* PRICING & COST */}
+                          <td className="px-4 py-4 min-w-[140px]">
+                            <div className="flex items-center gap-1.5">
+                              <p className="font-black text-gray-900 text-xs">₹{price.toLocaleString("en-IN")}</p>
+                              {itemOffPct > 0 && (
+                                <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-1 py-0.2 rounded">
+                                  -{itemOffPct}%
+                                </span>
                               )}
+                            </div>
+                            {comparePrice && comparePrice > price && (
+                              <p className="text-[10px] text-gray-400 line-through">MRP: ₹{comparePrice.toLocaleString("en-IN")}</p>
+                            )}
+                            {costPrice && (
+                              <p className="text-[10px] text-purple-700 font-bold">Cost: ₹{costPrice.toLocaleString("en-IN")}</p>
+                            )}
+                          </td>
+
+                          {/* ATTRIBUTES (Color / Size / Material) */}
+                          <td className="px-4 py-4 min-w-[140px]">
+                            <div className="space-y-0.5 text-[11px]">
+                              <p className="font-bold text-gray-800">🎨 <span className="text-gray-900">{p.color || "Standard"}</span></p>
+                              <p className="font-bold text-gray-800">📏 <span className="text-gray-900">{p.size || "Standard"}</span></p>
+                              {p.material && <p className="text-[10px] text-gray-500 font-medium">🧵 {p.material}</p>}
                             </div>
                           </td>
 
-                          <td className="px-6 py-4">
-                            <span className={`font-black text-xs ${
+                          {/* LOGISTICS (Weight / Dimensions / GST) */}
+                          <td className="px-4 py-4 min-w-[140px]">
+                            <div className="space-y-0.5 text-[11px]">
+                              <p className="font-bold text-gray-800">{p.weight ? `⚖️ ${p.weight} kg` : "⚖️ N/A"}</p>
+                              {p.dimensions && <p className="text-[10px] text-gray-500 font-mono">📦 {p.dimensions}</p>}
+                              <p className="text-[10px] text-emerald-700 font-bold">{p.gst_rate ? `GST: ${p.gst_rate}%` : "18% GST"}</p>
+                              {p.country_of_origin && <p className="text-[9px] text-gray-400">🌐 {p.country_of_origin}</p>}
+                            </div>
+                          </td>
+
+                          {/* STOCK & WAREHOUSE */}
+                          <td className="px-4 py-4 min-w-[130px]">
+                            <span className={`font-black text-xs block ${
                               isOutOfStock ? "text-red-600" : isLowStock ? "text-amber-600" : "text-gray-900"
                             }`}>
                               {stock} units
                             </span>
+                            <p className="text-[10px] text-gray-400 font-medium">{p.warehouse || "Central FC"}</p>
                           </td>
 
-                          {/* ⚡ NEW ARRIVAL TOGGLE SWITCH BUTTON */}
-                          <td className="px-6 py-4">
+                          {/* NEW ARRIVAL DROP */}
+                          <td className="px-4 py-4">
                             <button
                               onClick={() => handleToggleNewArrival(p)}
-                              className={`px-3 py-1.5 rounded-xl text-[10px] font-black border transition cursor-pointer flex items-center gap-1.5 ${
+                              className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition cursor-pointer flex items-center gap-1 whitespace-nowrap ${
                                 isNewArrival
                                   ? "bg-emerald-500 text-white border-emerald-400 shadow-md shadow-emerald-500/20"
                                   : "bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
                               }`}
                               title={isNewArrival ? "Click to remove from New Arrivals" : "Click to add to New Arrivals"}
                             >
-                              <span>{isNewArrival ? "✨ New Drop ON" : "⚪ Normal Item"}</span>
+                              <span>{isNewArrival ? "✨ New Drop ON" : "⚪ Normal"}</span>
                             </button>
                           </td>
 
-                          <td className="px-6 py-4">
+                          {/* STATUS */}
+                          <td className="px-4 py-4">
                             {isOutOfStock ? (
-                              <span className="bg-red-100 text-red-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-red-200">
-                                🚫 OUT OF STOCK
+                              <span className="bg-red-100 text-red-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-red-200 whitespace-nowrap">
+                                ❌ Out of Stock
                               </span>
                             ) : isLowStock ? (
-                              <span className="bg-amber-100 text-amber-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-amber-200">
-                                ⚠️ LOW STOCK ({stock})
+                              <span className="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-amber-200 whitespace-nowrap">
+                                ⚠️ Low Stock
                               </span>
                             ) : (
-                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-emerald-200">
-                                ✓ IN STOCK
+                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-emerald-200 whitespace-nowrap">
+                                ✓ In Stock
                               </span>
                             )}
                           </td>
 
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-2">
+                          {/* ACTIONS */}
+                          <td className="px-5 py-4 text-right min-w-[130px]">
+                            <div className="flex items-center justify-end gap-1.5">
+                              <button
+                                onClick={() => setViewProductSpecs(p)}
+                                title="View All 32 Product Attributes & Specs"
+                                className="w-8 h-8 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs transition cursor-pointer border border-purple-200"
+                              >
+                                👁️
+                              </button>
                               <button
                                 onClick={() => openEditProductModal(p)}
-                                className="bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold px-3 py-1.5 rounded-xl border border-blue-200 transition cursor-pointer text-xs flex items-center gap-1"
+                                title="Edit Product Details"
+                                className="w-8 h-8 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs transition cursor-pointer border border-blue-200"
                               >
-                                ✏️ Edit
+                                ✏️
                               </button>
                               <button
                                 onClick={() => setDeletingProductId(p.id)}
-                                className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3 py-1.5 rounded-xl border border-rose-200 transition cursor-pointer text-xs flex items-center gap-1"
+                                title="Delete Product"
+                                className="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center font-bold text-xs transition cursor-pointer border border-red-200"
                               >
-                                🗑️ Delete
+                                🗑️
                               </button>
                             </div>
                           </td>
+
                         </tr>
                       );
                     })}
@@ -3394,6 +3443,175 @@ export default function AdminProductsPage() {
                 Yes, Delete
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* 👁️ FULL 32-ATTRIBUTE PRODUCT SPECS INSPECTOR MODAL */}
+      {viewProductSpecs && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-3xl w-full max-h-[90vh] overflow-y-auto space-y-5 shadow-2xl relative text-xs">
+            
+            {/* Header */}
+            <div className="flex justify-between items-start border-b border-gray-100 pb-4">
+              <div className="flex items-center gap-3">
+                <img
+                  src={viewProductSpecs.images?.[0] || viewProductSpecs.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"}
+                  alt={viewProductSpecs.title}
+                  className="w-14 h-14 object-contain rounded-2xl bg-gray-50 border border-gray-200 p-1"
+                />
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="bg-purple-100 text-purple-800 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-purple-200 uppercase">
+                      Full 32 Specs Inspector
+                    </span>
+                    <span className="text-[10px] text-gray-400 font-mono">ID: #{viewProductSpecs.id}</span>
+                  </div>
+                  <h3 className="text-lg font-black text-gray-900 mt-0.5">{viewProductSpecs.title}</h3>
+                  <p className="text-xs text-emerald-700 font-bold">Handle: {viewProductSpecs.handle}</p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setViewProductSpecs(null)}
+                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 flex items-center justify-center font-bold text-sm transition cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* 32 Attributes Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Selling Price</span>
+                <span className="text-sm font-black text-gray-900">₹{Number(viewProductSpecs.price || 0).toLocaleString("en-IN")}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Compare At Price (MRP)</span>
+                <span className="text-sm font-bold text-gray-700">₹{Number(viewProductSpecs.compare_at_price || 0).toLocaleString("en-IN")}</span>
+              </div>
+              <div className="bg-purple-50 p-3 rounded-2xl border border-purple-200">
+                <span className="text-[9px] font-extrabold text-purple-600 uppercase block">Cost Price (Purchase)</span>
+                <span className="text-sm font-black text-purple-900">₹{Number(viewProductSpecs.cost_price || 0).toLocaleString("en-IN")}</span>
+              </div>
+
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Stock Quantity</span>
+                <span className="text-xs font-black text-emerald-700">{viewProductSpecs.stock_quantity ?? 0} units</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Low Stock Alert Limit</span>
+                <span className="text-xs font-bold text-gray-800">{viewProductSpecs.low_stock_threshold || 10} units</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Fulfillment Warehouse</span>
+                <span className="text-xs font-extrabold text-gray-900">{viewProductSpecs.warehouse || "Central FC"}</span>
+              </div>
+
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">SKU Code</span>
+                <span className="text-xs font-mono font-bold text-gray-900">{viewProductSpecs.sku || "N/A"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Barcode / EAN Number</span>
+                <span className="text-xs font-mono font-bold text-gray-900">{viewProductSpecs.barcode || "N/A"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">HSN Code</span>
+                <span className="text-xs font-mono font-bold text-gray-900">{viewProductSpecs.hsn_code || "85183000"}</span>
+              </div>
+
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Category Slug</span>
+                <span className="text-xs font-bold text-emerald-700 capitalize">{viewProductSpecs.category_slug || viewProductSpecs.category?.name || "General"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Sub Category</span>
+                <span className="text-xs font-bold text-gray-800">{viewProductSpecs.sub_category || "N/A"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Brand Name</span>
+                <span className="text-xs font-black text-gray-900">{viewProductSpecs.brand || "Skipd Store"}</span>
+              </div>
+
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Color Variant</span>
+                <span className="text-xs font-extrabold text-gray-900">🎨 {viewProductSpecs.color || "Standard"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Size Variant</span>
+                <span className="text-xs font-extrabold text-gray-900">📏 {viewProductSpecs.size || "Standard"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Material / Fabric</span>
+                <span className="text-xs font-bold text-gray-800">🧵 {viewProductSpecs.material || "Standard Fabric"}</span>
+              </div>
+
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Weight (kg)</span>
+                <span className="text-xs font-bold text-gray-900">⚖️ {viewProductSpecs.weight ? `${viewProductSpecs.weight} kg` : "N/A"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Dimensions (L x W x H)</span>
+                <span className="text-xs font-mono font-bold text-gray-800">📦 {viewProductSpecs.dimensions || "N/A"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">GST Rate %</span>
+                <span className="text-xs font-black text-emerald-700">{viewProductSpecs.gst_rate ? `${viewProductSpecs.gst_rate}% GST` : "18% GST"}</span>
+              </div>
+
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Country of Origin</span>
+                <span className="text-xs font-bold text-gray-900">🌐 {viewProductSpecs.country_of_origin || "India"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Is Featured Item</span>
+                <span className="text-xs font-bold text-gray-900">{viewProductSpecs.is_featured ? "⭐ TRUE (Featured)" : "FALSE"}</span>
+              </div>
+              <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Live Active Status</span>
+                <span className="text-xs font-bold text-emerald-700">{viewProductSpecs.is_active !== false ? "✓ TRUE (Live)" : "FALSE (Hidden)"}</span>
+              </div>
+            </div>
+
+            {/* Video URL & Descriptions */}
+            {viewProductSpecs.video_url && (
+              <div className="bg-red-50 p-3 rounded-2xl border border-red-200 flex items-center justify-between">
+                <span className="font-bold text-red-900">Video Demo Link</span>
+                <a href={viewProductSpecs.video_url} target="_blank" rel="noreferrer" className="text-red-700 font-black hover:underline">
+                  ▶ {viewProductSpecs.video_url}
+                </a>
+              </div>
+            )}
+
+            {viewProductSpecs.description && (
+              <div className="bg-gray-50 p-4 rounded-2xl border border-gray-200/80 space-y-1">
+                <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Full Description</span>
+                <p className="text-xs text-gray-700 leading-relaxed font-medium">{viewProductSpecs.description}</p>
+              </div>
+            )}
+
+            {/* Footer Buttons */}
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => {
+                  const p = viewProductSpecs;
+                  setViewProductSpecs(null);
+                  openEditProductModal(p);
+                }}
+                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-2xl transition text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span>✏️</span>
+                <span>Edit Full Product Attributes</span>
+              </button>
+              <button
+                onClick={() => setViewProductSpecs(null)}
+                className="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold px-6 py-3 rounded-2xl transition text-xs cursor-pointer"
+              >
+                Close Inspector
+              </button>
+            </div>
+
           </div>
         </div>
       )}
