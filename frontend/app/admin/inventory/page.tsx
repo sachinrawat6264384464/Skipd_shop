@@ -63,98 +63,179 @@ export default function AdminInventoryPage() {
           const parsed = JSON.parse(text);
           importedItems = Array.isArray(parsed) ? parsed : [parsed];
         } else {
-          const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
-          if (lines.length > 1) {
-            for (let i = 1; i < lines.length; i++) {
-              const lineStr = lines[i];
-              if (!lineStr) continue;
-              const cols = lineStr.split(",").map(c => c.trim().replace(/^"|"$/g, ""));
-              if (cols.length >= 2) {
-                const title = cols[0] || `Imported Item ${i}`;
-                const price = parseFloat(cols[1] ?? "999") || 999;
-                const compareAtPrice = cols[2] ? parseFloat(cols[2]) : price * 1.4;
-                const costPrice = cols[3] ? parseFloat(cols[3]) : price * 0.6;
-                const stock = parseInt(cols[4] ?? "20") || 20;
-                const lowStockThreshold = parseInt(cols[5] ?? "10") || 10;
-                const cat = cols[6] || "General";
-                const subcategory = cols[7] || "";
-                const brand = cols[8] || "";
-                const warehouse = cols[9] || "Central FC";
-                const sku = cols[10] || `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`;
-                const barcode = cols[11] || `89012345${Math.floor(10000 + Math.random() * 90000)}`;
-                const imageUrl = cols[12] || "";
-                const galleryUrls = cols[13] ? cols[13].split("|").map(u => u.trim()) : [];
-                const videoUrl = cols[14] || "";
-                const color = cols[15] || "";
-                const size = cols[16] || "";
-                const material = cols[17] || "";
-                const weight = cols[18] ? parseFloat(cols[18]) : null;
-                const dimensions = cols[19] || "";
-                const gstRate = cols[20] ? parseFloat(cols[20]) : 18.0;
-                const hsnCode = cols[21] || "85183000";
-                const countryOfOrigin = cols[22] || "India";
-                const isFeatured = cols[23] ? cols[23].toUpperCase() === "TRUE" : true;
-                const isActive = cols[24] ? cols[24].toUpperCase() === "TRUE" : true;
-                const tags = cols[25] ? cols[25].split("|").map(t => t.trim()) : ["bestseller"];
-                const shortDesc = cols[26] || "";
-                const fullDesc = cols[27] || shortDesc || `${title} premium quality catalog item.`;
-                const highlights = cols[28] ? cols[28].split("|").map(h => h.trim()).join(" | ") : "";
-                const boxContents = cols[29] ? cols[29].split("|").map(b => b.trim()).join(" | ") : "";
-                const metaTitle = cols[30] || title;
-                const metaDesc = cols[31] || shortDesc || fullDesc;
-
-                // Try to match with bulk-uploaded images by filename/title
-                const matchedImg = bulkImages.find(img =>
-                  img.name.toLowerCase().replace(/\.[^.]+$/, "").includes(title.toLowerCase().slice(0, 8)) ||
-                  title.toLowerCase().includes(img.name.toLowerCase().replace(/\.[^.]+$/, "").slice(0, 6))
-                );
-
-                const finalImages = [
-                  matchedImg?.url || imageUrl || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
-                  ...galleryUrls
-                ].filter(Boolean);
-
-                importedItems.push({
-                  id: Date.now() + i,
-                  title,
-                  handle: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-                  sku,
-                  barcode,
-                  price,
-                  compare_at_price: compareAtPrice,
-                  cost_price: costPrice,
-                  stock_quantity: stock,
-                  low_stock_threshold: lowStockThreshold,
-                  category: cat,
-                  category_slug: cat.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                  sub_category: subcategory,
-                  brand,
-                  warehouse,
-                  image_url: finalImages[0],
-                  images: finalImages,
-                  video_url: videoUrl,
-                  color,
-                  size,
-                  material,
-                  weight,
-                  dimensions,
-                  gst_rate: gstRate,
-                  hsn_code: hsnCode,
-                  country_of_origin: countryOfOrigin,
-                  is_featured: isFeatured,
-                  is_active: isActive,
-                  tags,
-                  short_description: shortDesc,
-                  description: fullDesc,
-                  highlights,
-                  box_contents: boxContents,
-                  meta_title: metaTitle,
-                  meta_description: metaDesc
-                });
+          // ─── Smart Header-Based CSV Parser ───────────────────────────────
+          const allLines = text.split(/\r?\n/).filter(l => l.trim());
+          if (allLines.length > 1) {
+            // Parse header row — handles quoted fields
+            const parseCSVLine = (line: string): string[] => {
+              const result: string[] = [];
+              let current = "";
+              let inQuotes = false;
+              for (let ci = 0; ci < line.length; ci++) {
+                const ch = line[ci];
+                if (ch === '"') {
+                  inQuotes = !inQuotes;
+                } else if (ch === "," && !inQuotes) {
+                  result.push(current.trim());
+                  current = "";
+                } else {
+                  current += ch;
+                }
               }
+              result.push(current.trim());
+              return result;
+            };
+
+            const headers = parseCSVLine(allLines[0] ?? "").map(h => h.toLowerCase().replace(/\s*\(.*?\)/g, "").trim());
+
+            // Header name → normalized key map
+            const colIdx = (names: string[]): number => {
+              for (const name of names) {
+                const idx = headers.findIndex(h => h.includes(name.toLowerCase()));
+                if (idx >= 0) return idx;
+              }
+              return -1;
+            };
+
+            const iTitle       = colIdx(["title", "product name", "name"]);
+            const iHandle      = colIdx(["handle", "slug", "url handle"]);
+            const iDesc        = colIdx(["description", "full description"]);
+            const iShortDesc   = colIdx(["short description", "short desc", "summary"]);
+            const iHighlights  = colIdx(["highlights", "key features"]);
+            const iBoxContents = colIdx(["box contents", "in the box", "box"]);
+            const iPrice       = colIdx(["price"]);
+            const iCompare     = colIdx(["compare at price", "mrp", "original price"]);
+            const iCostPrice   = colIdx(["cost price", "cost"]);
+            const iSku         = colIdx(["sku"]);
+            const iBarcode     = colIdx(["barcode", "ean", "upc"]);
+            const iStock       = colIdx(["stock quantity", "stock", "qty", "quantity"]);
+            const iLowStock    = colIdx(["low stock threshold", "low stock", "reorder"]);
+            const iCat         = colIdx(["category slug", "category"]);
+            const iSubCat      = colIdx(["sub category", "subcategory", "sub cat"]);
+            const iBrand       = colIdx(["brand"]);
+            const iWarehouse   = colIdx(["warehouse"]);
+            const iMainImg     = colIdx(["main image url", "image url", "image", "thumbnail"]);
+            const iGallery     = colIdx(["gallery images", "gallery"]);
+            const iVideo       = colIdx(["video url", "video"]);
+            const iColor       = colIdx(["color", "colour"]);
+            const iSize        = colIdx(["size"]);
+            const iMaterial    = colIdx(["material"]);
+            const iWeight      = colIdx(["weight"]);
+            const iDimensions  = colIdx(["dimensions", "dimension"]);
+            const iGst         = colIdx(["gst rate", "gst"]);
+            const iHsn         = colIdx(["hsn code", "hsn"]);
+            const iCountry     = colIdx(["country of origin", "country"]);
+            const iTags        = colIdx(["tags"]);
+            const iMetaTitle   = colIdx(["meta title"]);
+            const iMetaDesc    = colIdx(["meta description", "meta desc"]);
+            const iIsFeatured  = colIdx(["is featured", "featured"]);
+
+            const g = (cols: string[], idx: number) => idx >= 0 ? (cols[idx] || "").trim() : "";
+
+            for (let i = 1; i < allLines.length; i++) {
+              const lineStr = allLines[i] ?? "";
+              if (!lineStr.trim()) continue;
+              const cols = parseCSVLine(lineStr);
+              if (cols.length < 2) continue;
+
+              const title = g(cols, iTitle) || `Imported Item ${i}`;
+              const price = parseFloat(g(cols, iPrice)) || 999;
+              const compareAtPrice = parseFloat(g(cols, iCompare)) || price * 1.4;
+              const costPrice = parseFloat(g(cols, iCostPrice)) || price * 0.6;
+              const stock = parseInt(g(cols, iStock)) || 20;
+              const lowStockThreshold = parseInt(g(cols, iLowStock)) || 10;
+              const cat = g(cols, iCat) || "General";
+              const subcategory = g(cols, iSubCat);
+              const brand = g(cols, iBrand);
+              const warehouse = g(cols, iWarehouse) || "Central FC";
+              const sku = g(cols, iSku) || `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`;
+              const barcode = g(cols, iBarcode) || `89012345${Math.floor(10000 + Math.random() * 90000)}`;
+              const imageUrl = g(cols, iMainImg);
+              const galleryRaw = g(cols, iGallery);
+              let galleryUrls: string[] = [];
+              try {
+                // Try JSON parse first (e.g. ["url1","url2"])
+                if (galleryRaw.startsWith("[")) {
+                  galleryUrls = JSON.parse(galleryRaw);
+                } else if (galleryRaw) {
+                  galleryUrls = galleryRaw.split("|").map(u => u.trim()).filter(Boolean);
+                }
+              } catch { galleryUrls = []; }
+
+              const videoUrl = g(cols, iVideo);
+              const color = g(cols, iColor);
+              const size = g(cols, iSize);
+              const material = g(cols, iMaterial);
+              const weight = parseFloat(g(cols, iWeight)) || null;
+              const dimensions = g(cols, iDimensions);
+              const gstRate = parseFloat(g(cols, iGst)) || 18.0;
+              const hsnCode = g(cols, iHsn) || "85183000";
+              const countryOfOrigin = g(cols, iCountry) || "India";
+              const isFeaturedStr = g(cols, iIsFeatured).toUpperCase();
+              const isFeatured = isFeaturedStr === "TRUE" || isFeaturedStr === "YES" || isFeaturedStr === "1";
+              const tagsRaw = g(cols, iTags);
+              const tags = tagsRaw ? tagsRaw.split(",").map(t => t.trim()).filter(Boolean) : ["bestseller"];
+              const shortDesc = g(cols, iShortDesc);
+              const fullDesc = g(cols, iDesc) || shortDesc || `${title} premium catalog item.`;
+              const highlights = g(cols, iHighlights);
+              const boxContents = g(cols, iBoxContents);
+              const metaTitle = g(cols, iMetaTitle) || title;
+              const metaDesc = g(cols, iMetaDesc) || shortDesc;
+              const handle = g(cols, iHandle) || title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+              // Match with bulk-uploaded images by filename/title
+              const matchedImg = bulkImages.find(img =>
+                img.name.toLowerCase().replace(/\.[^.]+$/, "").includes(title.toLowerCase().slice(0, 8)) ||
+                title.toLowerCase().includes(img.name.toLowerCase().replace(/\.[^.]+$/, "").slice(0, 6))
+              );
+
+              const finalImages = [
+                matchedImg?.url || imageUrl || "",
+                ...galleryUrls
+              ].filter(Boolean);
+
+              importedItems.push({
+                id: Date.now() + i,
+                title,
+                handle,
+                sku,
+                barcode,
+                price,
+                compare_at_price: compareAtPrice,
+                cost_price: costPrice,
+                stock_quantity: stock,
+                low_stock_threshold: lowStockThreshold,
+                category: cat,
+                category_slug: cat.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                sub_category: subcategory,
+                brand,
+                warehouse,
+                image_url: finalImages[0] || "",
+                images: finalImages.length > 0 ? finalImages : [],
+                video_url: videoUrl,
+                color,
+                size,
+                material,
+                weight,
+                dimensions,
+                gst_rate: gstRate,
+                hsn_code: hsnCode,
+                country_of_origin: countryOfOrigin,
+                is_featured: isFeatured,
+                is_active: true,
+                tags,
+                short_description: shortDesc,
+                description: fullDesc,
+                highlights,
+                box_contents: boxContents,
+                meta_title: metaTitle,
+                meta_description: metaDesc
+              });
             }
           }
         }
+
+
 
         if (importedItems.length > 0) {
           // Bulk Save to Neon PostgreSQL database in ONE request
@@ -257,7 +338,45 @@ export default function AdminInventoryPage() {
   };
 
   useEffect(() => {
+    // 1️⃣ Load DB products (may take time if Render is cold starting)
     loadInventoryData();
+
+    // 2️⃣ Also immediately show any locally saved products
+    if (typeof window !== "undefined") {
+      try {
+        const localStr = localStorage.getItem("ecom_custom_products");
+        if (localStr) {
+          const localProds = JSON.parse(localStr);
+          if (Array.isArray(localProds) && localProds.length > 0) {
+            const localInventory = localProds.map((p: any, idx: number) => ({
+              id: p.id,
+              title: p.title,
+              variant: p.variant || "Standard Edition",
+              sku: p.sku || `SKU-${p.id}`,
+              barcode: p.barcode || `89012345${idx}`,
+              category: typeof p.category === "object" ? (p.category?.name || "General") : (p.category || "General"),
+              warehouse: p.warehouse || "Central FC",
+              stock: Number(p.stock_quantity ?? p.stock ?? 0),
+              minStock: Number(p.low_stock_threshold ?? 10),
+              reserved: 0,
+              price: Number(p.price || 0),
+              stockValue: Number(p.price || 0) * Number(p.stock_quantity ?? p.stock ?? 0),
+              status: Number(p.stock_quantity ?? p.stock ?? 0) > 15 ? "In Stock" : Number(p.stock_quantity ?? p.stock ?? 0) > 0 ? "Low Stock" : "Out of Stock",
+              lastUpdated: "Just now",
+              image: p.images?.[0] || p.image_url || p.image || "",
+              rawProduct: p
+            }));
+            setProducts(localInventory);
+            setLoading(false);
+          }
+        }
+      } catch (e) {}
+    }
+
+    // 3️⃣ Listen for new locally saved products and reload
+    const handleLocalChange = () => loadInventoryData();
+    window.addEventListener("ecom_products_changed", handleLocalChange);
+    return () => window.removeEventListener("ecom_products_changed", handleLocalChange);
   }, []);
 
   async function loadInventoryData() {
