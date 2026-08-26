@@ -238,17 +238,18 @@ export default function AdminInventoryPage() {
 
 
         if (importedItems.length > 0) {
-          // Bulk Save to Neon PostgreSQL database in ONE request
+          // Bulk Save to Neon PostgreSQL database
+          showToast(`⏳ Saving ${importedItems.length} products to database... Please wait.`);
           try {
-            await bulkCreateAdminProducts(importedItems);
-            showToast(`✓ Successfully imported & saved ${importedItems.length} products with all 32 Enterprise columns live to PostgreSQL DB!`);
+            const result = await bulkCreateAdminProducts(importedItems);
+            showToast(`✅ ${result.count || importedItems.length} products saved to PostgreSQL database successfully!`);
+            // Reload inventory from real DB
+            await loadInventoryData();
+            setBulkImages([]);
+            setShowImportModal(false);
           } catch (err: any) {
-            showToast(err?.message || "Failed to bulk save products in DB", "error");
+            showToast(`❌ ${err?.message || "Failed to save products to database"}`, "error");
           }
-
-          await loadInventoryData();
-          setBulkImages([]);
-          setShowImportModal(false);
         } else {
           showToast("⚠️ Could not parse valid rows from file.", "error");
         }
@@ -338,45 +339,7 @@ export default function AdminInventoryPage() {
   };
 
   useEffect(() => {
-    // 1️⃣ Load DB products (may take time if Render is cold starting)
     loadInventoryData();
-
-    // 2️⃣ Also immediately show any locally saved products
-    if (typeof window !== "undefined") {
-      try {
-        const localStr = localStorage.getItem("ecom_custom_products");
-        if (localStr) {
-          const localProds = JSON.parse(localStr);
-          if (Array.isArray(localProds) && localProds.length > 0) {
-            const localInventory = localProds.map((p: any, idx: number) => ({
-              id: p.id,
-              title: p.title,
-              variant: p.variant || "Standard Edition",
-              sku: p.sku || `SKU-${p.id}`,
-              barcode: p.barcode || `89012345${idx}`,
-              category: typeof p.category === "object" ? (p.category?.name || "General") : (p.category || "General"),
-              warehouse: p.warehouse || "Central FC",
-              stock: Number(p.stock_quantity ?? p.stock ?? 0),
-              minStock: Number(p.low_stock_threshold ?? 10),
-              reserved: 0,
-              price: Number(p.price || 0),
-              stockValue: Number(p.price || 0) * Number(p.stock_quantity ?? p.stock ?? 0),
-              status: Number(p.stock_quantity ?? p.stock ?? 0) > 15 ? "In Stock" : Number(p.stock_quantity ?? p.stock ?? 0) > 0 ? "Low Stock" : "Out of Stock",
-              lastUpdated: "Just now",
-              image: p.images?.[0] || p.image_url || p.image || "",
-              rawProduct: p
-            }));
-            setProducts(localInventory);
-            setLoading(false);
-          }
-        }
-      } catch (e) {}
-    }
-
-    // 3️⃣ Listen for new locally saved products and reload
-    const handleLocalChange = () => loadInventoryData();
-    window.addEventListener("ecom_products_changed", handleLocalChange);
-    return () => window.removeEventListener("ecom_products_changed", handleLocalChange);
   }, []);
 
   async function loadInventoryData() {

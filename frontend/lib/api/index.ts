@@ -118,24 +118,8 @@ export async function fetchProducts(query?: { category?: string; search?: string
     console.warn("[API SDK Warning] Backend error fetching products.", err);
   }
 
-  // 🚀 Merge live PostgreSQL DB products with locally saved bulk items
+  // Return only real PostgreSQL DB products — no localStorage fallback
   let list = isBackendOk ? [...backendProducts] : [];
-
-  if (typeof window !== "undefined") {
-    try {
-      const customStr = localStorage.getItem("ecom_custom_products");
-      if (customStr) {
-        const localProds = JSON.parse(customStr);
-        if (Array.isArray(localProds) && localProds.length > 0) {
-          localProds.forEach(lp => {
-            if (!list.some(p => p.id === lp.id || p.handle === lp.handle)) {
-              list.unshift(lp);
-            }
-          });
-        }
-      }
-    } catch (e) {}
-  }
 
   if (query?.featured) list = list.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
@@ -996,96 +980,52 @@ export async function createAdminProduct(payload: any) {
 
     if (res.ok) {
       const data = await res.json();
-      saveCustomProductLocally(payload);
       return data;
     }
-  } catch (err) {
-    console.warn("[API SDK] Backend save failed, saving product locally.", err);
-  }
 
-  // Fail-safe: Save product locally so UI & storefront update instantly
-  saveCustomProductLocally(payload);
-  return { message: "Product saved successfully", product: payload };
+    let errMsg = `Server error ${res.status}`;
+    try { const e = await res.json(); errMsg = e.detail || errMsg; } catch {}
+    throw new Error(errMsg);
+  } catch (err) {
+    console.error("[API SDK] createAdminProduct failed:", err);
+    throw err;
+  }
 }
 
+
 export async function bulkCreateAdminProducts(products: any[]) {
+  // 60s timeout — Render backend may need cold-start time
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 60000);
+
   try {
     const res = await fetch(`${API_BASE_URL}/products/admin/bulk-create`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ products })
+      body: JSON.stringify({ products }),
+      signal: controller.signal
     });
+    clearTimeout(timer);
 
     if (res.ok) {
       const data = await res.json();
-      products.forEach(p => saveCustomProductLocally(p));
       return data;
     }
-  } catch (err) {
-    console.warn("[API SDK] Backend bulk-create failed, saving products locally.", err);
-  }
 
-  // Fail-safe: Save products locally so UI & storefront update instantly without 'Failed to fetch' error
-  products.forEach(p => saveCustomProductLocally(p));
-  return { message: `Successfully imported & saved ${products.length} products!`, count: products.length };
-}
+    // Backend returned error — throw with backend message
+    let errMsg = `Server error ${res.status}`;
+    try { const errBody = await res.json(); errMsg = errBody.detail || errMsg; } catch {}
+    throw new Error(errMsg);
 
-function saveCustomProductLocally(prodPayload: any) {
-  if (typeof window === "undefined") return;
-  try {
-    const existingStr = localStorage.getItem("ecom_custom_products") || "[]";
-    const list: any[] = JSON.parse(existingStr);
-    const id = prodPayload.id || Date.now() + Math.floor(Math.random() * 1000);
-    
-    const formatted = {
-      id: id,
-      title: prodPayload.title,
-      handle: prodPayload.handle || prodPayload.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      description: prodPayload.description || "",
-      short_description: prodPayload.short_description || "",
-      highlights: prodPayload.highlights || "",
-      box_contents: prodPayload.box_contents || "",
-      price: Number(prodPayload.price || 0),
-      compare_at_price: Number(prodPayload.compare_at_price || 0),
-      cost_price: Number(prodPayload.cost_price || 0),
-      sku: prodPayload.sku || `SKU-${id}`,
-      barcode: prodPayload.barcode || "",
-      stock_quantity: Number(prodPayload.stock_quantity || 0),
-      low_stock_threshold: Number(prodPayload.low_stock_threshold || 10),
-      category: typeof prodPayload.category === "object" ? prodPayload.category : { name: prodPayload.category || "General", slug: (prodPayload.category || "general").toLowerCase() },
-      category_slug: prodPayload.category_slug || "general",
-      sub_category: prodPayload.sub_category || "",
-      brand: prodPayload.brand || "",
-      warehouse: prodPayload.warehouse || "",
-      image_url: prodPayload.image_url || (prodPayload.images?.[0] || ""),
-      images: prodPayload.images || [prodPayload.image_url || ""],
-      video_url: prodPayload.video_url || "",
-      color: prodPayload.color || "",
-      size: prodPayload.size || "",
-      material: prodPayload.material || "",
-      weight: Number(prodPayload.weight || 0),
-      dimensions: prodPayload.dimensions || "",
-      gst_rate: Number(prodPayload.gst_rate || 18),
-      hsn_code: prodPayload.hsn_code || "",
-      country_of_origin: prodPayload.country_of_origin || "India",
-      tags: prodPayload.tags || [],
-      meta_title: prodPayload.meta_title || "",
-      meta_description: prodPayload.meta_description || "",
-      featured: Boolean(prodPayload.is_featured || prodPayload.featured || false),
-      is_featured: Boolean(prodPayload.is_featured || prodPayload.featured || false),
-      is_active: true
-    };
-
-    const idx = list.findIndex((item: any) => item.id === formatted.id || item.handle === formatted.handle);
-    if (idx >= 0) {
-      list[idx] = formatted;
-    } else {
-      list.unshift(formatted);
+  } catch (err: any) {
+    clearTimeout(timer);
+    if (err?.name === "AbortError") {
+      throw new Error("Request timed out. Backend may be cold starting — please wait 30 seconds and try again.");
     }
-    localStorage.setItem("ecom_custom_products", JSON.stringify(list));
-    window.dispatchEvent(new Event("ecom_products_changed"));
-  } catch (e) {}
+    throw err;
+  }
 }
+
 
 export async function updateAdminProduct(id: number | string, payload: any) {
   try {
