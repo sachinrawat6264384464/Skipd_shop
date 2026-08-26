@@ -207,8 +207,8 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       } catch (err: any) {
         // 🚀 FALLBACK TO BACKEND DB LOGIN API
         try {
-          const { loginUser } = await import("lib/api");
-          const dbRes = await loginUser(emailOrPhone.trim(), password);
+          const { loginCustomerUser } = await import("lib/api");
+          const dbRes = await loginCustomerUser(emailOrPhone.trim(), password);
           if (dbRes && dbRes.access_token) {
             const userObj = {
               db_id: dbRes.id || 1,

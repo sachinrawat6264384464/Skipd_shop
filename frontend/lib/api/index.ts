@@ -1625,6 +1625,20 @@ export async function deleteAdminReview(id: number) {
   return { status: "success" };
 }
 
+export async function loginCustomerUser(email: string, password?: string) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email.trim().toLowerCase(), password: password || "password123" })
+    });
+    if (res.ok) return await res.json();
+  } catch (e) {
+    console.warn("[API SDK] Customer DB Login API offline");
+  }
+  return null;
+}
+
 export async function fetchAdminPayments() {
   try {
     const res = await fetch(`${API_BASE_URL}/payments/admin/all`, { cache: "no-store" });
