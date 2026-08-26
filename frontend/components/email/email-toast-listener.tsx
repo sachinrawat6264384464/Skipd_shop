@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export function EmailToastListener() {
+  const pathname = usePathname();
   const [activeEmail, setActiveEmail] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
+    if (pathname?.startsWith("/admin")) return;
+
     const handleEmailSent = (e: any) => {
       const emailDetail = e.detail;
       if (emailDetail) {
@@ -16,9 +20,9 @@ export function EmailToastListener() {
 
     window.addEventListener("skipd_email_sent", handleEmailSent);
     return () => window.removeEventListener("skipd_email_sent", handleEmailSent);
-  }, []);
+  }, [pathname]);
 
-  if (!activeEmail) return null;
+  if (pathname?.startsWith("/admin") || !activeEmail) return null;
 
   return (
     <>

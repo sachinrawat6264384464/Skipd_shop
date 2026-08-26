@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { getApiBaseUrl } from "lib/api";
 
 interface RecentPurchaseItem {
@@ -17,14 +18,25 @@ interface RecentPurchaseItem {
 }
 
 export function SocialProofToast() {
+  const pathname = usePathname();
   const [purchases, setPurchases] = useState<RecentPurchaseItem[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token");
+      setIsCustomerLoggedIn(!!token);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
+    if (pathname?.startsWith("/admin") || !isCustomerLoggedIn) return;
+
     fetchRecentPurchases();
-  }, []);
+  }, [pathname, isCustomerLoggedIn]);
 
   useEffect(() => {
     if (purchases.length === 0 || isDismissed) return;
@@ -67,7 +79,7 @@ export function SocialProofToast() {
 
   const current = purchases[currentIndex];
 
-  if (purchases.length === 0 || !isVisible || isDismissed || !current) {
+  if (pathname?.startsWith("/admin") || !isCustomerLoggedIn || purchases.length === 0 || !isVisible || isDismissed || !current) {
     return null;
   }
 

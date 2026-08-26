@@ -106,7 +106,7 @@ export function AbandonedReminderModal() {
     }
   };
 
-  if (!isOpen || !reminderData || !reminderData.product) {
+  if (pathname?.startsWith("/admin") || !isOpen || !reminderData || !reminderData.product) {
     return null;
   }
 
