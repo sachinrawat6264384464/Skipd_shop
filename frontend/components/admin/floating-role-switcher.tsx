@@ -251,21 +251,50 @@ export default function FloatingAdminRoleSwitcher() {
     }, 600);
   };
 
+  // Check if currently logged-in account is Super Admin
+  const isSuperAdminAccount = (): boolean => {
+    if (typeof window === "undefined") return true;
+
+    try {
+      const storedAdminUser = localStorage.getItem("skipd_admin_user");
+      if (storedAdminUser) {
+        const parsed = JSON.parse(storedAdminUser);
+        const roleLower = (parsed.role || "").toLowerCase();
+        const emailLower = (parsed.email || "").toLowerCase();
+        
+        // If sub-role account is logged in, hide floating switcher completely!
+        if (
+          roleLower !== "super admin" &&
+          roleLower !== "super_admin" &&
+          emailLower !== "superadmin@skipd.in" &&
+          !emailLower.includes("superadmin")
+        ) {
+          return false;
+        }
+      }
+    } catch (e) {}
+
+    return true;
+  };
+
   const currentRoleObj: RoleOption = availableRoles.find(r => r.name.toLowerCase() === activeRoleName.toLowerCase()) || SUPER_ADMIN_ROLE;
 
   if (pathname === "/admin/login") return null;
+
+  // 🔒 Only visible for Super Admin accounts! Hide for sub-roles!
+  if (!isSuperAdminAccount()) return null;
 
   return (
     <>
       {/* Toast Notification */}
       {toastMessage && (
         <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-[#0F172A] text-emerald-400 border border-emerald-500/50 px-6 py-3 rounded-2xl shadow-2xl text-xs font-black flex items-center gap-3 animate-bounce backdrop-blur-md">
-          <span className="text-lg">🛡️</span>
+          <span className="text-lg">👑</span>
           <span>{toastMessage}</span>
         </div>
       )}
 
-      {/* Floating Movable Draggable Badge Button */}
+      {/* Floating Movable Draggable Circular Icon Button */}
       <div
         ref={dragRef}
         style={{
@@ -276,7 +305,7 @@ export default function FloatingAdminRoleSwitcher() {
         }}
         className="group select-none touch-none"
       >
-        <div
+        <button
           onMouseDown={handleMouseDown}
           onTouchStart={handleTouchStart}
           onClick={() => {
@@ -284,29 +313,19 @@ export default function FloatingAdminRoleSwitcher() {
               setIsOpen(!isOpen);
             }
           }}
-          className={`flex items-center gap-3 bg-[#0F172A]/90 hover:bg-[#0F172A] border ${currentRoleObj.borderColor} text-white px-4 py-2.5 rounded-2xl shadow-2xl backdrop-blur-md cursor-grab active:cursor-grabbing transition-all hover:scale-105 ${
-            isDragging ? "opacity-75 scale-95" : ""
+          className={`w-13 h-13 rounded-full bg-[#0F172A]/95 hover:bg-[#0F172A] border-2 border-emerald-400/80 text-white shadow-2xl backdrop-blur-md cursor-grab active:cursor-grabbing transition-all hover:scale-110 flex items-center justify-center relative active:scale-95 ${
+            isDragging ? "opacity-75 scale-95 cursor-grabbing" : ""
           }`}
-          title="Drag anywhere or click to switch Admin Roles"
+          title={`👑 Super Admin Role Switcher (${activeRoleName}) — Drag or Click`}
         >
-          <div className="relative flex items-center justify-center">
-            <span className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-sm shadow-inner">
-              {currentRoleObj.icon}
-            </span>
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#0F172A] absolute -top-1 -right-1 animate-pulse"></span>
-          </div>
+          <span className="text-2xl">{currentRoleObj.icon || "👑"}</span>
 
-          <div className="text-left">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[9px] font-black tracking-widest text-emerald-400 uppercase">ROLE SWITCHER</span>
-              <span className="text-[8px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded font-mono">DRAGGABLE ✋</span>
-            </div>
-            <p className="text-xs font-extrabold text-white truncate max-w-[130px] flex items-center gap-1">
-              <span>{activeRoleName}</span>
-              <span className="text-slate-400 text-[10px]">▾</span>
-            </p>
-          </div>
-        </div>
+          {/* Green Online Pulsing Indicator Badge */}
+          <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 border-2 border-[#0F172A]"></span>
+          </span>
+        </button>
       </div>
 
       {/* High-Tech Draggable Role Switching Hub Modal */}
