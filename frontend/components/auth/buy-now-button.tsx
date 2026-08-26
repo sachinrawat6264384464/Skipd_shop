@@ -13,6 +13,7 @@ interface BuyNowButtonProps {
   className?: string;
   children?: React.ReactNode;
   mode?: "buy" | "cart";
+  disabled?: boolean;
 }
 
 export function BuyNowButton({
@@ -21,7 +22,8 @@ export function BuyNowButton({
   productObj,
   className = "bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-2.5 px-3 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs cursor-pointer",
   children = "⚡ Buy Now",
-  mode = "buy"
+  mode = "buy",
+  disabled = false
 }: BuyNowButtonProps) {
   const router = useRouter();
   const { requireAuth } = useAuth();
@@ -30,6 +32,8 @@ export function BuyNowButton({
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (disabled) return;
 
     const handleStr = productObj?.handle || productHandle || (productObj?.title ? productObj.title.toLowerCase().replace(/[^a-z0-9]+/g, "-") : "product");
     const titleStr = productObj?.title || productTitle || (productHandle ? productHandle.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : "Store Item");
@@ -82,7 +86,7 @@ export function BuyNowButton({
   };
 
   return (
-    <button onClick={handleClick} className={className}>
+    <button disabled={disabled} onClick={disabled ? undefined : handleClick} className={className}>
       {added ? "✓ Added" : children}
     </button>
   );
