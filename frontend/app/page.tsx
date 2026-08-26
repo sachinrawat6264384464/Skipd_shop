@@ -3,6 +3,7 @@ import Image from "next/image";
 import { CategoryNav } from "components/layout/category-nav";
 import { HeroSlider } from "components/carousel/hero-slider";
 import { DynamicHomeShowcase } from "components/home/dynamic-home-showcase";
+import { FlashSaleBanner } from "components/home/flash-sale-banner";
 import { fetchProducts } from "lib/api";
 import Footer from "components/layout/footer";
 
@@ -10,8 +11,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata = {
-  title: "SKIPD | Modern Direct-to-Consumer Storefront",
-  description: "Explore premium electronics, fashion, footwear, and accessories with instant Razorpay checkout and Shiprocket live tracking.",
+  title: "E-COM | Modern Direct-to-Consumer Storefront",
+  description: "Explore premium electronics, fashion, footwear, and accessories with instant Razorpay checkout and live tracking.",
 };
 
 export default async function HomePage() {
@@ -26,6 +27,11 @@ export default async function HomePage() {
       {/* 🟢 Hero Carousel Banner */}
       <section className="max-w-7xl mx-auto px-4 pt-6 pb-4">
         <HeroSlider />
+      </section>
+
+      {/* ⚡ Live Flash Sale Deal Banner */}
+      <section className="max-w-7xl mx-auto px-4">
+        <FlashSaleBanner />
       </section>
 
       {/* 🚚 Trust & Delivery Features Strip */}

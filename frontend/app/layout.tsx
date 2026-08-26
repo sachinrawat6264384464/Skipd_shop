@@ -58,6 +58,7 @@ import { ClearLegacyStorage } from "components/layout/clear-legacy-storage";
 import { EmailToastListener } from "components/email/email-toast-listener";
 import FloatingChatbot from "components/chatbot/FloatingChatbot";
 import { AbandonedReminderModal } from "components/modals/AbandonedReminderModal";
+import { SocialProofToast } from "components/social/social-proof-toast";
 
 export default async function RootLayout({
   children,
@@ -85,6 +86,7 @@ export default async function RootLayout({
                   <EmailToastListener />
                   <FloatingChatbot />
                   <AbandonedReminderModal />
+                  <SocialProofToast />
                 </main>
               </CartProvider>
             </WishlistProvider>

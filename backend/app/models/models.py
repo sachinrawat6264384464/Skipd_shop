@@ -304,6 +304,9 @@ class Review(Base):
     user_name = Column(String(150), default="Customer")
     rating = Column(Integer, nullable=False)
     comment = Column(Text, nullable=True)
+    images = Column(JSON, default=list)  # List of customer review photo URLs
+    videos = Column(JSON, default=list)  # List of customer review video URLs
+    is_verified_purchase = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     user = relationship("User", back_populates="reviews")
@@ -357,17 +360,21 @@ class ReturnRequest(Base):
     __tablename__ = "return_requests"
 
     id = Column(Integer, primary_key=True, index=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=True, index=True)
     reason = Column(Text, nullable=False)
-    status = Column(SQLEnum(ReturnStatus), default=ReturnStatus.PENDING)
-    refund_amount = Column(Float, nullable=False)
+    comments = Column(Text, nullable=True)
+    images = Column(JSON, default=list)
+    status = Column(String(50), default="Pending")
+    refund_amount = Column(Float, nullable=True, default=0.0)
     admin_notes = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     order = relationship("Order")
     user = relationship("User")
+    product = relationship("Product")
 
 class EmailLog(Base):
     __tablename__ = "email_logs"
@@ -452,6 +459,23 @@ class UserView(Base):
 
     product = relationship("Product")
     user = relationship("User")
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    title = Column(String(200), nullable=False)
+    message = Column(Text, nullable=False)
+    type = Column(String(50), default="info")  # order, price_drop, wallet, info
+    link = Column(String(255), nullable=True)
+    is_read = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+    user = relationship("User")
+
+
 
 
 

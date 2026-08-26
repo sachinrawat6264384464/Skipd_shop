@@ -6,6 +6,7 @@ import { WishlistNavButton } from "./wishlist-nav-button";
 import { LanguagePicker } from "components/language/language-picker";
 import { InstantSearchModal } from "components/search/search-modal";
 import { NavLinks } from "./nav-links";
+import { NotificationBell } from "components/notifications/NotificationBell";
 
 export async function Navbar() {
   return (
@@ -30,6 +31,7 @@ export async function Navbar() {
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <InstantSearchModal />
           <LanguagePicker />
+          <NotificationBell />
           <UserAccountDropdown />
           <div className="hidden sm:block">
             <WishlistNavButton />

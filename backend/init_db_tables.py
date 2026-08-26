@@ -58,6 +58,26 @@ async def initialize_and_migrate_all_tables():
         await conn.execute(text("CREATE INDEX IF NOT EXISTS ix_user_views_product_id ON user_views(product_id);"))
         await conn.execute(text("CREATE INDEX IF NOT EXISTS ix_user_views_user_id ON user_views(user_id);"))
 
+        # Add media and verified purchase columns to reviews table
+        await conn.execute(text("ALTER TABLE reviews ADD COLUMN IF NOT EXISTS images JSONB DEFAULT '[]'::jsonb;"))
+        await conn.execute(text("ALTER TABLE reviews ADD COLUMN IF NOT EXISTS videos JSONB DEFAULT '[]'::jsonb;"))
+        await conn.execute(text("ALTER TABLE reviews ADD COLUMN IF NOT EXISTS is_verified_purchase BOOLEAN DEFAULT TRUE;"))
+
+        # Ensure notifications table exists
+        await conn.execute(text("""
+            CREATE TABLE IF NOT EXISTS notifications (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES users(id),
+                title VARCHAR(200) NOT NULL,
+                message TEXT NOT NULL,
+                type VARCHAR(50) DEFAULT 'info',
+                link VARCHAR(255),
+                is_read BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """))
+        await conn.execute(text("CREATE INDEX IF NOT EXISTS ix_notifications_user_id ON notifications(user_id);"))
+
         print("[SUCCESS] Schema alterations & column migrations verified!")
 
 

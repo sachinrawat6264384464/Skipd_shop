@@ -8,31 +8,41 @@ from dotenv import load_dotenv
 load_dotenv()
 
 def send_email_notification(to_email: str, subject: str, html_content: str) -> bool:
-    """Send HTML Email via SMTP or Fallback Console Logger for Async Tasks."""
+    """Send HTML Email via Gmail SMTP with auto space sanitization & SSL fallback."""
     smtp_host = os.getenv("SMTP_HOST", os.getenv("EMAIL_HOST", "smtp.gmail.com")).strip()
     smtp_port = int(os.getenv("SMTP_PORT", os.getenv("EMAIL_PORT", 587)))
     smtp_user = os.getenv("SMTP_USER", os.getenv("EMAIL_HOST_USER", "")).strip()
-    smtp_password = os.getenv("SMTP_PASSWORD", os.getenv("EMAIL_HOST_PASSWORD", "")).strip()
+    raw_pwd = os.getenv("SMTP_PASSWORD", os.getenv("EMAIL_HOST_PASSWORD", "")).strip()
+    smtp_password = raw_pwd.replace(" ", "")
 
     if smtp_user and smtp_password:
-        try:
-            msg = MIMEMultipart("alternative")
-            msg["Subject"] = Header(subject, "utf-8")
-            msg["From"] = f"SKIPD Commerce <{smtp_user}>"
-            msg["To"] = to_email
-            msg.attach(MIMEText(html_content, "html", "utf-8"))
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = Header(subject, "utf-8")
+        msg["From"] = f"E-COM Commerce <{smtp_user}>"
+        msg["To"] = to_email
+        msg.attach(MIMEText(html_content, "html", "utf-8"))
 
-            with smtplib.SMTP(smtp_host, smtp_port) as server:
+        # Try Port 587 with STARTTLS
+        try:
+            with smtplib.SMTP(smtp_host, smtp_port, timeout=15) as server:
                 server.starttls()
                 server.login(smtp_user, smtp_password)
                 server.send_message(msg)
-            print(f"[EMAIL SENT SUCCESSFULLY] To: {to_email}")
+            print(f"✅ [EMAIL SENT SUCCESSFULLY] To: {to_email} | Subject: {subject}")
             return True
-        except Exception as e:
-            print(f"[SMTP EMAIL ERROR] {type(e).__name__}: {str(e).encode('ascii', 'replace').decode('ascii')}")
-            return False
+        except Exception as e1:
+            print(f"⚠️ [SMTP TLS 587 ERROR] {type(e1).__name__}: {e1}. Retrying with SSL Port 465...")
+            try:
+                with smtplib.SMTP_SSL(smtp_host, 465, timeout=15) as server:
+                    server.login(smtp_user, smtp_password)
+                    server.send_message(msg)
+                print(f"✅ [EMAIL SENT VIA SSL 465] To: {to_email} | Subject: {subject}")
+                return True
+            except Exception as e2:
+                print(f"❌ [SMTP EMAIL FAILED BOTH PORTS] {type(e2).__name__}: {e2}")
+                return False
     else:
-        print(f"\n[SIMULATED EMAIL FLOW] To: {to_email}")
+        print(f"\n[SIMULATED EMAIL FLOW] To: {to_email} | Subject: {subject}")
         return True
 
 
@@ -167,13 +177,15 @@ def send_order_confirmation_email(
 
     # Build Shipping Address HTML
     address_str = "Customer Address"
-    if shipping_address:
+    if isinstance(shipping_address, dict):
         line1 = shipping_address.get("address_line1", "")
         city = shipping_address.get("city", "")
         state = shipping_address.get("state", "")
         pincode = shipping_address.get("pincode", "")
         phone = shipping_address.get("phone", "")
         address_str = f"{line1}, {city}, {state} - {pincode} (Mob: {phone})"
+    elif isinstance(shipping_address, str) and shipping_address.strip():
+        address_str = shipping_address.strip()
 
     awb_demo = f"SKP{order_number.replace('SKIPD-', '')}IN"
     # Use production domain if available, else fallback
