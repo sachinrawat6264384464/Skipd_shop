@@ -117,7 +117,7 @@ export function BrowseCategoriesGrid() {
 
         {/* 🖼️ 5-Column Grid of Category Tiles */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-          {displayList.map((cat, idx) => {
+          {displayList.map((cat: any, idx) => {
             const rawUrl = cat.image_url || cat.icon || "";
             const isPlaceholder = !rawUrl || rawUrl.includes("via.placeholder") || rawUrl.includes("open-shop") || rawUrl.includes("OPEN");
             
