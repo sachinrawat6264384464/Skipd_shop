@@ -57,11 +57,32 @@ DEFAULT_CATEGORIES_DATA = [
         "icon": "🏡",
         "image_url": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
         "description": "Cushion covers, home decor and kitchen items"
+    },
+    {
+        "name": "Sports & Fitness",
+        "slug": "sports",
+        "icon": "⚽",
+        "image_url": "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800",
+        "description": "Athletic gear, fitness equipment and sportswear"
+    },
+    {
+        "name": "Artisan & Crafts",
+        "slug": "artisan",
+        "icon": "🎨",
+        "image_url": "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
+        "description": "Handcrafted items, pottery, and art"
+    },
+    {
+        "name": "Beauty & Care",
+        "slug": "beauty",
+        "icon": "✨",
+        "image_url": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800",
+        "description": "Skincare, cosmetics, and wellness products"
     }
 ]
 
 async def ensure_default_categories(db: AsyncSession):
-    """Ensure all 7 primary store categories exist in PostgreSQL database with image URLs."""
+    """Ensure all 10 store categories exist in PostgreSQL database with valid Unsplash image URLs."""
     try:
         existing_res = await db.execute(select(Category))
         existing_cats = existing_res.scalars().all()
@@ -80,10 +101,12 @@ async def ensure_default_categories(db: AsyncSession):
                     status="Active"
                 ))
                 added_or_updated = True
-            elif not cat_obj.image_url:
-                cat_obj.image_url = item["image_url"]
-                db.add(cat_obj)
-                added_or_updated = True
+            else:
+                raw_img = cat_obj.image_url or ""
+                if not raw_img.startswith("http"):
+                    cat_obj.image_url = item["image_url"]
+                    db.add(cat_obj)
+                    added_or_updated = True
                 
         if added_or_updated:
             await db.commit()

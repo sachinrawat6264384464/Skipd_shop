@@ -73,8 +73,31 @@ export function BrowseCategoriesGrid() {
     );
   }
 
-  // Ensure full 10-category list from DB or high quality default seed
-  const displayList = categories.length > 0 ? categories : DEFAULT_FULL_CATEGORIES;
+  // Build complete 10-category list by merging DB categories with default seed
+  const dbMap = new Map<string, any>();
+  if (categories && categories.length > 0) {
+    categories.forEach((c: any) => {
+      const slug = (c.slug || c.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+      dbMap.set(slug, c);
+      dbMap.set(slug.split("-")[0], c);
+    });
+  }
+
+  const displayList = DEFAULT_FULL_CATEGORIES.map((def) => {
+    const dbMatch = dbMap.get(def.slug) || dbMap.get(def.slug.split("-")[0]);
+    if (dbMatch) {
+      const rawImg = dbMatch.image_url || dbMatch.icon;
+      const isValidUrl = rawImg && (rawImg.startsWith("http://") || rawImg.startsWith("https://") || rawImg.startsWith("/"));
+      return {
+        ...def,
+        id: dbMatch.id || def.slug,
+        name: dbMatch.name || def.name,
+        slug: dbMatch.slug || def.slug,
+        image_url: isValidUrl ? rawImg : def.image_url
+      };
+    }
+    return def;
+  });
 
   return (
     <section className="w-full bg-white py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-t border-gray-200/80 font-sans">
@@ -97,7 +120,7 @@ export function BrowseCategoriesGrid() {
             const isPlaceholder = !rawUrl || rawUrl.includes("via.placeholder") || rawUrl.includes("open-shop") || rawUrl.includes("OPEN");
             
             const slugKey = (cat.slug || cat.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-            const bgImage = !isPlaceholder && (rawUrl.startsWith("http") || rawUrl.startsWith("/"))
+            const bgImage = !isPlaceholder && (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("/"))
               ? rawUrl
               : CATEGORY_IMAGE_MAP[slugKey] || CATEGORY_IMAGE_MAP[slugKey.split("-")[0]] || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800";
 
