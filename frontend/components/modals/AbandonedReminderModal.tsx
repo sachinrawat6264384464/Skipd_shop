@@ -75,34 +75,39 @@ export function AbandonedReminderModal() {
   };
 
   const handleRemoveItem = async () => {
+    // Instantly close modal and clear state for zero UI lag
+    setIsOpen(false);
+    setRemoving(false);
+
+    if (typeof window !== "undefined") {
+      const snoozeTime = Date.now() + 24 * 60 * 60 * 1000;
+      sessionStorage.setItem("reminder_snoozed_until", snoozeTime.toString());
+    }
+
+    const currentItem = reminderData;
+    setReminderData(null);
+
     const token = typeof window !== "undefined"
       ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
       : null;
 
-    setRemoving(true);
-    try {
-      if (token && reminderData) {
+    if (currentItem) {
+      try {
         const apiBase = getApiBaseUrl().replace(/\/+$/, "");
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+
         await fetch(`${apiBase}/abandoned-reminders/remove`, {
           method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
+          headers,
           body: JSON.stringify({
-            item_id: reminderData.item_id,
-            item_type: reminderData.item_type
+            item_id: currentItem.item_id,
+            item_type: currentItem.item_type
           })
         });
+      } catch (e) {
+        console.warn("Background item removal error:", e);
       }
-    } catch (e) {
-      console.error("Error removing item from reminder:", e);
-    } finally {
-      // Snooze reminder and close modal cleanly
-      const snoozeTime = Date.now() + 60 * 60 * 1000;
-      sessionStorage.setItem("reminder_snoozed_until", snoozeTime.toString());
-      setRemoving(false);
-      setIsOpen(false);
     }
   };
 

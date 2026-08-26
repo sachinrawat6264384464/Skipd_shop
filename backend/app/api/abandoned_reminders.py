@@ -137,35 +137,33 @@ async def remove_abandoned_item(
     """
     Remove abandoned item from Cart or Wishlist directly from Popup Modal.
     """
-    if not current_user:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Authentication required")
-
-    if payload.item_type == "cart":
-        res = await db.execute(
-            select(CartItem).where(
-                CartItem.user_id == current_user.id,
-                or_(CartItem.id == payload.item_id, CartItem.product_id == payload.item_id)
+    if current_user:
+        if payload.item_type == "cart":
+            res = await db.execute(
+                select(CartItem).where(
+                    CartItem.user_id == current_user.id,
+                    or_(CartItem.id == payload.item_id, CartItem.product_id == payload.item_id)
+                )
             )
-        )
-        items = res.scalars().all()
-        for item in items:
-            await db.delete(item)
-        if items:
-            await db.commit()
-            return {"success": True, "message": "Item removed from cart successfully"}
+            items = res.scalars().all()
+            for item in items:
+                await db.delete(item)
+            if items:
+                await db.commit()
+                return {"success": True, "message": "Item removed from cart successfully"}
 
-    elif payload.item_type == "wishlist":
-        res = await db.execute(
-            select(WishlistItem).where(
-                WishlistItem.user_id == current_user.id,
-                or_(WishlistItem.id == payload.item_id, WishlistItem.product_id == payload.item_id)
+        elif payload.item_type == "wishlist":
+            res = await db.execute(
+                select(WishlistItem).where(
+                    WishlistItem.user_id == current_user.id,
+                    or_(WishlistItem.id == payload.item_id, WishlistItem.product_id == payload.item_id)
+                )
             )
-        )
-        items = res.scalars().all()
-        for item in items:
-            await db.delete(item)
-        if items:
-            await db.commit()
-            return {"success": True, "message": "Item removed from wishlist successfully"}
+            items = res.scalars().all()
+            for item in items:
+                await db.delete(item)
+            if items:
+                await db.commit()
+                return {"success": True, "message": "Item removed from wishlist successfully"}
 
-    return {"success": True, "message": "Item removed"}
+    return {"success": True, "message": "Item removed successfully"}
