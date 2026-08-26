@@ -46,6 +46,9 @@ export default function AdminSalesPage() {
   const [viewModalCampaign, setViewModalCampaign] = useState<any | null>(null);
   const [isEditingModal, setIsEditingModal] = useState(false);
 
+  // 📦 Real PostgreSQL Database Products List
+  const [dbProducts, setDbProducts] = useState<any[]>([]);
+
   // ⚡ Live Flash Sale Deals Dataset for Homepage FlashSaleBanner
   const [flashSaleDeals, setFlashSaleDeals] = useState<any[]>([
     {
@@ -97,6 +100,40 @@ export default function AdminSalesPage() {
   async function loadData() {
     setLoading(true);
     let formattedFromDb: any[] = [];
+
+    // Fetch Live Products from PostgreSQL DB for dropdown selection
+    try {
+      const liveProds = await fetchProducts();
+      if (Array.isArray(liveProds) && liveProds.length > 0) {
+        setDbProducts(liveProds);
+
+        // If flash sale deals are default, map first available DB products to slots
+        const savedFlash = typeof window !== "undefined" ? localStorage.getItem("ecom_flash_sale_products") : null;
+        if (!savedFlash && liveProds.length >= 4) {
+          const autoSlots = liveProds.slice(0, 4).map((p: any, idx: number) => {
+            const rawPrice = p.price || 999;
+            const mrp = p.compare_at_price || p.mrp || Math.round(rawPrice * 1.4);
+            const disc = mrp > rawPrice ? Math.round(((mrp - rawPrice) / mrp) * 100) : 25;
+            const img = p.images?.[0] || p.image || p.image_url || "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400";
+            return {
+              id: p.id || 100 + idx,
+              title: p.title || p.name,
+              handle: p.handle || (p.title || "").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+              price: rawPrice,
+              compare_at_price: mrp,
+              discount_percent: disc,
+              image: img,
+              sold_percent: 65 + (idx * 7)
+            };
+          });
+          setFlashSaleDeals(autoSlots);
+        } else if (savedFlash) {
+          try {
+            setFlashSaleDeals(JSON.parse(savedFlash));
+          } catch (e) {}
+        }
+      }
+    } catch (e) {}
 
     try {
       const dbSales = await fetchAdminAllSales();
@@ -802,93 +839,154 @@ export default function AdminSalesPage() {
           </button>
         </div>
 
-        {/* 4 Editable Flash Sale Deal Cards */}
+        {/* 4 Editable Flash Sale Deal Cards with DB Selector & Circular Images */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
           {flashSaleDeals.map((deal, idx) => (
-            <div key={deal.id || idx} className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
+            <div key={deal.id || idx} className="bg-slate-900/90 border border-slate-800 rounded-3xl p-4 space-y-3 shadow-md flex flex-col justify-between">
               
-              <div className="flex items-center justify-between text-[10px] font-black text-slate-400 border-b border-slate-800 pb-2">
-                <span>SLOT #{idx + 1}</span>
-                <span className="bg-red-600 text-white px-2 py-0.5 rounded font-bold uppercase">
-                  -{deal.discount_percent}% OFF
-                </span>
-              </div>
+              <div>
+                <div className="flex items-center justify-between text-[10px] font-black text-slate-400 border-b border-slate-800 pb-2.5">
+                  <span className="text-amber-400 font-extrabold tracking-wider">⚡ SLOT #{idx + 1}</span>
+                  <span className="bg-red-600 text-white px-2 py-0.5 rounded-full font-black text-[9px] uppercase tracking-wider">
+                    -{deal.discount_percent}% OFF
+                  </span>
+                </div>
 
-              {/* Product Title Select or Input */}
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400">Product Title &amp; Handle</label>
-                <input
-                  type="text"
-                  value={deal.title}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    const updated = [...flashSaleDeals];
-                    updated[idx] = {
-                      ...deal,
-                      title: val,
-                      handle: val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
-                    };
-                    setFlashSaleDeals(updated);
-                  }}
-                  className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-amber-500"
-                />
-              </div>
+                {/* Circular Product Image Avatar */}
+                <div className="flex items-center gap-3 my-3">
+                  <div className="relative shrink-0">
+                    <img
+                      src={deal.image || "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400"}
+                      alt={deal.title}
+                      className="w-14 h-14 rounded-full object-cover border-2 border-amber-500/80 shadow-lg shadow-amber-500/10"
+                    />
+                    <span className="w-3 h-3 rounded-full bg-emerald-500 border-2 border-slate-900 absolute bottom-0 right-0 animate-ping" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs font-black text-white truncate leading-tight">{deal.title}</p>
+                    <p className="text-[10px] text-amber-400 font-extrabold mt-0.5">₹{deal.price} <span className="line-through text-slate-500 font-normal">₹{deal.compare_at_price}</span></p>
+                  </div>
+                </div>
 
-              {/* Price & Discount Inputs */}
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div>
-                  <label className="text-[10px] font-bold text-slate-400 block mb-0.5">Deal Price (₹)</label>
-                  <input
-                    type="number"
-                    value={deal.price}
+                {/* Dropdown: Select Product directly from PostgreSQL Database */}
+                <div className="space-y-1 mb-3">
+                  <label className="text-[10px] font-black text-amber-400 uppercase tracking-wider block">
+                    Choose DB Product (PostgreSQL):
+                  </label>
+                  <select
+                    value={deal.id || ""}
                     onChange={(e) => {
-                      const val = parseFloat(e.target.value) || 0;
+                      const selectedId = e.target.value;
+                      const found = dbProducts.find((p: any) => String(p.id) === String(selectedId));
+                      if (found) {
+                        const updated = [...flashSaleDeals];
+                        const rawPrice = found.price || 999;
+                        const mrp = found.compare_at_price || found.mrp || Math.round(rawPrice * 1.4);
+                        const disc = mrp > rawPrice ? Math.round(((mrp - rawPrice) / mrp) * 100) : 25;
+                        const img = found.images?.[0] || found.image || found.image_url || "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400";
+
+                        updated[idx] = {
+                          ...deal,
+                          id: found.id,
+                          title: found.title || found.name,
+                          handle: found.handle || (found.title || "").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+                          price: rawPrice,
+                          compare_at_price: mrp,
+                          discount_percent: disc,
+                          image: img
+                        };
+                        setFlashSaleDeals(updated);
+                      }
+                    }}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-200 focus:outline-none focus:border-amber-500"
+                  >
+                    <option value="">-- Select DB Product --</option>
+                    {dbProducts.map((p: any) => (
+                      <option key={p.id} value={p.id}>
+                        {p.title || p.name} (₹{p.price})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Product Title & Handle Manual Edit */}
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-slate-400">Custom Title / Handle</label>
+                  <input
+                    type="text"
+                    value={deal.title}
+                    onChange={(e) => {
+                      const val = e.target.value;
                       const updated = [...flashSaleDeals];
-                      const mrp = deal.compare_at_price || val * 1.5;
-                      const offPct = mrp > val && mrp > 0 ? Math.round(((mrp - val) / mrp) * 100) : 30;
-                      updated[idx] = { ...deal, price: val, discount_percent: offPct };
+                      updated[idx] = {
+                        ...deal,
+                        title: val,
+                        handle: val.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")
+                      };
                       setFlashSaleDeals(updated);
                     }}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 font-black text-amber-400 focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] font-bold text-slate-400 block mb-0.5">M.R.P Price (₹)</label>
-                  <input
-                    type="number"
-                    value={deal.compare_at_price}
-                    onChange={(e) => {
-                      const val = parseFloat(e.target.value) || 0;
-                      const updated = [...flashSaleDeals];
-                      const offPct = val > deal.price && val > 0 ? Math.round(((val - deal.price) / val) * 100) : 30;
-                      updated[idx] = { ...deal, compare_at_price: val, discount_percent: offPct };
-                      setFlashSaleDeals(updated);
-                    }}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 font-bold text-slate-300 focus:outline-none"
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
 
-              {/* Sold % Slider */}
-              <div className="space-y-1 pt-1">
-                <div className="flex justify-between text-[10px] font-bold text-slate-400">
-                  <span>Stock Claimed</span>
-                  <span className="text-amber-400 font-extrabold">{deal.sold_percent}% Sold</span>
+              <div className="space-y-2 pt-1">
+                {/* Price & Discount Inputs */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 block mb-0.5">Deal Price (₹)</label>
+                    <input
+                      type="number"
+                      value={deal.price}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value) || 0;
+                        const updated = [...flashSaleDeals];
+                        const mrp = deal.compare_at_price || val * 1.5;
+                        const offPct = mrp > val && mrp > 0 ? Math.round(((mrp - val) / mrp) * 100) : 30;
+                        updated[idx] = { ...deal, price: val, discount_percent: offPct };
+                        setFlashSaleDeals(updated);
+                      }}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 font-black text-amber-400 focus:outline-none"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 block mb-0.5">M.R.P Price (₹)</label>
+                    <input
+                      type="number"
+                      value={deal.compare_at_price}
+                      onChange={(e) => {
+                        const val = parseFloat(e.target.value) || 0;
+                        const updated = [...flashSaleDeals];
+                        const offPct = val > deal.price && val > 0 ? Math.round(((val - deal.price) / val) * 100) : 30;
+                        updated[idx] = { ...deal, compare_at_price: val, discount_percent: offPct };
+                        setFlashSaleDeals(updated);
+                      }}
+                      className="w-full bg-slate-950 border border-slate-700 rounded-xl px-2.5 py-1.5 font-bold text-slate-300 focus:outline-none"
+                    />
+                  </div>
                 </div>
-                <input
-                  type="range"
-                  min="10"
-                  max="99"
-                  value={deal.sold_percent}
-                  onChange={(e) => {
-                    const val = parseInt(e.target.value) || 50;
-                    const updated = [...flashSaleDeals];
-                    updated[idx] = { ...deal, sold_percent: val };
-                    setFlashSaleDeals(updated);
-                  }}
-                  className="w-full accent-amber-500 cursor-pointer"
-                />
+
+                {/* Sold % Slider */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-[10px] font-bold text-slate-400">
+                    <span>Stock Claimed</span>
+                    <span className="text-amber-400 font-extrabold">{deal.sold_percent}% Sold</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="10"
+                    max="99"
+                    value={deal.sold_percent}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value) || 50;
+                      const updated = [...flashSaleDeals];
+                      updated[idx] = { ...deal, sold_percent: val };
+                      setFlashSaleDeals(updated);
+                    }}
+                    className="w-full accent-amber-500 cursor-pointer"
+                  />
+                </div>
               </div>
 
             </div>

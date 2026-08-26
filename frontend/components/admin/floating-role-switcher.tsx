@@ -290,10 +290,10 @@ export default function FloatingAdminRoleSwitcher() {
           title="Drag anywhere or click to switch Admin Roles"
         >
           <div className="relative flex items-center justify-center">
-            <span className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-sm shadow-inner">
+            <span className="w-9 h-9 rounded-full bg-gradient-to-br from-slate-800 to-purple-950 border border-purple-500/50 flex items-center justify-center text-sm shadow-lg">
               {currentRoleObj.icon}
             </span>
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#0F172A] absolute -top-1 -right-1 animate-pulse"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#0F172A] absolute -top-0.5 -right-0.5 animate-pulse"></span>
           </div>
 
           <div className="text-left">
