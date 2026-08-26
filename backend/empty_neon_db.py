@@ -22,10 +22,10 @@ async def empty_neon_database():
 
     async with AsyncSessionLocal() as session:
         # Create ONLY Master SuperAdmin Account (so admin can log in)
-        print("Creating Master SuperAdmin account (admin@skipd.in)...")
+        print("Creating Master SuperAdmin account (admin@e-com.in)...")
         admin_user = User(
             full_name="Sachin Rawat (Super Admin)",
-            email="admin@skipd.in",
+            email="admin@e-com.in",
             phone="9876543210",
             hashed_password=get_password_hash("admin123"),
             role=UserRole.ADMIN

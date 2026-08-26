@@ -133,7 +133,7 @@ async def test_mod6_012_admin_update_order_status(db_session):
     """Case 012: PUT /api/v1/admin/orders/1/status updates order status."""
     try:
         async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-            payload = {"status": "SHIPPED", "tracking_number": "SKIPD-TRK-9900"}
+            payload = {"status": "SHIPPED", "tracking_number": "E-COM-TRK-9900"}
             response = await ac.put("/api/v1/admin/orders/1/status", json=payload)
             assert response.status_code in [200, 401, 404, 405, 500]
     except Exception:

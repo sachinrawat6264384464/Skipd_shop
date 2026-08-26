@@ -1,8 +1,8 @@
-# SKIPD Commerce — Modern Direct-to-Consumer (D2C) E-Commerce Platform
+# E-COM Commerce — Modern Direct-to-Consumer (D2C) E-Commerce Platform
 
-![SKIPD Commerce](https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1200)
+![E-COM Commerce](https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=1200)
 
-SKIPD Commerce is a high-performance, full-stack B2C e-commerce platform built with **Next.js 15 (App Router, Turbopack, PPR)** on the frontend and **FastAPI (Async SQLAlchemy 2.0, PostgreSQL/SQLite, Redis)** on the backend. It features native Razorpay payment integration, Shiprocket logistics tracking, full OTP/Password authentication, interactive product detail views, dynamic multi-filter category search, and a modular domain architecture.
+E-COM Commerce is a high-performance, full-stack B2C e-commerce platform built with **Next.js 15 (App Router, Turbopack, PPR)** on the frontend and **FastAPI (Async SQLAlchemy 2.0, PostgreSQL/SQLite, Redis)** on the backend. It features native Razorpay payment integration, Shiprocket logistics tracking, full OTP/Password authentication, interactive product detail views, dynamic multi-filter category search, and a modular domain architecture.
 
 ---
 
@@ -99,11 +99,11 @@ python test_e2e.py
 ```
 
 ### 👤 Demo Customer Credentials
-- **Email / Phone**: `customer@skipd.in` / `9876543210`
+- **Email / Phone**: `customer@e-com.in` / `9876543210`
 - **Password**: `pass1234`
 - **OTP**: Use screen auto-fill code or enter `123456`.
 
 ---
 
 ## 📜 License
-Developed for SKIPD Commerce — All Rights Reserved.
+Developed for E-COM Commerce — All Rights Reserved.

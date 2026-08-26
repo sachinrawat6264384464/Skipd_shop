@@ -99,7 +99,7 @@ export default function AdminHomepageManagerPage() {
 
   function loadHeroSlides() {
     try {
-      const stored = localStorage.getItem("skipd_hero_banners");
+      const stored = localStorage.getItem("ecom_hero_banners");
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -112,8 +112,8 @@ export default function AdminHomepageManagerPage() {
   }
 
   const saveHeroSlides = (slides: any[]) => {
-    localStorage.setItem("skipd_hero_banners", JSON.stringify(slides));
-    window.dispatchEvent(new Event("skipd_banners_updated"));
+    localStorage.setItem("ecom_hero_banners", JSON.stringify(slides));
+    window.dispatchEvent(new Event("ecom_banners_updated"));
     setHeroSlides(slides);
   };
 

@@ -39,8 +39,8 @@ export default function WishlistPage() {
       localStorage.setItem(cartKey, JSON.stringify(items));
 
       // Fire both cart events so navbar counter badge updates instantly
-      window.dispatchEvent(new Event("skipd_cart_updated"));
-      window.dispatchEvent(new Event("skipd_cart_changed"));
+      window.dispatchEvent(new Event("ecom_cart_updated"));
+      window.dispatchEvent(new Event("ecom_cart_changed"));
       window.dispatchEvent(new StorageEvent("storage", {
         key: cartKey,
         newValue: JSON.stringify(items)
@@ -69,7 +69,7 @@ export default function WishlistPage() {
         quantity: 1,
         image: item.image
       }];
-      sessionStorage.setItem("skipd_buy_now_item", JSON.stringify(buyNowItem));
+      sessionStorage.setItem("ecom_buy_now_item", JSON.stringify(buyNowItem));
       router.push("/checkout?buyNow=true");
     } catch (e) {
       toast.error("Could not proceed to checkout. Try again.");

@@ -161,7 +161,7 @@ export default function AdminPaymentsPage() {
 
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("skipd_payments", JSON.stringify(updated));
+        localStorage.setItem("ecom_payments", JSON.stringify(updated));
       } catch (e) {}
     }
     showToast(`🗑️ Transaction ${id} deleted successfully!`);
@@ -178,7 +178,7 @@ export default function AdminPaymentsPage() {
 
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("skipd_payments", JSON.stringify(updated));
+        localStorage.setItem("ecom_payments", JSON.stringify(updated));
       } catch (e) {}
     }
 
@@ -237,9 +237,9 @@ export default function AdminPaymentsPage() {
       const colors = ["bg-purple-600", "bg-emerald-600", "bg-amber-500", "bg-blue-600", "bg-[#8b5cf6]", "bg-rose-500"];
       const formatted = deduplicatedRaw.map((t: any, idx: number) => ({
         id: t.id || `PAY-${99201 + idx}`,
-        orderId: t.orderId || `#SKIPD-${25879 - idx}`,
+        orderId: t.orderId || `#E-COM-${25879 - idx}`,
         customerName: t.customerName || "Store Customer",
-        customerEmail: t.customerEmail || "customer@skipd.in",
+        customerEmail: t.customerEmail || "customer@e-com.in",
         avatarBg: colors[idx % colors.length] || "bg-emerald-600",
         paymentMethod: t.payment_method || "Razorpay UPI",
         methodIcon: (t.payment_method || "").includes("UPI") ? "UPI" : (t.payment_method || "").includes("VISA") ? "VISA" : "PAY",
@@ -274,7 +274,7 @@ export default function AdminPaymentsPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `SKIPD_Payments_Settlement_Statement_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `ECOM_Payments_Settlement_Statement_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

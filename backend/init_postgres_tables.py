@@ -4,7 +4,7 @@ from app.models.models import Base, Category, Product, ProductVariant, User, Use
 from app.core.security import get_password_hash
 from sqlalchemy import select
 
-PG_URL = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5433/skipd_commerce_db"
+PG_URL = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5433/ecom_commerce_db"
 
 async def init_tables():
     print(f"Connecting to PostgreSQL on {PG_URL}...")
@@ -54,15 +54,15 @@ async def init_tables():
             await db.commit()
 
             admin_user = User(
-                full_name="SKIPD Store Admin",
-                email="admin@skipd.in",
+                full_name="E-COM Store Admin",
+                email="admin@e-com.in",
                 phone="9876543210",
                 hashed_password=get_password_hash("admin123"),
                 role=UserRole.ADMIN
             )
             db.add(admin_user)
             await db.commit()
-            print("[SUCCESS] Initial seed data created in PostgreSQL database 'skipd_commerce_db'!")
+            print("[SUCCESS] Initial seed data created in PostgreSQL database 'ecom_commerce_db'!")
         else:
             print("[INFO] B2C Catalog already populated in PostgreSQL database.")
 

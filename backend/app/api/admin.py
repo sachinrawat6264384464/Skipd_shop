@@ -42,7 +42,7 @@ async def get_admin_dashboard_stats(db: AsyncSession = Depends(get_db)):
     db_recent_orders = recent_orders_res.scalars().all()
     recent_orders_list = [
         {
-            "id": f"#SKIPD-{ord.id}",
+            "id": f"#E-COM-{ord.id}",
             "customer": f"Customer #{ord.user_id}",
             "date": ord.created_at.strftime("%b %d, %Y") if ord.created_at else "Today",
             "amount": float(ord.total_amount or 0),
@@ -179,7 +179,7 @@ async def trigger_bulk_email_campaign(
     🚀 High-Scale Bulk Email Dispatch Endpoint for 10,000+ Users:
     Pushes campaign jobs into Redis Message Queue for multi-worker Celery parallel execution.
     """
-    subject = payload.get("subject", "🔥 Special Offer from SKIPD Commerce!")
+    subject = payload.get("subject", "🔥 Special Offer from E-COM Commerce!")
     html_content = payload.get("html_content", "<h1>Special Discount Inside</h1>")
     target_count = payload.get("target_count", 10000)
 
@@ -190,7 +190,7 @@ async def trigger_bulk_email_campaign(
     # If target count is higher than DB users, complement with batch user list
     if len(user_emails) < target_count:
         additional_count = target_count - len(user_emails)
-        user_emails += [f"user_{i}@skipd-demo.com" for i in range(1, additional_count + 1)]
+        user_emails += [f"user_{i}@e-com-demo.com" for i in range(1, additional_count + 1)]
 
     try:
         task = dispatch_bulk_email_campaign_job.delay(user_emails, subject, html_content)

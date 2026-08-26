@@ -8,19 +8,19 @@ export function NavLinks() {
 
   useEffect(() => {
     const checkAuth = () => {
-      const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
-      const user = typeof window !== "undefined" ? localStorage.getItem("skipd_user") : null;
+      const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
+      const user = typeof window !== "undefined" ? localStorage.getItem("ecom_user") : null;
       setIsLoggedIn(!!(token || user));
     };
 
     checkAuth();
 
     window.addEventListener("storage", checkAuth);
-    window.addEventListener("skipd_auth_changed", checkAuth);
+    window.addEventListener("ecom_auth_changed", checkAuth);
 
     return () => {
       window.removeEventListener("storage", checkAuth);
-      window.removeEventListener("skipd_auth_changed", checkAuth);
+      window.removeEventListener("ecom_auth_changed", checkAuth);
     };
   }, []);
 

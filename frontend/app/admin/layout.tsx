@@ -39,8 +39,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   const loadActiveRoleState = () => {
     if (typeof window !== "undefined") {
-      const role = localStorage.getItem("skipd_admin_role") || "Super Admin";
-      const permsStr = localStorage.getItem("skipd_admin_permissions");
+      const role = localStorage.getItem("ecom_admin_role") || "Super Admin";
+      const permsStr = localStorage.getItem("ecom_admin_permissions");
       setActiveRoleName(role);
 
       if (role.toLowerCase() === "super admin") {
@@ -64,8 +64,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     loadActiveRoleState();
-    window.addEventListener("skipd_role_changed", loadActiveRoleState);
-    return () => window.removeEventListener("skipd_role_changed", loadActiveRoleState);
+    window.addEventListener("ecom_role_changed", loadActiveRoleState);
+    return () => window.removeEventListener("ecom_role_changed", loadActiveRoleState);
   }, []);
 
   const getModuleIdForPath = (path: string): string => {
@@ -105,8 +105,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => {
     if (pathname === "/admin/login") return;
-    const token = localStorage.getItem("skipd_admin_token");
-    const storedUser = localStorage.getItem("skipd_admin_user");
+    const token = localStorage.getItem("ecom_admin_token");
+    const storedUser = localStorage.getItem("ecom_admin_user");
 
     if (!token) {
       setIsAdminAuthenticated(false);
@@ -171,13 +171,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     if (isAdminAuthenticated) {
       loadHeaderData();
       const interval = setInterval(loadHeaderData, 15000);
-      window.addEventListener("skipd_new_query", loadHeaderData);
-      window.addEventListener("skipd_new_order", loadHeaderData);
+      window.addEventListener("ecom_new_query", loadHeaderData);
+      window.addEventListener("ecom_new_order", loadHeaderData);
 
       return () => {
         clearInterval(interval);
-        window.removeEventListener("skipd_new_query", loadHeaderData);
-        window.removeEventListener("skipd_new_order", loadHeaderData);
+        window.removeEventListener("ecom_new_query", loadHeaderData);
+        window.removeEventListener("ecom_new_order", loadHeaderData);
       };
     }
   }, [isAdminAuthenticated]);
@@ -195,8 +195,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, []);
 
   const handleAdminLogout = () => {
-    localStorage.removeItem("skipd_admin_token");
-    localStorage.removeItem("skipd_admin_user");
+    localStorage.removeItem("ecom_admin_token");
+    localStorage.removeItem("ecom_admin_user");
     router.push("/admin/login");
   };
 
@@ -328,7 +328,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 S
               </div>
               <div>
-                <span className="font-black text-white text-xl tracking-tight block leading-none">SKIPD ADMIN</span>
+                <span className="font-black text-white text-xl tracking-tight block leading-none">E-COM ADMIN</span>
                 <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Enterprise OS v3.0</span>
               </div>
             </Link>
@@ -627,7 +627,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="absolute right-0 top-12 w-60 bg-white border border-gray-200 rounded-2xl shadow-2xl z-50 p-2 space-y-1 text-xs font-semibold animate-in fade-in slide-in-from-top-2 duration-150">
                   <div className="px-3 py-2 border-b border-gray-100 mb-1">
                     <p className="font-black text-gray-900">Sachin Rawat</p>
-                    <p className="text-[10px] text-emerald-600 font-bold">admin@skipd.in (Super Admin)</p>
+                    <p className="text-[10px] text-emerald-600 font-bold">admin@e-com.in (Super Admin)</p>
                   </div>
 
                   <Link

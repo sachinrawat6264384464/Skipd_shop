@@ -1006,8 +1006,8 @@ export default function AdminInventoryPage() {
                     type="button"
                     onClick={() => {
                       const a = document.createElement("a");
-                      a.href = "/skipd_10_products_full_spec.csv";
-                      a.download = "skipd_10_products_full_spec.csv";
+                      a.href = "/ecom_10_products_full_spec.csv";
+                      a.download = "ecom_10_products_full_spec.csv";
                       a.click();
                       showToast("📥 10-Product Full Spec CSV (with all 18 form step columns) downloaded!");
                     }}

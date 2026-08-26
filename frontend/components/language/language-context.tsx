@@ -183,7 +183,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const [language, setLanguageState] = useState<SupportedLanguage>("en");
 
   useEffect(() => {
-    const saved = localStorage.getItem("skipd_lang") as SupportedLanguage;
+    const saved = localStorage.getItem("ecom_lang") as SupportedLanguage;
     if (saved && TRANSLATIONS[saved]) {
       setLanguageState(saved);
     }
@@ -191,7 +191,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   const setLanguage = (lang: SupportedLanguage) => {
     setLanguageState(lang);
-    localStorage.setItem("skipd_lang", lang);
+    localStorage.setItem("ecom_lang", lang);
   };
 
   const t = (key: string): string => {

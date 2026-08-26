@@ -30,14 +30,14 @@ async def reset_local_database():
         # Create fresh SuperAdmin
         admin_user = User(
             full_name="Sachin Rawat (Super Admin)",
-            email="admin@skipd.in",
+            email="admin@e-com.in",
             phone="9876543210",
             hashed_password=get_password_hash("admin123"),
             role=UserRole.ADMIN
         )
         session.add(admin_user)
         await session.commit()
-        print("[SUCCESS] Fresh Master Admin created: admin@skipd.in (Password: admin123)")
+        print("[SUCCESS] Fresh Master Admin created: admin@e-com.in (Password: admin123)")
 
     print("=====================================================")
     print("[SUCCESS] LOCAL POSTGRESQL DATABASE IS NOW 100% FRESH & EMPTY!")

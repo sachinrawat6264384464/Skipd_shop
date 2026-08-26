@@ -12,7 +12,7 @@ const { SITE_NAME } = process.env;
 
 const siteBaseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : "https://skipd-shop.vercel.app";
+  : "https://e-com-shop.vercel.app";
 
 export const metadata = {
   metadataBase: new URL(siteBaseUrl),
@@ -28,11 +28,11 @@ export const metadata = {
   openGraph: {
     title: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
     description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones & smart wearables with 24-hour express delivery.",
-    url: "https://skipd-shop.vercel.app",
+    url: "https://e-com-shop.vercel.app",
     siteName: "E-COM Commerce",
     images: [
       {
-        url: "https://skipd-shop.vercel.app/og-image.png",
+        url: "https://e-com-shop.vercel.app/og-image.png",
         width: 1200,
         height: 630,
         alt: "E-COM Commerce Storefront Preview"
@@ -45,7 +45,7 @@ export const metadata = {
     card: "summary_large_image",
     title: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
     description: "Upgrade your daily setup with studio ANC headphones, gaming phones & smart wearables on E-COM Commerce.",
-    images: ["https://skipd-shop.vercel.app/og-image.png"]
+    images: ["https://e-com-shop.vercel.app/og-image.png"]
   }
 };
 

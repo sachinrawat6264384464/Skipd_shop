@@ -10,7 +10,7 @@ async def seed_crm_db():
 
         # 1. Real Users Data
         real_users = [
-          {"name": "Sachin Rawat", "email": "sachin.rawat@skipd.in", "phone": "+91 62643 84464", "role": UserRole.CUSTOMER},
+          {"name": "Sachin Rawat", "email": "sachin.rawat@e-com.in", "phone": "+91 62643 84464", "role": UserRole.CUSTOMER},
           {"name": "Priya Patel", "email": "priya.patel@gmail.com", "phone": "+91 98123 45678", "role": UserRole.CUSTOMER},
           {"name": "Rahul Sharma", "email": "rahul.sharma@yahoo.com", "phone": "+91 98765 43210", "role": UserRole.CUSTOMER},
           {"name": "Sneha Gupta", "email": "sneha.gupta@outlook.com", "phone": "+91 96555 44332", "role": UserRole.CUSTOMER},
@@ -62,7 +62,7 @@ async def seed_crm_db():
                     "user": created_users[2],
                     "product": products[min(2, len(products)-1)],
                     "rating": 5,
-                    "comment": "100% authentic original product. Fast delivery by SKIPD team!"
+                    "comment": "100% authentic original product. Fast delivery by E-COM team!"
                 },
                 {
                     "user": created_users[3],

@@ -15,7 +15,7 @@ export default function TermsPage() {
           <span className="bg-emerald-400/20 text-emerald-300 font-black text-xs px-3.5 py-1 rounded-full uppercase tracking-wider border border-emerald-400/30">
             Consumer Protection &amp; Legal Framework
           </span>
-          <h1 className="text-3xl sm:text-4xl font-black">SKIPD Consumer Policies</h1>
+          <h1 className="text-3xl sm:text-4xl font-black">E-COM Consumer Policies</h1>
           <p className="text-xs text-gray-300 font-medium">Last Updated: August 18, 2026 &bull; Compliant with IT Act 2000 &amp; Consumer Protection Rules</p>
         </div>
 
@@ -60,7 +60,7 @@ export default function TermsPage() {
           <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-10 shadow-2xs space-y-6 text-xs text-gray-700 leading-relaxed font-medium animate-in fade-in duration-300">
             <h2 className="text-2xl font-black text-gray-900">1. Terms of Use &amp; Service Agreement</h2>
             <p>
-              Welcome to <strong>SKIPD Commerce Pvt Ltd</strong> (&quot;SKIPD&quot;, &quot;we&quot;, &quot;our&quot;). By accessing, browsing, or registering an account on www.skipd.in or using our APIs and mobile portals, you agree to bound by these terms.
+              Welcome to <strong>E-COM Commerce Pvt Ltd</strong> (&quot;E-COM&quot;, &quot;we&quot;, &quot;our&quot;). By accessing, browsing, or registering an account on www.e-com.in or using our APIs and mobile portals, you agree to bound by these terms.
             </p>
 
             <h3 className="font-extrabold text-sm text-gray-900 pt-2">1.1 Customer Account &amp; Security</h3>
@@ -70,7 +70,7 @@ export default function TermsPage() {
 
             <h3 className="font-extrabold text-sm text-gray-900 pt-2">1.2 Pricing &amp; Order Acceptance</h3>
             <p>
-              All prices listed on SKIPD Store are in Indian Rupees (INR) and inclusive of applicable GST taxes. We reserve the right to cancel orders arising from typographical or technical pricing glitches.
+              All prices listed on E-COM Store are in Indian Rupees (INR) and inclusive of applicable GST taxes. We reserve the right to cancel orders arising from typographical or technical pricing glitches.
             </p>
           </div>
         )}
@@ -85,7 +85,7 @@ export default function TermsPage() {
 
             <h3 className="font-extrabold text-sm text-gray-900 pt-2">2.1 PCI-DSS Level 1 Payment Processing</h3>
             <p>
-              SKIPD does not store or process payment card numbers or UPI PINs on its local servers. All financial transactions are handled securely via Razorpay&apos;s RBI-approved PCI-DSS Level 1 payment gateway.
+              E-COM does not store or process payment card numbers or UPI PINs on its local servers. All financial transactions are handled securely via Razorpay&apos;s RBI-approved PCI-DSS Level 1 payment gateway.
             </p>
 
             <h3 className="font-extrabold text-sm text-gray-900 pt-2">2.2 Cookie Policy &amp; Data Usage</h3>
@@ -106,9 +106,9 @@ export default function TermsPage() {
             <div className="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl space-y-2">
               <p className="font-extrabold text-emerald-900 text-sm">Grievance Officer: Mr. Rajesh V. Nambiar</p>
               <p className="text-gray-700"><strong>Designation:</strong> Head of Consumer Escalations &amp; Legal Affairs</p>
-              <p className="text-gray-700"><strong>Address:</strong> SKIPD Commerce Pvt Ltd, Outer Ring Road, Embassy Tech Village, Bengaluru 560103, KA</p>
-              <p className="text-gray-700"><strong>Email:</strong> grievance@skipd.in</p>
-              <p className="text-gray-700"><strong>Toll-Free Phone:</strong> 1800-SKIPD-COMMERCE (1800 754 733)</p>
+              <p className="text-gray-700"><strong>Address:</strong> E-COM Commerce Pvt Ltd, Outer Ring Road, Embassy Tech Village, Bengaluru 560103, KA</p>
+              <p className="text-gray-700"><strong>Email:</strong> grievance@e-com.in</p>
+              <p className="text-gray-700"><strong>Toll-Free Phone:</strong> 1800-E-COM-COMMERCE (1800 754 733)</p>
             </div>
 
             <p className="text-gray-500 text-[11px]">
@@ -122,7 +122,7 @@ export default function TermsPage() {
           <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-10 shadow-2xs space-y-6 text-xs text-gray-700 leading-relaxed font-medium animate-in fade-in duration-300">
             <h2 className="text-2xl font-black text-gray-900">4. Extended Producer Responsibility (EPR) Compliance</h2>
             <p>
-              SKIPD Commerce is committed to environmental sustainability under the E-Waste (Management) Rules, 2016 and Plastic Waste Management Rules, 2018.
+              E-COM Commerce is committed to environmental sustainability under the E-Waste (Management) Rules, 2016 and Plastic Waste Management Rules, 2018.
             </p>
 
             <div className="bg-emerald-50 border border-emerald-200 p-5 rounded-2xl space-y-1">

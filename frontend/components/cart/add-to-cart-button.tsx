@@ -15,7 +15,7 @@ export function AddToCartButton({ product }: { product: Product }) {
     e.stopPropagation();
 
     // 🔒 REQUIRE LOGIN FOR ADD TO CART
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
     if (!token) {
       toast.error("🔒 Please sign in to add items to your cart", {
         description: "Redirecting you to the login page...",

@@ -40,9 +40,9 @@ export default function StoreSitemapPage() {
     {
       title: "About & Legal Policies",
       links: [
-        { label: "About SKIPD Commerce", href: "/about" },
+        { label: "About E-COM Commerce", href: "/about" },
         { label: "Careers & Open Roles", href: "/about#careers" },
-        { label: "SKIPD Stories & News", href: "/about#stories" },
+        { label: "E-COM Stories & News", href: "/about#stories" },
         { label: "Corporate Information", href: "/about#corporate" },
         { label: "Terms of Service", href: "/terms" },
         { label: "Security & Privacy Policy", href: "/terms?tab=privacy" },
@@ -60,7 +60,7 @@ export default function StoreSitemapPage() {
           <span className="bg-emerald-400/20 text-emerald-300 font-black text-xs px-3.5 py-1 rounded-full uppercase tracking-wider border border-emerald-400/30">
             Store Navigation Map
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black">SKIPD Website Sitemap</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black">E-COM Website Sitemap</h1>
           <p className="text-xs text-gray-300 font-medium">Quick links to all pages, product categories, policies, and customer support.</p>
         </div>
 

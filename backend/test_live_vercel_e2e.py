@@ -4,14 +4,14 @@ import json
 
 pytestmark = pytest.mark.asyncio
 
-LIVE_URL = "https://skipd-shop.vercel.app"
+LIVE_URL = "https://e-com-shop.vercel.app"
 
 async def test_01_live_storefront_home():
     """Verify live Vercel storefront home page is online and returning HTTP 200."""
     req = urllib.request.urlopen(LIVE_URL)
     assert req.getcode() == 200
     html = req.read().decode('utf-8')
-    assert "SKIPD" in html or "html" in html.lower()
+    assert "E-COM" in html or "html" in html.lower()
 
 async def test_02_live_admin_dashboard():
     """Verify live Admin Dashboard route is online."""

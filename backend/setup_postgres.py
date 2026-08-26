@@ -14,13 +14,13 @@ async def setup():
             print(f"[SUCCESS] Connected to PostgreSQL port 5433 with password='{pwd}'")
             connected_pwd = pwd
             
-            # Check if skipd_commerce_db database exists
-            db_exists = await conn.fetchval("SELECT 1 FROM pg_database WHERE datname = 'skipd_commerce_db'")
+            # Check if ecom_commerce_db database exists
+            db_exists = await conn.fetchval("SELECT 1 FROM pg_database WHERE datname = 'ecom_commerce_db'")
             if not db_exists:
-                await conn.execute("CREATE DATABASE skipd_commerce_db")
-                print("[SUCCESS] Database 'skipd_commerce_db' created on port 5433!")
+                await conn.execute("CREATE DATABASE ecom_commerce_db")
+                print("[SUCCESS] Database 'ecom_commerce_db' created on port 5433!")
             else:
-                print("[INFO] Database 'skipd_commerce_db' already exists on port 5433.")
+                print("[INFO] Database 'ecom_commerce_db' already exists on port 5433.")
             
             await conn.close()
             break

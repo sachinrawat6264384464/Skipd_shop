@@ -147,7 +147,7 @@ async def verify_otp(payload: dict = Body(...), db: AsyncSession = Depends(get_d
         display_name = email_or_phone.split("@")[0].replace(".", " ").title() if "@" in email_or_phone else "Sachin Rawat"
         user = User(
             full_name=display_name,
-            email=email_or_phone if "@" in email_or_phone else f"{email_or_phone}@skipd.in",
+            email=email_or_phone if "@" in email_or_phone else f"{email_or_phone}@e-com.in",
             phone=email_or_phone if not "@" in email_or_phone else "9876543210",
             hashed_password=get_password_hash("defaultpass123"),
             role=UserRole.CUSTOMER
@@ -281,7 +281,7 @@ async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
     email_clean = data.email.strip().lower()
     
     # 🔑 Master Admin Credentials Override
-    if email_clean in ["admin@skipd.in", "sachin@skipd.in", "admin@skipd.com"] and data.password in ["admin123", "admin", "skipd@2026"]:
+    if email_clean in ["admin@e-com.in", "sachin@e-com.in", "admin@e-com.com"] and data.password in ["admin123", "admin", "e-com@2026"]:
         token = create_access_token(subject=email_clean)
         return TokenResponse(
             access_token=token,

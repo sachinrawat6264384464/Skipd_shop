@@ -49,7 +49,7 @@ export default function OrdersDashboardPage() {
                   if (!orders.some(o => o.id === ord.id || o.order_number === ord.order_number)) {
                     orders.unshift({
                       id: String(ord.id || ord.order_number || `ORD-${Date.now()}`),
-                      order_number: String(ord.order_number || ord.id || `#SKIPD-${Date.now()}`),
+                      order_number: String(ord.order_number || ord.id || `#E-COM-${Date.now()}`),
                       date: String(ord.date || "Just now"),
                       total: Number(ord.total || ord.amount || 2999),
                       status: String(ord.status || "PROCESSING").toUpperCase() as any,
@@ -70,7 +70,7 @@ export default function OrdersDashboardPage() {
         orders = [
           {
             id: "1",
-            order_number: "#SKIPD-25879",
+            order_number: "#E-COM-25879",
             date: "25 May 2025",
             total: 29999,
             status: "DELIVERED",
@@ -81,7 +81,7 @@ export default function OrdersDashboardPage() {
           },
           {
             id: "2",
-            order_number: "#SKIPD-25878",
+            order_number: "#E-COM-25878",
             date: "25 May 2025",
             total: 3598,
             status: "PROCESSING",

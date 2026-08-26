@@ -5,11 +5,11 @@ test.describe("Admin Dashboard E2E Tests", () => {
   test.beforeEach(async ({ page }) => {
     // Set admin auth token in localStorage before each test
     await page.addInitScript(() => {
-      localStorage.setItem("skipd_admin_token", "mock-admin-token-12345");
-      localStorage.setItem("skipd_admin_user", JSON.stringify({
+      localStorage.setItem("ecom_admin_token", "mock-admin-token-12345");
+      localStorage.setItem("ecom_admin_user", JSON.stringify({
         id: 1,
         full_name: "Sachin Rawat",
-        email: "admin@skipd.in",
+        email: "admin@e-com.in",
         role: "SUPER_ADMIN"
       }));
     });

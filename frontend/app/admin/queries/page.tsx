@@ -36,7 +36,7 @@ export default function AdminProductQueriesPage() {
           id: q.query_number || `#INQ-${q.id}`,
           db_id: q.id,
           customer: q.customer_name || "Customer",
-          email: q.customer_email || "customer@skipd.in",
+          email: q.customer_email || "customer@e-com.in",
           product: q.product_name || "Store Item",
           price: "Inquiry",
           img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100",

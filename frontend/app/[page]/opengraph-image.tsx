@@ -3,7 +3,7 @@ import { getPage } from "lib/shopify";
 
 export default async function Image({ params }: { params: { page: string } }) {
   const page = await getPage(params.page);
-  const title = page?.seo?.title || page?.title || "SKIPD Commerce";
+  const title = page?.seo?.title || page?.title || "E-COM Commerce";
 
   return await OpengraphImage({ title });
 }

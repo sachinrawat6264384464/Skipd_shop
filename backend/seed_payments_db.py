@@ -14,7 +14,7 @@ async def seed_payments():
         real_txns = [
             {
                 "txn_id": "PAY-99201",
-                "order_number": "#SKIPD-25879",
+                "order_number": "#E-COM-25879",
                 "customer_name": "Amit Sharma",
                 "customer_email": "amit@gmail.com",
                 "payment_method": "Razorpay UPI",
@@ -25,7 +25,7 @@ async def seed_payments():
             },
             {
                 "txn_id": "PAY-99202",
-                "order_number": "#SKIPD-25878",
+                "order_number": "#E-COM-25878",
                 "customer_name": "Priya Verma",
                 "customer_email": "priya@yahoo.com",
                 "payment_method": "VISA Credit Card",
@@ -36,7 +36,7 @@ async def seed_payments():
             },
             {
                 "txn_id": "PAY-99203",
-                "order_number": "#SKIPD-25877",
+                "order_number": "#E-COM-25877",
                 "customer_name": "Rahul Singh",
                 "customer_email": "rahul@gmail.com",
                 "payment_method": "Mastercard Debit",
@@ -47,7 +47,7 @@ async def seed_payments():
             },
             {
                 "txn_id": "PAY-99204",
-                "order_number": "#SKIPD-25876",
+                "order_number": "#E-COM-25876",
                 "customer_name": "Sneha Patel",
                 "customer_email": "sneha@gmail.com",
                 "payment_method": "Razorpay UPI",
@@ -58,7 +58,7 @@ async def seed_payments():
             },
             {
                 "txn_id": "PAY-99205",
-                "order_number": "#SKIPD-25875",
+                "order_number": "#E-COM-25875",
                 "customer_name": "Vikram Joshi",
                 "customer_email": "vikram@gmail.com",
                 "payment_method": "Razorpay NetBanking",
@@ -69,7 +69,7 @@ async def seed_payments():
             },
             {
                 "txn_id": "PAY-99206",
-                "order_number": "#SKIPD-25874",
+                "order_number": "#E-COM-25874",
                 "customer_name": "Karan Mehta",
                 "customer_email": "karan@gmail.com",
                 "payment_method": "Amazon Pay",
@@ -80,7 +80,7 @@ async def seed_payments():
             },
             {
                 "txn_id": "PAY-99207",
-                "order_number": "#SKIPD-25873",
+                "order_number": "#E-COM-25873",
                 "customer_name": "Ananya Roy",
                 "customer_email": "ananya@gmail.com",
                 "payment_method": "Paytm Wallet",

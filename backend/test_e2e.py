@@ -34,7 +34,7 @@ def test_redis():
         import redis
         r = redis.from_url("redis://127.0.0.1:6379/0", socket_timeout=2)
         r.ping()
-        r.set("test_key", "skipd_ok", ex=10)
+        r.set("test_key", "ecom_ok", ex=10)
         val = r.get("test_key")
         print(f"[OK] Redis Ping & Set/Get: SUCCESS (key_val={val.decode('utf-8')})")
         return True
@@ -64,7 +64,7 @@ def test_api_endpoints():
 
     # C. POST Auth Request OTP
     try:
-        payload = json.dumps({"email_or_phone": "customer@skipd.in"}).encode('utf-8')
+        payload = json.dumps({"email_or_phone": "customer@e-com.in"}).encode('utf-8')
         req = urllib.request.Request(
             f"{base_url}/auth/request-otp",
             data=payload,
@@ -76,7 +76,7 @@ def test_api_endpoints():
         print(f"[OK] POST /api/v1/auth/request-otp: HTTP 200 (OTP Code Generated: {otp_demo})")
 
         # D. POST Auth Verify OTP & Login Token
-        verify_payload = json.dumps({"email_or_phone": "customer@skipd.in", "otp": otp_demo}).encode('utf-8')
+        verify_payload = json.dumps({"email_or_phone": "customer@e-com.in", "otp": otp_demo}).encode('utf-8')
         v_req = urllib.request.Request(
             f"{base_url}/auth/verify-otp",
             data=verify_payload,

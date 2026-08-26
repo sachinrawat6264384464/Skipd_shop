@@ -20,7 +20,7 @@ async def test_e2e_master_001_browser_launch():
 
 @pytest.mark.asyncio
 async def test_e2e_master_002_homepage_navigation():
-    """Case 002: Navigate to Homepage and verify page title contains SKIPD."""
+    """Case 002: Navigate to Homepage and verify page title contains E-COM."""
     async with async_playwright() as p:
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()

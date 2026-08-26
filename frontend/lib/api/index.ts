@@ -7,7 +7,7 @@ export const getApiBaseUrl = () => {
       return envUrl;
     }
     if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-      return "https://skipd-ecom.onrender.com/api/v1";
+      return "https://e-com-ecom.onrender.com/api/v1";
     }
     return envUrl || "http://127.0.0.1:8000/api/v1";
   }
@@ -16,7 +16,7 @@ export const getApiBaseUrl = () => {
   if (envUrl && !envUrl.includes("127.0.0.1") && !envUrl.includes("localhost")) {
     return envUrl;
   }
-  return "https://skipd-ecom.onrender.com/api/v1";
+  return "https://e-com-ecom.onrender.com/api/v1";
 };
 
 export const API_BASE_URL = getApiBaseUrl();
@@ -571,7 +571,7 @@ export async function createCheckoutSession(checkoutData: any) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+        "Authorization": `Bearer ${localStorage.getItem("ecom_token") || "jwt_token_demo_ecom_2026"}`
       },
       body: JSON.stringify(checkoutData)
     });
@@ -584,7 +584,7 @@ export async function createCheckoutSession(checkoutData: any) {
 
   return {
     id: 101,
-    order_number: `SKIPD-${Math.floor(100000 + Math.random() * 900000)}`,
+    order_number: `E-COM-${Math.floor(100000 + Math.random() * 900000)}`,
     total_amount: checkoutData.total || 1299,
     currency: "INR",
     status: "PENDING_PAYMENT",
@@ -596,7 +596,7 @@ export async function fetchWalletBalance(): Promise<{ balance: number }> {
   try {
     const res = await fetch(`${API_BASE_URL}/wallet`, {
       headers: {
-        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+        "Authorization": `Bearer ${localStorage.getItem("ecom_token") || "jwt_token_demo_ecom_2026"}`
       },
       cache: "no-store"
     });
@@ -635,7 +635,7 @@ export async function fetchLiveTracking(awbOrOrder: string): Promise<TrackingDat
   }
 
   return {
-    order_number: awbOrOrder.startsWith("SR-") ? "SKIPD-984201" : awbOrOrder,
+    order_number: awbOrOrder.startsWith("SR-") ? "E-COM-984201" : awbOrOrder,
     awb_code: awbOrOrder,
     courier_name: "Shiprocket Express Air (BlueDart)",
     current_status: "IN_TRANSIT",
@@ -682,7 +682,7 @@ export function getProductImageByTitle(title?: string): string {
 
 export async function fetchUserOrders(): Promise<UserOrder[]> {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
     if (!token) return [];
 
     const res = await fetch(`${API_BASE_URL}/orders`, {
@@ -714,7 +714,7 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
 
           return {
             id: String(o.id),
-            order_number: o.order_number || `SKIPD-${o.id}`,
+            order_number: o.order_number || `E-COM-${o.id}`,
             date: formattedDate,
             total: o.total_amount || 0,
             title: prodTitle,
@@ -752,7 +752,7 @@ export async function updateOrderStatusGlobal(orderId: string, newStatus: string
     });
     if (res.ok) {
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("skipd_orders_changed"));
+        window.dispatchEvent(new Event("ecom_orders_changed"));
       }
       return await res.json();
     }
@@ -761,14 +761,14 @@ export async function updateOrderStatusGlobal(orderId: string, newStatus: string
   }
 
   if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("skipd_orders_changed"));
+    window.dispatchEvent(new Event("ecom_orders_changed"));
   }
   return null;
 }
 
 export async function fetchUserAddressesAPI() {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
     if (!token) return [];
     const res = await fetch(`${API_BASE_URL}/addresses`, {
       headers: { "Authorization": `Bearer ${token}` },
@@ -784,7 +784,7 @@ export async function fetchUserAddressesAPI() {
 
 export async function addUserAddressAPI(addressData: any) {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
     if (!token) return null;
     const res = await fetch(`${API_BASE_URL}/addresses`, {
       method: "POST",
@@ -801,7 +801,7 @@ export async function addUserAddressAPI(addressData: any) {
 
 export async function fetchUserWalletAPI() {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
     if (!token) return { balance: 0.0, transactions: [] };
     const res = await fetch(`${API_BASE_URL}/wallet`, {
       headers: { "Authorization": `Bearer ${token}` },
@@ -814,7 +814,7 @@ export async function fetchUserWalletAPI() {
 
 export async function fetchUserCartAPI() {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
     if (!token) return [];
     const res = await fetch(`${API_BASE_URL}/cart`, {
       headers: { "Authorization": `Bearer ${token}` },
@@ -830,7 +830,7 @@ export async function fetchUserCartAPI() {
 
 export async function addToCartAPI(productId: number, quantity: number = 1) {
   try {
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
     if (!token) return null;
     const res = await fetch(`${API_BASE_URL}/cart/add`, {
       method: "POST",
@@ -851,7 +851,7 @@ export async function requestReturn(orderId: string, reason: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("skipd_token") || "jwt_token_demo_skipd_2026"}`
+        "Authorization": `Bearer ${localStorage.getItem("ecom_token") || "jwt_token_demo_ecom_2026"}`
       },
       body: JSON.stringify({ reason })
     });
@@ -942,9 +942,9 @@ export async function purgeAllStoreOrders() {
 
   if (typeof window !== "undefined") {
     try {
-      const keys = Object.keys(localStorage).filter(k => k.startsWith("skipd_orders_") || k === "skipd_all_store_orders" || k === "skipd_payments");
+      const keys = Object.keys(localStorage).filter(k => k.startsWith("ecom_orders_") || k === "ecom_all_store_orders" || k === "ecom_payments");
       keys.forEach(k => localStorage.removeItem(k));
-      window.dispatchEvent(new Event("skipd_orders_changed"));
+      window.dispatchEvent(new Event("ecom_orders_changed"));
     } catch (e) { }
   }
 }
@@ -1194,9 +1194,9 @@ export async function verifyOTP(emailOrPhone: string, otp: string) {
 
   const name = emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "Sachin Rawat";
   return {
-    access_token: "jwt_token_demo_skipd_2026",
+    access_token: "jwt_token_demo_ecom_2026",
     user_name: name,
-    email: emailOrPhone.includes("@") ? emailOrPhone : "customer@skipd.in",
+    email: emailOrPhone.includes("@") ? emailOrPhone : "customer@e-com.in",
     phone: !emailOrPhone.includes("@") ? emailOrPhone : "9876543210",
     can_change_password: true,
     message: "OTP verified successfully!"
@@ -1221,7 +1221,7 @@ export function saveRegisteredEmail(email: string) {
   if (typeof window === "undefined" || !email) return;
   const cleanEmail = email.toLowerCase().trim();
   try {
-    const existing = localStorage.getItem("skipd_registered_users");
+    const existing = localStorage.getItem("ecom_registered_users");
     let list: string[] = [];
     if (existing) {
       try {
@@ -1231,7 +1231,7 @@ export function saveRegisteredEmail(email: string) {
     }
     if (!list.includes(cleanEmail)) {
       list.push(cleanEmail);
-      localStorage.setItem("skipd_registered_users", JSON.stringify(list));
+      localStorage.setItem("ecom_registered_users", JSON.stringify(list));
     }
   } catch (e) { }
 }
@@ -1258,20 +1258,20 @@ export async function checkEmailRegistered(email: string) {
     "sachin.rawat@email.com",
     "sachinrawat6264384464@gmail.com",
     "familyzila1213@gmail.com",
-    "customer@skipd.in",
-    "admin@skipd.in",
+    "customer@e-com.in",
+    "admin@e-com.in",
     "sachin.rawat@example.com"
   ];
 
   if (typeof window !== "undefined") {
     try {
-      const currentUser = localStorage.getItem("skipd_user");
+      const currentUser = localStorage.getItem("ecom_user");
       if (currentUser) {
         const pUser = JSON.parse(currentUser);
         if (pUser.email) registeredEmails.push(pUser.email.toLowerCase().trim());
       }
 
-      const allReg = localStorage.getItem("skipd_registered_users");
+      const allReg = localStorage.getItem("ecom_registered_users");
       if (allReg) {
         const pList = JSON.parse(allReg);
         if (Array.isArray(pList)) {
@@ -1328,7 +1328,7 @@ export async function syncFirebaseUser(payload: {
   }
   return {
     status: "success",
-    access_token: "jwt_token_skipd_2026",
+    access_token: "jwt_token_ecom_2026",
     id: Date.now(),
     firebase_uid: payload.firebase_uid,
     user_name: payload.full_name || payload.email.split("@")[0],
@@ -1551,8 +1551,8 @@ export function purgeLocalCustomerData(emailOrId: string) {
   try {
     const target = emailOrId.toLowerCase().trim();
 
-    // 1. Purge from skipd_registered_users
-    const registered = localStorage.getItem("skipd_registered_users");
+    // 1. Purge from ecom_registered_users
+    const registered = localStorage.getItem("ecom_registered_users");
     if (registered) {
       const parsed = JSON.parse(registered);
       if (Array.isArray(parsed)) {
@@ -1561,12 +1561,12 @@ export function purgeLocalCustomerData(emailOrId: string) {
           const uId = String(u.id || "");
           return uEmail !== target && uId !== target && !uEmail.includes(target);
         });
-        localStorage.setItem("skipd_registered_users", JSON.stringify(filtered));
+        localStorage.setItem("ecom_registered_users", JSON.stringify(filtered));
       }
     }
 
-    // 2. Purge from skipd_all_registered_users
-    const allReg = localStorage.getItem("skipd_all_registered_users");
+    // 2. Purge from ecom_all_registered_users
+    const allReg = localStorage.getItem("ecom_all_registered_users");
     if (allReg) {
       const parsed = JSON.parse(allReg);
       if (Array.isArray(parsed)) {
@@ -1575,30 +1575,30 @@ export function purgeLocalCustomerData(emailOrId: string) {
           const uId = String(u.id || "");
           return uEmail !== target && uId !== target;
         });
-        localStorage.setItem("skipd_all_registered_users", JSON.stringify(filtered));
+        localStorage.setItem("ecom_all_registered_users", JSON.stringify(filtered));
       }
     }
 
     // 3. Purge current logged in user if it matches target
-    const currentUser = localStorage.getItem("skipd_user");
+    const currentUser = localStorage.getItem("ecom_user");
     if (currentUser) {
       const pUser = JSON.parse(currentUser);
       const curEmail = (pUser.email || "").toLowerCase().trim();
       const curId = String(pUser.uid || pUser.id || "");
       if (curEmail === target || curId === target) {
-        localStorage.removeItem("skipd_user");
-        localStorage.removeItem("skipd_token");
-        window.dispatchEvent(new Event("skipd_auth_changed"));
+        localStorage.removeItem("ecom_user");
+        localStorage.removeItem("ecom_token");
+        window.dispatchEvent(new Event("ecom_auth_changed"));
       }
     }
 
     // 4. Purge customer return requests
-    const returnQueries = localStorage.getItem("skipd_return_queries");
+    const returnQueries = localStorage.getItem("ecom_return_queries");
     if (returnQueries) {
       const parsed = JSON.parse(returnQueries);
       if (Array.isArray(parsed)) {
         const filtered = parsed.filter((q: any) => (q.email || "").toLowerCase().trim() !== target);
-        localStorage.setItem("skipd_return_queries", JSON.stringify(filtered));
+        localStorage.setItem("ecom_return_queries", JSON.stringify(filtered));
       }
     }
   } catch (err) {

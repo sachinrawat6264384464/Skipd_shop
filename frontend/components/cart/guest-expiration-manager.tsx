@@ -9,8 +9,8 @@ export function GuestExpirationManager() {
 
     const checkGuestExpirations = () => {
       try {
-        const token = localStorage.getItem("skipd_token");
-        const user = localStorage.getItem("skipd_user");
+        const token = localStorage.getItem("ecom_token");
+        const user = localStorage.getItem("ecom_user");
         const loggedIn = !!(token || user);
 
         // Only run expiry cleaner for unauthenticated guest users
@@ -19,7 +19,7 @@ export function GuestExpirationManager() {
         const now = Date.now();
 
         // 1. Clean Guest Cart (2-Minute Expiration)
-        const guestCartStr = localStorage.getItem("skipd_cart_guest");
+        const guestCartStr = localStorage.getItem("ecom_cart_guest");
         if (guestCartStr) {
           try {
             const items = JSON.parse(guestCartStr);
@@ -31,9 +31,9 @@ export function GuestExpirationManager() {
 
               if (validCartItems.length < items.length) {
                 const expiredCount = items.length - validCartItems.length;
-                localStorage.setItem("skipd_cart_guest", JSON.stringify(validCartItems));
-                window.dispatchEvent(new Event("skipd_cart_updated"));
-                window.dispatchEvent(new Event("skipd_cart_changed"));
+                localStorage.setItem("ecom_cart_guest", JSON.stringify(validCartItems));
+                window.dispatchEvent(new Event("ecom_cart_updated"));
+                window.dispatchEvent(new Event("ecom_cart_changed"));
 
                 toast.info(`⏰ ${expiredCount} Guest Cart item(s) expired (2-min limit)`, {
                   description: "Please log in to save items to your cart permanently!",
@@ -45,7 +45,7 @@ export function GuestExpirationManager() {
         }
 
         // 2. Clean Guest Wishlist (2-Minute Expiration)
-        const guestWishlistStr = localStorage.getItem("skipd_wishlist_guest");
+        const guestWishlistStr = localStorage.getItem("ecom_wishlist_guest");
         if (guestWishlistStr) {
           try {
             const items = JSON.parse(guestWishlistStr);
@@ -57,8 +57,8 @@ export function GuestExpirationManager() {
 
               if (validWishlistItems.length < items.length) {
                 const expiredCount = items.length - validWishlistItems.length;
-                localStorage.setItem("skipd_wishlist_guest", JSON.stringify(validWishlistItems));
-                window.dispatchEvent(new Event("skipd_auth_changed"));
+                localStorage.setItem("ecom_wishlist_guest", JSON.stringify(validWishlistItems));
+                window.dispatchEvent(new Event("ecom_auth_changed"));
 
                 toast.info(`⏰ ${expiredCount} Guest Wishlist item(s) expired (2-min limit)`, {
                   description: "Please log in to save items to your wishlist permanently!",

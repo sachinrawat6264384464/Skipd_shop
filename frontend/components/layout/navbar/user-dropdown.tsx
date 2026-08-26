@@ -22,8 +22,8 @@ export function UserAccountDropdown() {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem("skipd_token");
-    const stored = localStorage.getItem("skipd_user");
+    const token = localStorage.getItem("ecom_token");
+    const stored = localStorage.getItem("ecom_user");
     if (token && stored) {
       try {
         setUser(JSON.parse(stored));
@@ -36,15 +36,15 @@ export function UserAccountDropdown() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("skipd_token");
-    localStorage.removeItem("skipd_user");
-    localStorage.removeItem("skipd_wishlist_items");
-    localStorage.removeItem("skipd_guest_wishlist");
+    localStorage.removeItem("ecom_token");
+    localStorage.removeItem("ecom_user");
+    localStorage.removeItem("ecom_wishlist_items");
+    localStorage.removeItem("ecom_guest_wishlist");
     setUser(null);
     setIsOpen(false);
-    window.dispatchEvent(new Event("skipd_auth_changed"));
-    window.dispatchEvent(new Event("skipd_wishlist_updated"));
-    window.dispatchEvent(new Event("skipd_wishlist_changed"));
+    window.dispatchEvent(new Event("ecom_auth_changed"));
+    window.dispatchEvent(new Event("ecom_wishlist_updated"));
+    window.dispatchEvent(new Event("ecom_wishlist_changed"));
     window.location.href = "/";
   };
 
@@ -95,7 +95,7 @@ export function UserAccountDropdown() {
             {/* Header info */}
             <div className="p-4 bg-emerald-50/70 border-b border-emerald-100 space-y-1">
               <p className="font-extrabold text-sm text-gray-900">{user.user_name}</p>
-              <p className="text-[11px] text-gray-500 truncate">{user.email || "customer@skipd.in"}</p>
+              <p className="text-[11px] text-gray-500 truncate">{user.email || "customer@e-com.in"}</p>
             </div>
 
             {/* Menu Links */}

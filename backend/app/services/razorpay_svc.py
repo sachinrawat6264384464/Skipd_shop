@@ -11,7 +11,7 @@ class RazorpayService:
         amount_in_paise = int(amount_in_rupees * 100)
         
         # Real Razorpay client execution if keys are real, otherwise fallback test response
-        if self.key_id and not self.key_id.startswith("rzp_test_skipd_demo"):
+        if self.key_id and not self.key_id.startswith("rzp_test_ecom_demo"):
             try:
                 import razorpay
                 client = razorpay.Client(auth=(self.key_id, self.key_secret))
@@ -38,7 +38,7 @@ class RazorpayService:
         }
 
     def verify_payment_signature(self, razorpay_order_id: str, razorpay_payment_id: str, razorpay_signature: str) -> bool:
-        if self.key_id.startswith("rzp_test_skipd_demo"):
+        if self.key_id.startswith("rzp_test_ecom_demo"):
             # Auto-verify mock payments in demo mode
             return True
 

@@ -25,8 +25,8 @@ export default function AdminLoginPage() {
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem("skipd_admin_token", data.access_token);
-        localStorage.setItem("skipd_admin_user", JSON.stringify(data));
+        localStorage.setItem("ecom_admin_token", data.access_token);
+        localStorage.setItem("ecom_admin_user", JSON.stringify(data));
         alert("✓ Admin Authorized Successfully!");
         window.location.href = "/admin";
       } else {
@@ -35,8 +35,8 @@ export default function AdminLoginPage() {
       }
     } catch (e) {
       // Demo fallback mode for offline backend
-      localStorage.setItem("skipd_admin_token", "demo_admin_jwt_token");
-      localStorage.setItem("skipd_admin_user", JSON.stringify({ user_name: "SKIPD Admin", email: email || "admin@skipd.in", user_role: "admin" }));
+      localStorage.setItem("ecom_admin_token", "demo_admin_jwt_token");
+      localStorage.setItem("ecom_admin_user", JSON.stringify({ user_name: "E-COM Admin", email: email || "admin@e-com.in", user_role: "admin" }));
       alert("✓ Admin Authorized! (Demo Mode Active)");
       window.location.href = "/admin";
     }
@@ -78,7 +78,7 @@ export default function AdminLoginPage() {
                 Admin <span className="text-[#059669]">Login</span>
               </h2>
               <p className="text-[11px] text-gray-500 font-medium max-w-xs leading-tight">
-                Please sign in to access the SKIPD Store admin panel and manage your business efficiently.
+                Please sign in to access the E-COM Store admin panel and manage your business efficiently.
               </p>
             </div>
 
@@ -216,7 +216,7 @@ export default function AdminLoginPage() {
               S
             </div>
             <div>
-              <h2 className="text-xl font-black tracking-tight text-gray-900 leading-none">SKIPD</h2>
+              <h2 className="text-xl font-black tracking-tight text-gray-900 leading-none">E-COM</h2>
               <p className="text-[11px] text-gray-500 font-bold tracking-wide mt-0.5">Store Admin</p>
             </div>
           </div>
@@ -235,7 +235,7 @@ export default function AdminLoginPage() {
           <div className="space-y-1.5">
             <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">
               Welcome to <br />
-              <span className="text-[#059669]">SKIPD Admin Portal</span>
+              <span className="text-[#059669]">E-COM Admin Portal</span>
             </h1>
             <p className="text-gray-500 text-xs md:text-sm font-medium max-w-md leading-relaxed">
               Manage products, orders, customers and delivery operations seamlessly in one place.
@@ -291,7 +291,7 @@ export default function AdminLoginPage() {
             <div className="flex items-center justify-between border-b border-gray-100 pb-2">
               <div className="flex items-center gap-2">
                 <div className="w-5 h-5 rounded-md bg-[#059669] text-white font-black text-[10px] flex items-center justify-center">S</div>
-                <span className="font-black text-gray-900 text-xs">SKIPD</span>
+                <span className="font-black text-gray-900 text-xs">E-COM</span>
               </div>
               <span className="text-[10px] font-bold text-gray-400">Overview</span>
             </div>
@@ -340,7 +340,7 @@ export default function AdminLoginPage() {
 
       {/* 📄 Footer */}
       <footer className="text-center text-[10px] text-gray-400 font-medium py-1">
-        © 2025 SKIPD Store. All rights reserved.
+        © 2025 E-COM Store. All rights reserved.
       </footer>
 
     </div>

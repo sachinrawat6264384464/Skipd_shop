@@ -79,7 +79,7 @@ export default function AdminUsersRolesPage() {
 
       // Combine local custom created roles if available
       if (typeof window !== "undefined") {
-        const savedCustom = localStorage.getItem("skipd_custom_roles");
+        const savedCustom = localStorage.getItem("ecom_custom_roles");
         if (savedCustom) {
           try {
             const parsedCustom: RoleData[] = JSON.parse(savedCustom);
@@ -255,16 +255,16 @@ export default function AdminUsersRolesPage() {
     // Save locally for instant persistence
     if (typeof window !== "undefined") {
       try {
-        const savedCustom = localStorage.getItem("skipd_custom_roles");
+        const savedCustom = localStorage.getItem("ecom_custom_roles");
         const list: RoleData[] = savedCustom ? JSON.parse(savedCustom) : [];
         if (!list.some(r => r.name.toLowerCase() === roleName.toLowerCase())) {
           list.push(newRoleObj);
-          localStorage.setItem("skipd_custom_roles", JSON.stringify(list));
+          localStorage.setItem("ecom_custom_roles", JSON.stringify(list));
         }
       } catch (e) {}
 
       // Broadcast event so FloatingAdminRoleSwitcher updates immediately
-      window.dispatchEvent(new Event("skipd_roles_updated"));
+      window.dispatchEvent(new Event("ecom_roles_updated"));
     }
 
     setRolesList(prev => [...prev.filter(r => r.name.toLowerCase() !== roleName.toLowerCase()), newRoleObj]);
@@ -585,7 +585,7 @@ export default function AdminUsersRolesPage() {
                   <input
                     type="email"
                     required
-                    placeholder="e.g. vikram@skipd.com"
+                    placeholder="e.g. vikram@e-com.com"
                     value={formEmail}
                     onChange={(e) => setFormEmail(e.target.value)}
                     className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"

@@ -20,7 +20,7 @@ export default function Error({
           🛍️
         </div>
         <div className="space-y-1">
-          <h2 className="text-xl font-black text-gray-900">SKIPD Store Sync Notice</h2>
+          <h2 className="text-xl font-black text-gray-900">E-COM Store Sync Notice</h2>
           <p className="text-xs text-gray-500 font-medium">
             We updated catalog states in real time. Click below to refresh your view smoothly.
           </p>

@@ -34,7 +34,7 @@ async def test_mod11_003_send_order_confirmation_email():
     """Case 003: Test Order Confirmation HTML email delivery."""
     result = send_order_confirmation_email(
         to_email="sachinrawat6264384464@gmail.com",
-        order_number="SKIPD-998877",
+        order_number="E-COM-998877",
         total_amount=2499.00,
         customer_name="Sachin Rawat",
         order_items=[{"title": "boAt Rockerz 450 Pro Headphones", "quantity": 1, "unit_price": 2499.00}],

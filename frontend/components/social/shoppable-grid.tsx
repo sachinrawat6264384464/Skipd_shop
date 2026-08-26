@@ -46,7 +46,7 @@ export function ShoppableInstagramGrid() {
         </span>
         <h3 className="text-2xl md:text-4xl font-black text-gray-900 mt-3">Shop The Look</h3>
         <p className="text-gray-500 text-xs md:text-sm mt-1">
-          Tag @SKIPD_official on Instagram to get featured on our store!
+          Tag @ECOM_official on Instagram to get featured on our store!
         </p>
       </div>
 

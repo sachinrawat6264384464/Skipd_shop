@@ -13,7 +13,7 @@ class ShiprocketService:
 
     async def get_auth_token(self) -> Optional[str]:
         """Fetch auth token from Shiprocket API. Returns None if credentials are demo or invalid."""
-        if not self.email or self.email == "demo@skipd.in" or not self.password or self.password == "demo_password":
+        if not self.email or self.email == "demo@e-com.in" or not self.password or self.password == "demo_password":
             return None
             
         if self.token:
@@ -116,15 +116,15 @@ class ShiprocketService:
     async def create_shipment(self, order_data: dict) -> dict:
         """Create order & shipment in Shiprocket or return dynamic simulation."""
         token = await self.get_auth_token()
-        order_num = str(order_data.get("order_number") or order_data.get("orderId") or f"SKIPD-{int(time.time())}")
+        order_num = str(order_data.get("order_number") or order_data.get("orderId") or f"E-COM-{int(time.time())}")
         
         if token:
             try:
                 headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
                 items = order_data.get("items") or [
                     {
-                        "name": "SKIPD Product Item",
-                        "sku": "SKU-SKIPD-001",
+                        "name": "E-COM Product Item",
+                        "sku": "SKU-E-COM-001",
                         "units": 1,
                         "selling_price": order_data.get("total_amount", 999),
                         "discount": 0
@@ -142,7 +142,7 @@ class ShiprocketService:
                     "billing_pincode": str(order_data.get("pinCode") or order_data.get("pincode") or "400001"),
                     "billing_state": order_data.get("state", "Maharashtra"),
                     "billing_country": "India",
-                    "billing_email": order_data.get("customerEmail") or order_data.get("customer_email") or "customer@skipd.in",
+                    "billing_email": order_data.get("customerEmail") or order_data.get("customer_email") or "customer@e-com.in",
                     "billing_phone": order_data.get("customerPhone") or order_data.get("customer_phone") or "9876543210",
                     "shipping_is_billing": True,
                     "order_items": items,
@@ -271,7 +271,7 @@ class ShiprocketService:
         return [
             {
                 "status": "Order Placed & Payment Verified",
-                "location": "SKIPD Fulfillment Center",
+                "location": "E-COM Fulfillment Center",
                 "timestamp": now_str,
                 "completed": True
             },

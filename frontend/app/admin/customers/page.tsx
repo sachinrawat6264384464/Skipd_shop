@@ -104,7 +104,7 @@ export default function AdminCustomersCRMPage() {
         return {
           id: u.id || idx + 1,
           name: u.full_name || "Store Customer",
-          email: u.email || `customer${idx}@skipd.in`,
+          email: u.email || `customer${idx}@e-com.in`,
           phone: u.phone || "+91 98765 43210",
           ordersCount: ordersCount,
           spent: spent,
@@ -153,7 +153,7 @@ export default function AdminCustomersCRMPage() {
       const formattedRevs = rawReviews.map((r: any, idx: number) => {
         const matchedProd = liveProducts?.find((p: any) => p.id === r.product_id);
         const matchedCust = formattedCusts.find((c: any) => c.id === r.user_id);
-        const custEmail = matchedCust?.email || (r.user_name ? `${r.user_name.toLowerCase().replace(/\s+/g, ".")}@skipd.in` : `customer_${r.user_id || idx}@skipd.in`);
+        const custEmail = matchedCust?.email || (r.user_name ? `${r.user_name.toLowerCase().replace(/\s+/g, ".")}@e-com.in` : `customer_${r.user_id || idx}@e-com.in`);
 
         return {
           id: r.id,
@@ -165,7 +165,7 @@ export default function AdminCustomersCRMPage() {
           productTitle: matchedProd?.title || r.product_title || "Store Catalog Item",
           productPrice: matchedProd?.price ? `₹${Number(matchedProd.price).toLocaleString("en-IN")}` : r.product_price || "₹2,999",
           productImage: (matchedProd?.images && matchedProd.images.length > 0) ? matchedProd.images[0] : r.product_image,
-          orderId: `#SKIPD-${25870 + r.id}`,
+          orderId: `#E-COM-${25870 + r.id}`,
           date: r.created_at ? new Date(r.created_at).toLocaleDateString() : "May 25, 2025",
           time: "10:30 AM",
           status: idx === 2 ? "Pending" : idx === 4 ? "Rejected" : "Approved",

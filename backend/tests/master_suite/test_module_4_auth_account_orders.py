@@ -11,7 +11,7 @@ async def test_mod4_001_auth_register_user_success(db_session):
     """Case 001: POST /api/v1/auth/register creates new customer user."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         payload = {
-            "email": "pytest_user_mod4@skipd.in",
+            "email": "pytest_user_mod4@e-com.in",
             "password": "Password123!",
             "full_name": "Pytest Customer User",
             "phone": "9876543210"
@@ -24,7 +24,7 @@ async def test_mod4_002_auth_login_user_success(db_session):
     """Case 002: POST /api/v1/auth/login logs in customer user."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         payload = {
-            "username": "customer@skipd.in",
+            "username": "customer@e-com.in",
             "password": "Password123!"
         }
         response = await ac.post("/api/v1/auth/login", data=payload)
@@ -35,7 +35,7 @@ async def test_mod4_003_auth_login_invalid_password_401(db_session):
     """Case 003: POST /api/v1/auth/login with wrong password."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         payload = {
-            "username": "customer@skipd.in",
+            "username": "customer@e-com.in",
             "password": "WrongPassword999!"
         }
         response = await ac.post("/api/v1/auth/login", data=payload)
@@ -47,7 +47,7 @@ async def test_mod4_004_firebase_sync_user(db_session):
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         payload = {
             "firebase_uid": "fb_uid_pytest_12345",
-            "email": "firebase_user@skipd.in",
+            "email": "firebase_user@e-com.in",
             "full_name": "Firebase User"
         }
         response = await ac.post("/api/v1/auth/firebase-sync", json=payload)
@@ -179,7 +179,7 @@ async def test_mod4_019_auth_register_duplicate_email_400(db_session):
     """Case 019: POST /api/v1/auth/register with already existing email."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
         payload = {
-            "email": "admin@skipd.in",
+            "email": "admin@e-com.in",
             "password": "Password123!",
             "full_name": "Admin User"
         }
@@ -190,7 +190,7 @@ async def test_mod4_019_auth_register_duplicate_email_400(db_session):
 async def test_mod4_020_auth_register_short_password_422(db_session):
     """Case 020: POST register with password under 6 characters."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        payload = {"email": "shortpass@skipd.in", "password": "123", "full_name": "Short Pass"}
+        payload = {"email": "shortpass@e-com.in", "password": "123", "full_name": "Short Pass"}
         response = await ac.post("/api/v1/auth/register", json=payload)
         assert response.status_code in [200, 400, 404, 422]
 
@@ -241,9 +241,9 @@ async def test_mod4_026_user_change_password(db_session):
 
 @pytest.mark.asyncio
 async def test_mod4_027_get_order_by_tracking_number():
-    """Case 027: GET /api/v1/orders/track/SKIPD-ORD-1001 returns order status."""
+    """Case 027: GET /api/v1/orders/track/E-COM-ORD-1001 returns order status."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        response = await ac.get("/api/v1/orders/track/SKIPD-ORD-1001")
+        response = await ac.get("/api/v1/orders/track/E-COM-ORD-1001")
         assert response.status_code in [200, 401, 404]
 
 @pytest.mark.asyncio

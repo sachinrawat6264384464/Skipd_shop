@@ -118,7 +118,7 @@ async def create_product_query(
         query_num = f"#INQ-{random.randint(1000, 9999)}"
 
     cust_name = payload.get("customer_name") or (current_user.full_name if current_user else "Customer")
-    cust_email = payload.get("customer_email") or (current_user.email if current_user else "customer@skipd.in")
+    cust_email = payload.get("customer_email") or (current_user.email if current_user else "customer@e-com.in")
     
     prod_id = payload.get("product_id")
     prod_name = payload.get("product_name")

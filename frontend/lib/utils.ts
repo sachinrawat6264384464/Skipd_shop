@@ -54,8 +54,8 @@ export const validateEnvironmentVariables = () => {
 export function isUserLoggedIn(): boolean {
   if (typeof window === "undefined") return false;
   try {
-    const userStr = localStorage.getItem("skipd_user");
-    const tokenStr = localStorage.getItem("skipd_token");
+    const userStr = localStorage.getItem("ecom_user");
+    const tokenStr = localStorage.getItem("ecom_token");
     return !!(userStr || tokenStr);
   } catch {
     return false;
@@ -68,18 +68,18 @@ let isGuestInitialLoadDone = false;
 
 // 🔒 1. User Cart Storage Key (Scoped per User Account)
 export function getUserCartKey(): string {
-  if (typeof window === "undefined") return "skipd_cart_guest";
+  if (typeof window === "undefined") return "ecom_cart_guest";
   try {
-    const userStr = localStorage.getItem("skipd_user");
+    const userStr = localStorage.getItem("ecom_user");
     if (userStr) {
       const user = JSON.parse(userStr);
       const identifier = user.email || user.phone || user.user_name;
       if (identifier) {
-        return `skipd_cart_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+        return `ecom_cart_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
       }
     }
   } catch (e) {}
-  return "skipd_cart_guest";
+  return "ecom_cart_guest";
 }
 
 // 🛒 Get Cart Store: Logged-in users get persistent cart; Guests get transient session cart that resets on F5 refresh
@@ -93,8 +93,8 @@ export function getCartStore(): any[] {
         isGuestInitialLoadDone = true;
         activeGuestMemoryCart = [];
         try {
-          sessionStorage.removeItem("skipd_guest_session_cart");
-          localStorage.removeItem("skipd_cart_guest");
+          sessionStorage.removeItem("ecom_guest_session_cart");
+          localStorage.removeItem("ecom_cart_guest");
         } catch {}
         return [];
       }
@@ -119,7 +119,7 @@ export function saveCartStore(items: any[]): void {
       activeGuestMemoryCart = items;
       isGuestInitialLoadDone = true;
       try {
-        sessionStorage.setItem("skipd_guest_session_cart", JSON.stringify(items));
+        sessionStorage.setItem("ecom_guest_session_cart", JSON.stringify(items));
       } catch {}
     } else {
       const cartKey = getUserCartKey();
@@ -127,102 +127,102 @@ export function saveCartStore(items: any[]): void {
     }
   } catch (e) {}
 
-  window.dispatchEvent(new Event("skipd_cart_updated"));
-  window.dispatchEvent(new Event("skipd_cart_changed"));
+  window.dispatchEvent(new Event("ecom_cart_updated"));
+  window.dispatchEvent(new Event("ecom_cart_changed"));
 }
 
 // 🔒 2. User Wishlist Storage Key (Scoped per User Account)
 export function getUserWishlistKey(): string {
-  if (typeof window === "undefined") return "skipd_wishlist_guest";
+  if (typeof window === "undefined") return "ecom_wishlist_guest";
   try {
-    const userStr = localStorage.getItem("skipd_user");
+    const userStr = localStorage.getItem("ecom_user");
     if (userStr) {
       const user = JSON.parse(userStr);
       const identifier = user.email || user.phone || user.user_name;
       if (identifier) {
-        return `skipd_wishlist_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+        return `ecom_wishlist_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
       }
     }
   } catch (e) {}
-  return "skipd_wishlist_guest";
+  return "ecom_wishlist_guest";
 }
 
 // 🔒 3. User Orders Storage Key (Scoped per User Account)
 export function getUserOrdersKey(): string {
-  if (typeof window === "undefined") return "skipd_orders_guest";
+  if (typeof window === "undefined") return "ecom_orders_guest";
   try {
-    const userStr = localStorage.getItem("skipd_user");
+    const userStr = localStorage.getItem("ecom_user");
     if (userStr) {
       const user = JSON.parse(userStr);
       const identifier = user.email || user.phone || user.user_name;
       if (identifier) {
-        return `skipd_orders_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+        return `ecom_orders_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
       }
     }
   } catch (e) {}
-  return "skipd_orders_guest";
+  return "ecom_orders_guest";
 }
 
 // 🔒 4. User Addresses Storage Key (Scoped per User Account)
 export function getUserAddressesKey(): string {
-  if (typeof window === "undefined") return "skipd_addresses_guest";
+  if (typeof window === "undefined") return "ecom_addresses_guest";
   try {
-    const userStr = localStorage.getItem("skipd_user");
+    const userStr = localStorage.getItem("ecom_user");
     if (userStr) {
       const user = JSON.parse(userStr);
       const identifier = user.email || user.phone || user.user_name;
       if (identifier) {
-        return `skipd_addresses_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+        return `ecom_addresses_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
       }
     }
   } catch (e) {}
-  return "skipd_addresses_guest";
+  return "ecom_addresses_guest";
 }
 
 // 🔒 5. User Gift Card Balance Storage Key (Scoped per User Account)
 export function getUserGiftBalanceKey(): string {
-  if (typeof window === "undefined") return "skipd_gift_balance_guest";
+  if (typeof window === "undefined") return "ecom_gift_balance_guest";
   try {
-    const userStr = localStorage.getItem("skipd_user");
+    const userStr = localStorage.getItem("ecom_user");
     if (userStr) {
       const user = JSON.parse(userStr);
       const identifier = user.email || user.phone || user.user_name;
       if (identifier) {
-        return `skipd_gift_balance_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+        return `ecom_gift_balance_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
       }
     }
   } catch (e) {}
-  return "skipd_gift_balance_guest";
+  return "ecom_gift_balance_guest";
 }
 
 // 🔒 6. User Wallet Balance Storage Key (Scoped per User Account)
 export function getUserWalletBalanceKey(): string {
-  if (typeof window === "undefined") return "skipd_wallet_balance_guest";
+  if (typeof window === "undefined") return "ecom_wallet_balance_guest";
   try {
-    const userStr = localStorage.getItem("skipd_user");
+    const userStr = localStorage.getItem("ecom_user");
     if (userStr) {
       const user = JSON.parse(userStr);
       const identifier = user.email || user.phone || user.user_name;
       if (identifier) {
-        return `skipd_wallet_balance_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+        return `ecom_wallet_balance_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
       }
     }
   } catch (e) {}
-  return "skipd_wallet_balance_guest";
+  return "ecom_wallet_balance_guest";
 }
 
 // 🔒 7. User Saved Cards Storage Key (Scoped per User Account)
 export function getUserSavedCardsKey(): string {
-  if (typeof window === "undefined") return "skipd_saved_cards_guest";
+  if (typeof window === "undefined") return "ecom_saved_cards_guest";
   try {
-    const userStr = localStorage.getItem("skipd_user");
+    const userStr = localStorage.getItem("ecom_user");
     if (userStr) {
       const user = JSON.parse(userStr);
       const identifier = user.email || user.phone || user.user_name;
       if (identifier) {
-        return `skipd_saved_cards_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+        return `ecom_saved_cards_${identifier.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
       }
     }
   } catch (e) {}
-  return "skipd_saved_cards_guest";
+  return "ecom_saved_cards_guest";
 }

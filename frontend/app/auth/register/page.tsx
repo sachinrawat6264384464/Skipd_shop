@@ -27,8 +27,8 @@ export default function CustomerRegisterPage() {
         phone: !emailOrPhone.includes("@") ? emailOrPhone : "+91 6264384464"
       };
 
-      localStorage.setItem("skipd_token", "jwt_token_demo_skipd_2026");
-      localStorage.setItem("skipd_user", JSON.stringify(userObj));
+      localStorage.setItem("ecom_token", "jwt_token_demo_ecom_2026");
+      localStorage.setItem("ecom_user", JSON.stringify(userObj));
 
       try {
         const { sendWelcomeEmail } = await import("lib/services/email-service");
@@ -89,7 +89,7 @@ export default function CustomerRegisterPage() {
           <div className="space-y-4 z-10">
             <h1 className="text-3xl font-black">Looks like you're new here!</h1>
             <p className="text-blue-100 text-xs md:text-sm leading-relaxed font-medium">
-              Sign up with your mobile or email number to get started with SKIPD Commerce
+              Sign up with your mobile or email number to get started with E-COM Commerce
             </p>
           </div>
 
@@ -159,7 +159,7 @@ export default function CustomerRegisterPage() {
             </div>
 
             <p className="text-[11px] text-gray-500 leading-normal">
-              By continuing, you agree to SKIPD's{" "}
+              By continuing, you agree to E-COM's{" "}
               <Link href="/terms" className="text-blue-600 font-bold hover:underline">
                 Terms of Use
               </Link>{" "}
@@ -241,7 +241,7 @@ export default function CustomerRegisterPage() {
                 </svg>
               </div>
               <h3 className="text-lg font-black text-gray-900">Sign in with Google</h3>
-              <p className="text-xs text-gray-500 font-medium">Choose an account to create account on <span className="font-bold text-gray-900">SKIPD Commerce</span></p>
+              <p className="text-xs text-gray-500 font-medium">Choose an account to create account on <span className="font-bold text-gray-900">E-COM Commerce</span></p>
             </div>
 
             {/* Google Accounts Selection List */}

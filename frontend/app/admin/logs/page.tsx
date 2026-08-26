@@ -33,9 +33,9 @@ export default function AdminSystemLogsPage() {
       {/* Log Output Console */}
       <div className="bg-[#0F172A] text-gray-300 border border-slate-800 rounded-2xl p-5 shadow-2xs font-mono text-xs space-y-2 overflow-x-auto">
         <p className="text-emerald-400">[2026-08-15 10:45:12] INFO: API GET /api/v1/admin/stats 200 OK (12ms)</p>
-        <p className="text-emerald-400">[2026-08-15 10:35:12] INFO: Product ID #1 stock updated to 100 by admin: sachin@skipd.com</p>
-        <p className="text-blue-400">[2026-08-15 10:30:45] INFO: Razorpay webhook payment_captured order #SKIPD-984210</p>
-        <p className="text-slate-400">[2026-08-15 10:25:01] INFO: PostgreSQL connection pool active on 127.0.0.1:5433 (skipd_commerce_db)</p>
+        <p className="text-emerald-400">[2026-08-15 10:35:12] INFO: Product ID #1 stock updated to 100 by admin: sachin@e-com.com</p>
+        <p className="text-blue-400">[2026-08-15 10:30:45] INFO: Razorpay webhook payment_captured order #E-COM-984210</p>
+        <p className="text-slate-400">[2026-08-15 10:25:01] INFO: PostgreSQL connection pool active on 127.0.0.1:5433 (ecom_commerce_db)</p>
         <p className="text-purple-400">[2026-08-15 10:20:00] INFO: Background Worker Job #7408 completed successfully</p>
       </div>
     </div>

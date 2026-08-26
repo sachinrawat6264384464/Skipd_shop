@@ -13,7 +13,7 @@ const INITIAL_CART_ITEMS = [
     title: "OnePlus Nord 4 5G (Obsidian Midnight, 12GB RAM, 256GB Storage)",
     rating: "4.5",
     reviews: "2,356",
-    seller: "SKIPD Official",
+    seller: "E-COM Official",
     specs: ["Snapdragon 7+ Gen 3", "50MP Sony Camera", "5500mAh Battery"],
     delivery: "Delivery by 28 May, 2026 | Free Delivery",
     originalPrice: 32999,
@@ -59,13 +59,13 @@ export default function CartItemsPage() {
   useEffect(() => {
     loadUserCart();
 
-    window.addEventListener("skipd_auth_changed", loadUserCart);
-    window.addEventListener("skipd_cart_updated", loadUserCart);
-    window.addEventListener("skipd_cart_changed", loadUserCart);
+    window.addEventListener("ecom_auth_changed", loadUserCart);
+    window.addEventListener("ecom_cart_updated", loadUserCart);
+    window.addEventListener("ecom_cart_changed", loadUserCart);
     return () => {
-      window.removeEventListener("skipd_auth_changed", loadUserCart);
-      window.removeEventListener("skipd_cart_updated", loadUserCart);
-      window.removeEventListener("skipd_cart_changed", loadUserCart);
+      window.removeEventListener("ecom_auth_changed", loadUserCart);
+      window.removeEventListener("ecom_cart_updated", loadUserCart);
+      window.removeEventListener("ecom_cart_changed", loadUserCart);
     };
   }, []);
 
@@ -127,7 +127,7 @@ export default function CartItemsPage() {
     savings: Math.max(0, Number(item.savings || ((item.originalPrice || item.compare_at_price || (item.price ? item.price * 1.3 : 1299)) - Number(item.price || 999)))),
     rating: item.rating || "4.5",
     reviews: item.reviews || "1,240",
-    seller: item.seller || "SKIPD Official",
+    seller: item.seller || "E-COM Official",
     delivery: item.delivery || "Delivery in 2 days | Free Delivery",
     image: item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500"
   }));
@@ -541,7 +541,7 @@ export default function CartItemsPage() {
                             handle: recHandle,
                             rating: rec.rating || "4.8",
                             reviews: rec.reviews || "1,240",
-                            seller: "SKIPD Official",
+                            seller: "E-COM Official",
                             specs: ["Official Warranty", "Verified Quality"],
                             delivery: "Delivery in 2 days | Free Delivery",
                             originalPrice: recCompare,

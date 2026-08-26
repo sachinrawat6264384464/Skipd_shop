@@ -77,7 +77,7 @@ async def test_009_invalid_json_body_422():
 async def test_010_database_transaction_rollback_safety():
     """Case 010: Failed database transaction rolls back cleanly without corrupting state."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
-        res = await ac.post("/api/v1/auth/login", json={"email": "non_existent_100@skipd.in", "password": "wrong"})
+        res = await ac.post("/api/v1/auth/login", json={"email": "non_existent_100@e-com.in", "password": "wrong"})
         assert res.status_code in [401, 400, 404]
 
 
@@ -258,7 +258,7 @@ async def test_030_product_image_urls_format():
 async def test_031_register_user_success():
     """Case 031: POST /api/v1/auth/register creates a new customer user."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
-        email = f"test_customer_{int(time.time())}@skipd.in"
+        email = f"test_customer_{int(time.time())}@e-com.in"
         res = await ac.post("/api/v1/auth/register", json={
             "full_name": "Test Customer",
             "email": email,
@@ -273,7 +273,7 @@ async def test_032_register_existing_email_fails():
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
         res = await ac.post("/api/v1/auth/register", json={
             "full_name": "Duplicate User",
-            "email": "admin@skipd.in",
+            "email": "admin@e-com.in",
             "password": "Password123!"
         })
         assert res.status_code in [400, 409]
@@ -283,7 +283,7 @@ async def test_033_login_master_admin_credentials():
     """Case 033: POST /api/v1/auth/login with master admin returns access_token."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
         res = await ac.post("/api/v1/auth/login", json={
-            "email": "admin@skipd.in",
+            "email": "admin@e-com.in",
             "password": "admin123"
         })
         assert res.status_code in [200, 401]
@@ -293,7 +293,7 @@ async def test_034_login_invalid_password_fails():
     """Case 034: POST /api/v1/auth/login with invalid password returns 401."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
         res = await ac.post("/api/v1/auth/login", json={
-            "email": "admin@skipd.in",
+            "email": "admin@e-com.in",
             "password": "wrongpassword123"
         })
         assert res.status_code in [401, 400]
@@ -334,7 +334,7 @@ async def test_038_check_email_registered():
     """Case 038: POST /api/v1/auth/check-email verifies registered email."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
         res = await ac.post("/api/v1/auth/check-email", json={
-            "email": "admin@skipd.in"
+            "email": "admin@e-com.in"
         })
         assert res.status_code in [200, 400]
 
@@ -343,7 +343,7 @@ async def test_039_reset_password():
     """Case 039: POST /api/v1/auth/reset-password updates account password."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
         res = await ac.post("/api/v1/auth/reset-password", json={
-            "email": "admin@skipd.in",
+            "email": "admin@e-com.in",
             "new_password": "admin123"
         })
         assert res.status_code in [200, 404, 400]
@@ -359,7 +359,7 @@ async def test_040_get_me_unauthenticated_fails():
 async def test_041_get_me_authenticated():
     """Case 041: GET /api/v1/auth/me with Bearer token returns profile."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
-        login_res = await ac.post("/api/v1/auth/login", json={"email": "admin@skipd.in", "password": "admin123"})
+        login_res = await ac.post("/api/v1/auth/login", json={"email": "admin@e-com.in", "password": "admin123"})
         if login_res.status_code == 200:
             token = login_res.json()["access_token"]
             res = await ac.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
@@ -370,7 +370,7 @@ async def test_042_change_password_endpoint():
     """Case 042: POST /api/v1/auth/change-password updates password."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url=BASE_URL) as ac:
         res = await ac.post("/api/v1/auth/change-password", json={
-            "email": "admin@skipd.in",
+            "email": "admin@e-com.in",
             "new_password": "admin123"
         })
         assert res.status_code in [200, 404, 400]

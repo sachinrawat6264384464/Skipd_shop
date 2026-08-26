@@ -19,7 +19,7 @@ async def get_all_gift_cards(db: AsyncSession = Depends(get_db)):
             "initial_balance": float(g.initial_balance or 0),
             "current_balance": float(g.current_balance or 0),
             "is_active": g.is_active,
-            "recipient": "store-customer@skipd.in",
+            "recipient": "store-customer@e-com.in",
             "created_at": g.created_at.isoformat() if g.created_at else None
         }
         for g in cards
@@ -36,7 +36,7 @@ async def create_admin_gift_card(
 
     if not code:
         import random
-        code = f"SKIPD-GC-{random.randint(100000, 999999)}"
+        code = f"E-COM-GC-{random.randint(100000, 999999)}"
 
     # Check duplicate
     existing = await db.execute(select(GiftCard).where(GiftCard.code == code))
@@ -62,7 +62,7 @@ async def create_admin_gift_card(
             "initial_balance": new_gc.initial_balance,
             "current_balance": new_gc.current_balance,
             "is_active": new_gc.is_active,
-            "recipient": payload.get("recipient", "store-customer@skipd.in")
+            "recipient": payload.get("recipient", "store-customer@e-com.in")
         }
     }
 

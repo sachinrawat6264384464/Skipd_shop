@@ -33,7 +33,7 @@ export function CustomerReviewsSection() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const stored = localStorage.getItem("skipd_custom_reviews");
+        const stored = localStorage.getItem("ecom_custom_reviews");
         if (stored) {
           const parsed = JSON.parse(stored);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -64,7 +64,7 @@ export function CustomerReviewsSection() {
 
     setReviews(updated);
     if (typeof window !== "undefined") {
-      localStorage.setItem("skipd_custom_reviews", JSON.stringify(updated));
+      localStorage.setItem("ecom_custom_reviews", JSON.stringify(updated));
     }
 
     setModalOpen(false);
@@ -75,7 +75,7 @@ export function CustomerReviewsSection() {
     const updated = reviews.filter(r => r.id !== id);
     setReviews(updated);
     if (typeof window !== "undefined") {
-      localStorage.setItem("skipd_custom_reviews", JSON.stringify(updated));
+      localStorage.setItem("ecom_custom_reviews", JSON.stringify(updated));
     }
   };
 

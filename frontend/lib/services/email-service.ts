@@ -11,11 +11,11 @@ export interface EmailReceipt {
 export function recordSentEmail(emailData: EmailReceipt) {
   if (typeof window === "undefined") return;
   try {
-    const existing = JSON.parse(localStorage.getItem("skipd_sent_emails") || "[]");
-    localStorage.setItem("skipd_sent_emails", JSON.stringify([emailData, ...existing]));
+    const existing = JSON.parse(localStorage.getItem("ecom_sent_emails") || "[]");
+    localStorage.setItem("ecom_sent_emails", JSON.stringify([emailData, ...existing]));
 
     // Dispatch custom event for real-time notification toasts in UI
-    window.dispatchEvent(new CustomEvent("skipd_email_sent", { detail: emailData }));
+    window.dispatchEvent(new CustomEvent("ecom_email_sent", { detail: emailData }));
   } catch (err) {
     console.error("Failed to record sent email:", err);
   }
@@ -26,12 +26,12 @@ export function sendWelcomeEmail(email: string, username: string) {
   if (!email) return;
   const emailData: EmailReceipt = {
     to: email,
-    subject: `Welcome to SKIPD Commerce, ${username}! 🎉`,
+    subject: `Welcome to E-COM Commerce, ${username}! 🎉`,
     type: "WELCOME",
     timestamp: new Date().toISOString(),
     username: username,
     details: {
-      message: `Hi ${username},\n\nWelcome to SKIPD Commerce! Your registered account (${email}) has been successfully created.\n\nYour Username: ${username}\nRegistered Email: ${email}\n\nYou can now enjoy fast checkout, track live shipments, and access exclusive deals!`,
+      message: `Hi ${username},\n\nWelcome to E-COM Commerce! Your registered account (${email}) has been successfully created.\n\nYour Username: ${username}\nRegistered Email: ${email}\n\nYou can now enjoy fast checkout, track live shipments, and access exclusive deals!`,
       email: email,
       username: username
     }
@@ -41,10 +41,10 @@ export function sendWelcomeEmail(email: string, username: string) {
   // Add user to registered users database list in localStorage
   if (typeof window !== "undefined") {
     try {
-      const existing = JSON.parse(localStorage.getItem("skipd_registered_users") || "[]");
+      const existing = JSON.parse(localStorage.getItem("ecom_registered_users") || "[]");
       if (!existing.some((u: any) => (typeof u === "string" ? u : u.email) === email)) {
         existing.push({ email, username, created_at: new Date().toISOString() });
-        localStorage.setItem("skipd_registered_users", JSON.stringify(existing));
+        localStorage.setItem("ecom_registered_users", JSON.stringify(existing));
       }
     } catch (e) {}
   }
@@ -55,7 +55,7 @@ export function sendOrderInvoiceEmail(email: string, username: string, order: an
   if (!email) return;
 
   const itemsList = (order.items || []).map((item: any) => ({
-    title: item.title || item.name || "SKIPD Product",
+    title: item.title || item.name || "E-COM Product",
     price: Number(item.price || 0),
     quantity: Number(item.quantity || 1),
     total: Number(item.price || 0) * Number(item.quantity || 1),
@@ -87,8 +87,8 @@ export function sendOrderInvoiceEmail(email: string, username: string, order: an
       owner_contact: {
         owner_name: "Sachin Rawat (Store Founder & Owner)",
         phone: "+91 98765 43210",
-        email: "owner@skipd.in / support@skipd.in",
-        helpdesk: "https://skipd-shop.vercel.app/help"
+        email: "owner@e-com.in / support@e-com.in",
+        helpdesk: "https://e-com-shop.vercel.app/help"
       }
     }
   };
@@ -110,7 +110,7 @@ export function sendForgotOTPNotification(email: string, otpCode: string) {
   if (!email) return;
   const emailData: EmailReceipt = {
     to: email,
-    subject: `SKIPD Password Reset Verification Code: ${otpCode} 🔒`,
+    subject: `E-COM Password Reset Verification Code: ${otpCode} 🔒`,
     type: "OTP_VERIFICATION",
     timestamp: new Date().toISOString(),
     username: email.split("@")[0] || "User",
@@ -133,9 +133,9 @@ export function sendAdminNotification(notification: {
 }) {
   if (typeof window === "undefined") return;
   try {
-    const existing = JSON.parse(localStorage.getItem("skipd_admin_inquiries") || "[]");
-    localStorage.setItem("skipd_admin_inquiries", JSON.stringify([notification, ...existing]));
-    window.dispatchEvent(new CustomEvent("skipd_admin_notification_added", { detail: notification }));
+    const existing = JSON.parse(localStorage.getItem("ecom_admin_inquiries") || "[]");
+    localStorage.setItem("ecom_admin_inquiries", JSON.stringify([notification, ...existing]));
+    window.dispatchEvent(new CustomEvent("ecom_admin_notification_added", { detail: notification }));
   } catch (err) {}
 }
 
@@ -151,8 +151,8 @@ export function sendCampaignPromotionalEmail(campaign: {
   if (typeof window === "undefined") return;
   try {
     // Gather registered customers
-    const registeredUsers = JSON.parse(localStorage.getItem("skipd_registered_users") || "[]");
-    const sampleEmails = ["sachinrawat6264384464@gmail.com", "customer@skipd.in", "amit@gmail.com", "priya@yahoo.com"];
+    const registeredUsers = JSON.parse(localStorage.getItem("ecom_registered_users") || "[]");
+    const sampleEmails = ["sachinrawat6264384464@gmail.com", "customer@e-com.in", "amit@gmail.com", "priya@yahoo.com"];
 
     const userEmails = registeredUsers.map((u: any) => typeof u === "string" ? u : u.email).filter(Boolean);
     const targetEmails = Array.from(new Set([...userEmails, ...sampleEmails]));
@@ -166,7 +166,7 @@ export function sendCampaignPromotionalEmail(campaign: {
         timestamp: new Date().toISOString(),
         username: username,
         details: {
-          message: `Hi ${username},\n\n🎉 ${campaign.title} is now LIVE on SKIPD Commerce!\n\nDiscount Offer: ${campaign.discountOffer}\nTagline: ${campaign.subtitle || "Exclusive Limited Time Offer"}\nValid Dates: ${campaign.startDate || "May 25, 2025"} to ${campaign.endDate || "May 31, 2025"}\n\nVisit SKIPD Commerce now to grab deals: https://skipd-shop.vercel.app/deals`,
+          message: `Hi ${username},\n\n🎉 ${campaign.title} is now LIVE on E-COM Commerce!\n\nDiscount Offer: ${campaign.discountOffer}\nTagline: ${campaign.subtitle || "Exclusive Limited Time Offer"}\nValid Dates: ${campaign.startDate || "May 25, 2025"} to ${campaign.endDate || "May 31, 2025"}\n\nVisit E-COM Commerce now to grab deals: https://e-com-shop.vercel.app/deals`,
           campaign_title: campaign.title,
           discount: campaign.discountOffer,
           email: email

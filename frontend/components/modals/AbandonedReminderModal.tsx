@@ -32,7 +32,7 @@ export function AbandonedReminderModal() {
     if (typeof window === "undefined") return;
     if (pathname?.startsWith("/admin")) return;
 
-    const token = localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token");
+    const token = localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token");
     if (!token) return;
 
     const snoozedUntil = sessionStorage.getItem("reminder_snoozed_until");
@@ -88,7 +88,7 @@ export function AbandonedReminderModal() {
     setReminderData(null);
 
     const token = typeof window !== "undefined"
-      ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
+      ? (localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token"))
       : null;
 
     if (currentItem) {

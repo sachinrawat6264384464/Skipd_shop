@@ -1,7 +1,7 @@
 services:
   # 1. FastAPI Web Server (Connected Live to Neon Cloud PostgreSQL & Upstash Redis)
   - type: web
-    name: skipd-commerce-backend
+    name: e-com-commerce-backend
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
@@ -19,12 +19,12 @@ services:
       - key: REDIS_URL
         value: rediss://default:gQAAAAAAApeoAAIgcDIyYmVlZDhhODBhY2Q0MjhiYmUzYzkzMzlkNDY3N2ZiYw@relaxed-beetle-169896.upstash.io:6379
       - key: JWT_SECRET
-        value: super_secret_jwt_key_skipd_2026_dev
+        value: super_secret_jwt_key_ecom_2026_dev
       - key: RAZORPAY_KEY_ID
         value: rzp_test_TPfRXRqzrh7kXX
       - key: RAZORPAY_KEY_SECRET
         value: EwSRHUOV8KNJrsQ49U53kPtA
       - key: SHIPROCKET_EMAIL
-        value: demo@skipd.in
+        value: demo@e-com.in
       - key: SHIPROCKET_PASSWORD
         value: demo_password_123

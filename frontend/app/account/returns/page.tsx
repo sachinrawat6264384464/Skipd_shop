@@ -35,7 +35,7 @@ export default function ReturnsPage() {
 
   const fetchMyReturns = async () => {
     const token = typeof window !== "undefined"
-      ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
+      ? (localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token"))
       : null;
     if (!token) {
       setLoading(false);
@@ -72,7 +72,7 @@ export default function ReturnsPage() {
     }
 
     const token = typeof window !== "undefined"
-      ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
+      ? (localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token"))
       : null;
     if (!token) {
       toast.error("Please sign in to submit a return request");
@@ -153,7 +153,7 @@ export default function ReturnsPage() {
               <input
                 type="text"
                 required
-                placeholder="e.g. 101 or SKIPD-101"
+                placeholder="e.g. 101 or E-COM-101"
                 value={orderIdInput}
                 onChange={(e) => setOrderIdInput(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 font-semibold text-gray-900 focus:outline-none focus:border-emerald-500"

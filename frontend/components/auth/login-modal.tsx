@@ -155,10 +155,10 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           phone: syncRes.phone || (!emailOrPhone.includes("@") ? emailOrPhone : "")
         };
 
-        localStorage.setItem("skipd_token", syncRes.access_token || idToken);
-        localStorage.setItem("skipd_user", JSON.stringify(userObj));
+        localStorage.setItem("ecom_token", syncRes.access_token || idToken);
+        localStorage.setItem("ecom_user", JSON.stringify(userObj));
         saveRegisteredEmail(userObj.email);
-        window.dispatchEvent(new Event("skipd_auth_changed"));
+        window.dispatchEvent(new Event("ecom_auth_changed"));
 
         try {
           const { sendWelcomeEmail } = await import("lib/services/email-service");
@@ -197,9 +197,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           email: syncRes.email || fbUser.email || emailOrPhone
         };
 
-        localStorage.setItem("skipd_token", syncRes.access_token || idToken);
-        localStorage.setItem("skipd_user", JSON.stringify(userObj));
-        window.dispatchEvent(new Event("skipd_auth_changed"));
+        localStorage.setItem("ecom_token", syncRes.access_token || idToken);
+        localStorage.setItem("ecom_user", JSON.stringify(userObj));
+        window.dispatchEvent(new Event("ecom_auth_changed"));
 
         setLoading(false);
         setSuccessMsg("🔥 Authenticated via Firebase Auth & synced to Database! Welcome back.");
@@ -216,9 +216,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
               email: dbRes.email || emailOrPhone.trim(),
               phone: dbRes.phone || ""
             };
-            localStorage.setItem("skipd_token", dbRes.access_token);
-            localStorage.setItem("skipd_user", JSON.stringify(userObj));
-            window.dispatchEvent(new Event("skipd_auth_changed"));
+            localStorage.setItem("ecom_token", dbRes.access_token);
+            localStorage.setItem("ecom_user", JSON.stringify(userObj));
+            window.dispatchEvent(new Event("ecom_auth_changed"));
             setLoading(false);
             setSuccessMsg(`🔥 Authenticated successfully! Welcome back ${userObj.user_name}.`);
             setTimeout(() => finishLogin(), 800);
@@ -274,9 +274,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         photoURL: fbUser.photoURL || ""
       };
 
-      localStorage.setItem("skipd_token", syncRes.access_token || idToken);
-      localStorage.setItem("skipd_user", JSON.stringify(userObj));
-      window.dispatchEvent(new Event("skipd_auth_changed"));
+      localStorage.setItem("ecom_token", syncRes.access_token || idToken);
+      localStorage.setItem("ecom_user", JSON.stringify(userObj));
+      window.dispatchEvent(new Event("ecom_auth_changed"));
 
       if (isRegisterView) {
         try {
@@ -321,9 +321,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
               photoURL: ""
             };
 
-            localStorage.setItem("skipd_token", syncRes.access_token || "google_fallback_token");
-            localStorage.setItem("skipd_user", JSON.stringify(userObj));
-            window.dispatchEvent(new Event("skipd_auth_changed"));
+            localStorage.setItem("ecom_token", syncRes.access_token || "google_fallback_token");
+            localStorage.setItem("ecom_user", JSON.stringify(userObj));
+            window.dispatchEvent(new Event("ecom_auth_changed"));
 
             setLoading(false);
             setSuccessMsg(`🔥 Signed in as ${userObj.user_name} (${userObj.email}) via Google Auth & synced to Database!`);
@@ -448,9 +448,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         email: emailOrPhone,
         phone: "9876543210"
       };
-      localStorage.setItem("skipd_token", "jwt_token_reset_skipd_2026");
-      localStorage.setItem("skipd_user", JSON.stringify(userObj));
-      window.dispatchEvent(new Event("skipd_auth_changed"));
+      localStorage.setItem("ecom_token", "jwt_token_reset_ecom_2026");
+      localStorage.setItem("ecom_user", JSON.stringify(userObj));
+      window.dispatchEvent(new Event("ecom_auth_changed"));
 
       setSuccessMsg("🎉 Password updated successfully! Logging you in...");
       setTimeout(() => finishLogin(), 1200);
@@ -482,13 +482,13 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
       if (res.access_token) {
         const userObj = {
           user_name: fullName || res.user_name || (emailOrPhone.includes("@") ? emailOrPhone.split("@")[0] : "Sachin Rawat"),
-          email: res.email || (emailOrPhone.includes("@") ? emailOrPhone : "customer@skipd.in"),
+          email: res.email || (emailOrPhone.includes("@") ? emailOrPhone : "customer@e-com.in"),
           phone: res.phone || (!emailOrPhone.includes("@") ? emailOrPhone : "9876543210")
         };
 
-        localStorage.setItem("skipd_token", res.access_token);
-        localStorage.setItem("skipd_user", JSON.stringify(userObj));
-        window.dispatchEvent(new Event("skipd_auth_changed"));
+        localStorage.setItem("ecom_token", res.access_token);
+        localStorage.setItem("ecom_user", JSON.stringify(userObj));
+        window.dispatchEvent(new Event("ecom_auth_changed"));
 
         setTimerActive(false);
 
@@ -572,7 +572,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 : step === 2
                 ? `6-digit verification code sent to ${emailOrPhone}`
                 : isRegisterView
-                ? "Sign up with mobile or email for SKIPD Store"
+                ? "Sign up with mobile or email for E-COM Store"
                 : "Get access to your Orders, Wishlist & Tracking"}
             </p>
           </div>
@@ -862,7 +862,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 >
                   {isRegisterView
                     ? "Existing User? Log in to your account"
-                    : "New to SKIPD? Create an account"}
+                    : "New to E-COM? Create an account"}
                 </button>
               </div>
 

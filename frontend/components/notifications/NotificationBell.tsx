@@ -40,7 +40,7 @@ export function NotificationBell() {
 
   const fetchNotifications = async () => {
     const token = typeof window !== "undefined"
-      ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
+      ? (localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token"))
       : null;
     if (!token) return;
 
@@ -61,7 +61,7 @@ export function NotificationBell() {
 
   const handleMarkAllRead = async () => {
     const token = typeof window !== "undefined"
-      ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
+      ? (localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token"))
       : null;
     if (!token) return;
 
@@ -78,7 +78,7 @@ export function NotificationBell() {
 
   const handleMarkSingleRead = async (id: number) => {
     const token = typeof window !== "undefined"
-      ? (localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token"))
+      ? (localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token"))
       : null;
     if (!token) return;
 

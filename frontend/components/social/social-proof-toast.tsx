@@ -27,7 +27,7 @@ export function SocialProofToast() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("user_token") || localStorage.getItem("skipd_token") || localStorage.getItem("token");
+      const token = localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token");
       setIsCustomerLoggedIn(!!token);
     }
   }, [pathname]);

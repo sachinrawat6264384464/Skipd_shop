@@ -24,7 +24,7 @@ async def get_all_admin_shipments(db: AsyncSession = Depends(get_db)):
         output.append({
             "id": s.id,
             "awbCode": s.awb_code or f"SR-884920{idx+1}",
-            "orderId": ord_obj.order_number if ord_obj else f"#SKIPD-2587{9-idx}",
+            "orderId": ord_obj.order_number if ord_obj else f"#E-COM-2587{9-idx}",
             "customerName": ord_obj.customer_name if ord_obj else "Customer Account",
             "customerEmail": ord_obj.customer_email if ord_obj else "customer@gmail.com",
             "customerPhone": ord_obj.customer_phone if ord_obj else "+91 98765 43210",
@@ -79,7 +79,7 @@ async def track_shipment_query(
     tracking_number: Optional[str] = Query(None),
     db: AsyncSession = Depends(get_db)
 ):
-    tracking_id = tracking_number or "SKIPD-984201"
+    tracking_id = tracking_number or "E-COM-984201"
     return await _process_tracking(tracking_id, db)
 
 @router.get("/track/{tracking_id}", response_model=TrackingResponse)

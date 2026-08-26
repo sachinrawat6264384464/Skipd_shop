@@ -86,12 +86,12 @@ async def initialize_and_migrate_all_tables():
         print("\n[STEP 3] Verifying and seeding baseline database data...")
 
         # Seed Default Super Admin
-        admin_email = "admin@skipd.in"
+        admin_email = "admin@e-com.in"
         res = await session.execute(select(User).where(User.email == admin_email))
         admin = res.scalars().first()
         if not admin:
             admin_user = User(
-                full_name="SKIPD Super Admin",
+                full_name="E-COM Super Admin",
                 email=admin_email,
                 phone="+91 98765 43210",
                 hashed_password=get_password_hash("AdminPass123!"),
@@ -99,10 +99,10 @@ async def initialize_and_migrate_all_tables():
                 is_active=True
             )
             session.add(admin_user)
-            print("[SUCCESS] Default Super Admin created (admin@skipd.in / AdminPass123!)")
+            print("[SUCCESS] Default Super Admin created (admin@e-com.in / AdminPass123!)")
 
         # Seed Default Demo Customer
-        cust_email = "customer@skipd.in"
+        cust_email = "customer@e-com.in"
         res = await session.execute(select(User).where(User.email == cust_email))
         cust = res.scalars().first()
         if not cust:
@@ -115,7 +115,7 @@ async def initialize_and_migrate_all_tables():
                 is_active=True
             )
             session.add(demo_cust)
-            print("[SUCCESS] Default Demo Customer created (customer@skipd.in)")
+            print("[SUCCESS] Default Demo Customer created (customer@e-com.in)")
 
         # Seed Default Categories if empty
         cat_count_res = await session.execute(select(func.count(Category.id)))

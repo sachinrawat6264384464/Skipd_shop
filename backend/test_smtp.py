@@ -9,7 +9,7 @@ from app.services.email_service import send_order_confirmation_email, send_welco
 print("Sending test order confirmation email...")
 result = send_order_confirmation_email(
     to_email="sachinrawat6264384464@gmail.com",
-    order_number="SKIPD-TEST001",
+    order_number="E-COM-TEST001",
     total_amount=1299.00,
     customer_name="Sachin Rawat",
     order_items=[{"title": "Minimalist Oversized Graphic Tee", "quantity": 1, "unit_price": 1299, "total_price": 1299}],

@@ -146,7 +146,7 @@ async def test_mod5_016_purchase_gift_card_zero_amount_422(db_session):
 async def test_mod5_017_query_message_min_length_validation(db_session):
     """Case 017: Submit query with empty message."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        payload = {"name": "Test", "email": "test@skipd.in", "subject": "Hi", "message": ""}
+        payload = {"name": "Test", "email": "test@e-com.in", "subject": "Hi", "message": ""}
         response = await ac.post("/api/v1/queries", json=payload)
         assert response.status_code in [200, 400, 404, 422]
 
@@ -190,7 +190,7 @@ async def test_mod5_022_gift_card_code_format():
 async def test_mod5_023_query_subject_length_limit(db_session):
     """Case 023: Submit query with long subject string."""
     async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as ac:
-        payload = {"name": "Test User", "email": "test@skipd.in", "subject": "A" * 150, "message": "Inquiry test message."}
+        payload = {"name": "Test User", "email": "test@e-com.in", "subject": "A" * 150, "message": "Inquiry test message."}
         response = await ac.post("/api/v1/queries", json=payload)
         assert response.status_code in [200, 201, 404, 422]
 

@@ -88,13 +88,13 @@ async def get_wallet_balance():
     return {
         "user_id": 1,
         "wallet_balance_inr": 250.0,
-        "skipd_coins": 500,
-        "referral_code": "SKIPD-REF-9842"
+        "ecom_coins": 500,
+        "referral_code": "E-COM-REF-9842"
     }
 
 @router.post("/verify-referral")
 async def verify_referral(data: ReferralInput):
-    if data.referral_code.upper().startswith("SKIPD"):
+    if data.referral_code.upper().startswith("E-COM"):
         return {
             "valid": True,
             "discount_inr": 250.0,

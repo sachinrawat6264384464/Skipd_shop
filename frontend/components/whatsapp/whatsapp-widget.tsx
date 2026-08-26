@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 export function WhatsAppFloatingWidget() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const phoneNumber = "919876543210"; // SKIPD Support Line
+  const phoneNumber = "919876543210"; // E-COM Support Line
 
   // Hide WhatsApp widget on admin routes
   if (pathname?.startsWith("/admin")) {
@@ -25,7 +25,7 @@ export function WhatsAppFloatingWidget() {
           <div className="flex justify-between items-center pb-3 border-b border-neutral-800">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <h5 className="font-bold text-xs">SKIPD WhatsApp Support</h5>
+              <h5 className="font-bold text-xs">E-COM WhatsApp Support</h5>
             </div>
             <button onClick={() => setOpen(false)} className="text-neutral-400 hover:text-white text-xs font-bold">
               ✕

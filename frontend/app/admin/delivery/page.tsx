@@ -50,7 +50,7 @@ export default function AdminDeliveryPage() {
 
   // New Shipment Form State
   const [newAwb, setNewAwb] = useState("");
-  const [newOrderId, setNewOrderId] = useState("#SKIPD-25880");
+  const [newOrderId, setNewOrderId] = useState("#E-COM-25880");
   const [newCourier, setNewCourier] = useState("Delhivery Surface");
   const [newDestination, setNewDestination] = useState("Gwalior, Madhya Pradesh");
   const [newPin, setNewPin] = useState("474001");
@@ -60,7 +60,7 @@ export default function AdminDeliveryPage() {
   const [trackSearchCode, setTrackSearchCode] = useState("SR-8849201");
   const [activeTrackingData, setActiveTrackingData] = useState<any>({
     awbCode: "SR-8849201",
-    orderId: "#SKIPD-25879",
+    orderId: "#E-COM-25879",
     customer: "Amit Sharma (+91 98765 43210)",
     courier: "Delhivery Surface",
     destination: "Gwalior, Madhya Pradesh - 474001",
@@ -137,7 +137,7 @@ export default function AdminDeliveryPage() {
           return {
             id: s.id || idx + 1,
             awbCode: s.awbCode || `SR-884920${idx+1}`,
-            orderId: s.orderId || `#SKIPD-2587${9-idx}`,
+            orderId: s.orderId || `#E-COM-2587${9-idx}`,
             customerName: s.customerName || "Customer",
             customerEmail: s.customerEmail || "customer@gmail.com",
             customerPhone: s.customerPhone || "+91 98765 43210",
@@ -186,7 +186,7 @@ export default function AdminDeliveryPage() {
       pin_code: newPin,
       est_delivery_date: newEstDate,
       customer_name: "Sachin Rawat",
-      customer_email: "sachin@skipd.in",
+      customer_email: "sachin@e-com.in",
       customer_phone: "+91 62643 84464"
     };
 
@@ -198,7 +198,7 @@ export default function AdminDeliveryPage() {
       awbCode: finalAwb,
       orderId: newOrderId,
       customerName: "Sachin Rawat",
-      customerEmail: "sachin@skipd.in",
+      customerEmail: "sachin@e-com.in",
       customerPhone: "+91 62643 84464",
       courierName: res?.courier_name || newCourier,
       courierBadge: "D",
@@ -891,7 +891,7 @@ export default function AdminDeliveryPage() {
           <div className="flex gap-2">
             <input
               type="text"
-              placeholder="Enter AWB Code (e.g. SR-8849201) or Order ID (#SKIPD-25879)..."
+              placeholder="Enter AWB Code (e.g. SR-8849201) or Order ID (#E-COM-25879)..."
               value={trackSearchCode}
               onChange={(e) => setTrackSearchCode(e.target.value)}
               className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-3 text-xs font-mono font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
@@ -1131,7 +1131,7 @@ export default function AdminDeliveryPage() {
             onClick={() => {
               if (typeof window !== "undefined") {
                 try {
-                  localStorage.setItem("skipd_shipping_rates", JSON.stringify(shippingRates));
+                  localStorage.setItem("ecom_shipping_rates", JSON.stringify(shippingRates));
                 } catch (e) {}
               }
               showToast("🎉 Shipping rate slabs saved & synced live across checkout!");

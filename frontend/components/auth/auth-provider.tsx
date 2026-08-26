@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem("skipd_user");
+    const stored = localStorage.getItem("ecom_user");
     if (stored) {
       try {
         setUser(JSON.parse(stored));
@@ -45,26 +45,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (userData: UserProfile) => {
     setUser(userData);
-    localStorage.setItem("skipd_token", "jwt_token_demo_skipd_2026");
-    localStorage.setItem("skipd_user", JSON.stringify(userData));
-    window.dispatchEvent(new Event("skipd_auth_changed"));
+    localStorage.setItem("ecom_token", "jwt_token_demo_ecom_2026");
+    localStorage.setItem("ecom_user", JSON.stringify(userData));
+    window.dispatchEvent(new Event("ecom_auth_changed"));
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("skipd_token");
-    localStorage.removeItem("skipd_user");
-    localStorage.removeItem("skipd_wishlist_items");
-    localStorage.removeItem("skipd_guest_wishlist");
-    sessionStorage.removeItem("skipd_buy_now_item");
-    window.dispatchEvent(new Event("skipd_auth_changed"));
-    window.dispatchEvent(new Event("skipd_wishlist_updated"));
-    window.dispatchEvent(new Event("skipd_wishlist_changed"));
+    localStorage.removeItem("ecom_token");
+    localStorage.removeItem("ecom_user");
+    localStorage.removeItem("ecom_wishlist_items");
+    localStorage.removeItem("ecom_guest_wishlist");
+    sessionStorage.removeItem("ecom_buy_now_item");
+    window.dispatchEvent(new Event("ecom_auth_changed"));
+    window.dispatchEvent(new Event("ecom_wishlist_updated"));
+    window.dispatchEvent(new Event("ecom_wishlist_changed"));
     window.location.href = "/";
   };
 
   const requireAuth = (onSuccessAction?: () => void): boolean => {
-    const stored = localStorage.getItem("skipd_user");
+    const stored = localStorage.getItem("ecom_user");
     if (stored) {
       if (onSuccessAction) onSuccessAction();
       return true;

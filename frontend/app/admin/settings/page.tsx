@@ -19,10 +19,10 @@ export default function AdminSettingsPage() {
   // Complete Storefront Settings State
   const [settings, setSettings] = useState({
     // General Settings
-    storeName: "SKIPD Commerce",
+    storeName: "E-COM Commerce",
     storeTagline: "India's #1 Express E-Commerce Storefront",
     currency: "INR (₹)",
-    supportEmail: "support@skipd.in",
+    supportEmail: "support@e-com.in",
     supportPhone: "+91 98765 43210",
     storeAddress: "A-42, Tech Park, Gwalior, MP - 474001",
 
@@ -36,12 +36,12 @@ export default function AdminSettingsPage() {
     // Payment Settings
     razorpayKey: "rzp_test_90481029841",
     razorpaySecret: "••••••••••••••••••••••••",
-    upiGatewayId: "skipd@upi",
+    upiGatewayId: "e-com@upi",
     codEnabled: true,
     maxCodLimit: "5000",
 
     // Shipping Settings
-    shiprocketUser: "logistics@skipd.com",
+    shiprocketUser: "logistics@e-com.com",
     shiprocketApiKey: "••••••••••••••••••••••••",
     defaultCourier: "BlueDart Express Air",
     freeShippingThreshold: "499",
@@ -57,7 +57,7 @@ export default function AdminSettingsPage() {
     // Email Settings
     smtpHost: "smtp.gmail.com",
     smtpPort: "587",
-    smtpUser: "notifications@skipd.in",
+    smtpUser: "notifications@e-com.in",
     adminNotifyEmail: "sachinrawat6264384464@gmail.com",
     welcomeEmailActive: true,
     orderInvoiceEmailActive: true,
@@ -73,7 +73,7 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
-        const saved = localStorage.getItem("skipd_store_settings");
+        const saved = localStorage.getItem("ecom_store_settings");
         if (saved) {
           setSettings(prev => ({ ...prev, ...JSON.parse(saved) }));
         }
@@ -90,7 +90,7 @@ export default function AdminSettingsPage() {
     e.preventDefault();
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("skipd_store_settings", JSON.stringify(settings));
+        localStorage.setItem("ecom_store_settings", JSON.stringify(settings));
       } catch (e) {}
     }
     showToast(`🎉 ${activeTab} saved & synced live across storefront!`);

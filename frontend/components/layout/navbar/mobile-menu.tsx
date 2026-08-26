@@ -21,8 +21,8 @@ export default function MobileMenu() {
 
   // Re-check authentication state when drawer opens or path changes
   useEffect(() => {
-    const token = localStorage.getItem("skipd_token");
-    const stored = localStorage.getItem("skipd_user");
+    const token = localStorage.getItem("ecom_token");
+    const stored = localStorage.getItem("ecom_user");
     if (token && stored) {
       try {
         setUser(JSON.parse(stored));
@@ -52,8 +52,8 @@ export default function MobileMenu() {
   }, [isOpen]);
 
   const handleLogout = () => {
-    localStorage.removeItem("skipd_token");
-    localStorage.removeItem("skipd_user");
+    localStorage.removeItem("ecom_token");
+    localStorage.removeItem("ecom_user");
     setUser(null);
     setIsOpen(false);
     window.location.href = "/";
@@ -92,7 +92,7 @@ export default function MobileMenu() {
                 <span className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-sm shadow-xs">
                   S
                 </span>
-                <span>SKIPD STORE</span>
+                <span>E-COM STORE</span>
               </Link>
 
               <div className="flex items-center gap-2">
@@ -132,7 +132,7 @@ export default function MobileMenu() {
               <div className="p-4 bg-gray-50 border-b border-gray-200/80 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">Guest Account</p>
-                  <p className="font-black text-sm text-gray-900">Welcome to SKIPD</p>
+                  <p className="font-black text-sm text-gray-900">Welcome to E-COM</p>
                 </div>
                 <button
                   type="button"

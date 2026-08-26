@@ -199,15 +199,15 @@ async def lifespan(app: FastAPI):
 
                 # Admin User
                 admin_user = User(
-                    full_name="SKIPD Store Admin",
-                    email="admin@skipd.in",
+                    full_name="E-COM Store Admin",
+                    email="admin@e-com.in",
                     phone="9876543210",
                     hashed_password=get_password_hash("admin123"),
                     role=UserRole.ADMIN
                 )
                 db.add(admin_user)
                 await db.commit()
-                print("[Backend Startup] Seed complete! Admin login: admin@skipd.in / admin123")
+                print("[Backend Startup] Seed complete! Admin login: admin@e-com.in / admin123")
     except Exception as e:
         print(f"[Backend Startup Warning] DB seed skipped ({e}). Server starting cleanly...")
 
@@ -271,7 +271,7 @@ app.include_router(reviews_router, prefix=settings.API_V1_STR)
 @app.get("/")
 async def root():
     return {
-        "message": "Welcome to SKIPD Custom B2C E-Commerce Platform API",
+        "message": "Welcome to E-COM Custom B2C E-Commerce Platform API",
         "docs": "/docs",
         "health": "/health"
     }

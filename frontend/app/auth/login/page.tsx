@@ -45,9 +45,9 @@ export default function CustomerLoginPage() {
         phone: !emailOrPhone.includes("@") ? emailOrPhone : "+91 6264384464"
       };
 
-      localStorage.setItem("skipd_token", "jwt_token_demo_skipd_2026");
-      localStorage.setItem("skipd_user", JSON.stringify(userObj));
-      window.dispatchEvent(new Event("skipd_auth_changed"));
+      localStorage.setItem("ecom_token", "jwt_token_demo_ecom_2026");
+      localStorage.setItem("ecom_user", JSON.stringify(userObj));
+      window.dispatchEvent(new Event("ecom_auth_changed"));
 
       setLoading(false);
       window.location.href = "/account?tab=profile";
@@ -80,9 +80,9 @@ export default function CustomerLoginPage() {
           phone: "+91 6264384464",
           auth_provider: "google"
         };
-        localStorage.setItem("skipd_token", "jwt_token_google_oauth_skipd_2026");
-        localStorage.setItem("skipd_user", JSON.stringify(googleUser));
-        window.dispatchEvent(new Event("skipd_auth_changed"));
+        localStorage.setItem("ecom_token", "jwt_token_google_oauth_ecom_2026");
+        localStorage.setItem("ecom_user", JSON.stringify(googleUser));
+        window.dispatchEvent(new Event("ecom_auth_changed"));
 
         setLoading(false);
         setShowGooglePicker(false);
@@ -215,7 +215,7 @@ export default function CustomerLoginPage() {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. customer@skipd.in"
+                    placeholder="e.g. customer@e-com.in"
                     value={emailOrPhone}
                     onChange={(e) => {
                       setEmailOrPhone(e.target.value);
@@ -309,7 +309,7 @@ export default function CustomerLoginPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. customer@skipd.in or +91 9876543210"
+                  placeholder="e.g. customer@e-com.in or +91 9876543210"
                   value={emailOrPhone}
                   onChange={(e) => setEmailOrPhone(e.target.value)}
                   className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none transition"
@@ -346,7 +346,7 @@ export default function CustomerLoginPage() {
               </div>
 
               <p className="text-[11px] text-gray-500 leading-normal">
-                By continuing, you agree to SKIPD's{" "}
+                By continuing, you agree to E-COM's{" "}
                 <Link href="/terms" className="text-blue-600 font-bold hover:underline">
                   Terms of Use
                 </Link>{" "}
@@ -408,7 +408,7 @@ export default function CustomerLoginPage() {
           {!isForgotView && (
             <div className="text-center pt-4 border-t border-gray-100">
               <Link href="/auth/register" className="text-xs text-blue-600 font-bold hover:underline">
-                New to SKIPD? Create an account
+                New to E-COM? Create an account
               </Link>
             </div>
           )}
@@ -432,7 +432,7 @@ export default function CustomerLoginPage() {
                 </svg>
               </div>
               <h3 className="text-lg font-black text-gray-900">Sign in with Google</h3>
-              <p className="text-xs text-gray-500 font-medium">Choose an account to continue to <span className="font-bold text-gray-900">SKIPD Commerce</span></p>
+              <p className="text-xs text-gray-500 font-medium">Choose an account to continue to <span className="font-bold text-gray-900">E-COM Commerce</span></p>
             </div>
 
             {/* Google Accounts Selection List */}

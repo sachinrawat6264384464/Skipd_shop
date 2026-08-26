@@ -50,7 +50,7 @@ def send_otp_email(to_email: str, otp_code: str):
     """Send ultra-premium HTML 6-digit OTP email with branding, security notices and timestamp."""
     from datetime import datetime
     formatted_time = datetime.now().strftime("%b %d, %Y • %I:%M %p IST")
-    subject = f"🔐 {otp_code} is your SKIPD Security Verification Code"
+    subject = f"🔐 {otp_code} is your E-COM Security Verification Code"
     
     html_content = f"""
     <!DOCTYPE html>
@@ -58,7 +58,7 @@ def send_otp_email(to_email: str, otp_code: str):
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>SKIPD Security OTP</title>
+      <title>E-COM Security OTP</title>
     </head>
     <body style="margin: 0; padding: 0; background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
@@ -70,7 +70,7 @@ def send_otp_email(to_email: str, otp_code: str):
               <tr>
                 <td style="background: linear-gradient(135deg, #059669 0%, #047857 50%, #064e3b 100%); padding: 32px 28px; text-align: center;">
                   <div style="font-size: 28px; font-weight: 900; color: #ffffff; letter-spacing: -0.5px; margin-bottom: 4px;">
-                    SKIPD<span style="color: #6ee7b7;">.</span>
+                    E-COM<span style="color: #6ee7b7;">.</span>
                   </div>
                   <div style="font-size: 11px; font-weight: 700; color: #a7f3d0; text-transform: uppercase; letter-spacing: 2px;">
                     Official Account Security Verification
@@ -85,7 +85,7 @@ def send_otp_email(to_email: str, otp_code: str):
                     Security Verification Code 👋
                   </h3>
                   <p style="margin: 0 0 20px 0; font-size: 14px; line-height: 1.6; color: #4b5563;">
-                    You recently requested a security code to sign in or verify your account on <strong>SKIPD Commerce</strong>. Use the 6-digit code below to proceed:
+                    You recently requested a security code to sign in or verify your account on <strong>E-COM Commerce</strong>. Use the 6-digit code below to proceed:
                   </p>
 
                   <!-- 🔢 6-DIGIT OTP BOX -->
@@ -113,7 +113,7 @@ def send_otp_email(to_email: str, otp_code: str):
                       🔒 Security Tip:
                     </p>
                     <p style="margin: 0; font-size: 12px; color: #6b7280; line-height: 1.5;">
-                      Never share this code with anyone. SKIPD Commerce employees will never call or message asking for your password or OTP. If you did not initiate this request, please change your password immediately.
+                      Never share this code with anyone. E-COM Commerce employees will never call or message asking for your password or OTP. If you did not initiate this request, please change your password immediately.
                     </p>
                   </div>
                 </td>
@@ -123,7 +123,7 @@ def send_otp_email(to_email: str, otp_code: str):
               <tr>
                 <td style="background-color: #f9fafb; padding: 20px 28px; border-top: 1px solid #f3f4f6; text-align: center;">
                   <p style="margin: 0 0 6px 0; font-size: 11px; font-weight: 600; color: #6b7280;">
-                    © 2026 SKIPD Commerce Inc. • 256-Bit Encrypted Commerce Portal
+                    © 2026 E-COM Commerce Inc. • 256-Bit Encrypted Commerce Portal
                   </p>
                   <p style="margin: 0; font-size: 11px; color: #9ca3af;">
                     Sent to {to_email} • Request Time: {formatted_time}
@@ -151,7 +151,7 @@ def send_order_confirmation_email(
     payment_method: str = "Online Payment / UPI"
 ):
     """Send Rich Order Confirmation Email with product details and live tracking CTA."""
-    subject = f"🎉 Order Confirmed! #{order_number} - SKIPD Commerce"
+    subject = f"🎉 Order Confirmed! #{order_number} - E-COM Commerce"
     
     # Build Items Rows
     items_html = ""
@@ -187,7 +187,7 @@ def send_order_confirmation_email(
     elif isinstance(shipping_address, str) and shipping_address.strip():
         address_str = shipping_address.strip()
 
-    awb_demo = f"SKP{order_number.replace('SKIPD-', '')}IN"
+    awb_demo = f"SKP{order_number.replace('E-COM-', '')}IN"
     # Use production domain if available, else fallback
     site_domain = os.getenv("SITE_URL", "https://ecom.botmartz.com")
     tracking_url = f"{site_domain}/track-order?awb={awb_demo}"
@@ -220,7 +220,7 @@ def send_order_confirmation_email(
       <div class="card">
         <div class="header">
           <h1>🎉 ORDER CONFIRMED!</h1>
-          <p>Thank you for shopping with SKIPD Commerce</p>
+          <p>Thank you for shopping with E-COM Commerce</p>
         </div>
 
         <div class="body">
@@ -261,7 +261,7 @@ def send_order_confirmation_email(
         </div>
 
         <div class="footer">
-          <p style="margin: 0 0 4px 0; font-weight: bold; color: #374151;">SKIPD Commerce Pvt Ltd • BlueDart &amp; Shiprocket Express Logistics</p>
+          <p style="margin: 0 0 4px 0; font-weight: bold; color: #374151;">E-COM Commerce Pvt Ltd • BlueDart &amp; Shiprocket Express Logistics</p>
           <p style="margin: 0;">24x7 Customer Support | AWB: {awb_demo}</p>
         </div>
       </div>
@@ -288,7 +288,7 @@ def send_shipping_update_email(to_email: str, order_number: str, tracking_number
 
 def send_welcome_account_email(to_email: str, full_name: str, raw_password: str):
     """Send Welcome Email containing login credentials & welcome message upon registration."""
-    subject = f"🎉 Welcome to SKIPD Commerce, {full_name}! Your Account Credentials"
+    subject = f"🎉 Welcome to E-COM Commerce, {full_name}! Your Account Credentials"
     html_content = f"""
     <!DOCTYPE html>
     <html>
@@ -316,14 +316,14 @@ def send_welcome_account_email(to_email: str, full_name: str, raw_password: str)
       <div class="card">
         <div class="header">
           <div class="badge">Official Welcome</div>
-          <h1>🎉 Welcome to SKIPD!</h1>
+          <h1>🎉 Welcome to E-COM!</h1>
           <p>Your Commerce Account is Activated &amp; Ready to Shop</p>
         </div>
 
         <div class="body">
           <div class="greeting">Hello {full_name}, 👋</div>
           <p style="font-size: 14px; color: #4b5563; margin-top: 0;">
-            Thank you for creating your account with <strong>SKIPD Commerce</strong>! We are thrilled to have you onboard. Below are your official account details and login credentials:
+            Thank you for creating your account with <strong>E-COM Commerce</strong>! We are thrilled to have you onboard. Below are your official account details and login credentials:
           </p>
 
           <div class="creds-box">
@@ -354,8 +354,8 @@ def send_welcome_account_email(to_email: str, full_name: str, raw_password: str)
         </div>
 
         <div class="footer">
-          <p style="margin: 0 0 6px 0; font-weight: bold; color: #374151;">SKIPD Commerce India • 24x7 Customer Helpdesk</p>
-          <p style="margin: 0;">If you did not initiate this registration, please contact support@skipd.in immediately.</p>
+          <p style="margin: 0 0 6px 0; font-weight: bold; color: #374151;">E-COM Commerce India • 24x7 Customer Helpdesk</p>
+          <p style="margin: 0;">If you did not initiate this registration, please contact support@e-com.in immediately.</p>
         </div>
       </div>
     </body>

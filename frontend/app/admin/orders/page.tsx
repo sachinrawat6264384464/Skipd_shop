@@ -97,9 +97,9 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     loadOrdersData();
-    window.addEventListener("skipd_orders_changed", loadOrdersData);
+    window.addEventListener("ecom_orders_changed", loadOrdersData);
     return () => {
-      window.removeEventListener("skipd_orders_changed", loadOrdersData);
+      window.removeEventListener("ecom_orders_changed", loadOrdersData);
     };
   }, []);
 
@@ -147,7 +147,7 @@ export default function AdminOrdersPage() {
           }
 
           return {
-            id: String(o.order_number || `#SKIPD-${o.id}`),
+            id: String(o.order_number || `#E-COM-${o.id}`),
             raw_created_at: o.created_at || new Date().toISOString(),
             date: (() => {
               if (!o.created_at) return "Aug 18, 2026, 01:21 PM";
@@ -158,7 +158,7 @@ export default function AdminOrdersPage() {
             })(),
             customer: String(o.user?.full_name || o.customer_name || o.user_name || "Customer"),
             phone: String(o.customer_phone || o.user?.phone || "+91 98765 43210"),
-            email: String(o.customer_email || o.user?.email || "customer@skipd.in"),
+            email: String(o.customer_email || o.user?.email || "customer@e-com.in"),
             address: o.shipping_address ? `${o.shipping_address.city || ''}, ${o.shipping_address.state || ''} (${o.shipping_address.pincode || ''})` : "India",
             category: resolvedCat,
             raw_items: rawItemsList,
@@ -418,7 +418,7 @@ export default function AdminOrdersPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `skipd_orders_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `ecom_orders_report_${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

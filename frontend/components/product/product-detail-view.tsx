@@ -169,7 +169,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     if (e) e.preventDefault();
 
     // 🔒 REQUIRE LOGIN FOR ADD TO CART
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
     if (!token) {
       toast.error("🔒 Please sign in to add items to your cart", {
         description: "Redirecting you to the login page...",
@@ -243,7 +243,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
         quantity: 1,
         image: selectedImage
       };
-      sessionStorage.setItem("skipd_buy_now_item", JSON.stringify([mainItem]));
+      sessionStorage.setItem("ecom_buy_now_item", JSON.stringify([mainItem]));
       router.push("/checkout?buyNow=true");
     });
   };
@@ -286,8 +286,8 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       }
 
       localStorage.setItem(cartKey, JSON.stringify([...existing, ...comboItems]));
-      window.dispatchEvent(new Event("skipd_cart_updated"));
-      window.dispatchEvent(new Event("skipd_cart_changed"));
+      window.dispatchEvent(new Event("ecom_cart_updated"));
+      window.dispatchEvent(new Event("ecom_cart_changed"));
       router.push("/checkout");
     });
   };
@@ -311,8 +311,8 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
       const updated = [...existing, newItem];
       localStorage.setItem(cartKey, JSON.stringify(updated));
-      window.dispatchEvent(new Event("skipd_cart_updated"));
-      window.dispatchEvent(new Event("skipd_cart_changed"));
+      window.dispatchEvent(new Event("ecom_cart_updated"));
+      window.dispatchEvent(new Event("ecom_cart_changed"));
       setAddedState(true);
       try {
         toast.success(`🛒 Added ${addon.title} to cart!`);
@@ -320,7 +320,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     });
   };
 
-  // Toggle SKIPD Protect Extended Warranty Plan Add-on
+  // Toggle E-COM Protect Extended Warranty Plan Add-on
   const handleToggleWarranty = () => {
     requireAuth(() => {
       const cartKey = getUserCartKey();
@@ -330,25 +330,25 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       if (warrantyAdded) {
         const updated = existing.filter((item: any) => item.id !== warrantyId);
         localStorage.setItem(cartKey, JSON.stringify(updated));
-        window.dispatchEvent(new Event("skipd_cart_updated"));
-        window.dispatchEvent(new Event("skipd_cart_changed"));
+        window.dispatchEvent(new Event("ecom_cart_updated"));
+        window.dispatchEvent(new Event("ecom_cart_changed"));
         setWarrantyAdded(false);
-        try { toast.info("🛡️ SKIPD Protect Warranty removed from cart."); } catch (e) {}
+        try { toast.info("🛡️ E-COM Protect Warranty removed from cart."); } catch (e) {}
       } else {
         const newItem = {
           id: warrantyId,
-          handle: "skipd-protect-1yr-warranty",
-          title: `SKIPD Protect 1-Year Extended Warranty`,
+          handle: "e-com-protect-1yr-warranty",
+          title: `E-COM Protect 1-Year Extended Warranty`,
           price: 199,
           quantity: 1,
           image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=200"
         };
         const updated = [...existing, newItem];
         localStorage.setItem(cartKey, JSON.stringify(updated));
-        window.dispatchEvent(new Event("skipd_cart_updated"));
-        window.dispatchEvent(new Event("skipd_cart_changed"));
+        window.dispatchEvent(new Event("ecom_cart_updated"));
+        window.dispatchEvent(new Event("ecom_cart_changed"));
         setWarrantyAdded(true);
-        try { toast.success("🛡️ SKIPD Protect Warranty (₹199) added to cart!"); } catch (e) {}
+        try { toast.success("🛡️ E-COM Protect Warranty (₹199) added to cart!"); } catch (e) {}
       }
     });
   };
@@ -718,7 +718,7 @@ const SUB_NAV_ITEMS = [
                     ✓
                   </span>
                   <div>
-                    <h4 className="font-extrabold text-gray-900 text-xs tracking-tight">SKIPD Assured Promise</h4>
+                    <h4 className="font-extrabold text-gray-900 text-xs tracking-tight">E-COM Assured Promise</h4>
                     <p className="text-[10px] text-emerald-700 font-bold">100% Genuine • Fast Delivery</p>
                   </div>
                 </div>
@@ -1156,7 +1156,7 @@ const SUB_NAV_ITEMS = [
 
             </div>
 
-            {/* 2. 🛡️ SKIPD Protection Plan Card */}
+            {/* 2. 🛡️ E-COM Protection Plan Card */}
             <div className={`border rounded-3xl p-5 shadow-2xs space-y-3 text-xs transition-all duration-300 ${
               warrantyAdded ? "bg-emerald-50/70 border-emerald-300 shadow-emerald-500/10" : "bg-white border-gray-200"
             }`}>
@@ -1209,7 +1209,7 @@ const SUB_NAV_ITEMS = [
                 </div>
                 <div className="flex justify-between">
                   <span>Ships from</span>
-                  <span className="font-bold text-gray-900">SKIPD Express Logistics</span>
+                  <span className="font-bold text-gray-900">E-COM Express Logistics</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Returns</span>
@@ -1429,7 +1429,7 @@ const SUB_NAV_ITEMS = [
                       )}
                     </div>
                     <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{sp.title}</h4>
-                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.8</span> <span className="text-emerald-700 font-extrabold">✓ SKIPD Assured</span></p>
+                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.8</span> <span className="text-emerald-700 font-extrabold">✓ E-COM Assured</span></p>
                     <div>
                       <p className="font-black text-sm text-gray-900">₹{spPrice.toLocaleString("en-IN")}.00</p>
                       {spCompare > spPrice && (

@@ -22,7 +22,7 @@ export function DeliveryLocationPicker() {
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("skipd_user");
+    const storedUser = localStorage.getItem("ecom_user");
     if (storedUser) {
       try {
         const u = JSON.parse(storedUser);

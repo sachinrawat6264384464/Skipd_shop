@@ -33,9 +33,9 @@ async def get_all_admin_payments(db: AsyncSession = Depends(get_db)):
         output.append({
             "id": f"PAY-{99201 + idx}",
             "db_id": t.id,
-            "orderId": ord_obj.order_number if ord_obj else f"#SKIPD-{25879 - idx}",
+            "orderId": ord_obj.order_number if ord_obj else f"#E-COM-{25879 - idx}",
             "customerName": ord_obj.customer_name if ord_obj else "Customer Account",
-            "customerEmail": ord_obj.customer_email if ord_obj else "customer@skipd.in",
+            "customerEmail": ord_obj.customer_email if ord_obj else "customer@e-com.in",
             "amount": float(t.amount or 0.0),
             "payment_method": t.payment_method or "Razorpay Online",
             "gateway": t.gateway or "Razorpay",
@@ -59,7 +59,7 @@ async def get_all_admin_payments(db: AsyncSession = Depends(get_db)):
             "db_id": o.id,
             "orderId": o.order_number,
             "customerName": o.customer_name or "Customer",
-            "customerEmail": o.customer_email or "customer@skipd.in",
+            "customerEmail": o.customer_email or "customer@e-com.in",
             "amount": float(o.total_amount or 0.0),
             "payment_method": "Razorpay UPI / Online",
             "gateway": "Razorpay",
@@ -108,7 +108,7 @@ async def verify_payment(
     items_list = [
         {"title": item.product_name, "quantity": item.quantity, "unit_price": item.unit_price}
         for item in order.items
-    ] if order.items else [{"title": "SKIPD Order Items", "quantity": 1, "unit_price": order.total_amount}]
+    ] if order.items else [{"title": "E-COM Order Items", "quantity": 1, "unit_price": order.total_amount}]
 
     background_tasks.add_task(
         send_order_confirmation_email,

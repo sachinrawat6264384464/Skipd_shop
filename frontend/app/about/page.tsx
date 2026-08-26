@@ -18,7 +18,7 @@ export default function AboutPage() {
         <div className="bg-gradient-to-br from-gray-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-8 sm:p-12 shadow-xl text-center space-y-4 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl" />
           <span className="bg-emerald-400/20 text-emerald-300 font-black text-xs px-3.5 py-1 rounded-full uppercase tracking-wider border border-emerald-400/30">
-            SKIPD Commerce Pvt Ltd
+            E-COM Commerce Pvt Ltd
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white">
             India&apos;s Fastest Direct-to-Consumer Platform
@@ -58,7 +58,7 @@ export default function AboutPage() {
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
-            ✨ SKIPD Stories
+            ✨ E-COM Stories
           </button>
           <button
             onClick={() => setActiveTab("corporate")}
@@ -188,9 +188,9 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-300">
             <div className="bg-white border border-gray-200 rounded-3xl p-6 space-y-3 shadow-2xs">
               <span className="text-xs font-bold text-emerald-600 uppercase">Founder&apos;s Vision</span>
-              <h3 className="text-xl font-black text-gray-900">&quot;Why we built SKIPD Commerce&quot;</h3>
+              <h3 className="text-xl font-black text-gray-900">&quot;Why we built E-COM Commerce&quot;</h3>
               <p className="text-xs text-gray-600 leading-relaxed font-medium">
-                Traditional shopping portals suffer from slow load times, fake discount traps, and painful return processes. We built SKIPD on high-speed cloud infrastructure to give Indian shoppers instant page loads, genuine pricing, and guaranteed 24-hour refund processing.
+                Traditional shopping portals suffer from slow load times, fake discount traps, and painful return processes. We built E-COM on high-speed cloud infrastructure to give Indian shoppers instant page loads, genuine pricing, and guaranteed 24-hour refund processing.
               </p>
               <p className="text-xs font-extrabold text-gray-900 pt-2">— Sachin Rawat, Founder &amp; CEO</p>
             </div>
@@ -227,7 +227,7 @@ export default function AboutPage() {
               <div className="bg-gray-50 border border-gray-200 p-5 rounded-2xl space-y-2 col-span-1 md:col-span-2">
                 <p className="font-extrabold text-gray-900 text-sm">Registered Office Address</p>
                 <p className="text-gray-600 leading-relaxed">
-                  SKIPD Commerce Private Limited,<br />
+                  E-COM Commerce Private Limited,<br />
                   Buildings Alyssa, Begonia &amp; Clove Embassy Tech Village,<br />
                   Outer Ring Road, Devarabeesanahalli Village, Bengaluru, 560103, Karnataka, India
                 </p>

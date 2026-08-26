@@ -108,7 +108,7 @@ def seed_default_staff_if_empty(db: Session):
         super_admin_role = db.query(Role).filter(Role.slug == "super_admin").first()
         staff = StaffUser(
             name="Sachin Rawat",
-            email="admin@skipd.com",
+            email="admin@e-com.com",
             password_hash="admin123",
             role="Super Admin",
             role_id=super_admin_role.id if super_admin_role else None,

@@ -50,7 +50,7 @@ export function BuyNowButton({
 
     if (mode === "buy") {
       requireAuth(() => {
-        sessionStorage.setItem("skipd_buy_now_item", JSON.stringify([itemToAdd]));
+        sessionStorage.setItem("ecom_buy_now_item", JSON.stringify([itemToAdd]));
         router.push("/checkout?buyNow=true");
       });
     } else {

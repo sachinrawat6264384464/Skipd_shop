@@ -29,7 +29,7 @@ export default function AdvertisePage() {
         priority: "High"
       });
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("skipd_new_query"));
+        window.dispatchEvent(new Event("ecom_new_query"));
       }
     } catch (err) {
       console.warn("Advertising inquiry submit error:", err);
@@ -46,7 +46,7 @@ export default function AdvertisePage() {
         {/* Hero Banner */}
         <div className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 text-white rounded-3xl p-8 md:p-12 shadow-lg space-y-4 text-center">
           <span className="bg-white text-blue-900 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
-            SKIPD Advertising Solutions
+            E-COM Advertising Solutions
           </span>
           <h1 className="text-3xl md:text-5xl font-black">Reach 5 Million+ High-Intent Shoppers</h1>
           <p className="text-blue-100 max-w-2xl mx-auto text-xs md:text-sm leading-relaxed">

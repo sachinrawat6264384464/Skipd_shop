@@ -6,7 +6,7 @@ export async function generateMetadata(props: {
 }) {
   const params = await props.params;
   return {
-    title: `${params.collection.toUpperCase()} Collection | SKIPD Commerce`,
+    title: `${params.collection.toUpperCase()} Collection | E-COM Commerce`,
     description: `Browse all items in ${params.collection} collection.`,
   };
 }

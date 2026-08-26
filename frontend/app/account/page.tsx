@@ -46,8 +46,8 @@ function AccountContent() {
   const [isEditingName, setIsEditingName] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("skipd_token");
-    const stored = localStorage.getItem("skipd_user");
+    const token = localStorage.getItem("ecom_token");
+    const stored = localStorage.getItem("ecom_user");
     if (token || stored) {
       if (stored) {
         try {
@@ -70,8 +70,8 @@ function AccountContent() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("skipd_token");
-    localStorage.removeItem("skipd_user");
+    localStorage.removeItem("ecom_token");
+    localStorage.removeItem("ecom_user");
     window.location.href = "/";
   };
 
@@ -102,9 +102,9 @@ function AccountContent() {
 
   useEffect(() => {
     loadAccountUserOrders();
-    window.addEventListener("skipd_auth_changed", loadAccountUserOrders);
+    window.addEventListener("ecom_auth_changed", loadAccountUserOrders);
     return () => {
-      window.removeEventListener("skipd_auth_changed", loadAccountUserOrders);
+      window.removeEventListener("ecom_auth_changed", loadAccountUserOrders);
     };
   }, []);
 
@@ -125,11 +125,11 @@ function AccountContent() {
 
   useEffect(() => {
     loadUserAddresses();
-    window.addEventListener("skipd_auth_changed", loadUserAddresses);
-    window.addEventListener("skipd_address_changed", loadUserAddresses);
+    window.addEventListener("ecom_auth_changed", loadUserAddresses);
+    window.addEventListener("ecom_address_changed", loadUserAddresses);
     return () => {
-      window.removeEventListener("skipd_auth_changed", loadUserAddresses);
-      window.removeEventListener("skipd_address_changed", loadUserAddresses);
+      window.removeEventListener("ecom_auth_changed", loadUserAddresses);
+      window.removeEventListener("ecom_address_changed", loadUserAddresses);
     };
   }, []);
 
@@ -137,7 +137,7 @@ function AccountContent() {
     setAddresses(newAddrs);
     const key = getUserAddressesKey();
     localStorage.setItem(key, JSON.stringify(newAddrs));
-    window.dispatchEvent(new Event("skipd_address_changed"));
+    window.dispatchEvent(new Event("ecom_address_changed"));
   };
 
 
@@ -207,15 +207,15 @@ function AccountContent() {
 
   useEffect(() => {
     syncWalletAndCards();
-    window.addEventListener("skipd_gift_balance_changed", syncWalletAndCards);
-    window.addEventListener("skipd_wallet_balance_changed", syncWalletAndCards);
-    window.addEventListener("skipd_saved_cards_changed", syncWalletAndCards);
-    window.addEventListener("skipd_auth_changed", syncWalletAndCards);
+    window.addEventListener("ecom_gift_balance_changed", syncWalletAndCards);
+    window.addEventListener("ecom_wallet_balance_changed", syncWalletAndCards);
+    window.addEventListener("ecom_saved_cards_changed", syncWalletAndCards);
+    window.addEventListener("ecom_auth_changed", syncWalletAndCards);
     return () => {
-      window.removeEventListener("skipd_gift_balance_changed", syncWalletAndCards);
-      window.removeEventListener("skipd_wallet_balance_changed", syncWalletAndCards);
-      window.removeEventListener("skipd_saved_cards_changed", syncWalletAndCards);
-      window.removeEventListener("skipd_auth_changed", syncWalletAndCards);
+      window.removeEventListener("ecom_gift_balance_changed", syncWalletAndCards);
+      window.removeEventListener("ecom_wallet_balance_changed", syncWalletAndCards);
+      window.removeEventListener("ecom_saved_cards_changed", syncWalletAndCards);
+      window.removeEventListener("ecom_auth_changed", syncWalletAndCards);
     };
   }, []);
 
@@ -233,7 +233,7 @@ function AccountContent() {
     const newBal = currentBal + addedAmount;
     setGiftCardBalance(newBal);
     localStorage.setItem(giftKey, newBal.toString());
-    window.dispatchEvent(new Event("skipd_gift_balance_changed"));
+    window.dispatchEvent(new Event("ecom_gift_balance_changed"));
 
     showToast(`🎉 Gift Card "${upper}" redeemed! ₹${addedAmount.toLocaleString("en-IN")} added to Gift Balance.`);
     setGiftCardCode("");
@@ -243,8 +243,8 @@ function AccountContent() {
   const handleBuyGiftCard = (card: { amount: number; label: string; color: string }) => {
     const giftCardItem = {
       id: Date.now(),
-      handle: `skipd-gift-card-${card.amount}`,
-      title: `SKIPD ${card.label} Digital Gift Voucher (₹${card.amount.toLocaleString("en-IN")})`,
+      handle: `e-com-gift-card-${card.amount}`,
+      title: `E-COM ${card.label} Digital Gift Voucher (₹${card.amount.toLocaleString("en-IN")})`,
       price: card.amount,
       quantity: 1,
       image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400",
@@ -252,7 +252,7 @@ function AccountContent() {
       giftAmount: card.amount
     };
 
-    sessionStorage.setItem("skipd_buy_now_item", JSON.stringify([giftCardItem]));
+    sessionStorage.setItem("ecom_buy_now_item", JSON.stringify([giftCardItem]));
 
     showToast(`🎉 Gift Card ₹${card.amount} selected! Redirecting to checkout...`);
     setTimeout(() => {
@@ -270,9 +270,9 @@ function AccountContent() {
     const newWallet = currentWallet + amountNum;
     setWalletBalance(newWallet);
     localStorage.setItem(walletKey, newWallet.toString());
-    window.dispatchEvent(new Event("skipd_wallet_balance_changed"));
+    window.dispatchEvent(new Event("ecom_wallet_balance_changed"));
 
-    showToast(`💳 ₹${amountNum.toLocaleString("en-IN")} added to SKIPD Pay Wallet! New Balance: ₹${newWallet.toLocaleString("en-IN")}`);
+    showToast(`💳 ₹${amountNum.toLocaleString("en-IN")} added to E-COM Pay Wallet! New Balance: ₹${newWallet.toLocaleString("en-IN")}`);
     setShowAddWalletModal(false);
   };
 
@@ -294,7 +294,7 @@ function AccountContent() {
     setSavedCards(updated);
     const cardsKey = getUserSavedCardsKey();
     localStorage.setItem(cardsKey, JSON.stringify(updated));
-    window.dispatchEvent(new Event("skipd_saved_cards_changed"));
+    window.dispatchEvent(new Event("ecom_saved_cards_changed"));
 
     showToast(`💳 ${newCardBank} card ending in ${last4} saved successfully!`);
     setShowAddCardModal(false);
@@ -308,7 +308,7 @@ function AccountContent() {
     setSavedCards(updated);
     const cardsKey = getUserSavedCardsKey();
     localStorage.setItem(cardsKey, JSON.stringify(updated));
-    window.dispatchEvent(new Event("skipd_saved_cards_changed"));
+    window.dispatchEvent(new Event("ecom_saved_cards_changed"));
     showToast("💳 Card removed from saved payment methods.");
   };
 
@@ -423,7 +423,7 @@ function AccountContent() {
   const [trackingSearchError, setTrackingSearchError] = useState("");
 
   const trackableOrders = userOrders.map((o: any) => ({
-    order_number: o.order_number || (o.id ? `SKIPD-${o.id}` : "SKIPD-984201"),
+    order_number: o.order_number || (o.id ? `E-COM-${o.id}` : "E-COM-984201"),
     created_at: o.date || o.created_at || "Today",
     delivered_at: o.delivered_at,
     total_amount: Number(o.total || o.total_amount || 0),
@@ -485,7 +485,7 @@ function AccountContent() {
     return [
       {
         status: "Order Confirmed & Placed",
-        location: "SKIPD Fulfillment Hub, Mumbai",
+        location: "E-COM Fulfillment Hub, Mumbai",
         timestamp: `${placedTimeStr} • Confirmed ✓`,
         completed: true
       },
@@ -531,7 +531,7 @@ function AccountContent() {
     if (match) {
       setSelectedTrackOrderId(match.order_number);
     } else {
-      setTrackingSearchError(`No order found matching "${trackingInput}". Try SKIPD-984201.`);
+      setTrackingSearchError(`No order found matching "${trackingInput}". Try E-COM-984201.`);
     }
   };
 
@@ -568,7 +568,7 @@ function AccountContent() {
 
   const loadUserReturnOrders = () => {
     const key = getUserOrdersKey();
-    const storedStr = localStorage.getItem(key) || localStorage.getItem("skipd_user_return_orders");
+    const storedStr = localStorage.getItem(key) || localStorage.getItem("ecom_user_return_orders");
     if (storedStr) {
       try {
         const raw = JSON.parse(storedStr);
@@ -583,19 +583,19 @@ function AccountContent() {
                 orderTimestamp = new Date(ord.date).getTime();
               } else {
                 const orderIdKey = ord.id || ord.order_number || ord.orderNumber || "temp";
-                const savedTs = typeof window !== "undefined" ? localStorage.getItem(`skipd_order_ts_${orderIdKey}`) : null;
+                const savedTs = typeof window !== "undefined" ? localStorage.getItem(`ecom_order_ts_${orderIdKey}`) : null;
                 if (savedTs && !isNaN(Number(savedTs))) {
                   orderTimestamp = Number(savedTs);
                 } else {
                   orderTimestamp = Date.now();
                   if (typeof window !== "undefined") {
-                    localStorage.setItem(`skipd_order_ts_${orderIdKey}`, String(orderTimestamp));
+                    localStorage.setItem(`ecom_order_ts_${orderIdKey}`, String(orderTimestamp));
                   }
                 }
               }
             }
 
-            const orderId = ord.id || ord.order_number || ord.orderNumber || `#SKIPD-${Math.floor(10000 + Math.random() * 90000)}`;
+            const orderId = ord.id || ord.order_number || ord.orderNumber || `#E-COM-${Math.floor(10000 + Math.random() * 90000)}`;
             const isExpired = Date.now() - orderTimestamp > 24 * 3600 * 1000;
 
             if (ord.items && Array.isArray(ord.items) && ord.items.length > 0) {
@@ -644,8 +644,8 @@ function AccountContent() {
 
   useEffect(() => {
     loadUserReturnOrders();
-    window.addEventListener("skipd_auth_changed", loadUserReturnOrders);
-    return () => window.removeEventListener("skipd_auth_changed", loadUserReturnOrders);
+    window.addEventListener("ecom_auth_changed", loadUserReturnOrders);
+    return () => window.removeEventListener("ecom_auth_changed", loadUserReturnOrders);
   }, []);
 
   useEffect(() => {
@@ -675,7 +675,7 @@ function AccountContent() {
     ];
 
     const randomProd = sampleProducts[Math.floor(Math.random() * sampleProducts.length)];
-    const newOrderId = `#SKIPD-${Math.floor(10000 + Math.random() * 90000)}`;
+    const newOrderId = `#E-COM-${Math.floor(10000 + Math.random() * 90000)}`;
 
     if (!randomProd) return;
 
@@ -717,7 +717,7 @@ function AccountContent() {
     } : o);
     
     const key = getUserOrdersKey();
-    localStorage.setItem("skipd_user_return_orders", JSON.stringify(updated));
+    localStorage.setItem("ecom_user_return_orders", JSON.stringify(updated));
     setReturnOrders(updated);
 
     showToast(`✓ Return query #${queryId} submitted with ${returnPhotos.length} attached photo(s)! Support team will review within 12 hours.`);
@@ -760,7 +760,7 @@ function AccountContent() {
   const { wishlist } = useWishlist();
 
   const notifications = [
-    { id: 1, title: "Shipment Dispatched", text: "Your order SKIPD-984201 is on its way via BlueDart Courier.", time: "2 hours ago" },
+    { id: 1, title: "Shipment Dispatched", text: "Your order E-COM-984201 is on its way via BlueDart Courier.", time: "2 hours ago" },
     { id: 2, title: "Supercoins Credited", text: "250 Supercoins added to your wallet.", time: "1 day ago" }
   ];
 
@@ -804,7 +804,7 @@ function AccountContent() {
     );
   }
 
-  const currentUser = user || { user_name: "Customer", email: "user@skipd.in" };
+  const currentUser = user || { user_name: "Customer", email: "user@e-com.in" };
 
   return (
     <div className="min-h-screen bg-[#F4F6F8] text-gray-900 p-4 md:p-8 font-sans">
@@ -1377,7 +1377,7 @@ function AccountContent() {
                     <form onSubmit={handleTrackingSearch} className="flex flex-col sm:flex-row gap-2.5">
                       <input
                         type="text"
-                        placeholder="e.g. SKIPD-984201"
+                        placeholder="e.g. E-COM-984201"
                         value={trackingInput}
                         onChange={(e) => setTrackingInput(e.target.value)}
                         className="flex-1 min-w-0 bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-600 focus:outline-none uppercase tracking-wider font-mono"
@@ -1624,7 +1624,7 @@ function AccountContent() {
                         <div>
                           <p className="font-extrabold text-gray-900 text-sm">No Purchased Orders Found</p>
                           <p className="text-gray-500 max-w-sm mx-auto mt-1">
-                            When you place an order on SKIPD Commerce, your purchased items will automatically appear here with a 24-hour return window!
+                            When you place an order on E-COM Commerce, your purchased items will automatically appear here with a 24-hour return window!
                           </p>
                         </div>
                         <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
@@ -2154,7 +2154,7 @@ function AccountContent() {
                   </div>
                   <div>
                     <p className="text-2xl font-black text-gray-900">₹{walletBalance.toLocaleString("en-IN")}</p>
-                    <p className="text-xs text-gray-500 font-extrabold">SKIPD Pay Wallet</p>
+                    <p className="text-xs text-gray-500 font-extrabold">E-COM Pay Wallet</p>
                   </div>
                 </button>
 
@@ -2247,7 +2247,7 @@ function AccountContent() {
                     <input
                       type="email"
                       disabled
-                      value={user?.email || "customer@skipd.in"}
+                      value={user?.email || "customer@e-com.in"}
                       className="w-full bg-gray-100 border border-gray-200 rounded-2xl px-4 py-3 text-xs text-gray-700 font-bold cursor-not-allowed shadow-2xs"
                     />
                   </div>
@@ -2275,11 +2275,11 @@ function AccountContent() {
                         const fullName = `${firstName} ${lastName}`.trim();
                         const updated = {
                           user_name: fullName,
-                          email: user?.email || "customer@skipd.in",
+                          email: user?.email || "customer@e-com.in",
                           phone: user?.phone
                         };
                         setUser(updated);
-                        localStorage.setItem("skipd_user", JSON.stringify(updated));
+                        localStorage.setItem("ecom_user", JSON.stringify(updated));
                         setIsEditingName(false);
                         showToast("✓ Profile Information Updated & Saved to Account!");
                       }}
@@ -2385,7 +2385,7 @@ function AccountContent() {
                     <div key={ord.id || ord.order_number} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                       <div className="space-y-1">
                         <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
-                          {ord.order_number || ord.id || "SKIPD-ORDER"} • {ord.date || "Today"}
+                          {ord.order_number || ord.id || "E-COM-ORDER"} • {ord.date || "Today"}
                         </span>
                         <h4 className="font-black text-gray-900 text-sm">{ord.title || "Purchased Product"}</h4>
                         <p className="text-xs text-gray-500 font-bold">Total: ₹{(ord.total || ord.total_amount || 0).toLocaleString("en-IN")}</p>
@@ -2418,7 +2418,7 @@ function AccountContent() {
                 <div className="flex flex-wrap justify-between items-center gap-4 relative z-10">
                   <div>
                     <span className="bg-amber-400 text-gray-900 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
-                      🎁 SKIPD GIFT CARD VAULT
+                      🎁 E-COM GIFT CARD VAULT
                     </span>
                     <h2 className="text-2xl md:text-3xl font-black mt-2">Gift Cards &amp; Store Credits</h2>
                     <p className="text-xs text-gray-300 max-w-md mt-1">
@@ -2437,7 +2437,7 @@ function AccountContent() {
                 <form onSubmit={handleRedeemGiftCard} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <input
                     type="text"
-                    placeholder="Gift Card Code (e.g. SKIPD-GIFT-992)"
+                    placeholder="Gift Card Code (e.g. E-COM-GIFT-992)"
                     value={giftCardCode}
                     onChange={(e) => setGiftCardCode(e.target.value)}
                     required
@@ -2497,7 +2497,7 @@ function AccountContent() {
               <div className="bg-gradient-to-r from-emerald-700 via-emerald-800 to-teal-900 text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-wrap justify-between items-center gap-4">
                 <div>
                   <span className="bg-white/20 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
-                    💳 SKIPD PAY WALLET
+                    💳 E-COM PAY WALLET
                   </span>
                   <h2 className="text-2xl md:text-3xl font-black mt-2">Saved Cards &amp; Wallet Balance</h2>
                   <p className="text-xs text-emerald-100 max-w-md mt-1">
@@ -2612,7 +2612,7 @@ function AccountContent() {
                     <span className="bg-amber-400 text-gray-900 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
                       ⚡ PLUS VIP ZONE
                     </span>
-                    <h2 className="text-2xl md:text-3xl font-black mt-2 text-amber-400">SKIPD SuperCoins</h2>
+                    <h2 className="text-2xl md:text-3xl font-black mt-2 text-amber-400">E-COM SuperCoins</h2>
                     <p className="text-xs text-gray-300 max-w-md mt-1">
                       Earn 5 SuperCoins for every ₹100 spent. Redeem coins for instant cash discounts &amp; free shipping!
                     </p>
@@ -2695,7 +2695,7 @@ function AccountContent() {
                             quantity: 1,
                             image: item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
                           }];
-                          sessionStorage.setItem("skipd_buy_now_item", JSON.stringify(buyNowItem));
+                          sessionStorage.setItem("ecom_buy_now_item", JSON.stringify(buyNowItem));
                           router.push("/checkout?buyNow=true");
                         }}
                         className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-2.5 rounded-xl text-center cursor-pointer shadow-xs transition active:scale-98"
@@ -3095,7 +3095,7 @@ function AccountContent() {
           <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl text-xs">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div>
-                <h3 className="text-base font-black text-gray-900">🛡️ SKIPD Official 24-Hour Return Policy</h3>
+                <h3 className="text-base font-black text-gray-900">🛡️ E-COM Official 24-Hour Return Policy</h3>
                 <p className="text-xs text-gray-500">Guaranteed instant replacement or full refund</p>
               </div>
               <button onClick={() => setShowReturnPolicyModal(false)} className="text-gray-400 hover:text-gray-900 text-lg font-bold cursor-pointer">✕</button>
@@ -3132,7 +3132,7 @@ function AccountContent() {
           <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl text-xs">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div>
-                <h3 className="text-base font-black text-gray-900">💳 Add Money to SKIPD Pay Wallet</h3>
+                <h3 className="text-base font-black text-gray-900">💳 Add Money to E-COM Pay Wallet</h3>
                 <p className="text-xs text-gray-500">1-Click Instant Top-up via UPI or Card</p>
               </div>
               <button onClick={() => setShowAddWalletModal(false)} className="text-gray-400 hover:text-gray-900 text-lg font-bold cursor-pointer">✕</button>

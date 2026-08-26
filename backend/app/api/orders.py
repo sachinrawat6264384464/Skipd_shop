@@ -95,14 +95,14 @@ async def update_order_status(
 ):
     """
     Update order fulfillment status in Neon PostgreSQL database.
-    Supports Order ID (integer/string), Order Number (#SKIPD-123456), or AWB Code.
+    Supports Order ID (integer/string), Order Number (#E-COM-123456), or AWB Code.
     """
     clean_id = order_id.replace("#", "").strip()
 
     # Search for order
     query = select(Order)
     if clean_id.isdigit():
-        query = query.where((Order.id == int(clean_id)) | (Order.order_number == clean_id) | (Order.order_number == f"SKIPD-{clean_id}"))
+        query = query.where((Order.id == int(clean_id)) | (Order.order_number == clean_id) | (Order.order_number == f"E-COM-{clean_id}"))
     else:
         query = query.where((Order.order_number == clean_id) | (Order.order_number.ilike(f"%{clean_id}%")))
 
@@ -201,16 +201,16 @@ async def create_order_direct(
     Directly insert a completed order into PostgreSQL DB from Checkout / Razorpay / COD.
     Ensures 100% real-time synchronization with Admin Orders Panel & Customer History.
     """
-    order_number = payload.get("order_number") or f"SKIPD-{random.randint(100000, 999999)}"
+    order_number = payload.get("order_number") or f"E-COM-{random.randint(100000, 999999)}"
     
     # Ensure unique order_number
     existing = await db.execute(select(Order).where(Order.order_number == order_number))
     if existing.scalars().first():
-        order_number = f"SKIPD-{random.randint(100000, 999999)}"
+        order_number = f"E-COM-{random.randint(100000, 999999)}"
 
     shipping_addr = payload.get("shipping_address") or {}
     cust_name = shipping_addr.get("name") or payload.get("customer_name") or (current_user.full_name if current_user else "Customer")
-    cust_email = (current_user.email if current_user else None) or payload.get("customer_email") or shipping_addr.get("email") or "customer@skipd.in"
+    cust_email = (current_user.email if current_user else None) or payload.get("customer_email") or shipping_addr.get("email") or "customer@e-com.in"
     cust_phone = shipping_addr.get("phone") or payload.get("customer_phone") or (current_user.phone if current_user else "9876543210")
 
     status_str = str(payload.get("status") or "PAID").upper()
@@ -362,7 +362,7 @@ async def create_checkout(
     if not data.items:
         raise HTTPException(status_code=400, detail="Cart is empty")
 
-    order_number = f"SKIPD-{random.randint(100000, 999999)}"
+    order_number = f"E-COM-{random.randint(100000, 999999)}"
     total_amount = 0.0
     order_items = []
     items_summary = []
@@ -452,7 +452,7 @@ async def create_checkout(
         rzp_order_id = None
         status = OrderStatus.PAID
 
-    c_email = data.customer_email or (current_user.email if current_user else "customer@skipd.in")
+    c_email = data.customer_email or (current_user.email if current_user else "customer@e-com.in")
     c_name = data.customer_name or (current_user.full_name if current_user else "Customer")
     c_phone = data.customer_phone or (current_user.phone if current_user else "9876543210")
 
@@ -580,7 +580,7 @@ async def track_order_timeline(
 ):
     """
     Get 100% real-time tracking timeline & status history from PostgreSQL DB.
-    Supports Order Number (#SKIPD-123456, SKIPD-123456, WH1025), Order ID, or AWB Code.
+    Supports Order Number (#E-COM-123456, E-COM-123456, WH1025), Order ID, or AWB Code.
     """
     raw_str = order_identifier.strip()
     clean_id = raw_str.replace("#", "").replace("SR-AWB-", "").replace("AWB-", "").strip()

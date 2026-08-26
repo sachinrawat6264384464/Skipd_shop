@@ -88,10 +88,10 @@ export default function AdminAnalyticsPage() {
           }
 
           allOrders.push({
-            id: String(o.order_number || `#SKIPD-${o.id}`),
+            id: String(o.order_number || `#E-COM-${o.id}`),
             date: o.created_at ? new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Today",
             customer: String(o.user?.full_name || o.customer_name || o.user_name || "Customer"),
-            email: String(o.customer_email || o.user?.email || "customer@skipd.in"),
+            email: String(o.customer_email || o.user?.email || "customer@e-com.in"),
             amount: Number(o.total_amount || o.total || 0),
             payment: String(o.payment_method || "UPI"),
             status: String(o.status || "Processing"),
@@ -114,12 +114,12 @@ export default function AdminAnalyticsPage() {
   useEffect(() => {
     loadData();
 
-    window.addEventListener("skipd_orders_changed", loadData);
-    window.addEventListener("skipd_orders_updated", loadData);
+    window.addEventListener("ecom_orders_changed", loadData);
+    window.addEventListener("ecom_orders_updated", loadData);
     window.addEventListener("storage", loadData);
     return () => {
-      window.removeEventListener("skipd_orders_changed", loadData);
-      window.removeEventListener("skipd_orders_updated", loadData);
+      window.removeEventListener("ecom_orders_changed", loadData);
+      window.removeEventListener("ecom_orders_updated", loadData);
       window.removeEventListener("storage", loadData);
     };
   }, []);
@@ -161,7 +161,7 @@ export default function AdminAnalyticsPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `skipd_business_analytics_report_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.download = `ecom_business_analytics_report_${new Date().toISOString().slice(0, 10)}.csv`;
     a.click();
 
     setTimeout(() => setExportMsg(null), 3500);

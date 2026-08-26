@@ -125,7 +125,7 @@ export default function AdminSalesPage() {
     let localExtra: any[] = [];
     if (typeof window !== "undefined") {
       try {
-        const saved = localStorage.getItem("skipd_marketing_campaigns");
+        const saved = localStorage.getItem("ecom_marketing_campaigns");
         if (saved) {
           const parsed = JSON.parse(saved);
           if (Array.isArray(parsed)) localExtra = parsed;
@@ -236,7 +236,7 @@ export default function AdminSalesPage() {
 
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(updated));
+        localStorage.setItem("ecom_marketing_campaigns", JSON.stringify(updated));
       } catch (e) {}
     }
 
@@ -281,7 +281,7 @@ export default function AdminSalesPage() {
 
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(updated));
+        localStorage.setItem("ecom_marketing_campaigns", JSON.stringify(updated));
       } catch (e) {}
     }
 
@@ -302,7 +302,7 @@ export default function AdminSalesPage() {
 
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(updated));
+        localStorage.setItem("ecom_marketing_campaigns", JSON.stringify(updated));
       } catch (e) {}
     }
     showToast("🗑️ Campaign deleted successfully!");
@@ -321,7 +321,7 @@ export default function AdminSalesPage() {
 
     if (typeof window !== "undefined") {
       try {
-        localStorage.setItem("skipd_marketing_campaigns", JSON.stringify(updated));
+        localStorage.setItem("ecom_marketing_campaigns", JSON.stringify(updated));
       } catch (e) {}
     }
 
@@ -791,8 +791,8 @@ export default function AdminSalesPage() {
           <button
             onClick={() => {
               if (typeof window !== "undefined") {
-                localStorage.setItem("skipd_flash_sale_products", JSON.stringify(flashSaleDeals));
-                window.dispatchEvent(new Event("skipd_flash_sale_updated"));
+                localStorage.setItem("ecom_flash_sale_products", JSON.stringify(flashSaleDeals));
+                window.dispatchEvent(new Event("ecom_flash_sale_updated"));
               }
               showToast("⚡ Live Flash Sale deals published & updated on storefront!");
             }}

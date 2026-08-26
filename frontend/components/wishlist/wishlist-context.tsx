@@ -24,17 +24,17 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 function getApiBase(): string {
-  if (typeof window === "undefined") return "https://skipd-ecom.onrender.com/api/v1";
+  if (typeof window === "undefined") return "https://e-com-ecom.onrender.com/api/v1";
   const h = window.location.hostname;
   if (h === "localhost" || h === "127.0.0.1") {
     return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
   }
-  return "https://skipd-ecom.onrender.com/api/v1";
+  return "https://e-com-ecom.onrender.com/api/v1";
 }
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("skipd_token") || null;
+  return localStorage.getItem("ecom_token") || null;
 }
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
@@ -50,8 +50,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       setWishlist([]);
       if (typeof window !== "undefined") {
         try {
-          localStorage.removeItem("skipd_wishlist_items");
-          localStorage.removeItem("skipd_guest_wishlist");
+          localStorage.removeItem("ecom_wishlist_items");
+          localStorage.removeItem("ecom_guest_wishlist");
         } catch (e) {}
       }
       return;
@@ -77,7 +77,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
         setWishlist(dbItems);
         if (typeof window !== "undefined") {
-          localStorage.setItem(`skipd_wishlist_${token.slice(0, 15)}`, JSON.stringify(dbItems));
+          localStorage.setItem(`ecom_wishlist_${token.slice(0, 15)}`, JSON.stringify(dbItems));
         }
       } else {
         setWishlist([]);
@@ -93,14 +93,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     const handleAuthChange = () => loadWishlist();
     const handleWishlistUpdated = () => loadWishlist();
 
-    window.addEventListener("skipd_auth_changed", handleAuthChange);
-    window.addEventListener("skipd_wishlist_updated", handleWishlistUpdated);
-    window.addEventListener("skipd_wishlist_changed", handleWishlistUpdated);
+    window.addEventListener("ecom_auth_changed", handleAuthChange);
+    window.addEventListener("ecom_wishlist_updated", handleWishlistUpdated);
+    window.addEventListener("ecom_wishlist_changed", handleWishlistUpdated);
 
     return () => {
-      window.removeEventListener("skipd_auth_changed", handleAuthChange);
-      window.removeEventListener("skipd_wishlist_updated", handleWishlistUpdated);
-      window.removeEventListener("skipd_wishlist_changed", handleWishlistUpdated);
+      window.removeEventListener("ecom_auth_changed", handleAuthChange);
+      window.removeEventListener("ecom_wishlist_updated", handleWishlistUpdated);
+      window.removeEventListener("ecom_wishlist_changed", handleWishlistUpdated);
     };
   }, [loadWishlist]);
 
@@ -140,8 +140,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       // Persist in LocalStorage
       if (typeof window !== "undefined") {
         try {
-          localStorage.setItem("skipd_wishlist_items", JSON.stringify(updated));
-          localStorage.setItem("skipd_guest_wishlist", JSON.stringify(updated));
+          localStorage.setItem("ecom_wishlist_items", JSON.stringify(updated));
+          localStorage.setItem("ecom_guest_wishlist", JSON.stringify(updated));
         } catch (e) {}
       }
 
@@ -150,8 +150,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
     // Notify header icons & wishlist views
     if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("skipd_wishlist_changed"));
-      window.dispatchEvent(new Event("skipd_wishlist_updated"));
+      window.dispatchEvent(new Event("ecom_wishlist_changed"));
+      window.dispatchEvent(new Event("ecom_wishlist_updated"));
     }
 
     // Sync to PostgreSQL DB in background if logged in
@@ -183,7 +183,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       setWishlist(prev => {
         const updated = prev.filter(w => String(w.id) !== String(id));
         if (typeof window !== "undefined") {
-          localStorage.setItem("skipd_wishlist_items", JSON.stringify(updated));
+          localStorage.setItem("ecom_wishlist_items", JSON.stringify(updated));
         }
         return updated;
       });

@@ -68,7 +68,7 @@ export default function ContactUsPage() {
             </div>
             <h3 className="font-black text-base text-gray-900">Toll-Free Helpline</h3>
             <p className="text-xs text-gray-500">Mon-Sat from 9:00 AM to 8:00 PM IST</p>
-            <p className="font-extrabold text-emerald-700 text-sm">1800-SKIPD-COMMERCE</p>
+            <p className="font-extrabold text-emerald-700 text-sm">1800-E-COM-COMMERCE</p>
           </div>
 
           <div className="bg-white border border-gray-200/80 p-6 rounded-3xl shadow-2xs space-y-3 hover:border-emerald-500 transition duration-300">
@@ -77,7 +77,7 @@ export default function ContactUsPage() {
             </div>
             <h3 className="font-black text-base text-gray-900">Email Support</h3>
             <p className="text-xs text-gray-500">Send an email for order inquiries</p>
-            <p className="font-extrabold text-blue-700 text-sm">support@skipd.in</p>
+            <p className="font-extrabold text-blue-700 text-sm">support@e-com.in</p>
           </div>
 
           <div className="bg-white border border-gray-200/80 p-6 rounded-3xl shadow-2xs space-y-3 hover:border-emerald-500 transition duration-300">
@@ -208,11 +208,11 @@ export default function ContactUsPage() {
           <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 to-indigo-950 text-white p-8 rounded-3xl flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <span className="bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px] px-2.5 py-1 rounded-md uppercase">
-                SKIPD Headquarters
+                E-COM Headquarters
               </span>
               <h3 className="text-2xl font-black leading-tight">Visit or Mail Us</h3>
               <p className="text-xs text-gray-300 leading-relaxed font-medium">
-                SKIPD Commerce Pvt Ltd,<br />
+                E-COM Commerce Pvt Ltd,<br />
                 Buildings Alyssa, Begonia &amp; Clove<br />
                 Embassy Tech Village, Outer Ring Road,<br />
                 Bengaluru, 560103, Karnataka, India

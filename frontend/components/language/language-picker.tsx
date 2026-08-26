@@ -65,7 +65,7 @@ export function LanguagePicker() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const saved = (localStorage.getItem("skipd_lang_code") || localStorage.getItem("skipd_lang") || "en") as SupportedLanguage;
+    const saved = (localStorage.getItem("ecom_lang_code") || localStorage.getItem("ecom_lang") || "en") as SupportedLanguage;
     setSelectedLang(saved);
     setContextLang(saved);
 
@@ -104,8 +104,8 @@ export function LanguagePicker() {
   const changeLanguage = (langCode: SupportedLanguage) => {
     setSelectedLang(langCode);
     setContextLang(langCode);
-    localStorage.setItem("skipd_lang_code", langCode);
-    localStorage.setItem("skipd_lang", langCode);
+    localStorage.setItem("ecom_lang_code", langCode);
+    localStorage.setItem("ecom_lang", langCode);
 
     if (langCode === "en") {
       clearGoogleTranslateCookies();

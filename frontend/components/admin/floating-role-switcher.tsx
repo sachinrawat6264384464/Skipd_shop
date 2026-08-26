@@ -74,7 +74,7 @@ export default function FloatingAdminRoleSwitcher() {
   // Load current active role from localStorage & listen for changes
   const loadActiveRole = () => {
     if (typeof window !== "undefined") {
-      const storedRole = localStorage.getItem("skipd_admin_role");
+      const storedRole = localStorage.getItem("ecom_admin_role");
       if (storedRole) {
         setActiveRoleName(storedRole);
       } else {
@@ -111,7 +111,7 @@ export default function FloatingAdminRoleSwitcher() {
 
     // Check custom roles created locally
     if (typeof window !== "undefined") {
-      const localCustom = localStorage.getItem("skipd_custom_roles");
+      const localCustom = localStorage.getItem("ecom_custom_roles");
       if (localCustom) {
         try {
           const parsed: RoleData[] = JSON.parse(localCustom);
@@ -148,12 +148,12 @@ export default function FloatingAdminRoleSwitcher() {
       loadRoles();
     };
 
-    window.addEventListener("skipd_roles_updated", handleRoleUpdate);
-    window.addEventListener("skipd_role_changed", loadActiveRole);
+    window.addEventListener("ecom_roles_updated", handleRoleUpdate);
+    window.addEventListener("ecom_role_changed", loadActiveRole);
 
     return () => {
-      window.removeEventListener("skipd_roles_updated", handleRoleUpdate);
-      window.removeEventListener("skipd_role_changed", loadActiveRole);
+      window.removeEventListener("ecom_roles_updated", handleRoleUpdate);
+      window.removeEventListener("ecom_role_changed", loadActiveRole);
     };
   }, []);
 
@@ -226,20 +226,20 @@ export default function FloatingAdminRoleSwitcher() {
   const handleRoleSwitch = (role: RoleOption) => {
     setActiveRoleName(role.name);
     if (typeof window !== "undefined") {
-      localStorage.setItem("skipd_admin_role", role.name);
-      localStorage.setItem("skipd_admin_permissions", JSON.stringify(role.permissions));
+      localStorage.setItem("ecom_admin_role", role.name);
+      localStorage.setItem("ecom_admin_permissions", JSON.stringify(role.permissions));
       
-      const existingUser = localStorage.getItem("skipd_admin_user");
+      const existingUser = localStorage.getItem("ecom_admin_user");
       if (existingUser) {
         try {
           const parsed = JSON.parse(existingUser);
           parsed.role = role.name;
-          localStorage.setItem("skipd_admin_user", JSON.stringify(parsed));
+          localStorage.setItem("ecom_admin_user", JSON.stringify(parsed));
         } catch (e) {}
       }
 
       // Dispatch global role change event for real-time sidebar update
-      window.dispatchEvent(new Event("skipd_role_changed"));
+      window.dispatchEvent(new Event("ecom_role_changed"));
     }
 
     setToastMessage(`⚡ Active role switched to "${role.name}" (${role.permissionsCount} modules authorized)!`);

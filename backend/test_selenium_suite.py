@@ -18,11 +18,11 @@ def driver():
     driver.implicitly_wait(10)
     
     # Pre-set admin session token in browser
-    driver.get("https://skipd-shop.vercel.app/admin/login")
+    driver.get("https://e-com-shop.vercel.app/admin/login")
     time.sleep(2)
     try:
-        driver.execute_script("localStorage.setItem('skipd_admin_authenticated', 'true');")
-        driver.execute_script("localStorage.setItem('skipd_admin_token', 'jwt_demo_token_123');")
+        driver.execute_script("localStorage.setItem('ecom_admin_authenticated', 'true');")
+        driver.execute_script("localStorage.setItem('ecom_admin_token', 'jwt_demo_token_123');")
     except Exception:
         pass
 
@@ -31,23 +31,23 @@ def driver():
 
 def test_selenium_storefront_home(driver):
     """Selenium Test 1: Verify Storefront Home Page renders without crashes."""
-    driver.get("https://skipd-shop.vercel.app/")
+    driver.get("https://e-com-shop.vercel.app/")
     time.sleep(2)
     assert len(driver.page_source) > 500
     print("\n[SELENIUM OK] Storefront Home Page Loaded & Rendered Successfully!")
 
 def test_selenium_admin_orders(driver):
     """Selenium Test 2: Verify /admin/orders loads instantly with 0 Error Boundary cards."""
-    driver.get("https://skipd-shop.vercel.app/admin/orders")
+    driver.get("https://e-com-shop.vercel.app/admin/orders")
     time.sleep(3)
     page_text = driver.page_source
-    assert "SKIPD Store Sync Notice" not in page_text, "Error boundary card appeared on admin orders page!"
+    assert "E-COM Store Sync Notice" not in page_text, "Error boundary card appeared on admin orders page!"
     assert len(page_text) > 1000
     print("[SELENIUM OK] Admin Orders Page Loaded with 0 Error Boundary Cards!")
 
 def test_selenium_admin_payments(driver):
     """Selenium Test 3: Verify /admin/payments renders live customer transactions and metrics."""
-    driver.get("https://skipd-shop.vercel.app/admin/payments")
+    driver.get("https://e-com-shop.vercel.app/admin/payments")
     time.sleep(3)
     page_text = driver.page_source
     assert len(page_text) > 1000
@@ -55,7 +55,7 @@ def test_selenium_admin_payments(driver):
 
 def test_selenium_admin_delivery(driver):
     """Selenium Test 4: Verify /admin/delivery renders AWB tracking codes and logistics."""
-    driver.get("https://skipd-shop.vercel.app/admin/delivery")
+    driver.get("https://e-com-shop.vercel.app/admin/delivery")
     time.sleep(3)
     page_text = driver.page_source
     assert len(page_text) > 1000
@@ -63,7 +63,7 @@ def test_selenium_admin_delivery(driver):
 
 def test_selenium_admin_products(driver):
     """Selenium Test 5: Verify /admin/products catalog table and CRUD controls."""
-    driver.get("https://skipd-shop.vercel.app/admin/products")
+    driver.get("https://e-com-shop.vercel.app/admin/products")
     time.sleep(3)
     page_text = driver.page_source
     assert len(page_text) > 1000

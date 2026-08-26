@@ -2,7 +2,7 @@ import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import text
 
-PG_URL = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5433/skipd_commerce_db"
+PG_URL = "postgresql+asyncpg://postgres:postgres@127.0.0.1:5433/ecom_commerce_db"
 
 async def add_stock_column():
     engine = create_async_engine(PG_URL, echo=False)

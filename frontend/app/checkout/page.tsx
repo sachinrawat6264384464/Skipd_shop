@@ -87,11 +87,11 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     loadCheckoutAddresses();
-    window.addEventListener("skipd_address_changed", loadCheckoutAddresses);
-    window.addEventListener("skipd_auth_changed", loadCheckoutAddresses);
+    window.addEventListener("ecom_address_changed", loadCheckoutAddresses);
+    window.addEventListener("ecom_auth_changed", loadCheckoutAddresses);
     return () => {
-      window.removeEventListener("skipd_address_changed", loadCheckoutAddresses);
-      window.removeEventListener("skipd_auth_changed", loadCheckoutAddresses);
+      window.removeEventListener("ecom_address_changed", loadCheckoutAddresses);
+      window.removeEventListener("ecom_auth_changed", loadCheckoutAddresses);
     };
   }, []);
 
@@ -120,7 +120,7 @@ export default function CheckoutPage() {
     // Load Cart Items from Local / Session Storage
     const loadCart = () => {
       // 1. Check if Buy Now single-item session storage exists
-      const buyNowStored = sessionStorage.getItem("skipd_buy_now_item");
+      const buyNowStored = sessionStorage.getItem("ecom_buy_now_item");
       if (buyNowStored) {
         try {
           const buyNowItems = JSON.parse(buyNowStored);
@@ -165,12 +165,12 @@ export default function CheckoutPage() {
     const updated = cartItems.filter((_, idx) => idx !== indexToRemove);
     setCartItems(updated);
     if (isBuyNowMode) {
-      sessionStorage.setItem("skipd_buy_now_item", JSON.stringify(updated));
+      sessionStorage.setItem("ecom_buy_now_item", JSON.stringify(updated));
     } else {
       const cartKey = getUserCartKey();
       localStorage.setItem(cartKey, JSON.stringify(updated));
-      window.dispatchEvent(new Event("skipd_cart_changed"));
-      window.dispatchEvent(new Event("skipd_cart_updated"));
+      window.dispatchEvent(new Event("ecom_cart_changed"));
+      window.dispatchEvent(new Event("ecom_cart_updated"));
     }
   };
 
@@ -184,12 +184,12 @@ export default function CheckoutPage() {
     });
     setCartItems(updated);
     if (isBuyNowMode) {
-      sessionStorage.setItem("skipd_buy_now_item", JSON.stringify(updated));
+      sessionStorage.setItem("ecom_buy_now_item", JSON.stringify(updated));
     } else {
       const cartKey = getUserCartKey();
       localStorage.setItem(cartKey, JSON.stringify(updated));
-      window.dispatchEvent(new Event("skipd_cart_changed"));
-      window.dispatchEvent(new Event("skipd_cart_updated"));
+      window.dispatchEvent(new Event("ecom_cart_changed"));
+      window.dispatchEvent(new Event("ecom_cart_updated"));
     }
   };
 
@@ -268,7 +268,7 @@ export default function CheckoutPage() {
     localStorage.setItem(key, JSON.stringify(updatedRaw));
 
     // Dispatch global event so profile & checkout update live
-    window.dispatchEvent(new Event("skipd_address_changed"));
+    window.dispatchEvent(new Event("ecom_address_changed"));
 
     loadCheckoutAddresses();
     setSelectedAddrId(newId);
@@ -288,7 +288,7 @@ export default function CheckoutPage() {
       setShowAddAddrModal(true);
       return;
     }
-    const orderNum = `SKIPD-${Math.floor(100000 + Math.random() * 900000)}`;
+    const orderNum = `E-COM-${Math.floor(100000 + Math.random() * 900000)}`;
     setCreatedOrderNumber(orderNum);
     setQrTimer(300);
     setPaymentModalOpen(true);
@@ -340,7 +340,7 @@ export default function CheckoutPage() {
       key: razorpayKey,
       amount: Math.round(finalPayable * 100), // Amount in paise
       currency: "INR",
-      name: "SKIPD Commerce",
+      name: "E-COM Commerce",
       description: `Payment for Order #${createdOrderNumber}`,
       image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200",
       handler: function (response: any) {
@@ -372,13 +372,13 @@ export default function CheckoutPage() {
 
         // Submit order directly to PostgreSQL Database API
         try {
-          const currentUserStr = localStorage.getItem("skipd_user");
+          const currentUserStr = localStorage.getItem("ecom_user");
           const parsedUser = currentUserStr ? JSON.parse(currentUserStr) : null;
           fetch(`${API_BASE_URL}/orders`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "Authorization": `Bearer ${localStorage.getItem("skipd_token") || ""}`
+              "Authorization": `Bearer ${localStorage.getItem("ecom_token") || ""}`
             },
             body: JSON.stringify({
               order_number: createdOrderNumber,
@@ -386,7 +386,7 @@ export default function CheckoutPage() {
               payment_method: "Razorpay Online (" + (response.razorpay_payment_id || "PAID") + ")",
               status: "PAID",
               customer_name: selectedAddressObj.name || parsedUser?.user_name || "Customer",
-              customer_email: parsedUser?.email || (selectedAddressObj as any)?.email || "customer@skipd.in",
+              customer_email: parsedUser?.email || (selectedAddressObj as any)?.email || "customer@e-com.in",
               customer_phone: selectedAddressObj.phone || parsedUser?.phone || "9876543210",
               shipping_address: selectedAddressObj,
               items: cartItems.map(item => ({
@@ -406,17 +406,17 @@ export default function CheckoutPage() {
         localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
         if (typeof window !== "undefined") {
-          window.dispatchEvent(new Event("skipd_orders_changed"));
-          window.dispatchEvent(new Event("skipd_orders_updated"));
+          window.dispatchEvent(new Event("ecom_orders_changed"));
+          window.dispatchEvent(new Event("ecom_orders_updated"));
         }
 
-        // Save Payment Transaction to skipd_payments for Admin Payments sync
+        // Save Payment Transaction to ecom_payments for Admin Payments sync
         try {
           const newPaymentTxn = {
             id: response.razorpay_payment_id ? `PAY-${response.razorpay_payment_id.slice(-6)}` : `PAY-${Math.floor(100000 + Math.random() * 900000)}`,
             orderId: createdOrderNumber,
             customerName: selectedAddressObj.name || user?.user_name || "Customer",
-            customerEmail: (selectedAddressObj as any)?.email || user?.email || "customer@skipd.in",
+            customerEmail: (selectedAddressObj as any)?.email || user?.email || "customer@e-com.in",
             amount: finalPayable,
             payment_method: "Razorpay Online UPI",
             gateway: "Razorpay",
@@ -425,15 +425,15 @@ export default function CheckoutPage() {
             date: new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
             time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
           };
-          const existingPayments = JSON.parse(localStorage.getItem("skipd_payments") || "[]");
-          localStorage.setItem("skipd_payments", JSON.stringify([newPaymentTxn, ...existingPayments]));
+          const existingPayments = JSON.parse(localStorage.getItem("ecom_payments") || "[]");
+          localStorage.setItem("ecom_payments", JSON.stringify([newPaymentTxn, ...existingPayments]));
         } catch (e) {}
 
         // ✉️ Trigger Order Confirmation & Detailed Invoice Email on Razorpay Payment Success!
         try {
-          const currentUser = localStorage.getItem("skipd_user");
+          const currentUser = localStorage.getItem("ecom_user");
           const parsedUser = currentUser ? JSON.parse(currentUser) : null;
-          const targetEmail = parsedUser?.email || (selectedAddressObj as any)?.email || "customer@skipd.in";
+          const targetEmail = parsedUser?.email || (selectedAddressObj as any)?.email || "customer@e-com.in";
           const targetName = parsedUser?.user_name || selectedAddressObj?.name || "Valued Customer";
 
           import("lib/services/email-service").then(({ sendOrderInvoiceEmail }) => {
@@ -452,17 +452,17 @@ export default function CheckoutPage() {
               const currentBal = Number(localStorage.getItem(giftBalKey) || "0");
               const updatedBal = currentBal + amount;
               localStorage.setItem(giftBalKey, updatedBal.toString());
-              window.dispatchEvent(new Event("skipd_gift_balance_changed"));
+              window.dispatchEvent(new Event("ecom_gift_balance_changed"));
             }
           }
         });
 
         // Clear User Cart or Buy Now Session Storage
-        if (isBuyNowMode || sessionStorage.getItem("skipd_buy_now_item")) {
-          sessionStorage.removeItem("skipd_buy_now_item");
+        if (isBuyNowMode || sessionStorage.getItem("ecom_buy_now_item")) {
+          sessionStorage.removeItem("ecom_buy_now_item");
         } else {
           localStorage.setItem(cartKey, JSON.stringify([]));
-          window.dispatchEvent(new Event("skipd_cart_changed"));
+          window.dispatchEvent(new Event("ecom_cart_changed"));
         }
 
         // Set completed order data & show success modal
@@ -471,7 +471,7 @@ export default function CheckoutPage() {
       },
       prefill: {
         name: selectedAddressObj.name || user?.user_name || "Customer",
-        email: user?.email || (selectedAddressObj as any)?.email || "customer@skipd.in",
+        email: user?.email || (selectedAddressObj as any)?.email || "customer@e-com.in",
         contact: (selectedAddressObj.phone || user?.phone || "9876543210").replace(/^\+91/, "").replace(/\D/g, "")
       },
       notes: {
@@ -536,13 +536,13 @@ export default function CheckoutPage() {
 
       // Submit order directly to PostgreSQL Database API
       try {
-        const currentUserStr = localStorage.getItem("skipd_user");
+        const currentUserStr = localStorage.getItem("ecom_user");
         const parsedUser = currentUserStr ? JSON.parse(currentUserStr) : null;
         fetch(`${API_BASE_URL}/orders`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("skipd_token") || ""}`
+            "Authorization": `Bearer ${localStorage.getItem("ecom_token") || ""}`
           },
           body: JSON.stringify({
             order_number: createdOrderNumber,
@@ -550,7 +550,7 @@ export default function CheckoutPage() {
             payment_method: selectedMethod === "upi" ? "Razorpay Online UPI" : selectedMethod === "card" ? "Debit / Credit Card" : selectedMethod.toUpperCase(),
             status: "PACKED",
             customer_name: selectedAddressObj.name || parsedUser?.user_name || "Customer",
-            customer_email: parsedUser?.email || (selectedAddressObj as any)?.email || "customer@skipd.in",
+            customer_email: parsedUser?.email || (selectedAddressObj as any)?.email || "customer@e-com.in",
             customer_phone: selectedAddressObj.phone || parsedUser?.phone || "9876543210",
             shipping_address: selectedAddressObj,
             items: cartItems.map(item => ({
@@ -570,15 +570,15 @@ export default function CheckoutPage() {
       localStorage.setItem(ordersKey, JSON.stringify([newOrder, ...existingOrders]));
 
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("skipd_orders_changed"));
-        window.dispatchEvent(new Event("skipd_orders_updated"));
+        window.dispatchEvent(new Event("ecom_orders_changed"));
+        window.dispatchEvent(new Event("ecom_orders_updated"));
       }
 
       // 📧 Send Order Confirmation & Detailed Invoice Bill Email
       try {
-        const currentUser = localStorage.getItem("skipd_user");
+        const currentUser = localStorage.getItem("ecom_user");
         const parsedUser = currentUser ? JSON.parse(currentUser) : null;
-        const targetEmail = parsedUser?.email || (selectedAddressObj as any)?.email || "customer@skipd.in";
+        const targetEmail = parsedUser?.email || (selectedAddressObj as any)?.email || "customer@e-com.in";
         const targetName = parsedUser?.user_name || selectedAddressObj?.name || "Valued Customer";
 
         import("lib/services/email-service").then(({ sendOrderInvoiceEmail }) => {
@@ -587,11 +587,11 @@ export default function CheckoutPage() {
       } catch (e) {}
 
       // Clear User Cart or Buy Now Session Storage
-      if (isBuyNowMode || sessionStorage.getItem("skipd_buy_now_item")) {
-        sessionStorage.removeItem("skipd_buy_now_item");
+      if (isBuyNowMode || sessionStorage.getItem("ecom_buy_now_item")) {
+        sessionStorage.removeItem("ecom_buy_now_item");
       } else {
         localStorage.setItem(cartKey, JSON.stringify([]));
-        window.dispatchEvent(new Event("skipd_cart_changed"));
+        window.dispatchEvent(new Event("ecom_cart_changed"));
       }
 
       // Set completed order data & show success modal
@@ -935,7 +935,7 @@ export default function CheckoutPage() {
                   {fullCartCount > 0 && (
                     <button
                       onClick={() => {
-                        sessionStorage.removeItem("skipd_buy_now_item");
+                        sessionStorage.removeItem("ecom_buy_now_item");
                         setIsBuyNowMode(false);
                         const cartKey = getUserCartKey();
                         const storedGen = localStorage.getItem(cartKey);
@@ -1210,7 +1210,7 @@ export default function CheckoutPage() {
             {/* Modal Header */}
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div>
-                <h3 className="text-base font-black text-gray-900">SKIPD Gateway — Pay ₹{finalPayable.toLocaleString("en-IN")}</h3>
+                <h3 className="text-base font-black text-gray-900">E-COM Gateway — Pay ₹{finalPayable.toLocaleString("en-IN")}</h3>
                 <p className="text-[11px] text-gray-500">Order Ref: <span className="font-extrabold text-emerald-700">{createdOrderNumber}</span></p>
               </div>
               <button
@@ -1251,7 +1251,7 @@ export default function CheckoutPage() {
 
             {/* TAB 1: REAL SCANNABLE UPI QR CODE & DIRECT INTENT */}
             {selectedMethod === "upi" && (() => {
-              const upiPayUrl = `upi://pay?pa=6264384464@ybl&pn=SKIPD%20Commerce&am=${finalPayable.toFixed(2)}&cu=INR&tn=Order%20${createdOrderNumber}`;
+              const upiPayUrl = `upi://pay?pa=6264384464@ybl&pn=E-COM%20Commerce&am=${finalPayable.toFixed(2)}&cu=INR&tn=Order%20${createdOrderNumber}`;
               const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiPayUrl)}`;
 
               return (
@@ -1295,7 +1295,7 @@ export default function CheckoutPage() {
                 {/* 3D Card Preview */}
                 <div className="bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 text-white rounded-3xl p-5 shadow-xl space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-extrabold text-sm tracking-wider">SKIPD CARD</span>
+                    <span className="font-extrabold text-sm tracking-wider">E-COM CARD</span>
                     <span className="text-xs font-bold text-amber-400">VISA / MasterCard</span>
                   </div>
                   <p className="font-mono text-base tracking-widest py-2">

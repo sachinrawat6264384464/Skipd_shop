@@ -81,7 +81,7 @@ export default function AdminEngagementPage() {
       const res = await createAdminGiftCard({
         code: newGcCode.trim().toUpperCase(),
         amount: Number(newGcAmount),
-        recipient: newGcEmail || "store-customer@skipd.in"
+        recipient: newGcEmail || "store-customer@e-com.in"
       });
 
       if (res && res.status === "success") {
@@ -431,7 +431,7 @@ export default function AdminEngagementPage() {
                         </td>
 
                         <td className="px-6 py-4 font-bold text-gray-700">
-                          {gc.recipient || "store-customer@skipd.in"}
+                          {gc.recipient || "store-customer@e-com.in"}
                         </td>
 
                         <td className="px-6 py-4 font-bold text-gray-900">
@@ -771,7 +771,7 @@ export default function AdminEngagementPage() {
                 <label className="font-bold text-gray-700">Voucher Code (Optional)</label>
                 <input
                   type="text"
-                  placeholder="e.g. SKIPD-GIFT-1000"
+                  placeholder="e.g. E-COM-GIFT-1000"
                   value={newGcCode}
                   onChange={(e) => setNewGcCode(e.target.value)}
                   className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-medium focus:border-emerald-500 uppercase"
@@ -843,7 +843,7 @@ export default function AdminEngagementPage() {
                 <label className="font-bold text-gray-700">Customer Email Address</label>
                 <input
                   type="email"
-                  placeholder="sachin@skipd.in"
+                  placeholder="sachin@e-com.in"
                   value={coinUserEmail}
                   onChange={(e) => setCoinUserEmail(e.target.value)}
                   className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-medium focus:border-amber-500"

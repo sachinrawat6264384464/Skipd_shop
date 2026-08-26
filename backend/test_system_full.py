@@ -39,7 +39,7 @@ async def test_03_auth_flow():
     """Verify Request OTP and Verify OTP Auth APIs."""
     base_url = "http://127.0.0.1:8080/api/v1"
     try:
-        payload = json.dumps({"email_or_phone": "customer@skipd.in"}).encode('utf-8')
+        payload = json.dumps({"email_or_phone": "customer@e-com.in"}).encode('utf-8')
         req = urllib.request.Request(
             f"{base_url}/auth/request-otp",
             data=payload,
@@ -51,7 +51,7 @@ async def test_03_auth_flow():
         otp = data.get("otp_demo")
         assert otp is not None, "OTP generation failed"
 
-        v_payload = json.dumps({"email_or_phone": "customer@skipd.in", "otp": otp}).encode('utf-8')
+        v_payload = json.dumps({"email_or_phone": "customer@e-com.in", "otp": otp}).encode('utf-8')
         v_req = urllib.request.Request(
             f"{base_url}/auth/verify-otp",
             data=v_payload,

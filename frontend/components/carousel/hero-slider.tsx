@@ -86,7 +86,7 @@ export function HeroSlider() {
   // Load dynamic slides from localStorage (admin panel updates)
   const loadSlides = () => {
     try {
-      const stored = localStorage.getItem("skipd_hero_banners");
+      const stored = localStorage.getItem("ecom_hero_banners");
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {
@@ -101,8 +101,8 @@ export function HeroSlider() {
   useEffect(() => {
     loadSlides();
     const handleUpdate = () => loadSlides();
-    window.addEventListener("skipd_banners_updated", handleUpdate);
-    return () => window.removeEventListener("skipd_banners_updated", handleUpdate);
+    window.addEventListener("ecom_banners_updated", handleUpdate);
+    return () => window.removeEventListener("ecom_banners_updated", handleUpdate);
   }, []);
 
   // Progress bar animation

@@ -160,7 +160,7 @@ export default function AdminProductsPage() {
 
     setSubCategories(prev => {
       const updated = [newSub, ...prev];
-      if (typeof window !== "undefined") localStorage.setItem("skipd_subcategories", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_subcategories", JSON.stringify(updated));
       return updated;
     });
 
@@ -174,7 +174,7 @@ export default function AdminProductsPage() {
     if (!editingSubCategory) return;
     setSubCategories(prev => {
       const updated = prev.map(sc => sc.id === editingSubCategory.id ? { ...sc, ...editSubCategoryForm } : sc);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_subcategories", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_subcategories", JSON.stringify(updated));
       return updated;
     });
     showNotification(`✓ Sub-Category "${editSubCategoryForm.name}" updated!`);
@@ -185,7 +185,7 @@ export default function AdminProductsPage() {
   const handleDeleteSubCategory = (id: number) => {
     setSubCategories(prev => {
       const updated = prev.filter(sc => sc.id !== id);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_subcategories", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_subcategories", JSON.stringify(updated));
       return updated;
     });
     showNotification(`🗑️ Sub-Category deleted`, "error");
@@ -231,7 +231,7 @@ export default function AdminProductsPage() {
     };
     setBrands(prev => {
       const updated = [newB, ...prev];
-      if (typeof window !== "undefined") localStorage.setItem("skipd_brands", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_brands", JSON.stringify(updated));
       return updated;
     });
     showNotification(`✓ Brand "${newBrandForm.name}" created!`);
@@ -244,7 +244,7 @@ export default function AdminProductsPage() {
     if (!editingBrand) return;
     setBrands(prev => {
       const updated = prev.map(b => b.id === editingBrand.id ? { ...b, ...editBrandForm } : b);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_brands", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_brands", JSON.stringify(updated));
       return updated;
     });
     showNotification(`✓ Brand "${editBrandForm.name}" updated!`);
@@ -255,7 +255,7 @@ export default function AdminProductsPage() {
   const handleDeleteBrand = (id: number, name: string) => {
     setBrands(prev => {
       const updated = prev.filter(b => b.id !== id);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_brands", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_brands", JSON.stringify(updated));
       return updated;
     });
     showNotification(`🗑️ Brand "${name}" deleted`, "error");
@@ -275,7 +275,7 @@ export default function AdminProductsPage() {
     };
     setAttributes(prev => {
       const updated = [newAttr, ...prev];
-      if (typeof window !== "undefined") localStorage.setItem("skipd_attributes", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_attributes", JSON.stringify(updated));
       return updated;
     });
     showNotification(`✓ Attribute "${newAttributeForm.name}" created!`);
@@ -288,7 +288,7 @@ export default function AdminProductsPage() {
     if (!editingAttribute) return;
     setAttributes(prev => {
       const updated = prev.map(a => a.id === editingAttribute.id ? { ...a, ...editAttributeForm } : a);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_attributes", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_attributes", JSON.stringify(updated));
       return updated;
     });
     showNotification(`✓ Attribute "${editAttributeForm.name}" updated!`);
@@ -299,7 +299,7 @@ export default function AdminProductsPage() {
   const handleDeleteAttribute = (id: number) => {
     setAttributes(prev => {
       const updated = prev.filter(a => a.id !== id);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_attributes", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_attributes", JSON.stringify(updated));
       return updated;
     });
     showNotification(`🗑️ Attribute deleted`, "error");
@@ -328,7 +328,7 @@ export default function AdminProductsPage() {
     };
     setVariants(prev => {
       const updated = [newV, ...prev];
-      if (typeof window !== "undefined") localStorage.setItem("skipd_variants", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_variants", JSON.stringify(updated));
       return updated;
     });
     showNotification(`⚡ Variant SKU "${newVariantForm.sku}" generated!`);
@@ -341,7 +341,7 @@ export default function AdminProductsPage() {
     if (!editingVariant) return;
     setVariants(prev => {
       const updated = prev.map(v => v.id === editingVariant.id ? { ...v, ...editVariantForm, stock: parseInt(editVariantForm.stock) || 10 } : v);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_variants", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_variants", JSON.stringify(updated));
       return updated;
     });
     showNotification(`✓ Variant SKU "${editingVariant.id}" updated!`);
@@ -352,7 +352,7 @@ export default function AdminProductsPage() {
   const handleDeleteVariant = (id: string) => {
     setVariants(prev => {
       const updated = prev.filter(v => v.id !== id);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_variants", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_variants", JSON.stringify(updated));
       return updated;
     });
     showNotification(`🗑️ Variant SKU "${id}" deleted`, "error");
@@ -370,7 +370,7 @@ export default function AdminProductsPage() {
         }
         return r;
       });
-      if (typeof window !== "undefined") localStorage.setItem("skipd_reviews", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_reviews", JSON.stringify(updated));
       return updated;
     });
   };
@@ -378,7 +378,7 @@ export default function AdminProductsPage() {
   const handleDeleteReview = (id: number) => {
     setReviews(prev => {
       const updated = prev.filter(r => r.id !== id);
-      if (typeof window !== "undefined") localStorage.setItem("skipd_reviews", JSON.stringify(updated));
+      if (typeof window !== "undefined") localStorage.setItem("ecom_reviews", JSON.stringify(updated));
       return updated;
     });
     showNotification(`🗑️ Review #${id} deleted`, "error");
@@ -593,19 +593,19 @@ export default function AdminProductsPage() {
     loadNewArrivalsData();
     if (typeof window !== "undefined") {
       try {
-        const subCats = localStorage.getItem("skipd_subcategories");
+        const subCats = localStorage.getItem("ecom_subcategories");
         if (subCats) setSubCategories(JSON.parse(subCats));
 
-        const storedBrands = localStorage.getItem("skipd_brands");
+        const storedBrands = localStorage.getItem("ecom_brands");
         if (storedBrands) setBrands(JSON.parse(storedBrands));
 
-        const storedAttrs = localStorage.getItem("skipd_attributes");
+        const storedAttrs = localStorage.getItem("ecom_attributes");
         if (storedAttrs) setAttributes(JSON.parse(storedAttrs));
 
-        const storedVars = localStorage.getItem("skipd_variants");
+        const storedVars = localStorage.getItem("ecom_variants");
         if (storedVars) setVariants(JSON.parse(storedVars));
 
-        const storedRevs = localStorage.getItem("skipd_reviews");
+        const storedRevs = localStorage.getItem("ecom_reviews");
         if (storedRevs) setReviews(JSON.parse(storedRevs));
       } catch (err) {}
     }
@@ -718,7 +718,7 @@ export default function AdminProductsPage() {
     const payload = {
       title: newProduct.title,
       handle: newProduct.handle || newProduct.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-      description: newProduct.description || newProduct.short_description || "Premium quality product from SKIPD Commerce catalog.",
+      description: newProduct.description || newProduct.short_description || "Premium quality product from E-COM Commerce catalog.",
       price: parseFloat(newProduct.price),
       compare_at_price: newProduct.compare_at_price ? parseFloat(newProduct.compare_at_price) : undefined,
       stock_quantity: parseInt(newProduct.stock_quantity) || 0,

@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata = {
-  title: "All Categories | SKIPD Commerce",
+  title: "All Categories | E-COM Commerce",
   description: "Browse all items in our full catalog.",
 };
 

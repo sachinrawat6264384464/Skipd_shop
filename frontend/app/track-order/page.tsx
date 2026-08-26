@@ -84,7 +84,7 @@ function TrackOrderContent() {
         setTrackingData(res);
       } else {
         setTrackingData(null);
-        setErrorMsg(`No live order found for "${queryStr}". Please check your Order ID (e.g. #SKIPD-123456).`);
+        setErrorMsg(`No live order found for "${queryStr}". Please check your Order ID (e.g. #E-COM-123456).`);
       }
     } catch (e) {
       setTrackingData(null);
@@ -131,7 +131,7 @@ function TrackOrderContent() {
               Track Your Order &amp; Delivery Status Live
             </h1>
             <p className="text-xs md:text-sm text-gray-300 font-medium">
-              Enter your Order Number (e.g. <span className="font-mono text-emerald-300 font-bold">#SKIPD-280335</span>) to check real-time status history recorded directly in Neon PostgreSQL database.
+              Enter your Order Number (e.g. <span className="font-mono text-emerald-300 font-bold">#E-COM-280335</span>) to check real-time status history recorded directly in Neon PostgreSQL database.
             </p>
           </div>
 
@@ -139,7 +139,7 @@ function TrackOrderContent() {
           <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-3 max-w-2xl">
             <input
               type="text"
-              placeholder="Enter Order ID or Number (#SKIPD-280335)..."
+              placeholder="Enter Order ID or Number (#E-COM-280335)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="flex-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3.5 text-xs md:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-emerald-400 font-mono tracking-wider"

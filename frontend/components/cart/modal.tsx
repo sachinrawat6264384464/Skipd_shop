@@ -28,8 +28,8 @@ export default function CartModal() {
     } catch (e) {
       setCartItems([]);
     }
-    const token = typeof window !== "undefined" ? localStorage.getItem("skipd_token") : null;
-    const user = typeof window !== "undefined" ? localStorage.getItem("skipd_user") : null;
+    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
+    const user = typeof window !== "undefined" ? localStorage.getItem("ecom_user") : null;
     setIsLoggedIn(!!(token || user));
   };
 
@@ -38,21 +38,21 @@ export default function CartModal() {
 
     const handleSync = () => loadCartAndAuth();
     window.addEventListener("storage", handleSync);
-    window.addEventListener("skipd_cart_updated", handleSync);
-    window.addEventListener("skipd_cart_changed", handleSync);
-    window.addEventListener("skipd_auth_changed", handleSync);
+    window.addEventListener("ecom_cart_updated", handleSync);
+    window.addEventListener("ecom_cart_changed", handleSync);
+    window.addEventListener("ecom_auth_changed", handleSync);
 
     return () => {
       window.removeEventListener("storage", handleSync);
-      window.removeEventListener("skipd_cart_updated", handleSync);
-      window.removeEventListener("skipd_cart_changed", handleSync);
-      window.removeEventListener("skipd_auth_changed", handleSync);
+      window.removeEventListener("ecom_cart_updated", handleSync);
+      window.removeEventListener("ecom_cart_changed", handleSync);
+      window.removeEventListener("ecom_auth_changed", handleSync);
     };
   }, []);
 
   const handleCheckoutClick = (e: React.MouseEvent) => {
-    const token = localStorage.getItem("skipd_token");
-    const user = localStorage.getItem("skipd_user");
+    const token = localStorage.getItem("ecom_token");
+    const user = localStorage.getItem("ecom_user");
     if (!token && !user) {
       e.preventDefault();
       closeCart();

@@ -69,7 +69,7 @@ export function FlashSaleBanner() {
     async function loadDbDeals() {
       try {
         if (typeof window !== "undefined") {
-          const customFlashSales = localStorage.getItem("skipd_flash_sale_products");
+          const customFlashSales = localStorage.getItem("ecom_flash_sale_products");
           if (customFlashSales) {
             const parsed = JSON.parse(customFlashSales);
             if (Array.isArray(parsed) && parsed.length > 0) {
@@ -113,10 +113,10 @@ export function FlashSaleBanner() {
     loadDbDeals();
 
     const handleSync = () => loadDbDeals();
-    window.addEventListener("skipd_flash_sale_updated", handleSync);
+    window.addEventListener("ecom_flash_sale_updated", handleSync);
     window.addEventListener("storage", handleSync);
     return () => {
-      window.removeEventListener("skipd_flash_sale_updated", handleSync);
+      window.removeEventListener("ecom_flash_sale_updated", handleSync);
       window.removeEventListener("storage", handleSync);
     };
   }, []);
@@ -162,8 +162,8 @@ export function FlashSaleBanner() {
       saveCartStore(updated);
 
       // Dispatch real cart sync events
-      window.dispatchEvent(new Event("skipd_cart_updated"));
-      window.dispatchEvent(new Event("skipd_cart_changed"));
+      window.dispatchEvent(new Event("ecom_cart_updated"));
+      window.dispatchEvent(new Event("ecom_cart_changed"));
 
       toast.success(`⚡ Flash Deal Claimed!`, {
         description: `Added ${item.title} to cart at ₹${item.price.toLocaleString("en-IN")}. Opening product...`,

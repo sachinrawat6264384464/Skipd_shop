@@ -24,14 +24,14 @@ export default function SellerPage() {
     try {
       await submitCustomerQuery({
         customer_name: formData.businessName || "Vendor Candidate",
-        customer_email: formData.email || "seller@skipd.in",
+        customer_email: formData.email || "seller@e-com.in",
         query_type: "Seller Application",
         subject: `New Seller Application: ${formData.businessName} (GSTIN: ${formData.gstin})`,
         message: `Business: ${formData.businessName}, Contact: ${formData.contactPerson || 'N/A'}, GSTIN: ${formData.gstin}, Mobile: ${formData.phone}`,
         priority: "High"
       });
       if (typeof window !== "undefined") {
-        window.dispatchEvent(new Event("skipd_new_query"));
+        window.dispatchEvent(new Event("ecom_new_query"));
       }
     } catch (err) {
       console.warn("Seller application DB submit error:", err);
@@ -49,7 +49,7 @@ export default function SellerPage() {
         <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-3xl p-8 md:p-12 shadow-lg flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="space-y-4 max-w-xl">
             <span className="bg-white text-emerald-900 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
-              SKIPD Marketplace Seller Portal
+              E-COM Marketplace Seller Portal
             </span>
             <h1 className="text-3xl md:text-5xl font-black">Sell to Millions of Customers Across India</h1>
             <p className="text-emerald-100 text-xs md:text-sm leading-relaxed">

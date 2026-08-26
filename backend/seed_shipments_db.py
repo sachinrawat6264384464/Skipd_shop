@@ -14,7 +14,7 @@ async def seed_shipments():
         real_shipments = [
             {
                 "awb_code": "SR-8849201",
-                "order_number": "#SKIPD-25879",
+                "order_number": "#E-COM-25879",
                 "customer_name": "Amit Sharma",
                 "customer_email": "amit@gmail.com",
                 "courier_name": "Delhivery Surface",
@@ -26,7 +26,7 @@ async def seed_shipments():
             },
             {
                 "awb_code": "SR-8849202",
-                "order_number": "#SKIPD-25878",
+                "order_number": "#E-COM-25878",
                 "customer_name": "Priya Verma",
                 "customer_email": "priya.verma@gmail.com",
                 "courier_name": "Bluedart Express Air",
@@ -38,7 +38,7 @@ async def seed_shipments():
             },
             {
                 "awb_code": "SR-8849203",
-                "order_number": "#SKIPD-25877",
+                "order_number": "#E-COM-25877",
                 "customer_name": "Rahul Singh",
                 "customer_email": "rahul.singh@gmail.com",
                 "courier_name": "Xpressbees Surface",
@@ -50,7 +50,7 @@ async def seed_shipments():
             },
             {
                 "awb_code": "SR-8849204",
-                "order_number": "#SKIPD-25876",
+                "order_number": "#E-COM-25876",
                 "customer_name": "Sneha Patel",
                 "customer_email": "sneha.patel@gmail.com",
                 "courier_name": "Ekart Surface",
@@ -62,7 +62,7 @@ async def seed_shipments():
             },
             {
                 "awb_code": "SR-8849205",
-                "order_number": "#SKIPD-25875",
+                "order_number": "#E-COM-25875",
                 "customer_name": "Vikram Joshi",
                 "customer_email": "vikram.joshi@gmail.com",
                 "courier_name": "Shadowfax Express",
