@@ -29,32 +29,10 @@ export function BrowseCategoriesGrid() {
   useEffect(() => {
     async function loadActiveCategoriesWithProducts() {
       try {
-        const prods = await fetchProducts().catch(() => []);
-        const categoriesWithProducts = new Set<string>();
-
-        if (Array.isArray(prods) && prods.length > 0) {
-          prods.forEach((p: any) => {
-            const catName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category);
-            const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
-            if (catSlug) {
-              const lowerSlug = String(catSlug).toLowerCase();
-              const prefix = lowerSlug.split("-")[0] || lowerSlug;
-              categoriesWithProducts.add(lowerSlug);
-              categoriesWithProducts.add(prefix);
-            }
-          });
-        }
-
         const data = await fetchCategories().catch(() => []);
         if (Array.isArray(data) && data.length > 0) {
-          const activeWithProds = data.filter((c: any) => {
-            if (c.status === "Inactive") return false;
-            const lowerSlug = (c.slug || c.name || "").toLowerCase();
-            const prefix = lowerSlug.split("-")[0] || lowerSlug;
-            const hasCount = typeof c.count === "number" ? c.count > 0 : false;
-            return categoriesWithProducts.has(lowerSlug) || categoriesWithProducts.has(prefix) || hasCount;
-          });
-          setCategories(activeWithProds);
+          const activeCats = data.filter((c: any) => c.status !== "Inactive" && c.status !== "Disabled");
+          setCategories(activeCats);
         }
       } catch (e) {
         console.error("Failed to load browse categories:", e);
@@ -101,11 +79,11 @@ export function BrowseCategoriesGrid() {
         {/* 🖼️ Grid of Category Tiles */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
           {categories.map((cat: any, idx) => {
-            const rawUrl = cat.image_url || cat.icon || "";
+            const rawUrl = cat.image_url || (cat.icon && (cat.icon.startsWith("http") || cat.icon.startsWith("data:") || cat.icon.startsWith("/")) ? cat.icon : "");
             const isPlaceholder = !rawUrl || rawUrl.includes("via.placeholder") || rawUrl.includes("open-shop") || rawUrl.includes("OPEN");
             
             const slugKey = (cat.slug || cat.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-            const bgImage = !isPlaceholder && (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("/"))
+            const bgImage = !isPlaceholder && (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("/") || rawUrl.startsWith("data:"))
               ? rawUrl
               : CATEGORY_IMAGE_MAP[slugKey] || CATEGORY_IMAGE_MAP[slugKey.split("-")[0]] || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800";
 

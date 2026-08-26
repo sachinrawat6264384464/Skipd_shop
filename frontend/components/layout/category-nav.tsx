@@ -62,19 +62,12 @@ export function CategoryNav() {
 
         if (Array.isArray(dbCats) && dbCats.length > 0) {
           dbCats.forEach((c: any) => {
-            if (c.status !== "Inactive" && c.slug) {
-              const lowerSlug = String(c.slug).toLowerCase();
-              const prefix = lowerSlug.split("-")[0] || lowerSlug;
-              const hasCount = typeof c.count === "number" ? c.count > 0 : false;
-
-              // ONLY INCLUDE IF CATEGORY HAS AT LEAST 1 PRODUCT
-              if (categoriesWithProducts.has(lowerSlug) || categoriesWithProducts.has(prefix) || hasCount) {
-                activeMap.set(c.slug, {
-                  name: c.name,
-                  slug: c.slug,
-                  image_url: getCategoryImageUrl(c)
-                });
-              }
+            if (c.status !== "Inactive" && c.status !== "Disabled" && c.slug) {
+              activeMap.set(c.slug, {
+                name: c.name,
+                slug: c.slug,
+                image_url: getCategoryImageUrl(c)
+              });
             }
           });
         }

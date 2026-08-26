@@ -82,7 +82,7 @@ DEFAULT_CATEGORIES_DATA = [
 ]
 
 async def ensure_default_categories(db: AsyncSession):
-    """Ensure all 10 store categories exist in PostgreSQL database with valid Unsplash image URLs."""
+    """Ensure default categories exist in PostgreSQL database without overwriting admin updates."""
     try:
         existing_res = await db.execute(select(Category))
         existing_cats = existing_res.scalars().all()
@@ -101,12 +101,6 @@ async def ensure_default_categories(db: AsyncSession):
                     status="Active"
                 ))
                 added_or_updated = True
-            else:
-                raw_img = cat_obj.image_url or ""
-                if not raw_img.startswith("http"):
-                    cat_obj.image_url = item["image_url"]
-                    db.add(cat_obj)
-                    added_or_updated = True
                 
         if added_or_updated:
             await db.commit()
