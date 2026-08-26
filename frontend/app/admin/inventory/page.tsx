@@ -72,22 +72,36 @@ export default function AdminInventoryPage() {
               if (cols.length >= 2) {
                 const title = cols[0] || `Imported Item ${i}`;
                 const price = parseFloat(cols[1] ?? "999") || 999;
-                const stock = parseInt(cols[2] ?? "20") || 20;
-                const cat = cols[3] || "General";
-                const warehouse = cols[4] || "Central FC";
-                const imageUrl = cols[5] || "";
-                const sku = cols[6] || `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`;
-                const compareAtPrice = cols[7] ? parseFloat(cols[7]) : price * 1.4;
+                const compareAtPrice = cols[2] ? parseFloat(cols[2]) : price * 1.4;
+                const costPrice = cols[3] ? parseFloat(cols[3]) : price * 0.6;
+                const stock = parseInt(cols[4] ?? "20") || 20;
+                const lowStockThreshold = parseInt(cols[5] ?? "10") || 10;
+                const cat = cols[6] || "General";
+                const subcategory = cols[7] || "";
                 const brand = cols[8] || "";
-                const subcategory = cols[9] || "";
-                const tags = cols[10] ? cols[10].split("|").map(t => t.trim()) : ["bestseller"];
-                const shortDesc = cols[11] || "";
-                const fullDesc = cols[12] || shortDesc || `${title} premium quality catalog item.`;
-                const highlights = cols[13] ? cols[13].split("|").map(h => h.trim()) : [];
-                const boxContents = cols[14] ? cols[14].split("|").map(b => b.trim()) : [];
-                const hsnCode = cols[15] || "85183000";
-                const metaTitle = cols[16] || title;
-                const metaDesc = cols[17] || shortDesc || fullDesc;
+                const warehouse = cols[9] || "Central FC";
+                const sku = cols[10] || `SKU-IMP-${Math.floor(1000 + Math.random() * 9000)}`;
+                const barcode = cols[11] || `89012345${Math.floor(10000 + Math.random() * 90000)}`;
+                const imageUrl = cols[12] || "";
+                const galleryUrls = cols[13] ? cols[13].split("|").map(u => u.trim()) : [];
+                const videoUrl = cols[14] || "";
+                const color = cols[15] || "";
+                const size = cols[16] || "";
+                const material = cols[17] || "";
+                const weight = cols[18] ? parseFloat(cols[18]) : null;
+                const dimensions = cols[19] || "";
+                const gstRate = cols[20] ? parseFloat(cols[20]) : 18.0;
+                const hsnCode = cols[21] || "85183000";
+                const countryOfOrigin = cols[22] || "India";
+                const isFeatured = cols[23] ? cols[23].toUpperCase() === "TRUE" : true;
+                const isActive = cols[24] ? cols[24].toUpperCase() === "TRUE" : true;
+                const tags = cols[25] ? cols[25].split("|").map(t => t.trim()) : ["bestseller"];
+                const shortDesc = cols[26] || "";
+                const fullDesc = cols[27] || shortDesc || `${title} premium quality catalog item.`;
+                const highlights = cols[28] ? cols[28].split("|").map(h => h.trim()).join(" | ") : "";
+                const boxContents = cols[29] ? cols[29].split("|").map(b => b.trim()).join(" | ") : "";
+                const metaTitle = cols[30] || title;
+                const metaDesc = cols[31] || shortDesc || fullDesc;
 
                 // Try to match with bulk-uploaded images by filename/title
                 const matchedImg = bulkImages.find(img =>
@@ -95,31 +109,47 @@ export default function AdminInventoryPage() {
                   title.toLowerCase().includes(img.name.toLowerCase().replace(/\.[^.]+$/, "").slice(0, 6))
                 );
 
+                const finalImages = [
+                  matchedImg?.url || imageUrl || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
+                  ...galleryUrls
+                ].filter(Boolean);
+
                 importedItems.push({
                   id: Date.now() + i,
                   title,
+                  handle: title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
                   sku,
+                  barcode,
                   price,
                   compare_at_price: compareAtPrice,
+                  cost_price: costPrice,
                   stock_quantity: stock,
+                  low_stock_threshold: lowStockThreshold,
                   category: cat,
                   category_slug: cat.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                  subcategory,
+                  sub_category: subcategory,
                   brand,
                   warehouse,
+                  image_url: finalImages[0],
+                  images: finalImages,
+                  video_url: videoUrl,
+                  color,
+                  size,
+                  material,
+                  weight,
+                  dimensions,
+                  gst_rate: gstRate,
+                  hsn_code: hsnCode,
+                  country_of_origin: countryOfOrigin,
+                  is_featured: isFeatured,
+                  is_active: isActive,
                   tags,
                   short_description: shortDesc,
                   description: fullDesc,
                   highlights,
                   box_contents: boxContents,
-                  hsn_code: hsnCode,
                   meta_title: metaTitle,
-                  meta_desc: metaDesc,
-                  images: [
-                    matchedImg?.url ||
-                    imageUrl ||
-                    "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200"
-                  ]
+                  meta_description: metaDesc
                 });
               }
             }
@@ -128,20 +158,9 @@ export default function AdminInventoryPage() {
 
         if (importedItems.length > 0) {
           // Bulk Save to Neon PostgreSQL database in ONE request
-          const payloadList = importedItems.map((item) => ({
-            title: item.title,
-            handle: (item.title || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-            description: item.description || item.title,
-            price: item.price,
-            compare_at_price: item.compare_at_price || item.price * 1.4,
-            stock_quantity: item.stock_quantity || item.stock || 20,
-            category_slug: (item.category || "general").toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-            images: item.images || ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]
-          }));
-
           try {
-            await bulkCreateAdminProducts(payloadList);
-            showToast(`✓ Successfully imported & saved ${importedItems.length} products live to Neon PostgreSQL DB!`);
+            await bulkCreateAdminProducts(importedItems);
+            showToast(`✓ Successfully imported & saved ${importedItems.length} products with all 32 Enterprise columns live to PostgreSQL DB!`);
           } catch (err: any) {
             showToast(err?.message || "Failed to bulk save products in DB", "error");
           }

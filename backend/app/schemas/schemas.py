@@ -77,12 +77,37 @@ class ProductSchema(BaseModel):
     title: str
     handle: str
     description: Optional[str] = None
+    short_description: Optional[str] = None
+    highlights: Optional[str] = None
+    box_contents: Optional[str] = None
     price: float
     compare_at_price: Optional[float] = None
-    featured: bool = False
-    images: Optional[Any] = []
-    tags: Optional[Any] = []
+    cost_price: Optional[float] = None
+    sku: Optional[str] = None
+    barcode: Optional[str] = None
     stock_quantity: Optional[int] = 100
+    low_stock_threshold: Optional[int] = 10
+    category_id: Optional[int] = None
+    sub_category: Optional[str] = None
+    brand: Optional[str] = None
+    warehouse: Optional[str] = None
+    image_url: Optional[str] = None
+    images: Optional[Any] = []
+    video_url: Optional[str] = None
+    color: Optional[str] = None
+    size: Optional[str] = None
+    material: Optional[str] = None
+    weight: Optional[float] = None
+    dimensions: Optional[str] = None
+    gst_rate: Optional[float] = None
+    hsn_code: Optional[str] = None
+    country_of_origin: Optional[str] = None
+    tags: Optional[Any] = []
+    meta_title: Optional[str] = None
+    meta_description: Optional[str] = None
+    is_featured: Optional[bool] = False
+    is_active: Optional[bool] = True
+    featured: bool = False
     category: Optional[CategorySchema] = None
     variants: Optional[List[VariantSchema]] = []
 

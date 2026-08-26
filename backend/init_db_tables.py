@@ -39,6 +39,33 @@ async def initialize_and_migrate_all_tables():
         await conn.execute(text("ALTER TABLE payment_transactions ADD COLUMN IF NOT EXISTS payment_method VARCHAR(50) DEFAULT 'UPI';"))
         await conn.execute(text("ALTER TABLE payment_transactions ADD COLUMN IF NOT EXISTS gateway VARCHAR(50) DEFAULT 'Razorpay';"))
         
+        # Add 32 Enterprise columns to products table if missing
+        product_cols = [
+            ("cost_price", "DOUBLE PRECISION"),
+            ("low_stock_threshold", "INTEGER DEFAULT 10"),
+            ("sub_category", "VARCHAR(100)"),
+            ("brand", "VARCHAR(100)"),
+            ("warehouse", "VARCHAR(100)"),
+            ("barcode", "VARCHAR(100)"),
+            ("image_url", "TEXT"),
+            ("video_url", "TEXT"),
+            ("color", "VARCHAR(50)"),
+            ("size", "VARCHAR(50)"),
+            ("material", "VARCHAR(100)"),
+            ("weight", "DOUBLE PRECISION"),
+            ("dimensions", "VARCHAR(100)"),
+            ("gst_rate", "DOUBLE PRECISION"),
+            ("hsn_code", "VARCHAR(50)"),
+            ("country_of_origin", "VARCHAR(100)"),
+            ("short_description", "TEXT"),
+            ("highlights", "TEXT"),
+            ("box_contents", "TEXT"),
+            ("meta_title", "VARCHAR(255)"),
+            ("meta_description", "TEXT")
+        ]
+        for col_name, col_type in product_cols:
+            await conn.execute(text(f"ALTER TABLE products ADD COLUMN IF NOT EXISTS {col_name} {col_type};"))
+
         # Add logistics columns to shipments table
         await conn.execute(text("ALTER TABLE shipments ADD COLUMN IF NOT EXISTS destination VARCHAR(255) DEFAULT 'Gwalior, Madhya Pradesh';"))
         await conn.execute(text("ALTER TABLE shipments ADD COLUMN IF NOT EXISTS pin_code VARCHAR(20) DEFAULT '474001';"))
