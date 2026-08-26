@@ -166,18 +166,18 @@ export function AbandonedReminderModal() {
 
           <div className="space-y-1 min-w-0 flex-1">
             <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
-              {product.category}
+              {typeof product.category === 'object' ? product.category?.name : (product.category || 'ELECTRONICS')}
             </p>
             <h4 className="font-extrabold text-white text-xs truncate">
-              {product.title}
+              {product.title || "Featured Product"}
             </h4>
             <div className="flex items-baseline gap-2 pt-0.5">
               <span className="text-sm font-black text-emerald-400">
-                ₹{product.price?.toLocaleString("en-IN")}
+                ₹{Number(product.price || 0).toLocaleString("en-IN")}
               </span>
-              {product.compare_at_price > product.price && (
+              {Number(product.compare_at_price || 0) > Number(product.price || 0) && (
                 <span className="text-[11px] text-slate-500 line-through font-bold">
-                  ₹{product.compare_at_price?.toLocaleString("en-IN")}
+                  ₹{Number(product.compare_at_price || 0).toLocaleString("en-IN")}
                 </span>
               )}
             </div>

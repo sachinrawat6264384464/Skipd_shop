@@ -94,9 +94,13 @@ export function EmailToastListener() {
             <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-1 text-xs">
               <div className="flex justify-between text-gray-600">
                 <span><strong>From:</strong> SKIPD Store (sachinrawat6264384464@gmail.com)</span>
-                <span className="text-gray-400 text-[11px]">{new Date(activeEmail.timestamp).toLocaleTimeString("en-IN")}</span>
+                <span className="text-gray-400 text-[11px]">
+                  {activeEmail?.timestamp && !isNaN(new Date(activeEmail.timestamp).getTime())
+                    ? new Date(activeEmail.timestamp).toLocaleTimeString("en-IN")
+                    : "Just now"}
+                </span>
               </div>
-              <p className="text-gray-900"><strong>To:</strong> {activeEmail.to} ({activeEmail.username})</p>
+              <p className="text-gray-900"><strong>To:</strong> {activeEmail?.to || 'Recipient'} ({activeEmail?.username || 'User'})</p>
               <p className="text-gray-600"><strong>Security:</strong> 256-bit TLS Encrypted Mail Transport</p>
             </div>
 
