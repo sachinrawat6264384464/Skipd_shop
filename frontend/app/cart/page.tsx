@@ -40,6 +40,7 @@ const INITIAL_CART_ITEMS = [
   }
 ];
 
+import { toast } from "sonner";
 import { getUserCartKey, getCartStore, saveCartStore, isUserLoggedIn } from "lib/utils";
 
 export default function CartItemsPage() {
@@ -88,6 +89,21 @@ export default function CartItemsPage() {
   };
 
   const updateQty = (id: number | string, delta: number) => {
+    const targetItem = items.find(i => String(i.id) === String(id));
+    if (targetItem && delta > 0) {
+      const numId = typeof targetItem.id === "number" ? targetItem.id : (parseInt(String(targetItem.id || "").replace(/[^0-9]/g, "")) || 1);
+      const maxStock = targetItem.stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+      const currentQty = Number(targetItem.quantity || 1);
+
+      if (maxStock > 0 && currentQty >= maxStock) {
+        toast.warning(`⚠️ Maximum available stock reached!`, {
+          description: `Only ${maxStock} unit(s) of this item are available in stock. No more items in stock!`,
+          duration: 3000
+        });
+        return;
+      }
+    }
+
     const updated = items.map(item => item.id === id ? { ...item, quantity: Math.max(1, (item.quantity || 1) + delta) } : item);
     saveCartState(updated);
   };

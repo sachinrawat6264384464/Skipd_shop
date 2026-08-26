@@ -230,18 +230,31 @@ export default function WishlistPage() {
                       {isOutOfStock ? "❌ Out of Stock" : "🛒 Move to Cart"}
                     </button>
 
-                    {/* ⚡ Buy Now Button */}
-                    <button
-                      onClick={() => !isOutOfStock && handleBuyNow(item)}
-                      disabled={isOutOfStock}
-                      className={`w-full font-black text-xs py-2.5 rounded-2xl transition shadow-md flex items-center justify-center gap-1.5 ${
-                        isOutOfStock
-                          ? "bg-gray-200 text-gray-400 shadow-none cursor-not-allowed opacity-60"
-                          : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20 cursor-pointer"
-                      }`}
-                    >
-                      {isOutOfStock ? "Unavailable" : "⚡ Buy Now"}
-                    </button>
+                    {/* ⚡ Buy Now & 🗑️ Remove Row */}
+                    <div className="grid grid-cols-3 gap-2">
+                      <button
+                        onClick={() => !isOutOfStock && handleBuyNow(item)}
+                        disabled={isOutOfStock}
+                        className={`col-span-2 font-black text-xs py-2.5 rounded-2xl transition shadow-md flex items-center justify-center gap-1.5 ${
+                          isOutOfStock
+                            ? "bg-gray-200 text-gray-400 shadow-none cursor-not-allowed opacity-60"
+                            : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20 cursor-pointer"
+                        }`}
+                      >
+                        {isOutOfStock ? "Unavailable" : "⚡ Buy Now"}
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          removeFromWishlist(item.id);
+                          toast("💔 Removed from Wishlist", { description: item.title });
+                        }}
+                        className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-extrabold text-xs py-2.5 rounded-2xl transition flex items-center justify-center gap-1 cursor-pointer"
+                        title="Remove from Wishlist"
+                      >
+                        🗑️ Remove
+                      </button>
+                    </div>
                   </div>
 
                 </div>
