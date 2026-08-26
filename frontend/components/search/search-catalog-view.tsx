@@ -366,7 +366,7 @@ export function SearchCatalogView({
             const discountPercent = product.compare_at_price
               ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
               : 36;
-            const isLiked = isInWishlist(product.id);
+            const isLiked = isInWishlist(product.id, product.handle);
             const isOutOfStock = product.stock_quantity === 0;
             const itemHandle = getValidCardHandle(product);
 

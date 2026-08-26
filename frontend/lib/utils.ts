@@ -62,10 +62,6 @@ export function isUserLoggedIn(): boolean {
   }
 }
 
-// Active guest memory cache (cleared automatically on page refresh)
-let activeGuestMemoryCart: any[] = [];
-let isGuestInitialLoadDone = false;
-
 // 🔒 1. User Cart Storage Key (Scoped per User Account)
 export function getUserCartKey(): string {
   if (typeof window === "undefined") return "ecom_cart_guest";
@@ -82,45 +78,76 @@ export function getUserCartKey(): string {
   return "ecom_cart_guest";
 }
 
-// 🛒 Get Cart Store: Logged-in users get persistent cart; Guests get transient session cart that resets on F5 refresh
+// 🛒 Get Cart Store: Persistent cart with seamless Guest-to-User Merge on Login
 export function getCartStore(): any[] {
   if (typeof window === "undefined") return [];
   try {
     const loggedIn = isUserLoggedIn();
+    const guestCartKey = "ecom_cart_guest";
+
     if (!loggedIn) {
-      // 🛑 Guest User Rule: On initial page reload/refresh, guest cart resets to 0 items!
-      if (!isGuestInitialLoadDone) {
-        isGuestInitialLoadDone = true;
-        activeGuestMemoryCart = [];
-        try {
-          sessionStorage.removeItem("ecom_guest_session_cart");
-          localStorage.removeItem("ecom_cart_guest");
-        } catch {}
-        return [];
-      }
-      return activeGuestMemoryCart;
+      const savedGuest = localStorage.getItem(guestCartKey) || sessionStorage.getItem("ecom_guest_session_cart");
+      return savedGuest ? JSON.parse(savedGuest) : [];
     }
 
     // Logged-in Customer: Read persistent cart from localStorage
     const cartKey = getUserCartKey();
-    const saved = localStorage.getItem(cartKey);
-    return saved ? JSON.parse(saved) : [];
+    let userCart: any[] = [];
+    const savedUserCart = localStorage.getItem(cartKey);
+    if (savedUserCart) {
+      try {
+        userCart = JSON.parse(savedUserCart);
+      } catch {}
+    }
+
+    // Check if there is an unmerged guest cart in storage
+    const savedGuest = localStorage.getItem(guestCartKey) || sessionStorage.getItem("ecom_guest_session_cart");
+    if (savedGuest) {
+      try {
+        const guestItems = JSON.parse(savedGuest);
+        if (Array.isArray(guestItems) && guestItems.length > 0) {
+          // Merge guest items into user cart
+          const mergedMap = new Map<string, any>();
+          userCart.forEach(item => {
+            const key = item.id || item.handle || item.title;
+            mergedMap.set(String(key), item);
+          });
+
+          guestItems.forEach(gItem => {
+            const key = gItem.id || gItem.handle || gItem.title;
+            const keyStr = String(key);
+            if (mergedMap.has(keyStr)) {
+              const existing = mergedMap.get(keyStr);
+              existing.quantity = (existing.quantity || 1) + (gItem.quantity || 1);
+            } else {
+              mergedMap.set(keyStr, gItem);
+            }
+          });
+
+          userCart = Array.from(mergedMap.values());
+          localStorage.setItem(cartKey, JSON.stringify(userCart));
+
+          // Clear guest cart after successful merge
+          localStorage.removeItem(guestCartKey);
+          sessionStorage.removeItem("ecom_guest_session_cart");
+        }
+      } catch (e) {}
+    }
+
+    return userCart;
   } catch (e) {
     return [];
   }
 }
 
-// 🛒 Save Cart Store: Logged-in users save to localStorage; Guests save only in active memory (erased on refresh)
+// 🛒 Save Cart Store: Persists cart for both guest and logged in users
 export function saveCartStore(items: any[]): void {
   if (typeof window === "undefined") return;
   try {
     const loggedIn = isUserLoggedIn();
     if (!loggedIn) {
-      activeGuestMemoryCart = items;
-      isGuestInitialLoadDone = true;
-      try {
-        sessionStorage.setItem("ecom_guest_session_cart", JSON.stringify(items));
-      } catch {}
+      localStorage.setItem("ecom_cart_guest", JSON.stringify(items));
+      sessionStorage.setItem("ecom_guest_session_cart", JSON.stringify(items));
     } else {
       const cartKey = getUserCartKey();
       localStorage.setItem(cartKey, JSON.stringify(items));

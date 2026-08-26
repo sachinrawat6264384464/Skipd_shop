@@ -342,13 +342,13 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     <button
                       onClick={() => handleToggleWishlist(product)}
                       className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full border flex items-center justify-center text-xs shadow transition cursor-pointer ${
-                        isInWishlist(product.id)
+                        isInWishlist(product.id, product.handle)
                           ? "bg-red-50 border-red-200 text-red-500"
                           : "bg-white/80 border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200"
                       }`}
-                      title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                      title={isInWishlist(product.id, product.handle) ? "Remove from Wishlist" : "Add to Wishlist"}
                     >
-                      {isInWishlist(product.id) ? "❤️" : "🖤"}
+                      {isInWishlist(product.id, product.handle) ? "❤️" : "🖤"}
                     </button>
 
                     <Link href={isOutOfStock ? "#" : `/product/${product.handle}`} className="block relative aspect-square bg-white rounded-xl overflow-hidden p-4 border border-gray-200/60 mt-5">
