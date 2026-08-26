@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { getApiBaseUrl } from 'lib/api';
 
 interface ProductCard {
@@ -20,6 +20,7 @@ interface Message {
   sender: 'user' | 'ai';
   text: string;
   products?: ProductCard[];
+  suggestedActions?: string[];
   isGuardrail?: boolean;
   isGuestLimit?: boolean;
   timestamp: string;
@@ -80,6 +81,12 @@ const ALL_FALLBACK_PRODUCTS: ProductCard[] = [
 
 export default function FloatingChatbot() {
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Hide Customer AI Recommender Chatbot on Admin dashboard pages (/admin and /admin/*)
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -115,8 +122,7 @@ export default function FloatingChatbot() {
     const queryText = (textToSend || inputMessage).trim();
     if (!queryText || loading) return;
 
-    // Check Guest Rate Limit (Max 3 free queries allowed)
-    if (!isLoggedIn && guestCount >= 3) {
+    if (!isLoggedIn && guestCount >= 10) {
       setShowLoginModal(true);
       return;
     }
@@ -128,9 +134,16 @@ export default function FloatingChatbot() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     };
 
-    setMessages((prev) => [...prev, userMsgObj]);
+    const newMessages = [...messages, userMsgObj];
+    setMessages(newMessages);
     if (!textToSend) setInputMessage('');
     setLoading(true);
+
+    // Build conversation history payload
+    const historyPayload = newMessages.map((m) => ({
+      role: m.sender === 'user' ? 'user' : 'assistant',
+      content: m.text
+    }));
 
     try {
       const controller = new AbortController();
@@ -152,6 +165,7 @@ export default function FloatingChatbot() {
           body: JSON.stringify({
             user_message: queryText,
             session_id: sessionId,
+            conversation_history: historyPayload,
             is_guest: !isLoggedIn
           })
         });
@@ -161,7 +175,6 @@ export default function FloatingChatbot() {
         }
       } catch (fetchErr) {
         clearTimeout(timeoutId);
-        // Smart fallback filtering based on user price criteria & keywords
         const qLower = queryText.toLowerCase();
         let fallbackProds = ALL_FALLBACK_PRODUCTS;
 
@@ -174,6 +187,7 @@ export default function FloatingChatbot() {
         data = {
           response_text: `✨ Here are top recommended products for "${queryText}":`,
           products: fallbackProds,
+          suggested_actions: ["⚡ Show cheaper ones", "⭐ Best rating", "🔋 Battery focus"],
           is_guest: !isLoggedIn
         };
       }
@@ -195,6 +209,7 @@ export default function FloatingChatbot() {
         sender: 'ai',
         text: data.response_text || 'Here are recommended products for you:',
         products: data.products || [],
+        suggestedActions: data.suggested_actions || [],
         isGuardrail: data.is_guardrail || false,
         isGuestLimit: data.is_guest_limit || false,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -322,6 +337,21 @@ export default function FloatingChatbot() {
                           </div>
                           <span className="text-slate-500 group-hover:text-purple-400 text-sm font-bold pr-1">→</span>
                         </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Dynamic Suggested Action Chips */}
+                  {msg.suggestedActions && msg.suggestedActions.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-1.5 pt-2 border-t border-slate-700/50">
+                      {msg.suggestedActions.map((action, aIdx) => (
+                        <button
+                          key={aIdx}
+                          onClick={() => handleSendMessage(action.replace(/^[^a-zA-Z0-9\s]+/, '').trim() || action)}
+                          className="text-[11px] bg-purple-950/80 hover:bg-purple-900 text-purple-200 border border-purple-500/40 rounded-full px-2.5 py-1 font-semibold transition cursor-pointer"
+                        >
+                          {action}
+                        </button>
                       ))}
                     </div>
                   )}

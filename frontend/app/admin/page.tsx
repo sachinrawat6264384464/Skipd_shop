@@ -12,6 +12,7 @@ import {
   seedCatalogProducts,
   purgeAllStoreOrders
 } from "lib/api";
+import { AIStoreCopilotWidget } from "components/admin/AIStoreCopilotWidget";
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>(null);
@@ -807,6 +808,9 @@ export default function AdminDashboardPage() {
           </div>
         </div>
       )}
+
+      {/* 📊 AI Store Copilot Merchant Intelligence Drawer Widget */}
+      <AIStoreCopilotWidget />
 
     </div>
   );

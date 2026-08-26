@@ -239,6 +239,7 @@ from app.api.abandoned_reminders import router as abandoned_reminders_router
 from app.api.notifications import router as notifications_router
 from app.api.returns import router as returns_router
 from app.api.reviews import router as reviews_router
+from app.api.admin_copilot import router as admin_copilot_router
 
 app.include_router(auth_router, prefix=settings.API_V1_STR)
 app.include_router(products_router, prefix=settings.API_V1_STR)
@@ -249,6 +250,7 @@ app.include_router(orders_router, prefix=settings.API_V1_STR)
 app.include_router(payments_router, prefix=settings.API_V1_STR)
 app.include_router(shipping_router, prefix=settings.API_V1_STR)
 app.include_router(admin_router, prefix=settings.API_V1_STR)
+app.include_router(admin_copilot_router, prefix=settings.API_V1_STR)
 app.include_router(whatsapp_router, prefix=settings.API_V1_STR)
 app.include_router(rewards_router, prefix=settings.API_V1_STR)
 app.include_router(sales_router, prefix=settings.API_V1_STR)
