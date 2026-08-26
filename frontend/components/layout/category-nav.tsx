@@ -49,8 +49,9 @@ export function CategoryNav() {
             const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
             if (catSlug) {
               const lowerSlug = String(catSlug).toLowerCase();
+              const prefix = lowerSlug.split("-")[0] || lowerSlug;
               categoriesWithProducts.add(lowerSlug);
-              categoriesWithProducts.add(lowerSlug.split("-")[0]);
+              categoriesWithProducts.add(prefix);
             }
           });
         }
