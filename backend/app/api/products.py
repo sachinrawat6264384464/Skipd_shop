@@ -196,12 +196,13 @@ async def admin_create_product(payload: dict = Body(...), db: AsyncSession = Dep
 
 @router.post("/admin/bulk-create")
 async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
-    """Admin: Bulk import and save products array directly into PostgreSQL database."""
+    """Admin: Bulk import and save products array directly into PostgreSQL database with smart UPSERT & deduplication."""
     products_list = payload.get("products", [])
     if not isinstance(products_list, list) or len(products_list) == 0:
         raise HTTPException(status_code=400, detail="No products array provided in payload")
 
     created_products = []
+    updated_products = []
     ts = int(datetime.datetime.utcnow().timestamp())
 
     try:
@@ -211,7 +212,13 @@ async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession
         cat_map = {c.slug.lower(): c.id for c in all_cats}
         cat_name_map = {c.name.lower(): c.id for c in all_cats}
 
-        # 2. Collect & pre-create any missing categories FIRST in batch
+        # 2. Pre-fetch existing products by SKU and Handle for UPSERT / Deduplication
+        existing_prods_res = await db.execute(select(Product))
+        existing_prods = existing_prods_res.scalars().all()
+        existing_sku_map = {p.sku.upper(): p for p in existing_prods if p.sku}
+        existing_handle_map = {p.handle.lower(): p for p in existing_prods if p.handle}
+
+        # 3. Collect & pre-create any missing categories FIRST in batch
         missing_cat_slugs = set()
         for item in products_list:
             cat_slug = (item.get("category_slug") or item.get("category") or "general").lower().replace(" ", "-")
@@ -235,15 +242,19 @@ async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession
             cat_map = {c.slug.lower(): c.id for c in all_cats_updated}
             cat_name_map = {c.name.lower(): c.id for c in all_cats_updated}
 
-        # 3. Create all product objects
+        batch_skus_seen = set()
+
+        # 4. Create or Update all product objects
         for idx, item in enumerate(products_list):
             title = item.get("title", f"Imported Product {idx+1}")
+            raw_sku = item.get("sku")
+            clean_sku = str(raw_sku).strip() if raw_sku else None
+
+            # Handle parsing
             raw_handle = item.get("handle") or title.lower().replace(" ", "-").replace("/", "-")
             clean_handle = "".join([c if c.isalnum() or c == "-" else "" for c in raw_handle]).strip("-")
             if not clean_handle:
                 clean_handle = f"product-{idx+1}"
-            
-            clean_handle = f"{clean_handle}-{ts}-{idx}"
 
             cat_slug = (item.get("category_slug") or item.get("category") or "general").lower().replace(" ", "-")
             category_id = cat_map.get(cat_slug) or cat_name_map.get(cat_slug.replace("-", " "))
@@ -264,43 +275,106 @@ async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession
             else:
                 tags_list = ["bestseller"]
 
-            prod = Product(
-                title=title,
-                handle=clean_handle,
-                description=item.get("description", f"{title} catalog product."),
-                short_description=item.get("short_description"),
-                highlights=item.get("highlights"),
-                box_contents=item.get("box_contents"),
-                price=float(item.get("price", 999.0)),
-                compare_at_price=float(item.get("compare_at_price")) if item.get("compare_at_price") else None,
-                cost_price=float(item.get("cost_price")) if item.get("cost_price") else None,
-                sku=item.get("sku"),
-                barcode=item.get("barcode"),
-                stock_quantity=int(item.get("stock_quantity") or item.get("stock") or 50),
-                low_stock_threshold=int(item.get("low_stock_threshold") or 10),
-                category_id=category_id,
-                sub_category=item.get("sub_category") or item.get("subcategory"),
-                brand=item.get("brand"),
-                warehouse=item.get("warehouse"),
-                image_url=item.get("image_url") or (images_list[0] if images_list else None),
-                images=images_list,
-                video_url=item.get("video_url"),
-                color=item.get("color"),
-                size=item.get("size"),
-                material=item.get("material"),
-                weight=float(item.get("weight")) if item.get("weight") else None,
-                dimensions=item.get("dimensions"),
-                gst_rate=float(item.get("gst_rate")) if item.get("gst_rate") else None,
-                hsn_code=item.get("hsn_code"),
-                country_of_origin=item.get("country_of_origin"),
-                tags=tags_list,
-                meta_title=item.get("meta_title"),
-                meta_description=item.get("meta_description"),
-                is_featured=bool(item.get("is_featured", item.get("featured", True))),
-                is_active=bool(item.get("is_active", True))
-            )
-            db.add(prod)
-            created_products.append(prod)
+            # Check if product with this SKU already exists in PostgreSQL
+            existing_prod = existing_sku_map.get(clean_sku.upper()) if clean_sku else None
+            if not existing_prod and clean_handle in existing_handle_map:
+                existing_prod = existing_handle_map.get(clean_handle)
+
+            if existing_prod:
+                # 🔄 UPSERT: Update existing product details in PostgreSQL
+                existing_prod.title = title
+                existing_prod.price = float(item.get("price", existing_prod.price))
+                if item.get("compare_at_price"):
+                    existing_prod.compare_at_price = float(item.get("compare_at_price"))
+                if item.get("cost_price"):
+                    existing_prod.cost_price = float(item.get("cost_price"))
+                existing_prod.stock_quantity = int(item.get("stock_quantity") or item.get("stock") or existing_prod.stock_quantity)
+                if item.get("low_stock_threshold"):
+                    existing_prod.low_stock_threshold = int(item.get("low_stock_threshold"))
+                if category_id:
+                    existing_prod.category_id = category_id
+                if item.get("sub_category"):
+                    existing_prod.sub_category = item.get("sub_category")
+                if item.get("brand"):
+                    existing_prod.brand = item.get("brand")
+                if item.get("warehouse"):
+                    existing_prod.warehouse = item.get("warehouse")
+                if images_list:
+                    existing_prod.images = images_list
+                    existing_prod.image_url = images_list[0]
+                if item.get("description"):
+                    existing_prod.description = item.get("description")
+                if item.get("highlights"):
+                    existing_prod.highlights = item.get("highlights")
+                if item.get("box_contents"):
+                    existing_prod.box_contents = item.get("box_contents")
+                if item.get("color"):
+                    existing_prod.color = item.get("color")
+                if item.get("size"):
+                    existing_prod.size = item.get("size")
+                if item.get("material"):
+                    existing_prod.material = item.get("material")
+                if item.get("weight"):
+                    existing_prod.weight = float(item.get("weight"))
+                if item.get("dimensions"):
+                    existing_prod.dimensions = item.get("dimensions")
+                if item.get("gst_rate"):
+                    existing_prod.gst_rate = float(item.get("gst_rate"))
+                if item.get("hsn_code"):
+                    existing_prod.hsn_code = item.get("hsn_code")
+                if item.get("country_of_origin"):
+                    existing_prod.country_of_origin = item.get("country_of_origin")
+
+                updated_products.append(existing_prod)
+            else:
+                # ➕ CREATE: New Product with unique SKU & Handle
+                if clean_sku and clean_sku.upper() in batch_skus_seen:
+                    final_sku = f"{clean_sku}-{ts}-{idx}"
+                else:
+                    final_sku = clean_sku
+
+                if clean_sku:
+                    batch_skus_seen.add(clean_sku.upper())
+
+                final_handle = f"{clean_handle}-{ts}-{idx}"
+
+                prod = Product(
+                    title=title,
+                    handle=final_handle,
+                    description=item.get("description", f"{title} catalog product."),
+                    short_description=item.get("short_description"),
+                    highlights=item.get("highlights"),
+                    box_contents=item.get("box_contents"),
+                    price=float(item.get("price", 999.0)),
+                    compare_at_price=float(item.get("compare_at_price")) if item.get("compare_at_price") else None,
+                    cost_price=float(item.get("cost_price")) if item.get("cost_price") else None,
+                    sku=final_sku,
+                    barcode=item.get("barcode"),
+                    stock_quantity=int(item.get("stock_quantity") or item.get("stock") or 50),
+                    low_stock_threshold=int(item.get("low_stock_threshold") or 10),
+                    category_id=category_id,
+                    sub_category=item.get("sub_category") or item.get("subcategory"),
+                    brand=item.get("brand"),
+                    warehouse=item.get("warehouse"),
+                    image_url=item.get("image_url") or (images_list[0] if images_list else None),
+                    images=images_list,
+                    video_url=item.get("video_url"),
+                    color=item.get("color"),
+                    size=item.get("size"),
+                    material=item.get("material"),
+                    weight=float(item.get("weight")) if item.get("weight") else None,
+                    dimensions=item.get("dimensions"),
+                    gst_rate=float(item.get("gst_rate")) if item.get("gst_rate") else None,
+                    hsn_code=item.get("hsn_code"),
+                    country_of_origin=item.get("country_of_origin"),
+                    tags=tags_list,
+                    meta_title=item.get("meta_title"),
+                    meta_description=item.get("meta_description"),
+                    is_featured=bool(item.get("is_featured", item.get("featured", True))),
+                    is_active=bool(item.get("is_active", True))
+                )
+                db.add(prod)
+                created_products.append(prod)
 
         await db.commit()
 
@@ -309,9 +383,10 @@ async def admin_bulk_create_products(payload: dict = Body(...), db: AsyncSession
         except BaseException as cache_err:
             print(f"[CACHE BYPASS WARNING] {cache_err}")
 
+        total_processed = len(created_products) + len(updated_products)
         return {
-            "message": f"Successfully created {len(created_products)} products in Neon PostgreSQL DB",
-            "count": len(created_products)
+            "message": f"Successfully processed {total_processed} products ({len(created_products)} created, {len(updated_products)} updated) in Neon PostgreSQL DB",
+            "count": total_processed
         }
     except HTTPException:
         raise
