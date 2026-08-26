@@ -978,14 +978,14 @@ export default function AdminInventoryPage() {
                   </span>
                 </div>
 
-                {/* CSV Format Info — supports all 6 steps of Add Product form & full enterprise fields */}
+                {/* CSV Format Info — supports all 6 steps of Add Product form */}
                 <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl text-[10px] text-gray-600 space-y-2">
-                  <p className="font-bold text-gray-900">📋 Comprehensive CSV Columns Format (All Enterprise Catalog Fields Supported):</p>
+                  <p className="font-bold text-gray-900">📋 Comprehensive CSV Columns Format (All 6 Form Steps Supported):</p>
                   <p className="font-mono text-emerald-700 bg-white p-2 rounded-lg border border-gray-200 whitespace-pre-wrap break-all leading-relaxed text-[9px]">
-                    Product Title, Price, Compare At Price, Cost Price, Stock Qty, Low Stock Threshold, Category, Sub Category, Brand, Warehouse, SKU, Barcode, Image URL, Gallery Image URLs, Video URL, Color, Size, Material, Weight (kg), Dimensions (L x W x H), GST Rate, HSN Code, Country of Origin, Is Featured, Is Active, Tags, Short Description, Description, Highlights, Box Contents, Meta Title, Meta Description
+                    Product Title, Price, Stock Qty, Category, Warehouse, Image URL, SKU, Compare At Price, Brand, Sub Category, Tags, Short Description, Description, Highlights, Box Contents, HSN Code, Meta Title, Meta Description
                   </p>
-                  <p className="text-gray-500 leading-relaxed">
-                    💡 Mandatory columns: <strong>Product Title, Price</strong>. All other columns are optional and auto-fill defaults. Separator for Tags, Gallery Image URLs, Highlights, and Box Contents is <code className="bg-white px-1 border rounded">|</code>.
+                  <p className="text-gray-400 leading-relaxed">
+                    💡 Mandatory columns: <strong>Product Title, Price</strong>. All other columns are optional and auto-fill defaults. Separator for Tags, Highlights, and Box Contents is <code className="bg-white px-1 border rounded">|</code>.
                   </p>
                 </div>
 

@@ -42,11 +42,11 @@ export function ShoppableInstagramGrid() {
     <div className="my-10">
       <div className="text-center mb-8">
         <span className="px-3.5 py-1 text-xs font-bold uppercase tracking-wider text-pink-700 bg-pink-50 border border-pink-200 rounded-full">
-          #ECOMStyle on Instagram
+          #SKIPDStyle on Instagram
         </span>
         <h3 className="text-2xl md:text-4xl font-black text-gray-900 mt-3">Shop The Look</h3>
         <p className="text-gray-500 text-xs md:text-sm mt-1">
-          Tag @ECOM_official on Instagram to get featured on our store!
+          Tag @SKIPD_official on Instagram to get featured on our store!
         </p>
       </div>
 

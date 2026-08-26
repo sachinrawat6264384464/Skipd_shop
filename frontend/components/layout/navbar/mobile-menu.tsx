@@ -90,9 +90,9 @@ export default function MobileMenu() {
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
               <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center gap-2 font-black text-lg text-gray-900">
                 <span className="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-black text-sm shadow-xs">
-                  E
+                  S
                 </span>
-                <span>E-COM STORE</span>
+                <span>SKIPD STORE</span>
               </Link>
 
               <div className="flex items-center gap-2">
@@ -132,7 +132,7 @@ export default function MobileMenu() {
               <div className="p-4 bg-gray-50 border-b border-gray-200/80 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-[10px] text-gray-400 font-extrabold uppercase tracking-wider">Guest Account</p>
-                  <p className="font-black text-sm text-gray-900">Welcome to E-COM</p>
+                  <p className="font-black text-sm text-gray-900">Welcome to SKIPD</p>
                 </div>
                 <button
                   type="button"

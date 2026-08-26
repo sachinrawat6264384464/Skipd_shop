@@ -76,36 +76,13 @@ class ProductSchema(BaseModel):
     id: int
     title: str
     handle: str
-    short_description: Optional[str] = None
     description: Optional[str] = None
     price: float
     compare_at_price: Optional[float] = None
-    cost_price: Optional[float] = None
-    sku: Optional[str] = None
-    barcode: Optional[str] = None
-    stock_quantity: Optional[int] = 100
-    low_stock_threshold: Optional[int] = 10
-    sub_category: Optional[str] = None
-    brand: Optional[str] = None
-    warehouse: Optional[str] = "Main FC"
     featured: bool = False
-    is_active: bool = True
     images: Optional[Any] = []
-    gallery_images: Optional[Any] = []
-    video_url: Optional[str] = None
-    color: Optional[str] = None
-    size: Optional[str] = None
-    material: Optional[str] = None
-    weight: Optional[float] = None
-    dimensions: Optional[str] = None
-    gst_rate: Optional[float] = 18.0
-    hsn_code: Optional[str] = None
-    country_of_origin: Optional[str] = "India"
     tags: Optional[Any] = []
-    highlights: Optional[Any] = []
-    box_contents: Optional[Any] = []
-    meta_title: Optional[str] = None
-    meta_description: Optional[str] = None
+    stock_quantity: Optional[int] = 100
     category: Optional[CategorySchema] = None
     variants: Optional[List[VariantSchema]] = []
 

@@ -9,8 +9,7 @@ import {
   deleteAdminSale,
   fetchProducts,
   fetchCoupons,
-  createCoupon,
-  bulkAddSaleProducts
+  createCoupon
 } from "lib/api";
 
 export default function AdminSalesPage() {
@@ -44,7 +43,6 @@ export default function AdminSalesPage() {
 
   // Dynamic Campaigns Dataset
   const [campaigns, setCampaigns] = useState<any[]>([]);
-  const [catalogProducts, setCatalogProducts] = useState<any[]>([]);
   const [viewModalCampaign, setViewModalCampaign] = useState<any | null>(null);
   const [isEditingModal, setIsEditingModal] = useState(false);
 
@@ -100,17 +98,6 @@ export default function AdminSalesPage() {
     setLoading(true);
     let formattedFromDb: any[] = [];
 
-    // 1. Fetch Real Products from Database Catalog
-    try {
-      const dbProds = await fetchProducts();
-      if (Array.isArray(dbProds) && dbProds.length > 0) {
-        setCatalogProducts(dbProds);
-      }
-    } catch (e) {
-      console.warn("Failed to fetch catalog products:", e);
-    }
-
-    // 2. Fetch Sales Campaigns from Database
     try {
       const dbSales = await fetchAdminAllSales();
       if (dbSales && Array.isArray(dbSales) && dbSales.length > 0) {
@@ -802,24 +789,12 @@ export default function AdminSalesPage() {
           </div>
 
           <button
-            onClick={async () => {
+            onClick={() => {
               if (typeof window !== "undefined") {
                 localStorage.setItem("skipd_flash_sale_products", JSON.stringify(flashSaleDeals));
                 window.dispatchEvent(new Event("skipd_flash_sale_updated"));
               }
-              
-              try {
-                const productsPayload = flashSaleDeals.map((d: any) => ({
-                  product_id: typeof d.id === "number" ? d.id : 1,
-                  sale_price: d.price,
-                  original_price: d.compare_at_price,
-                  shipping_type: "Easy Ship",
-                  weight_range: "<500gm"
-                }));
-                await bulkAddSaleProducts(1, productsPayload);
-              } catch (e) {}
-
-              showToast("⚡ Live Flash Sale deals published to DB & Storefront Homepage!");
+              showToast("⚡ Live Flash Sale deals published & updated on storefront!");
             }}
             className="bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs px-5 py-3 rounded-2xl transition shadow-lg cursor-pointer flex items-center gap-1.5 whitespace-nowrap"
           >
@@ -830,7 +805,7 @@ export default function AdminSalesPage() {
         {/* 4 Editable Flash Sale Deal Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
           {flashSaleDeals.map((deal, idx) => (
-            <div key={deal.id || idx} className="bg-slate-900/90 border border-slate-800 hover:border-amber-500/50 rounded-2xl p-4 space-y-3 shadow-md transition">
+            <div key={deal.id || idx} className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 shadow-md">
               
               <div className="flex items-center justify-between text-[10px] font-black text-slate-400 border-b border-slate-800 pb-2">
                 <span>SLOT #{idx + 1}</span>
@@ -839,59 +814,9 @@ export default function AdminSalesPage() {
                 </span>
               </div>
 
-              {/* Product Photo Image Preview */}
-              <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-slate-950 border border-slate-800 shadow-inner group">
-                <img
-                  src={deal.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"}
-                  alt={deal.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                />
-                <span className="absolute bottom-2 left-2 bg-slate-950/90 text-amber-400 text-[10px] font-black px-2 py-0.5 rounded border border-amber-500/40">
-                  ₹{deal.price.toLocaleString("en-IN")}
-                </span>
-              </div>
-
-              {/* Select Product from Database Catalog Dropdown */}
+              {/* Product Title Select or Input */}
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400 block">Select DB Catalog Product</label>
-                <select
-                  value={deal.id || deal.title}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    const found = catalogProducts.find(p => String(p.id) === String(val) || p.title === val);
-                    if (found) {
-                      const updated = [...flashSaleDeals];
-                      const price = Number(found.price) || deal.price;
-                      const compareAt = Number(found.compare_at_price) || Math.round(price * 1.4);
-                      const offPct = compareAt > price && compareAt > 0 ? Math.round(((compareAt - price) / compareAt) * 100) : 30;
-                      const img = (found.images && found.images.length > 0) ? found.images[0] : (found.image || deal.image);
-                      updated[idx] = {
-                        ...deal,
-                        id: found.id,
-                        title: found.title,
-                        handle: found.handle || found.title.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-                        price: price,
-                        compare_at_price: compareAt,
-                        discount_percent: offPct,
-                        image: img
-                      };
-                      setFlashSaleDeals(updated);
-                    }
-                  }}
-                  className="w-full bg-slate-950 border border-slate-700 hover:border-amber-500 rounded-xl px-2.5 py-2 text-xs font-bold text-white focus:outline-none focus:border-amber-500 cursor-pointer"
-                >
-                  <option value="">-- Choose Product from Catalog DB --</option>
-                  {catalogProducts.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      📦 {p.title} (₹{p.price})
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Editable Product Title & Handle */}
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-400">Custom Title Override</label>
+                <label className="text-[10px] font-bold text-slate-400">Product Title &amp; Handle</label>
                 <input
                   type="text"
                   value={deal.title}

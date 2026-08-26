@@ -93,7 +93,7 @@ export function EmailToastListener() {
             {/* Email Meta Header */}
             <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-1 text-xs">
               <div className="flex justify-between text-gray-600">
-                <span><strong>From:</strong> E-COM Store (sachinrawat6264384464@gmail.com)</span>
+                <span><strong>From:</strong> SKIPD Store (sachinrawat6264384464@gmail.com)</span>
                 <span className="text-gray-400 text-[11px]">
                   {activeEmail?.timestamp && !isNaN(new Date(activeEmail.timestamp).getTime())
                     ? new Date(activeEmail.timestamp).toLocaleTimeString("en-IN")
@@ -108,7 +108,7 @@ export function EmailToastListener() {
             <div className="bg-emerald-50/50 border border-emerald-200/80 rounded-2xl p-5 text-xs text-gray-800 space-y-4">
               {activeEmail.type === "WELCOME" && (
                 <div className="space-y-2">
-                  <h4 className="font-extrabold text-sm text-emerald-950">Welcome to E-COM Commerce, {activeEmail.username}! 🎉</h4>
+                  <h4 className="font-extrabold text-sm text-emerald-950">Welcome to SKIPD Commerce, {activeEmail.username}! 🎉</h4>
                   <p className="leading-relaxed">Your registered account <strong>{activeEmail.to}</strong> has been activated.</p>
                   <div className="bg-white p-3 rounded-xl border border-emerald-200">
                     <p className="font-bold text-gray-900">Account Details:</p>

@@ -387,11 +387,9 @@ export default function AdminProductsPage() {
   const initialEmptyProductState = {
     title: "",
     sku: "",
-    barcode: "",
     category_slug: "electronics",
     subcategory: "",
     brand: "",
-    warehouse: "Main FC",
     tags: "",
     short_description: "",
     description: "",
@@ -417,14 +415,12 @@ export default function AdminProductsPage() {
     track_quantity: true,
     image_url: "",
     gallery_images: [],
-    video_url: "",
     alt_text: "",
     has_variants: true,
     variant_color: "",
     variant_size: "",
     variant_ram: "",
     variant_storage: "",
-    material: "",
     meta_title: "",
     meta_desc: "",
     handle: "",
@@ -664,11 +660,9 @@ export default function AdminProductsPage() {
     setNewProduct({
       title: product.title || "",
       sku: product.sku || product.handle || `SKU-${product.id}`,
-      barcode: product.barcode || "",
       category_slug: product.category_slug || product.category?.slug || "electronics",
       subcategory: product.subcategory || "",
       brand: product.brand || "",
-      warehouse: product.warehouse || "Main FC",
       tags: Array.isArray(product.tags) ? product.tags.join(", ") : (product.tags || ""),
       short_description: product.short_description || (product.description ? product.description.substring(0, 150) : ""),
       description: product.description || "",
@@ -694,14 +688,12 @@ export default function AdminProductsPage() {
       track_quantity: true,
       image_url: (product.images && product.images.length > 0) ? product.images[0] : (product.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"),
       gallery_images: product.images && product.images.length > 1 ? product.images.slice(1) : ["https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800"],
-      video_url: product.video_url || "",
       alt_text: product.alt_text || product.title || "",
       has_variants: product.has_variants ?? true,
       variant_color: Array.isArray(product.colors) ? product.colors.join(", ") : (product.variant_color || "Pitch Black"),
       variant_size: product.variant_size || "Standard",
       variant_ram: product.variant_ram || "12GB",
       variant_storage: product.variant_storage || "256GB",
-      material: product.material || "",
       meta_title: product.meta_title || product.title || "",
       meta_desc: product.meta_desc || product.description || "",
       handle: product.handle || "",
@@ -726,42 +718,21 @@ export default function AdminProductsPage() {
     const payload = {
       title: newProduct.title,
       handle: newProduct.handle || newProduct.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-      short_description: newProduct.short_description || "",
       description: newProduct.description || newProduct.short_description || "Premium quality product from SKIPD Commerce catalog.",
       price: parseFloat(newProduct.price),
       compare_at_price: newProduct.compare_at_price ? parseFloat(newProduct.compare_at_price) : undefined,
-      cost_price: newProduct.cost_per_item ? parseFloat(newProduct.cost_per_item) : undefined,
-      sku: newProduct.sku || "",
-      barcode: newProduct.barcode || "",
       stock_quantity: parseInt(newProduct.stock_quantity) || 0,
-      low_stock_threshold: parseInt(newProduct.low_stock_threshold) || 10,
       category_slug: newProduct.category_slug,
-      sub_category: newProduct.subcategory || "",
-      brand: newProduct.brand || "",
-      warehouse: newProduct.warehouse || "Main FC",
-      color: newProduct.variant_color || "",
-      size: newProduct.variant_size || "",
-      material: newProduct.material || "",
-      weight: newProduct.weight ? parseFloat(newProduct.weight) : undefined,
-      dimensions: newProduct.dimensions_length ? `${newProduct.dimensions_length}x${newProduct.dimensions_width}x${newProduct.dimensions_height}` : "",
-      gst_rate: newProduct.tax_rate ? parseFloat(newProduct.tax_rate.replace(/[^0-9.]/g, "")) : 18.0,
-      hsn_code: newProduct.hsn_code || "85183000",
-      country_of_origin: newProduct.country || "India",
       featured: newProduct.featured,
-      is_active: newProduct.status === "Active",
       images: [
         newProduct.image_url || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
         ...(newProduct.gallery_images.filter(Boolean))
       ],
-      gallery_images: newProduct.gallery_images.filter(Boolean),
-      video_url: newProduct.video_url || "",
       tags: newProduct.tags ? newProduct.tags.split(",").map(t => t.trim()) : ["bestseller"],
       highlights: (newProduct.highlights || []).filter(Boolean),
       box_contents: newProduct.box_items && newProduct.box_items.length > 0 
         ? newProduct.box_items.filter(b => b.title.trim().length > 0)
-        : (newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : []),
-      meta_title: newProduct.meta_title || "",
-      meta_description: newProduct.meta_desc || ""
+        : (newProduct.box_contents ? newProduct.box_contents.split(",").map(b => b.trim()).filter(Boolean) : [])
     };
 
     if (editingProduct) {
@@ -1094,65 +1065,55 @@ export default function AdminProductsPage() {
                 <table className="w-full text-left text-xs text-gray-700">
                   <thead className="bg-gray-50 text-gray-400 font-extrabold uppercase text-[10px] border-b border-gray-100 tracking-wider">
                     <tr>
-                      <th className="px-6 py-4">Product Info &amp; SKU</th>
-                      <th className="px-6 py-4">Category &amp; Brand</th>
-                      <th className="px-6 py-4">Price &amp; Cost</th>
-                      <th className="px-6 py-4">Stock &amp; Warehouse</th>
-                      <th className="px-6 py-4">Variant &amp; Tax</th>
-                      <th className="px-6 py-4">New Drop &amp; Status</th>
+                      <th className="px-6 py-4">Product Info</th>
+                      <th className="px-6 py-4">Category</th>
+                      <th className="px-6 py-4">Price &amp; Off %</th>
+                      <th className="px-6 py-4">Stock Level</th>
+                      <th className="px-6 py-4">New Arrival Drop</th>
+                      <th className="px-6 py-4">Status</th>
                       <th className="px-6 py-4 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 font-medium">
                     {paginatedProducts.map((p) => {
                       const stock = p.stock_quantity ?? 100;
-                      const lowStockLimit = p.low_stock_threshold ?? 10;
                       const isOutOfStock = stock <= 0;
-                      const isLowStock = stock > 0 && stock <= lowStockLimit;
+                      const isLowStock = stock > 0 && stock <= 15;
                       const price = Number(p.price || 0);
                       const comparePrice = p.compare_at_price ? Number(p.compare_at_price) : null;
-                      const costPrice = p.cost_price ? Number(p.cost_price) : null;
                       const itemOffPct = (comparePrice && comparePrice > price) ? Math.round(((comparePrice - price) / comparePrice) * 100) : 0;
                       const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
                       const isNewArrival = newArrivalDbIds.includes(Number(p.id));
 
                       return (
                         <tr key={p.id} className="hover:bg-gray-50/80 transition group">
-                          {/* Product Info & SKU / Barcode */}
                           <td className="px-6 py-4 flex items-center gap-3.5">
                             <img
                               src={image}
                               alt={p.title}
                               className="w-12 h-12 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0 group-hover:scale-105 transition"
                             />
-                            <div className="space-y-0.5 min-w-0">
-                              <p className="font-black text-gray-900 text-sm leading-tight truncate max-w-[200px]" title={p.title}>{p.title}</p>
-                              <div className="flex items-center gap-2 text-[10px] font-mono text-gray-400">
-                                <span>SKU: {p.sku || `SKU-${p.id}`}</span>
-                                {p.barcode && <span>• Barcode: {p.barcode}</span>}
+                            <div className="space-y-0.5">
+                              <p className="font-black text-gray-900 text-sm leading-tight">{p.title}</p>
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] text-gray-400 font-mono">ID: #{p.id}</span>
+                                <Link
+                                  href={`/product/${p.handle}`}
+                                  target="_blank"
+                                  className="text-[10px] text-emerald-600 font-bold hover:underline"
+                                >
+                                  View on Store ↗
+                                </Link>
                               </div>
-                              <Link
-                                href={`/product/${p.handle}`}
-                                target="_blank"
-                                className="text-[10px] text-emerald-600 font-bold hover:underline block"
-                              >
-                                View on Store ↗
-                              </Link>
                             </div>
                           </td>
 
-                          {/* Category, Sub Category & Brand */}
                           <td className="px-6 py-4">
-                            <div className="space-y-1">
-                              <span className="bg-gray-100 text-gray-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-gray-200 capitalize block w-fit">
-                                {p.category_slug || p.category?.name || "General"}
-                              </span>
-                              {p.sub_category && <p className="text-[10px] text-gray-500 font-medium">{p.sub_category}</p>}
-                              {p.brand && <p className="text-[10px] font-black text-emerald-700">🏷️ {p.brand}</p>}
-                            </div>
+                            <span className="bg-gray-100 text-gray-800 text-[11px] font-bold px-2.5 py-1 rounded-lg border border-gray-200 capitalize">
+                              {p.category_slug || p.category?.name || "General"}
+                            </span>
                           </td>
 
-                          {/* Price, Compare Price & Cost Price */}
                           <td className="px-6 py-4">
                             <div>
                               <div className="flex items-center gap-2">
@@ -1168,55 +1129,22 @@ export default function AdminProductsPage() {
                                   MRP: ₹{comparePrice.toLocaleString("en-IN")}.00
                                 </p>
                               )}
-                              {costPrice && (
-                                <p className="text-[10px] text-gray-500 font-semibold mt-0.5">
-                                  Cost: ₹{costPrice.toLocaleString("en-IN")}
-                                </p>
-                              )}
                             </div>
                           </td>
 
-                          {/* Stock Level, Low Stock Threshold & Warehouse */}
                           <td className="px-6 py-4">
-                            <div className="space-y-0.5">
-                              <span className={`font-black text-xs block ${
-                                isOutOfStock ? "text-red-600" : isLowStock ? "text-amber-600" : "text-gray-900"
-                              }`}>
-                                {stock} units
-                              </span>
-                              <p className="text-[10px] text-gray-400 font-medium">Alert &lt; {lowStockLimit}</p>
-                              <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200 font-bold block w-fit">
-                                🏬 {p.warehouse || "Main FC"}
-                              </span>
-                            </div>
+                            <span className={`font-black text-xs ${
+                              isOutOfStock ? "text-red-600" : isLowStock ? "text-amber-600" : "text-gray-900"
+                            }`}>
+                              {stock} units
+                            </span>
                           </td>
 
-                          {/* Variant Attributes (Color/Size/Material) & Tax (GST/HSN) */}
+                          {/* ⚡ NEW ARRIVAL TOGGLE SWITCH BUTTON */}
                           <td className="px-6 py-4">
-                            <div className="space-y-1 text-[11px]">
-                              <p className="font-extrabold text-gray-900 flex items-center gap-1">
-                                <span>🎨</span>
-                                <span>
-                                  {p.color || p.variant_color || (p.category_slug === "mobiles" ? "Pitch Black" : p.category_slug === "apparel" ? "Oversized Black" : "Standard Color")}
-                                  {(p.size || p.variant_size) ? ` • ${p.size || p.variant_size}` : ""}
-                                </span>
-                              </p>
-                              <p className="text-[10px] text-gray-600 font-mono bg-gray-50 px-2 py-0.5 rounded border border-gray-200 w-fit">
-                                HSN: {p.hsn_code || "85183000"} | GST: {p.gst_rate || 18}%
-                              </p>
-                              {(p.material || p.weight) && (
-                                <p className="text-[10px] text-gray-500 font-medium">
-                                  {p.material ? `Mat: ${p.material}` : ""} {p.weight ? `(${p.weight} kg)` : ""}
-                                </p>
-                              )}
-                            </div>
-                          </td>
-
-                          {/* New Arrival Drop & Status */}
-                          <td className="px-6 py-4 space-y-1.5">
                             <button
                               onClick={() => handleToggleNewArrival(p)}
-                              className={`px-3 py-1 rounded-xl text-[10px] font-black border transition cursor-pointer flex items-center gap-1.5 ${
+                              className={`px-3 py-1.5 rounded-xl text-[10px] font-black border transition cursor-pointer flex items-center gap-1.5 ${
                                 isNewArrival
                                   ? "bg-emerald-500 text-white border-emerald-400 shadow-md shadow-emerald-500/20"
                                   : "bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
@@ -1225,17 +1153,19 @@ export default function AdminProductsPage() {
                             >
                               <span>{isNewArrival ? "✨ New Drop ON" : "⚪ Normal Item"}</span>
                             </button>
+                          </td>
 
+                          <td className="px-6 py-4">
                             {isOutOfStock ? (
-                              <span className="bg-red-100 text-red-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-red-200 block w-fit">
+                              <span className="bg-red-100 text-red-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-red-200">
                                 🚫 OUT OF STOCK
                               </span>
                             ) : isLowStock ? (
-                              <span className="bg-amber-100 text-amber-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-amber-200 block w-fit">
+                              <span className="bg-amber-100 text-amber-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-amber-200">
                                 ⚠️ LOW STOCK ({stock})
                               </span>
                             ) : (
-                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-emerald-200 block w-fit">
+                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2.5 py-1 rounded-full uppercase border border-emerald-200">
                                 ✓ IN STOCK
                               </span>
                             )}

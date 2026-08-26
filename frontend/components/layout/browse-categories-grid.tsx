@@ -9,13 +9,9 @@ const FALLBACK_CATEGORY_IMAGES: Record<string, string> = {
   mobiles: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
   laptops: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
   fashion: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
-  apparel: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
   footwear: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
   watches: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
-  home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
-  sports: "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800",
-  artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
-  lifestyle: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800"
+  home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800"
 };
 
 export function BrowseCategoriesGrid() {
@@ -55,18 +51,15 @@ export function BrowseCategoriesGrid() {
     );
   }
 
-  // Ensure all active database categories are covered
+  // Ensure active category list
   const activeCategories = categories.length > 0 ? categories : [
-    { name: "Mobiles & Tablets", slug: "mobiles", image_url: FALLBACK_CATEGORY_IMAGES.mobiles },
-    { name: "Electronics & Tech", slug: "electronics", image_url: FALLBACK_CATEGORY_IMAGES.electronics },
-    { name: "Watches & Wearables", slug: "watches", image_url: FALLBACK_CATEGORY_IMAGES.watches },
+    { name: "Electronics", slug: "electronics", image_url: FALLBACK_CATEGORY_IMAGES.electronics },
     { name: "Fashion & Apparel", slug: "fashion", image_url: FALLBACK_CATEGORY_IMAGES.fashion },
-    { name: "Home & Living", slug: "home", image_url: FALLBACK_CATEGORY_IMAGES.home },
     { name: "Footwear & Shoes", slug: "footwear", image_url: FALLBACK_CATEGORY_IMAGES.footwear },
+    { name: "Watches & Smartwear", slug: "watches", image_url: FALLBACK_CATEGORY_IMAGES.watches },
+    { name: "Mobiles & Tablets", slug: "mobiles", image_url: FALLBACK_CATEGORY_IMAGES.mobiles },
     { name: "Laptops & Computers", slug: "laptops", image_url: FALLBACK_CATEGORY_IMAGES.laptops },
-    { name: "Apparel & Wear", slug: "apparel", image_url: FALLBACK_CATEGORY_IMAGES.apparel },
-    { name: "Sports & Fitness", slug: "sports", image_url: FALLBACK_CATEGORY_IMAGES.sports },
-    { name: "Artisan & Handicraft", slug: "artisan", image_url: FALLBACK_CATEGORY_IMAGES.artisan }
+    { name: "Home & Living", slug: "home", image_url: FALLBACK_CATEGORY_IMAGES.home }
   ];
 
   return (
