@@ -1,12 +1,15 @@
-import CartModal from "components/cart/modal";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { UserAccountDropdown } from "./user-dropdown";
 import MobileMenu from "./mobile-menu";
 import { WishlistNavButton } from "./wishlist-nav-button";
 import { LanguagePicker } from "components/language/language-picker";
-import { InstantSearchModal } from "components/search/search-modal";
 import { NavLinks } from "./nav-links";
-import { NotificationBell } from "components/notifications/NotificationBell";
+
+// Dynamic imports for interactive modals in Server Component for strictly on-demand loading
+const CartModal = dynamic(() => import("components/cart/modal"));
+const InstantSearchModal = dynamic(() => import("components/search/search-modal").then(m => ({ default: m.InstantSearchModal })));
+const NotificationBell = dynamic(() => import("components/notifications/NotificationBell").then(m => ({ default: m.NotificationBell })));
 
 export async function Navbar() {
   return (
@@ -17,7 +20,7 @@ export async function Navbar() {
         <div className="flex items-center gap-3 sm:gap-5 lg:gap-8 shrink-0 min-w-0">
           <MobileMenu />
 
-          <Link href="/" className="flex items-center gap-2.5 text-gray-900 font-black text-xl sm:text-2xl tracking-tight shrink-0 group">
+          <Link href="/" prefetch={false} className="flex items-center gap-2.5 text-gray-900 font-black text-xl sm:text-2xl tracking-tight shrink-0 group">
             <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 text-white flex items-center justify-center font-black text-base sm:text-lg shadow-md shadow-emerald-500/25 group-hover:scale-105 transition duration-200">
               E
             </span>

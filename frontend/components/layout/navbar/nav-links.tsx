@@ -68,6 +68,7 @@ export function NavLinks() {
             </div>
             <Link
               href="/search"
+              prefetch={false}
               onClick={() => setIsCatOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50/80 text-emerald-900 font-black hover:bg-emerald-100/80 transition"
             >
@@ -75,6 +76,7 @@ export function NavLinks() {
             </Link>
             <Link
               href="/search/tech"
+              prefetch={false}
               onClick={() => setIsCatOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-bold transition"
             >
@@ -82,6 +84,7 @@ export function NavLinks() {
             </Link>
             <Link
               href="/search/apparel"
+              prefetch={false}
               onClick={() => setIsCatOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-bold transition"
             >
@@ -89,6 +92,7 @@ export function NavLinks() {
             </Link>
             <Link
               href="/search/lifestyle"
+              prefetch={false}
               onClick={() => setIsCatOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-bold transition"
             >
@@ -99,6 +103,7 @@ export function NavLinks() {
             {isLoggedIn && (
               <Link
                 href="/gift-cards"
+                prefetch={false}
                 onClick={() => setIsCatOpen(false)}
                 className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 text-amber-900 font-extrabold transition border-t border-gray-100 mt-1 pt-2"
               >
@@ -113,6 +118,7 @@ export function NavLinks() {
       <li>
         <Link
           href="/deals"
+          prefetch={false}
           className="px-3.5 py-2 rounded-xl text-emerald-700 font-black hover:bg-emerald-50 transition flex items-center gap-1.5"
         >
           <span>Deals</span>
@@ -127,6 +133,7 @@ export function NavLinks() {
         <li>
           <Link
             href="/gift-cards"
+            prefetch={false}
             className="px-3.5 py-2 rounded-xl text-amber-800 font-extrabold hover:bg-amber-50 transition flex items-center gap-1.5"
           >
             <span>🎁</span>
@@ -139,6 +146,7 @@ export function NavLinks() {
       <li>
         <Link
           href="/new-arrivals"
+          prefetch={false}
           className="px-3.5 py-2 rounded-xl text-gray-900 font-extrabold hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center gap-1.5"
         >
           <span>New Arrivals</span>
