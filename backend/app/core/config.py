@@ -62,6 +62,12 @@ class Settings(BaseSettings):
     SHIPROCKET_EMAIL: str = "demo@e-com.in"
     SHIPROCKET_PASSWORD: str = "demo_password"
 
+    # Cloudinary CDN Configuration
+    CLOUDINARY_CLOUD_NAME: str = "rluropic"
+    CLOUDINARY_API_KEY: str = "556369161351125"
+    CLOUDINARY_API_SECRET: str = "x3_oLOramAzVWpcOoz7EXhbQudk"
+    CLOUDINARY_URL: str = "cloudinary://556369161351125:x3_oLOramAzVWpcOoz7EXhbQudk@rluropic"
+
     class Config:
         case_sensitive = True
         env_file = ".env"

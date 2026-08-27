@@ -7,6 +7,7 @@ from app.core.database import get_db
 from app.models.models import Product, Category, ProductVariant, WishlistItem, CartItem, Review, InventoryLog, SaleProduct, OrderItem
 from app.schemas.schemas import ProductSchema, CategorySchema
 from app.core.redis_cache import get_cached_json, set_cached_json, invalidate_cache_pattern
+from app.services.cloudinary_svc import upload_image_to_cloudinary
 import datetime
 
 router = APIRouter(prefix="/products", tags=["Product Catalog"])
@@ -164,6 +165,21 @@ async def admin_create_product(payload: dict = Body(...), db: AsyncSession = Dep
 
         category_id = category.id if category else None
 
+        # ☁️ Automatically upload product images to Cloudinary CDN
+        raw_images = payload.get("images", ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"])
+        cloudinary_images = []
+        if isinstance(raw_images, list):
+            for img in raw_images:
+                if img:
+                    c_res = upload_image_to_cloudinary(img, folder="ecom_products")
+                    cloudinary_images.append(c_res["url"])
+        elif isinstance(raw_images, str) and raw_images.strip():
+            c_res = upload_image_to_cloudinary(raw_images, folder="ecom_products")
+            cloudinary_images.append(c_res["url"])
+
+        if not cloudinary_images:
+            cloudinary_images = ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]
+
         product = Product(
             title=title,
             handle=clean_handle,
@@ -172,7 +188,8 @@ async def admin_create_product(payload: dict = Body(...), db: AsyncSession = Dep
             compare_at_price=float(payload.get("compare_at_price")) if payload.get("compare_at_price") else None,
             category_id=category_id,
             featured=payload.get("featured", True),
-            images=payload.get("images", ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"]),
+            image_url=cloudinary_images[0],
+            images=cloudinary_images,
             tags=payload.get("tags", ["bestseller"]),
             stock_quantity=int(payload.get("stock_quantity", 100))
         )
