@@ -59,8 +59,35 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
   const [exchangeOption, setExchangeOption] = useState<"without" | "with">("without");
   const [openSubNav, setOpenSubNav] = useState<string | null>(null);
 
+  // Determine Size Category: 'shoes' | 'clothing' | 'none'
+  const catName = typeof product.category === "object" ? (product.category?.name || "") : (product.category || (product as any).category_name || "");
+  const subCatName = (product as any).sub_category || (product as any).subCategory || "";
+  const tagsText = Array.isArray(product.tags) ? product.tags.join(" ") : (product.tags || "");
+  const sizeSearchText = `${catName} ${subCatName} ${tagsText} ${product.title || ""}`.toLowerCase();
+
+  const isShoesProduct = /\b(shoe|shoes|footwear|sneaker|sneakers|boot|boots|slipper|slippers|sandal|sandals|loafer|heels|foot wear)\b/i.test(sizeSearchText);
+  const isClothingProduct = /\b(clothes|clothing|fashion|apparel|wear|t-shirt|tshirt|shirt|shirts|pant|pants|trousers|jeans|jacket|jackets|dress|dresses|top|tops|winterwear|garment|garments|hoodie|sweater|kurta|saree|suit|home living|home & living|home_living|bedsheet|curtains|bedding|pillow|towel|mat|blanket|quilt)\b/i.test(sizeSearchText);
+
+  let sizeType: "clothing" | "shoes" | "none" = "none";
+  if (isShoesProduct) {
+    sizeType = "shoes";
+  } else if (isClothingProduct) {
+    sizeType = "clothing";
+  } else if ((product as any).size) {
+    const szVal = String((product as any).size);
+    if (/^\d+|uk|us/i.test(szVal)) {
+      sizeType = "shoes";
+    } else {
+      sizeType = "clothing";
+    }
+  }
+
+  const sizesList = sizeType === "shoes" ? ["6", "7", "8", "9"] : ["S", "M", "L", "XL"];
+  const recommendedSize = sizeType === "shoes" ? "8" : "L";
+  const alsoAvailableSize = sizeType === "shoes" ? "UK 10" : "Plus";
+
   // States for Size, Quantity & Size Chart Modal
-  const [selectedSize, setSelectedSize] = useState<string>("S");
+  const [selectedSize, setSelectedSize] = useState<string>(sizeType === "shoes" ? "8" : "S");
   const [quantity, setQuantity] = useState<number>(1);
   const [showSizeChart, setShowSizeChart] = useState<boolean>(false);
 
@@ -190,10 +217,11 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     }
 
     const existing = getCartStore();
+    const sizePart = sizeType !== "none" && selectedSize ? ` / Size: ${selectedSize}` : "";
     const itemToAdd = {
       id: product.id,
       handle: product.handle,
-      title: `${product.title} (${selectedColor}${selectedSize ? ` / Size: ${selectedSize}` : ""})`,
+      title: `${product.title} (${selectedColor}${sizePart})`,
       price: product.price,
       quantity: quantity,
       image: selectedImage
@@ -845,7 +873,7 @@ const SUB_NAV_ITEMS = [
             {/* 📏 Size Selector (Matching Screenshot 2) */}
             {(() => {
               const numId = typeof product.id === "number" ? product.id : (parseInt(String(product.id || "").replace(/[^0-9]/g, "")) || 1);
-              const maxStock = product.stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+              const maxStock = typeof product.stock_quantity === "number" ? product.stock_quantity : 12;
               const isOutOfStock = maxStock === 0;
 
               const handleIncreaseQty = () => {
@@ -861,57 +889,60 @@ const SUB_NAV_ITEMS = [
 
               return (
                 <>
-                  <div className="space-y-3 pt-3 border-t border-gray-100 text-xs">
-                    <div className="flex items-center justify-between">
-                      <p className="font-bold text-gray-900">
-                        Size: <span className={`font-extrabold ${isOutOfStock ? "text-red-600" : maxStock <= 5 ? "text-amber-600" : "text-[#0284C7]"}`}>
-                          {isOutOfStock ? "Out of Stock / Unavailable" : maxStock <= 5 ? `Only ${maxStock} Left!` : "In Stock"}
-                        </span>
-                      </p>
-                      <button
-                        type="button"
-                        onClick={() => setShowSizeChart(true)}
-                        className="text-gray-700 hover:text-emerald-700 font-bold flex items-center gap-1.5 underline underline-offset-2 cursor-pointer"
-                      >
-                        <span>📏</span> Size Chart
-                      </button>
-                    </div>
-
-                    {/* Size Pills Grid: S, M, L, XL */}
-                    <div className="flex items-center gap-2.5">
-                      {["S", "M", "L", "XL"].map((sz) => (
+                  {/* Render Size Selector ONLY for Clothes, Fashion, Home Living, and Shoes */}
+                  {sizeType !== "none" && (
+                    <div className="space-y-3 pt-3 border-t border-gray-100 text-xs">
+                      <div className="flex items-center justify-between">
+                        <p className="font-bold text-gray-900">
+                          Size: <span className={`font-extrabold ${isOutOfStock ? "text-red-600" : maxStock <= 5 ? "text-amber-600" : "text-[#0284C7]"}`}>
+                            {isOutOfStock ? "Out of Stock / Unavailable" : maxStock <= 5 ? `Only ${maxStock} Left!` : "In Stock"}
+                          </span>
+                        </p>
                         <button
-                          key={sz}
                           type="button"
-                          onClick={() => setSelectedSize(sz)}
-                          className={`w-12 h-10 rounded-xl font-black text-xs transition border cursor-pointer flex items-center justify-center ${
-                            selectedSize === sz
-                              ? "bg-black text-white border-black shadow-sm"
-                              : "bg-white text-gray-800 border-gray-300 hover:border-gray-500 hover:bg-gray-50"
-                          }`}
+                          onClick={() => setShowSizeChart(true)}
+                          className="text-gray-700 hover:text-emerald-700 font-bold flex items-center gap-1.5 underline underline-offset-2 cursor-pointer"
                         >
-                          {sz}
+                          <span>📏</span> Size Chart
                         </button>
-                      ))}
-                    </div>
-
-                    {/* RECOMMENDED Size Banner (Matching Screenshot 2) */}
-                    <div className="border border-gray-900 rounded-xl p-3 bg-white flex items-center justify-between font-black text-xs text-gray-900 shadow-2xs max-w-xs">
-                      <div className="flex items-center gap-2">
-                        <span className="font-serif italic font-black text-sm">TF</span>
-                        <span>RECOMMENDED: L</span>
                       </div>
-                      <span>&rarr;</span>
-                    </div>
 
-                    {/* Also Available in Size */}
-                    <div className="space-y-1.5 pt-1">
-                      <p className="font-bold text-gray-700 text-[11px]">Also Available in Size</p>
-                      <button className="border border-gray-300 rounded-xl px-4 py-2 text-xs font-bold text-gray-800 bg-white hover:bg-gray-50 cursor-pointer">
-                        Plus
-                      </button>
+                      {/* Size Pills Grid: S, M, L, XL for Clothes/Fashion/Home Living OR 6, 7, 8, 9 for Shoes */}
+                      <div className="flex items-center gap-2.5">
+                        {sizesList.map((sz) => (
+                          <button
+                            key={sz}
+                            type="button"
+                            onClick={() => setSelectedSize(sz)}
+                            className={`w-12 h-10 rounded-xl font-black text-xs transition border cursor-pointer flex items-center justify-center ${
+                              selectedSize === sz
+                                ? "bg-black text-white border-black shadow-sm"
+                                : "bg-white text-gray-800 border-gray-300 hover:border-gray-500 hover:bg-gray-50"
+                            }`}
+                          >
+                            {sz}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* RECOMMENDED Size Banner */}
+                      <div className="border border-gray-900 rounded-xl p-3 bg-white flex items-center justify-between font-black text-xs text-gray-900 shadow-2xs max-w-xs">
+                        <div className="flex items-center gap-2">
+                          <span className="font-serif italic font-black text-sm">TF</span>
+                          <span>RECOMMENDED: {recommendedSize}</span>
+                        </div>
+                        <span>&rarr;</span>
+                      </div>
+
+                      {/* Also Available in Size */}
+                      <div className="space-y-1.5 pt-1">
+                        <p className="font-bold text-gray-700 text-[11px]">Also Available in Size</p>
+                        <button className="border border-gray-300 rounded-xl px-4 py-2 text-xs font-bold text-gray-800 bg-white hover:bg-gray-50 cursor-pointer">
+                          {alsoAvailableSize}
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* 🔢 Quantity Stepper & 🛍️ Circular Wishlist Heart + ADD TO CART Action Row */}
                   <div className="space-y-3 pt-3 border-t border-gray-100">
@@ -1188,7 +1219,7 @@ const SUB_NAV_ITEMS = [
                 <p className="text-[11px] text-gray-500">📍 Deliver to Gwalior 474001</p>
                 {(() => {
                   const numId = typeof product.id === "number" ? product.id : (parseInt(String(product.id || "").replace(/[^0-9]/g, "")) || 1);
-                  const maxStock = product.stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+                  const maxStock = typeof product.stock_quantity === "number" ? product.stock_quantity : 12;
                   if (maxStock === 0) {
                     return <p className="text-red-600 font-black text-sm pt-1 uppercase tracking-wider flex items-center gap-1"><span>❌</span> Out of Stock (Unavailable)</p>;
                   }
@@ -1642,7 +1673,7 @@ const SUB_NAV_ITEMS = [
           <div className="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-4 text-xs font-sans relative border border-gray-200">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <h3 className="font-black text-gray-900 text-base flex items-center gap-2">
-                <span>📏</span> Product Size Chart &amp; Fit Guide
+                <span>📏</span> {sizeType === "shoes" ? "Footwear Size Chart & Fit Guide" : "Apparel Size Chart & Fit Guide"}
               </h3>
               <button
                 type="button"
@@ -1653,44 +1684,85 @@ const SUB_NAV_ITEMS = [
               </button>
             </div>
 
-            <p className="text-gray-600 text-xs">Standard body measurements in inches (in):</p>
+            <p className="text-gray-600 text-xs">
+              {sizeType === "shoes" ? "Standard footwear sizing conversions:" : "Standard body measurements in inches (in):"}
+            </p>
 
-            <table className="w-full text-center border-collapse border border-gray-200 text-xs">
-              <thead>
-                <tr className="bg-gray-100 font-black text-gray-900">
-                  <th className="p-2.5 border border-gray-200">Size</th>
-                  <th className="p-2.5 border border-gray-200">Chest</th>
-                  <th className="p-2.5 border border-gray-200">Waist</th>
-                  <th className="p-2.5 border border-gray-200">Length</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 font-medium">
-                <tr className={selectedSize === "S" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
-                  <td className="p-2.5 border border-gray-200 font-black">S</td>
-                  <td className="p-2.5 border border-gray-200">36 - 38"</td>
-                  <td className="p-2.5 border border-gray-200">30 - 32"</td>
-                  <td className="p-2.5 border border-gray-200">27"</td>
-                </tr>
-                <tr className={selectedSize === "M" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
-                  <td className="p-2.5 border border-gray-200 font-black">M</td>
-                  <td className="p-2.5 border border-gray-200">38 - 40"</td>
-                  <td className="p-2.5 border border-gray-200">32 - 34"</td>
-                  <td className="p-2.5 border border-gray-200">28"</td>
-                </tr>
-                <tr className={selectedSize === "L" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
-                  <td className="p-2.5 border border-gray-200 font-black">L</td>
-                  <td className="p-2.5 border border-gray-200">40 - 42"</td>
-                  <td className="p-2.5 border border-gray-200">34 - 36"</td>
-                  <td className="p-2.5 border border-gray-200">29"</td>
-                </tr>
-                <tr className={selectedSize === "XL" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
-                  <td className="p-2.5 border border-gray-200 font-black">XL</td>
-                  <td className="p-2.5 border border-gray-200">42 - 44"</td>
-                  <td className="p-2.5 border border-gray-200">36 - 38"</td>
-                  <td className="p-2.5 border border-gray-200">30"</td>
-                </tr>
-              </tbody>
-            </table>
+            {sizeType === "shoes" ? (
+              <table className="w-full text-center border-collapse border border-gray-200 text-xs">
+                <thead>
+                  <tr className="bg-gray-100 font-black text-gray-900">
+                    <th className="p-2.5 border border-gray-200">Size (UK)</th>
+                    <th className="p-2.5 border border-gray-200">Length (cm)</th>
+                    <th className="p-2.5 border border-gray-200">US Size</th>
+                    <th className="p-2.5 border border-gray-200">EU Size</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 font-medium">
+                  <tr className={selectedSize === "6" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                    <td className="p-2.5 border border-gray-200 font-black">6</td>
+                    <td className="p-2.5 border border-gray-200">24.5 cm</td>
+                    <td className="p-2.5 border border-gray-200">7</td>
+                    <td className="p-2.5 border border-gray-200">39</td>
+                  </tr>
+                  <tr className={selectedSize === "7" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                    <td className="p-2.5 border border-gray-200 font-black">7</td>
+                    <td className="p-2.5 border border-gray-200">25.5 cm</td>
+                    <td className="p-2.5 border border-gray-200">8</td>
+                    <td className="p-2.5 border border-gray-200">40.5</td>
+                  </tr>
+                  <tr className={selectedSize === "8" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                    <td className="p-2.5 border border-gray-200 font-black">8</td>
+                    <td className="p-2.5 border border-gray-200">26.5 cm</td>
+                    <td className="p-2.5 border border-gray-200">9</td>
+                    <td className="p-2.5 border border-gray-200">42</td>
+                  </tr>
+                  <tr className={selectedSize === "9" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                    <td className="p-2.5 border border-gray-200 font-black">9</td>
+                    <td className="p-2.5 border border-gray-200">27.5 cm</td>
+                    <td className="p-2.5 border border-gray-200">10</td>
+                    <td className="p-2.5 border border-gray-200">43.5</td>
+                  </tr>
+                </tbody>
+              </table>
+            ) : (
+              <table className="w-full text-center border-collapse border border-gray-200 text-xs">
+                <thead>
+                  <tr className="bg-gray-100 font-black text-gray-900">
+                    <th className="p-2.5 border border-gray-200">Size</th>
+                    <th className="p-2.5 border border-gray-200">Chest</th>
+                    <th className="p-2.5 border border-gray-200">Waist</th>
+                    <th className="p-2.5 border border-gray-200">Length</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200 font-medium">
+                  <tr className={selectedSize === "S" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                    <td className="p-2.5 border border-gray-200 font-black">S</td>
+                    <td className="p-2.5 border border-gray-200">36 - 38"</td>
+                    <td className="p-2.5 border border-gray-200">30 - 32"</td>
+                    <td className="p-2.5 border border-gray-200">27"</td>
+                  </tr>
+                  <tr className={selectedSize === "M" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                    <td className="p-2.5 border border-gray-200 font-black">M</td>
+                    <td className="p-2.5 border border-gray-200">38 - 40"</td>
+                    <td className="p-2.5 border border-gray-200">32 - 34"</td>
+                    <td className="p-2.5 border border-gray-200">28"</td>
+                  </tr>
+                  <tr className={selectedSize === "L" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                    <td className="p-2.5 border border-gray-200 font-black">L</td>
+                    <td className="p-2.5 border border-gray-200">40 - 42"</td>
+                    <td className="p-2.5 border border-gray-200">34 - 36"</td>
+                    <td className="p-2.5 border border-gray-200">29"</td>
+                  </tr>
+                  <tr className={selectedSize === "XL" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                    <td className="p-2.5 border border-gray-200 font-black">XL</td>
+                    <td className="p-2.5 border border-gray-200">42 - 44"</td>
+                    <td className="p-2.5 border border-gray-200">36 - 38"</td>
+                    <td className="p-2.5 border border-gray-200">30"</td>
+                  </tr>
+                </tbody>
+              </table>
+            )}
 
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-[11px] text-emerald-900 font-bold">
               💡 Tip: If you prefer a relaxed fit, we recommend selecting one size larger.

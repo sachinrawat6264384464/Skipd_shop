@@ -92,7 +92,7 @@ export default function CartItemsPage() {
     const targetItem = items.find(i => String(i.id) === String(id));
     if (targetItem && delta > 0) {
       const numId = typeof targetItem.id === "number" ? targetItem.id : (parseInt(String(targetItem.id || "").replace(/[^0-9]/g, "")) || 1);
-      const maxStock = targetItem.stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+      const maxStock = typeof targetItem.stock_quantity === "number" ? targetItem.stock_quantity : 12;
       const currentQty = Number(targetItem.quantity || 1);
 
       if (maxStock > 0 && currentQty >= maxStock) {

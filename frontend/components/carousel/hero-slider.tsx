@@ -177,7 +177,7 @@ export function HeroSlider() {
 
   return (
     <div
-      className="relative w-full overflow-hidden group rounded-3xl"
+      className="relative w-full overflow-hidden group border-b border-gray-200/80"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -193,54 +193,56 @@ export function HeroSlider() {
         {slides.map((slide, idx) => (
           <div key={slide.id || idx} className="w-full shrink-0">
             <div
-              className={`bg-gradient-to-r ${slide.bgGradient || "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"} border flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10 relative overflow-hidden min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[500px] p-6 sm:p-10 md:p-12 lg:p-16`}
+              className={`bg-gradient-to-r ${slide.bgGradient || "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"} relative overflow-hidden min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[500px]`}
             >
-              {/* Text Content */}
-              <div className="space-y-4 sm:space-y-5 max-w-xl z-10 w-full">
-                <span className={`inline-block border font-black text-xs uppercase px-4 py-1.5 rounded-full tracking-wider shadow-2xs ${slide.tagColor || "bg-emerald-100 text-emerald-800 border-emerald-300"}`}>
-                  {slide.tag}
-                </span>
+              <div className="max-w-[1440px] mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10 p-6 sm:p-10 md:p-12 lg:p-16">
+                {/* Text Content */}
+                <div className="space-y-4 sm:space-y-5 max-w-xl z-10 w-full">
+                  <span className={`inline-block border font-black text-xs uppercase px-4 py-1.5 rounded-full tracking-wider shadow-2xs ${slide.tagColor || "bg-emerald-100 text-emerald-800 border-emerald-300"}`}>
+                    {slide.tag}
+                  </span>
 
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight tracking-tight">
-                  {slide.title}
-                  <span className="text-emerald-600 font-black">{slide.highlightText}</span>
-                </h1>
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight tracking-tight">
+                    {slide.title}
+                    <span className="text-emerald-600 font-black">{slide.highlightText}</span>
+                  </h1>
 
-                <p className="text-gray-600 text-xs sm:text-sm md:text-base font-medium leading-relaxed max-w-lg">
-                  {slide.description}
-                </p>
+                  <p className="text-gray-600 text-xs sm:text-sm md:text-base font-medium leading-relaxed max-w-lg">
+                    {slide.description}
+                  </p>
 
-                <div className="flex flex-wrap items-center gap-3.5 pt-3">
-                  <Link
-                    href={slide.primaryButtonHref || "/search"}
-                    className={`font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl transition shadow-lg cursor-pointer flex items-center gap-2 ${slide.btnColor || "bg-emerald-600 hover:bg-emerald-700 text-white"}`}
-                  >
-                    <span>{slide.primaryButtonText || "SHOP NOW"}</span>
-                    <span>&rarr;</span>
-                  </Link>
-                  {slide.secondaryButtonText && (
+                  <div className="flex flex-wrap items-center gap-3.5 pt-3">
                     <Link
-                      href={slide.secondaryButtonHref || "/deals"}
-                      className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 font-black text-xs sm:text-sm px-5 py-3.5 rounded-2xl transition shadow-2xs cursor-pointer"
+                      href={slide.primaryButtonHref || "/search"}
+                      className={`font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl transition shadow-lg cursor-pointer flex items-center gap-2 ${slide.btnColor || "bg-emerald-600 hover:bg-emerald-700 text-white"}`}
                     >
-                      {slide.secondaryButtonText}
+                      <span>{slide.primaryButtonText || "SHOP NOW"}</span>
+                      <span>&rarr;</span>
                     </Link>
+                    {slide.secondaryButtonText && (
+                      <Link
+                        href={slide.secondaryButtonHref || "/deals"}
+                        className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 font-black text-xs sm:text-sm px-5 py-3.5 rounded-2xl transition shadow-2xs cursor-pointer"
+                      >
+                        {slide.secondaryButtonText}
+                      </Link>
+                    )}
+                  </div>
+                </div>
+
+                {/* Right Image (Full Fill & Cover) */}
+                <div className="relative w-full md:w-[440px] lg:w-[500px] h-60 sm:h-80 md:h-[360px] lg:h-[400px] rounded-3xl overflow-hidden shadow-2xl border-2 border-white/80 shrink-0">
+                  <img
+                    src={slide.imageUrl}
+                    alt={slide.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  />
+                  {slide.badgeText && (
+                    <div className="absolute top-4 right-4 bg-red-600 text-white font-black text-xs sm:text-sm px-4 py-1.5 rounded-full shadow-xl animate-pulse tracking-wide">
+                      {slide.badgeText}
+                    </div>
                   )}
                 </div>
-              </div>
-
-              {/* Right Image (Full Fill & Cover) */}
-              <div className="relative w-full md:w-[440px] lg:w-[500px] h-60 sm:h-80 md:h-[360px] lg:h-[400px] rounded-3xl overflow-hidden shadow-2xl border-2 border-white/80 shrink-0">
-                <img
-                  src={slide.imageUrl}
-                  alt={slide.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                {slide.badgeText && (
-                  <div className="absolute top-4 right-4 bg-red-600 text-white font-black text-xs sm:text-sm px-4 py-1.5 rounded-full shadow-xl animate-pulse tracking-wide">
-                    {slide.badgeText}
-                  </div>
-                )}
               </div>
             </div>
           </div>

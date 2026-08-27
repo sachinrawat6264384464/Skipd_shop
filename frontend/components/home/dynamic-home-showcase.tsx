@@ -179,7 +179,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
             <div className="grid grid-cols-2 gap-2">
               {products.slice(0, 4).map((p, i) => {
                 const numId = typeof p.id === "number" ? p.id : (parseInt(String(p.id || "").replace(/[^0-9]/g, "")) || i);
-                const stock = (p as any).stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+                const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                 return (
                   <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
                     <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
@@ -212,7 +212,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
               {products.slice(4, 8).map((p, i) => {
                 const offPercent = p.compare_at_price ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 35;
                 const numId = typeof p.id === "number" ? p.id : (parseInt(String(p.id || "").replace(/[^0-9]/g, "")) || i);
-                const stock = (p as any).stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+                const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                 return (
                   <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
                     <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
@@ -247,7 +247,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
             <div className="grid grid-cols-2 gap-2">
               {products.slice(8, 12).map((p, i) => {
                 const numId = typeof p.id === "number" ? p.id : (parseInt(String(p.id || "").replace(/[^0-9]/g, "")) || i);
-                const stock = (p as any).stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+                const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                 return (
                   <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
                     <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
@@ -305,7 +305,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                   : 0;
 
                 const numId = typeof product.id === "number" ? product.id : (parseInt(String(product.id || "").replace(/[^0-9]/g, "")) || idx);
-                const stock = (product as any).stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+                const stock = typeof product.stock_quantity === "number" ? product.stock_quantity : 12;
                 const isOutOfStock = stock === 0;
 
                 return (

@@ -159,7 +159,7 @@ export function AbandonedReminderModal() {
           {itemsList.map((item: any, idx: number) => {
             const imgUrl = item.image || getProductImageByTitle(item.title);
             const numId = typeof item.id === "number" ? item.id : (parseInt(String(item.id || "").replace(/[^0-9]/g, "")) || idx);
-            const stock = item.stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+            const stock = typeof item.stock_quantity === "number" ? item.stock_quantity : 12;
 
             return (
               <div key={item.item_id || item.id || idx} className="flex items-center gap-3 bg-slate-900/90 border border-slate-800 p-3 rounded-2xl">

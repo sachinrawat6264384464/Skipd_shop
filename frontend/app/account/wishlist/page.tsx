@@ -124,7 +124,7 @@ export default function WishlistPage() {
                 : 25;
 
               const numId = typeof item.id === "number" ? item.id : (parseInt(String(item.id || "").replace(/[^0-9]/g, "")) || idx);
-              const stock = (item as any).stock_quantity ?? (numId % 7 === 0 ? 0 : numId % 3 === 0 ? 3 : 12);
+              const stock = typeof (item as any).stock_quantity === "number" ? (item as any).stock_quantity : 12;
               const isOutOfStock = stock === 0;
 
               return (

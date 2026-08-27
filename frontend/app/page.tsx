@@ -25,7 +25,7 @@ export default async function HomePage() {
       <CategoryNav />
 
       {/* 🟢 Hero Carousel Banner */}
-      <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6 pt-4 pb-3">
+      <section className="w-full">
         <HeroSlider />
       </section>
 

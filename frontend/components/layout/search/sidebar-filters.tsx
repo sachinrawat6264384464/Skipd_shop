@@ -67,26 +67,8 @@ export function CatalogSidebarFilters() {
   ]);
 
   useEffect(() => {
-    async function loadActiveCategoriesWithProducts() {
+    async function loadActiveCategories() {
       try {
-        // 1. Collect category slugs with active products
-        const prods = await fetchProducts().catch(() => []);
-        const categoriesWithProducts = new Set<string>();
-
-        if (Array.isArray(prods) && prods.length > 0) {
-          prods.forEach((p: any) => {
-            const catName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category);
-            const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
-            if (catSlug) {
-              const lowerSlug = String(catSlug).toLowerCase();
-              const prefix = lowerSlug.split("-")[0] || lowerSlug;
-              categoriesWithProducts.add(lowerSlug);
-              categoriesWithProducts.add(prefix);
-            }
-          });
-        }
-
-        // 2. Fetch categories from PostgreSQL DB
         const dbCats = await fetchCategories().catch(() => []);
         const activeList: { name: string; image_url: string; slug: string }[] = [
           { name: "All Categories", image_url: "", slug: "all" }
@@ -94,28 +76,44 @@ export function CatalogSidebarFilters() {
 
         if (Array.isArray(dbCats) && dbCats.length > 0) {
           dbCats.forEach((c: any) => {
-            if (c.status !== "Inactive" && c.slug) {
-              const lowerSlug = String(c.slug).toLowerCase();
-              const prefix = lowerSlug.split("-")[0] || lowerSlug;
-              const hasCount = typeof c.count === "number" ? c.count > 0 : false;
-
-              // ONLY INCLUDE IF CATEGORY HAS AT LEAST 1 PRODUCT
-              if (categoriesWithProducts.has(lowerSlug) || categoriesWithProducts.has(prefix) || hasCount) {
-                activeList.push({
-                  name: c.name,
-                  slug: c.slug,
-                  image_url: getCategoryImageUrl(c)
-                });
-              }
+            if (c.status !== "Inactive" && c.status !== "Disabled" && c.slug) {
+              activeList.push({
+                name: c.name,
+                slug: c.slug,
+                image_url: getCategoryImageUrl(c)
+              });
             }
           });
+        }
+
+        // Fallback: if DB categories were empty, populate from products catalog
+        if (activeList.length === 1) {
+          const prods = await fetchProducts().catch(() => []);
+          const map = new Map<string, { name: string; image_url: string; slug: string }>();
+
+          if (Array.isArray(prods) && prods.length > 0) {
+            prods.forEach((p: any) => {
+              const catName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category);
+              const catSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (catName ? String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") : null));
+
+              if (catName && catSlug && !map.has(catSlug)) {
+                map.set(catSlug, {
+                  name: String(catName).charAt(0).toUpperCase() + String(catName).slice(1),
+                  slug: catSlug,
+                  image_url: getCategoryImageUrl({ name: catName, slug: catSlug })
+                });
+              }
+            });
+          }
+
+          map.forEach((item) => activeList.push(item));
         }
 
         setCategories(activeList);
       } catch (err) {}
     }
 
-    loadActiveCategoriesWithProducts();
+    loadActiveCategories();
   }, []);
 
   const colorPalette = [
@@ -168,34 +166,6 @@ export function CatalogSidebarFilters() {
             );
           })}
         </ul>
-      </div>
-
-      {/* ⚡ DELIVERY SPEED */}
-      <div className="pt-4 border-t border-gray-100 space-y-2">
-        <h4 className="font-black text-gray-900 uppercase text-[10px] tracking-wider">Delivery Speed</h4>
-        <label className="flex items-center gap-2 cursor-pointer font-semibold text-gray-700">
-          <input
-            type="checkbox"
-            checked={currentExpress}
-            onChange={(e) => updateParam("express", e.target.checked ? "true" : null)}
-            className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
-          />
-          <span>⚡ Get It Today / Tomorrow</span>
-        </label>
-      </div>
-
-      {/* ⭐ CUSTOMER REVIEWS */}
-      <div className="pt-4 border-t border-gray-100 space-y-2">
-        <h4 className="font-black text-gray-900 uppercase text-[10px] tracking-wider">Customer Reviews</h4>
-        <button
-          onClick={() => updateParam("rating", currentRating === 4 ? null : "4")}
-          className={`flex items-center gap-1.5 font-bold hover:underline cursor-pointer px-2 py-1 rounded-lg transition ${
-            currentRating === 4 ? "bg-amber-50 text-amber-800 border border-amber-200" : "text-amber-500"
-          }`}
-        >
-          <span>★★★★☆</span>
-          <span className="text-gray-700 font-bold text-xs">&amp; Up</span>
-        </button>
       </div>
 
       {/* 💰 PRICE RANGE */}
