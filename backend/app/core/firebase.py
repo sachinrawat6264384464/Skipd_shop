@@ -34,6 +34,9 @@ def init_firebase_admin():
 def verify_firebase_id_token(id_token: str):
     """Verify Firebase ID Token returned by frontend Firebase Auth."""
     init_firebase_admin()
+    if not firebase_admin._apps:
+        print("[FIREBASE WARN] Cannot verify ID token: Firebase Admin SDK is not configured (missing JSON cert/env).")
+        return None
     try:
         decoded_token = auth.verify_id_token(id_token)
         return decoded_token
