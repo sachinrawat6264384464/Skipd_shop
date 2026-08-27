@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
-import { getUserWishlistKey } from "lib/utils";
+import { useRouter } from "next/navigation";
 
 export interface WishlistItem {
   id: number | string;
@@ -41,27 +41,25 @@ function getToken(): string | null {
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [wishlist, setWishlist] = useState<WishlistItem[]>([]);
   const pendingTogglesRef = useRef<Set<string>>(new Set());
+  const router = useRouter();
 
-  // 1. Initial Load from LocalStorage + DB Sync
+  // 1. Dynamic Load from PostgreSQL Database (Strictly per Logged-In User Account)
   const loadWishlist = useCallback(async () => {
     const token = getToken();
-    const wishlistKey = getUserWishlistKey();
 
-    // Read user-account-scoped wishlist items first
-    let localItems: WishlistItem[] = [];
-    if (typeof window !== "undefined") {
-      try {
-        const saved = localStorage.getItem(wishlistKey) || localStorage.getItem("ecom_wishlist_items") || localStorage.getItem("ecom_guest_wishlist");
-        if (saved) localItems = JSON.parse(saved);
-      } catch (e) {}
-    }
-
+    // 🔒 LOGGED OUT / GUEST: Wishlist MUST be empty array []
     if (!token) {
-      setWishlist(localItems);
+      setWishlist([]);
+      if (typeof window !== "undefined") {
+        try {
+          localStorage.removeItem("ecom_wishlist_items");
+          localStorage.removeItem("ecom_guest_wishlist");
+        } catch (e) {}
+      }
       return;
     }
 
-    // 🔓 LOGGED IN: Fetch real user wishlist items from PostgreSQL DB & Merge with Account Local Storage
+    // 🔓 LOGGED IN: Fetch real dynamic user wishlist items from PostgreSQL DB
     try {
       const res = await fetch(`${getApiBase()}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -78,43 +76,12 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           image: w.image || w.images?.[0] || "",
           category: w.category || undefined
         }));
-
-        // Merge DB items with any local user items (ensures 100% wishlist retention across logins)
-        const mergedMap = new Map<string, WishlistItem>();
-        [...dbItems, ...localItems].forEach(item => {
-          if (item && (item.id || item.handle)) {
-            const key = String(item.id || item.handle);
-            mergedMap.set(key, item);
-          }
-        });
-        const mergedList = Array.from(mergedMap.values());
-        setWishlist(mergedList);
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem(wishlistKey, JSON.stringify(mergedList));
-          localStorage.setItem("ecom_wishlist_items", JSON.stringify(mergedList));
-        }
-
-        // Sync local items that are missing in DB back to PostgreSQL DB
-        const dbIds = new Set(dbItems.map(d => String(d.id)));
-        localItems.forEach(item => {
-          if (item.id && !dbIds.has(String(item.id))) {
-            const numericId = Number(item.id);
-            fetch(`${getApiBase()}/wishlist/toggle`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`
-              },
-              body: JSON.stringify({ product_id: numericId || item.id })
-            }).catch(() => {});
-          }
-        });
-      } else {
-        setWishlist(localItems);
+        setWishlist(dbItems);
+      } else if (res.status === 401 || res.status === 403) {
+        setWishlist([]);
       }
     } catch (e) {
-      setWishlist(localItems);
+      console.warn("[Wishlist] DB fetch error:", e);
     }
   }, []);
 
@@ -147,10 +114,20 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   };
 
   /**
-   * Toggle Wishlist Item (Optimistic & Persistent)
+   * Toggle Wishlist Item (Strict Database Persistence)
    */
   const toggleWishlist = (item: WishlistItem) => {
     if (!item || (!item.id && !item.handle)) return;
+    const token = getToken();
+
+    // Require Login for Wishlist Action
+    if (!token) {
+      if (typeof window !== "undefined") {
+        router.push(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      }
+      return;
+    }
+
     const itemIdStr = String(item.id || item.handle);
 
     // Debounce rapid double-clicks (150ms)
@@ -162,33 +139,20 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       pendingTogglesRef.current.delete(itemIdStr);
     }, 150);
 
+    // Optimistic UI update in memory
     setWishlist(prev => {
       const alreadyIn = prev.some(w => 
         (item.id && String(w.id) === String(item.id)) || 
         (item.handle && String(w.handle).toLowerCase() === String(item.handle).toLowerCase())
       );
-      let updated: WishlistItem[] = [];
-
       if (alreadyIn) {
-        updated = prev.filter(w => 
+        return prev.filter(w => 
           String(w.id) !== String(item.id) && 
           (!item.handle || String(w.handle).toLowerCase() !== String(item.handle).toLowerCase())
         );
       } else {
-        updated = [...prev, item];
+        return [...prev, item];
       }
-
-      // Persist in User Account LocalStorage
-      if (typeof window !== "undefined") {
-        try {
-          const userKey = getUserWishlistKey();
-          localStorage.setItem(userKey, JSON.stringify(updated));
-          localStorage.setItem("ecom_wishlist_items", JSON.stringify(updated));
-          localStorage.setItem("ecom_guest_wishlist", JSON.stringify(updated));
-        } catch (e) {}
-      }
-
-      return updated;
     });
 
     // Notify header icons & wishlist views
@@ -197,9 +161,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       window.dispatchEvent(new Event("ecom_wishlist_updated"));
     }
 
-    // Sync to PostgreSQL DB in background if logged in
-    const token = getToken();
-    if (token && item.id) {
+    // 💾 Save directly to PostgreSQL DB in background
+    if (item.id) {
       const numericId = Number(item.id);
       fetch(`${getApiBase()}/wishlist/toggle`, {
         method: "POST",
@@ -208,8 +171,14 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           Authorization: `Bearer ${token}`
         },
         body: JSON.stringify({ product_id: numericId || item.id })
-      }).catch(err => {
-        console.warn("[Wishlist] DB sync background warning:", err);
+      })
+      .then(res => {
+        if (res.ok) {
+          loadWishlist();
+        }
+      })
+      .catch(err => {
+        console.warn("[Wishlist] DB toggle error:", err);
       });
     }
   };
@@ -223,15 +192,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     if (item) {
       toggleWishlist(item);
     } else {
-      setWishlist(prev => {
-        const updated = prev.filter(w => String(w.id) !== String(id));
-        if (typeof window !== "undefined") {
-          const userKey = getUserWishlistKey();
-          localStorage.setItem(userKey, JSON.stringify(updated));
-          localStorage.setItem("ecom_wishlist_items", JSON.stringify(updated));
-        }
-        return updated;
-      });
+      setWishlist(prev => prev.filter(w => String(w.id) !== String(id)));
     }
   };
 
