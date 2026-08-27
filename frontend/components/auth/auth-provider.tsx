@@ -53,9 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("ecom_token");
+    localStorage.removeItem("user_token");
+    localStorage.removeItem("token");
     localStorage.removeItem("ecom_user");
-    localStorage.removeItem("ecom_wishlist_items");
-    localStorage.removeItem("ecom_guest_wishlist");
     sessionStorage.removeItem("ecom_buy_now_item");
     window.dispatchEvent(new Event("ecom_auth_changed"));
     window.dispatchEvent(new Event("ecom_wishlist_updated"));

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
+import { getUserWishlistKey } from "lib/utils";
 
 export interface WishlistItem {
   id: number | string;
@@ -34,7 +35,7 @@ function getApiBase(): string {
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("ecom_token") || null;
+  return localStorage.getItem("ecom_token") || localStorage.getItem("user_token") || localStorage.getItem("token") || null;
 }
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
@@ -44,12 +45,13 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   // 1. Initial Load from LocalStorage + DB Sync
   const loadWishlist = useCallback(async () => {
     const token = getToken();
+    const wishlistKey = getUserWishlistKey();
 
-    // Read local items first (works for both Guest & Logged-In users)
+    // Read user-account-scoped wishlist items first
     let localItems: WishlistItem[] = [];
     if (typeof window !== "undefined") {
       try {
-        const saved = localStorage.getItem("ecom_wishlist_items") || localStorage.getItem("ecom_guest_wishlist");
+        const saved = localStorage.getItem(wishlistKey) || localStorage.getItem("ecom_wishlist_items") || localStorage.getItem("ecom_guest_wishlist");
         if (saved) localItems = JSON.parse(saved);
       } catch (e) {}
     }
@@ -59,7 +61,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // 🔓 LOGGED IN: Fetch real user wishlist items from PostgreSQL DB
+    // 🔓 LOGGED IN: Fetch real user wishlist items from PostgreSQL DB & Merge with Account Local Storage
     try {
       const res = await fetch(`${getApiBase()}/wishlist`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -77,7 +79,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
           category: w.category || undefined
         }));
 
-        // Merge DB items with any local items
+        // Merge DB items with any local user items (ensures 100% wishlist retention across logins)
         const mergedMap = new Map<string, WishlistItem>();
         [...dbItems, ...localItems].forEach(item => {
           if (item && (item.id || item.handle)) {
@@ -89,8 +91,25 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         setWishlist(mergedList);
 
         if (typeof window !== "undefined") {
+          localStorage.setItem(wishlistKey, JSON.stringify(mergedList));
           localStorage.setItem("ecom_wishlist_items", JSON.stringify(mergedList));
         }
+
+        // Sync local items that are missing in DB back to PostgreSQL DB
+        const dbIds = new Set(dbItems.map(d => String(d.id)));
+        localItems.forEach(item => {
+          if (item.id && !dbIds.has(String(item.id))) {
+            const numericId = Number(item.id);
+            fetch(`${getApiBase()}/wishlist/toggle`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+              },
+              body: JSON.stringify({ product_id: numericId || item.id })
+            }).catch(() => {});
+          }
+        });
       } else {
         setWishlist(localItems);
       }
@@ -159,9 +178,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
         updated = [...prev, item];
       }
 
-      // Persist in LocalStorage
+      // Persist in User Account LocalStorage
       if (typeof window !== "undefined") {
         try {
+          const userKey = getUserWishlistKey();
+          localStorage.setItem(userKey, JSON.stringify(updated));
           localStorage.setItem("ecom_wishlist_items", JSON.stringify(updated));
           localStorage.setItem("ecom_guest_wishlist", JSON.stringify(updated));
         } catch (e) {}
@@ -205,6 +226,8 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       setWishlist(prev => {
         const updated = prev.filter(w => String(w.id) !== String(id));
         if (typeof window !== "undefined") {
+          const userKey = getUserWishlistKey();
+          localStorage.setItem(userKey, JSON.stringify(updated));
           localStorage.setItem("ecom_wishlist_items", JSON.stringify(updated));
         }
         return updated;

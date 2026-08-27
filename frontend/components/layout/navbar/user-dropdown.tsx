@@ -37,9 +37,9 @@ export function UserAccountDropdown() {
 
   const handleLogout = () => {
     localStorage.removeItem("ecom_token");
+    localStorage.removeItem("user_token");
+    localStorage.removeItem("token");
     localStorage.removeItem("ecom_user");
-    localStorage.removeItem("ecom_wishlist_items");
-    localStorage.removeItem("ecom_guest_wishlist");
     setUser(null);
     setIsOpen(false);
     window.dispatchEvent(new Event("ecom_auth_changed"));

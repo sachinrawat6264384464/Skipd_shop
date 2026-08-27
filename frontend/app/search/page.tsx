@@ -1,8 +1,7 @@
 import { fetchProducts } from "lib/api";
 import { SearchCatalogView } from "components/search/search-catalog-view";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 
 export const metadata = {
   title: "All Categories | E-COM Commerce",

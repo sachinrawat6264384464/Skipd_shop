@@ -1,6 +1,8 @@
 import { fetchProducts } from "lib/api";
 import { SearchCatalogView } from "components/search/search-catalog-view";
 
+export const revalidate = 60;
+
 export async function generateMetadata(props: {
   params: Promise<{ collection: string }>;
 }) {
@@ -16,18 +18,16 @@ export default async function CategoryPage(props: {
 }) {
   const params = await props.params;
   const collectionSlug = params.collection;
-  let products = await fetchProducts({ category: collectionSlug });
   
-  if (products.length < 2) {
-    const allProds = await fetchProducts();
-    const matched = allProds.filter(
-      (p) =>
-        p.category?.slug === collectionSlug ||
-        p.category?.name?.toLowerCase().includes(collectionSlug.toLowerCase()) ||
-        p.tags?.some((t) => t.toLowerCase() === collectionSlug.toLowerCase())
-    );
-    products = matched.length > 0 ? matched : allProds;
-  }
+  const allProds = await fetchProducts();
+  const matched = allProds.filter(
+    (p) =>
+      p.category?.slug === collectionSlug ||
+      (p as any).category_slug === collectionSlug ||
+      p.category?.name?.toLowerCase().includes(collectionSlug.toLowerCase()) ||
+      p.tags?.some((t) => t.toLowerCase() === collectionSlug.toLowerCase())
+  );
+  const products = matched.length > 0 ? matched : allProds;
 
   // Format dynamic collection title nicely (e.g. "mobiles" -> "Mobiles & Accessories")
   const titleMap: Record<string, string> = {

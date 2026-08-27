@@ -207,7 +207,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
     if (query?.featured !== undefined) params.append("featured", String(query.featured));
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
+    const timer = setTimeout(() => controller.abort(), 2500);
 
     const res = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
       cache: "no-store",
@@ -1182,12 +1182,20 @@ export async function toggleProductNewArrival(id: number | string, isNewArrival:
 
 export async function fetchNewArrivalsDB(): Promise<Product[]> {
   try {
-    const res = await fetch(`${API_BASE_URL}/new-arrivals`, { cache: "no-store" });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 2500);
+
+    const res = await fetch(`${API_BASE_URL}/new-arrivals`, {
+      cache: "no-store",
+      signal: controller.signal
+    });
+    clearTimeout(timer);
+
     if (res.ok) {
       return await res.json();
     }
   } catch (e) {
-    console.error("[API SDK] Fetch new arrivals from DB error:", e);
+    console.warn("[API SDK] Fetch new arrivals from DB timed out or failed:", e);
   }
   return [];
 }
