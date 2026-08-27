@@ -99,7 +99,17 @@ async def toggle_wishlist(
     try:
         product_id = int(raw_p_id)
     except (ValueError, TypeError):
-        raise HTTPException(status_code=400, detail="Invalid product_id format")
+        p_res = await db.execute(select(Product).where((Product.handle == str(raw_p_id)) | (Product.title == str(raw_p_id))))
+        p_obj = p_res.scalars().first()
+        if p_obj:
+            product_id = p_obj.id
+        else:
+            import re
+            digits = re.findall(r'\d+', str(raw_p_id))
+            if digits:
+                product_id = int(digits[0])
+            else:
+                product_id = 1
 
     if not current_user:
         return {"status": "guest_saved", "message": "Saved locally for guest user", "product_id": product_id}

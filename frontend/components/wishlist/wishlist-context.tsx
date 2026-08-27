@@ -31,9 +31,6 @@ function getApiBase(): string {
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
-  const directToken = localStorage.getItem("ecom_token") || localStorage.getItem("user_token") || localStorage.getItem("token");
-  if (directToken) return directToken;
-
   try {
     const userStr = localStorage.getItem("ecom_user");
     if (userStr) {
@@ -41,7 +38,9 @@ function getToken(): string | null {
       if (u && u.email) return u.email;
     }
   } catch (e) {}
-  return null;
+
+  const directToken = localStorage.getItem("ecom_token") || localStorage.getItem("user_token") || localStorage.getItem("token");
+  return directToken || null;
 }
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {

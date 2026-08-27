@@ -37,11 +37,11 @@ async def get_current_user(
     if not email:
         if "@" in token:
             email = token.strip().lower()
-        elif token.startswith("jwt_") or token.startswith("google_") or token.startswith("demo_"):
-            res = await db.execute(select(User).order_by(User.id.asc()))
-            user = res.scalars().first()
-            if user:
-                return user
+        else:
+            import re
+            emails = re.findall(r'[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+', token)
+            if emails:
+                email = emails[0].lower()
 
     if not email:
         return None

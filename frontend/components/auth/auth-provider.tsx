@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = (userData: UserProfile) => {
     setUser(userData);
-    localStorage.setItem("ecom_token", "jwt_token_demo_ecom_2026");
+    localStorage.setItem("ecom_token", userData.email || "jwt_token_demo_ecom_2026");
     localStorage.setItem("ecom_user", JSON.stringify(userData));
     window.dispatchEvent(new Event("ecom_auth_changed"));
   };
