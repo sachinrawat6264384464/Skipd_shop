@@ -197,9 +197,6 @@ export default function WishlistPage() {
                       >
                         {item.title}
                       </Link>
-                      <p className="text-[11px] text-amber-500 font-bold mt-1">
-                        ★ {item.rating || 4.5} <span className="text-gray-400 font-normal">(Verified Item)</span>
-                      </p>
                     </div>
                   </div>
 

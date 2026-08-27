@@ -21,7 +21,13 @@ export default function NewArrivalsPage() {
           fetchCategories()
         ]);
         
-        setProducts(dbNewArrivals || []);
+        let newDrops = dbNewArrivals || [];
+        if (newDrops.length === 0) {
+          const liveProds = await fetchProducts().catch(() => []);
+          newDrops = liveProds;
+        }
+        
+        setProducts(newDrops);
         setCategories(cats || []);
       } catch (err) {
         console.error("Error loading new arrivals data:", err);
@@ -261,7 +267,7 @@ export default function NewArrivalsPage() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pt-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pt-2">
             {sortedProducts.map((product) => {
               const image = (product.images && product.images[0]) || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800";
               const discountPercent = product.compare_at_price

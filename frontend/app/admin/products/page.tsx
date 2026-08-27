@@ -754,7 +754,36 @@ export default function AdminProductsPage() {
     try {
       const res = await createAdminProduct(payload);
       if (res) {
-        showNotification(`🚀 Product "${newProduct.title}" created & saved live in Neon PostgreSQL DB!`);
+        // 🔔 Broadcast live notification to Navbar bell icon
+        const newProdNotif = {
+          id: `prod-notif-${Date.now()}`,
+          title: `🚀 NEW PRODUCT DROPPED: ${newProduct.title}`,
+          message: `Now available for ₹${parseFloat(newProduct.price).toLocaleString("en-IN")}. ${newProduct.short_description || "Check it out in store catalog!"}`,
+          type: "product",
+          link: `/product/${newProduct.handle || newProduct.title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`,
+          is_read: false,
+          created_at: "Just now"
+        };
+        try {
+          const stored = localStorage.getItem("ecom_live_notifications");
+          const list = stored ? JSON.parse(stored) : [];
+          localStorage.setItem("ecom_live_notifications", JSON.stringify([newProdNotif, ...list]));
+          window.dispatchEvent(new Event("ecom_notification_broadcast"));
+        } catch (e) {}
+
+        // 📧 Email alert trigger simulation
+        try {
+          import("lib/services/email-service").then(({ sendCampaignPromotionalEmail }) => {
+            sendCampaignPromotionalEmail({
+              title: `New Product Arrival: ${newProduct.title}`,
+              type: "New Product",
+              discountOffer: `₹${parseFloat(newProduct.price).toLocaleString("en-IN")}`,
+              subtitle: newProduct.short_description || newProduct.description
+            });
+          });
+        } catch (e) {}
+
+        showNotification(`🚀 Product "${newProduct.title}" created & notification broadcasted to all users!`);
         handleCloseAndResetForm();
         await loadProducts();
       } else {

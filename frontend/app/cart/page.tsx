@@ -311,7 +311,7 @@ export default function CartItemsPage() {
                           <Link href={`/product/${item.handle || item.id}`}>{item.title}</Link>
                         </h3>
                         <p className="text-[11px] text-gray-500 mt-0.5">
-                          <span className="text-amber-500 font-bold">★ {item.rating}</span> ({item.reviews} reviews) | Sold by <span className="font-bold text-gray-800">{item.seller}</span>
+                          Sold by <span className="font-bold text-gray-800">{item.seller}</span>
                         </p>
                       </div>
 
@@ -516,9 +516,6 @@ export default function CartItemsPage() {
                       <h3 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-emerald-700 transition">
                         {rec.title}
                       </h3>
-                      <p className="text-[10px] text-gray-400 mt-0.5">
-                        <span className="text-amber-500 font-bold">★ {rec.rating || "4.8"}</span> ({rec.reviews || "1,240"})
-                      </p>
                     </div>
                   </Link>
 

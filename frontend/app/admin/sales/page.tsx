@@ -274,6 +274,21 @@ export default function AdminSalesPage() {
     if (typeof window !== "undefined") {
       try {
         localStorage.setItem("ecom_marketing_campaigns", JSON.stringify(updated));
+
+        // 🔔 Broadcast live notification to Navbar bell icon
+        const newNotif = {
+          id: `sale-notif-${Date.now()}`,
+          title: `⚡ SALE LIVE: ${created.title}`,
+          message: `${created.discountOffer} — ${created.subtitle}`,
+          type: "sale",
+          link: "/deals",
+          is_read: false,
+          created_at: "Just now"
+        };
+        const existingNotifsStr = localStorage.getItem("ecom_live_notifications");
+        const existingNotifs = existingNotifsStr ? JSON.parse(existingNotifsStr) : [];
+        localStorage.setItem("ecom_live_notifications", JSON.stringify([newNotif, ...existingNotifs]));
+        window.dispatchEvent(new Event("ecom_notification_broadcast"));
       } catch (e) {}
     }
 

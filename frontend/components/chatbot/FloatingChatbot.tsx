@@ -26,9 +26,6 @@ interface Message {
   timestamp: string;
 }
 
-
-
-
 export default function FloatingChatbot() {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,6 +34,7 @@ export default function FloatingChatbot() {
   if (pathname?.startsWith('/admin')) {
     return null;
   }
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -57,7 +55,6 @@ export default function FloatingChatbot() {
   ]);
 
   useEffect(() => {
-    // Check user auth token (NO localStorage used for guest count tracking)
     const token = localStorage.getItem('user_token') || localStorage.getItem('token');
     if (token) {
       setIsLoggedIn(true);
@@ -89,7 +86,6 @@ export default function FloatingChatbot() {
     if (!textToSend) setInputMessage('');
     setLoading(true);
 
-    // Build conversation history payload
     const historyPayload = newMessages.map((m) => ({
       role: m.sender === 'user' ? 'user' : 'assistant',
       content: m.text
@@ -125,7 +121,6 @@ export default function FloatingChatbot() {
         }
       } catch (fetchErr) {
         clearTimeout(timeoutId);
-        // Backend unavailable — show clean retry message, no wrong hardcoded products
         data = {
           response_text: `Sorry, I'm having trouble connecting right now. Please try again in a moment! 🔄`,
           products: [],
@@ -144,6 +139,48 @@ export default function FloatingChatbot() {
 
       if (data.guest_query_count !== undefined) {
         setGuestCount(data.guest_query_count);
+      }
+
+      // Strict budget filtering check: Extract max price if specified in query (e.g., "under ₹500")
+      let maxBudget: number | null = null;
+      const lowerQuery = queryText.toLowerCase();
+
+      const underMatch = lowerQuery.match(/under\s*₹?\s*(\d+)/) || lowerQuery.match(/below\s*₹?\s*(\d+)/) || lowerQuery.match(/less\s*than\s*₹?\s*(\d+)/);
+      if (underMatch && underMatch[1]) {
+        maxBudget = parseInt(underMatch[1], 10);
+      } else {
+        const rangeMatch = lowerQuery.match(/(\d+)\s*to\s*(\d+)/);
+        if (rangeMatch && rangeMatch[2]) {
+          maxBudget = parseInt(rangeMatch[2], 10);
+        }
+      }
+
+      if (maxBudget !== null && data.products && data.products.length > 0) {
+        data.products = data.products.filter((p: any) => Number(p.price) <= maxBudget!);
+      }
+
+      // If no products match budget from backend response, query live catalog for items under maxBudget
+      if (maxBudget !== null && (!data.products || data.products.length === 0)) {
+        try {
+          const { fetchProducts } = await import('lib/api');
+          const catalogProds = await fetchProducts().catch(() => []);
+          const filteredCatalog = catalogProds.filter((p) => Number(p.price) <= maxBudget!);
+          if (filteredCatalog.length > 0) {
+            data.products = filteredCatalog.slice(0, 6).map((p) => ({
+              id: p.id,
+              title: p.title,
+              handle: p.handle,
+              price: p.price,
+              formatted_price: `₹${p.price.toLocaleString("en-IN")}`,
+              image_url: p.images?.[0] || "",
+              rating: 4.5,
+              category_name: typeof p.category === "object" ? p.category?.name : (p.category || "Store")
+            }));
+            data.response_text = `I found **${data.products.length} options** under ₹${maxBudget}! 👇`;
+          } else {
+            data.response_text = `Currently, all items in our live catalog are priced above ₹${maxBudget}. Feel free to browse our store catalog! 🏷️`;
+          }
+        } catch (e) {}
       }
 
       const aiMsgObj: Message = {
@@ -261,9 +298,6 @@ export default function FloatingChatbot() {
                             <p className="text-xs text-slate-400 mt-0.5">{prod.category_name}</p>
                             <div className="flex items-center justify-between mt-1">
                               <span className="text-xs font-bold text-emerald-400">{prod.formatted_price}</span>
-                              <span className="text-[10px] text-amber-400 font-semibold bg-amber-400/10 px-1.5 py-0.5 rounded">
-                                ⭐ {prod.rating}
-                              </span>
                             </div>
                           </div>
                           <span className="text-slate-500 group-hover:text-emerald-400 text-sm font-bold pr-1">→</span>

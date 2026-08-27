@@ -139,7 +139,7 @@ export default function DealsPage() {
               <p className="text-xs mt-1 text-gray-500">Products added to the database will automatically appear here.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {productsToDisplay.map((item: any) => {
                 const isOutOfStock = item.stock_quantity === 0;
                 return (

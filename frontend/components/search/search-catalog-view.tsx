@@ -360,8 +360,8 @@ export function SearchCatalogView({
         </div>
       ) : viewMode === "grid" ? (
         
-        /* ☷ GRID VIEW (Optimal 3-4 Columns Layout) */
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
+        /* ☷ GRID VIEW (Clean 3-Columns Pairs Layout) */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {paginatedProducts.map((product, idx) => {
             const discountPercent = product.compare_at_price
               ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
@@ -432,9 +432,6 @@ export function SearchCatalogView({
                     <h3 className="font-bold text-xs text-gray-900 group-hover:text-emerald-700 transition line-clamp-2 leading-snug">
                       <Link href={`/product/${itemHandle}`}>{product.title}</Link>
                     </h3>
-                    <p className="text-[10px] text-amber-500 font-bold mt-1">
-                      ★ 4.5 <span className="text-gray-400 font-medium">(2,356)</span>
-                    </p>
                   </div>
 
                   <div className="flex items-baseline gap-1.5 pt-1">
@@ -527,9 +524,6 @@ export function SearchCatalogView({
                     </h3>
                     <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
                       {product.description || "High quality premium brand product with instant shipping and 1-year official warranty."}
-                    </p>
-                    <p className="text-xs text-amber-500 font-bold">
-                      ★ 4.5 <span className="text-gray-400 font-medium">(2,356 Reviews)</span>
                     </p>
                   </div>
 
