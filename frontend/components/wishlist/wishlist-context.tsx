@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { getApiBaseUrl } from "lib/api";
 
 export interface WishlistItem {
   id: number | string;
@@ -25,12 +26,7 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 function getApiBase(): string {
-  if (typeof window === "undefined") return "https://e-com-ecom.onrender.com/api/v1";
-  const h = window.location.hostname;
-  if (h === "localhost" || h === "127.0.0.1") {
-    return process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
-  }
-  return "https://e-com-ecom.onrender.com/api/v1";
+  return getApiBaseUrl();
 }
 
 function getToken(): string | null {
