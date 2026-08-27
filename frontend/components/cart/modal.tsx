@@ -164,55 +164,72 @@ export default function CartModal() {
               ) : (
                 <div className="flex h-full flex-col justify-between overflow-hidden pt-4">
                   <ul className="grow overflow-auto space-y-4 pr-1">
-                    {cartItems.map((item) => (
-                      <li key={item.id} className="flex gap-4 p-3 bg-gray-50 border border-gray-200 rounded-2xl relative group items-center">
-                        <Link href={`/product/${item.handle || item.id}`} onClick={closeCart} className="flex gap-3 flex-1 min-w-0 group/item cursor-pointer items-center">
-                          <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-white shrink-0 border border-gray-200 group-hover/item:border-emerald-400 transition">
-                            <img src={item.image} alt={item.title} className="h-full w-full object-contain p-1 group-hover/item:scale-105 transition duration-200" />
-                          </div>
-                          <div className="flex-1 min-w-0 text-xs space-y-1">
-                            <h4 className="font-bold text-gray-900 truncate group-hover/item:text-emerald-700 transition">{item.title}</h4>
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="font-black text-sm text-gray-900">₹{(item.price || 0).toLocaleString("en-IN")}</span>
-                              
-                              {/* Quantity Stepper */}
-                              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white shrink-0">
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    updateQty(item.id, -1);
-                                  }}
-                                  className="px-2 py-0.5 text-gray-700 hover:bg-gray-100 font-black text-xs cursor-pointer"
-                                >
-                                  -
-                                </button>
-                                <span className="px-2 py-0.5 font-extrabold text-[11px] text-gray-900">{item.quantity || 1}</span>
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    updateQty(item.id, 1);
-                                  }}
-                                  className="px-2 py-0.5 text-gray-700 hover:bg-gray-100 font-black text-xs cursor-pointer"
-                                >
-                                  +
-                                </button>
+                    {cartItems.map((item) => {
+                      const currentPrice = Number(item.price || 0);
+                      const comparePrice = Number(item.compare_at_price || item.compareAtPrice || item.originalPrice || Math.round(currentPrice * 1.35));
+                      const hasDiscount = comparePrice > currentPrice;
+                      const offPercent = hasDiscount ? Math.round(((comparePrice - currentPrice) / comparePrice) * 100) : 0;
+
+                      return (
+                        <li key={item.id} className="flex gap-4 p-3 bg-gray-50 border border-gray-200 rounded-2xl relative group items-center">
+                          <Link href={`/product/${item.handle || item.id}`} onClick={closeCart} className="flex gap-3 flex-1 min-w-0 group/item cursor-pointer items-center">
+                            <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-white shrink-0 border border-gray-200 group-hover/item:border-emerald-400 transition">
+                              <img src={item.image} alt={item.title} className="h-full w-full object-contain p-1 group-hover/item:scale-105 transition duration-200" />
+                            </div>
+                            <div className="flex-1 min-w-0 text-xs space-y-1">
+                              <h4 className="font-bold text-gray-900 truncate group-hover/item:text-emerald-700 transition">{item.title}</h4>
+                              <div className="flex items-center justify-between gap-2">
+                                <div className="flex items-baseline gap-1.5 flex-wrap">
+                                  <span className="font-black text-sm text-gray-900">₹{currentPrice.toLocaleString("en-IN")}</span>
+                                  {hasDiscount && (
+                                    <>
+                                      <span className="text-[11px] text-gray-400 line-through font-medium">₹{comparePrice.toLocaleString("en-IN")}</span>
+                                      <span className="text-[9px] font-black text-emerald-700 bg-emerald-100 px-1 py-0.2 rounded border border-emerald-200">
+                                        {offPercent}% OFF
+                                      </span>
+                                    </>
+                                  )}
+                                </div>
+                                
+                                {/* Quantity Stepper */}
+                                <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white shrink-0">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      updateQty(item.id, -1);
+                                    }}
+                                    className="px-2 py-0.5 text-gray-700 hover:bg-gray-100 font-black text-xs cursor-pointer"
+                                  >
+                                    -
+                                  </button>
+                                  <span className="px-2 py-0.5 font-extrabold text-[11px] text-gray-900">{item.quantity || 1}</span>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      updateQty(item.id, 1);
+                                    }}
+                                    className="px-2 py-0.5 text-gray-700 hover:bg-gray-100 font-black text-xs cursor-pointer"
+                                  >
+                                    +
+                                  </button>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </Link>
-                        <button
-                          onClick={() => removeItem(item.id, item.handle)}
-                          className="text-gray-400 hover:text-red-600 font-black text-sm p-1 cursor-pointer transition"
-                          title="Remove item"
-                        >
-                          ✕
-                        </button>
-                      </li>
-                    ))}
+                          </Link>
+                          <button
+                            onClick={() => removeItem(item.id, item.handle)}
+                            className="text-gray-400 hover:text-red-600 font-black text-sm p-1 cursor-pointer transition"
+                            title="Remove item"
+                          >
+                            ✕
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
 
                   <div className="border-t border-gray-100 pt-4 space-y-3">

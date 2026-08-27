@@ -39,22 +39,30 @@ export function BuyNowButton({
     const titleStr = productObj?.title || productTitle || (productHandle ? productHandle.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase()) : "Store Item");
     const idVal = productObj?.id !== undefined ? productObj.id : (productObj?.handle || productHandle || handleStr);
 
+    const priceNum = Number(productObj?.price || 999);
+    const compareNum = Number(productObj?.compare_at_price || productObj?.comparePrice || Math.round(priceNum * 1.35));
+
     const itemToAdd = {
       id: idVal,
       handle: handleStr,
       title: titleStr,
-      price: Number(productObj?.price || 999),
+      price: priceNum,
+      compare_at_price: compareNum,
       quantity: 1,
       image: (productObj?.images && productObj?.images[0]) || productObj?.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
     };
 
+    // 🔒 STRICT REQUIRE LOGIN FOR ADD TO CART & BUY NOW — Direct Redirect without Toast Message
+    const { isUserLoggedIn } = require("lib/utils");
+    if (!isUserLoggedIn()) {
+      router.push(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
     if (mode === "buy") {
-      requireAuth(() => {
-        sessionStorage.setItem("ecom_buy_now_item", JSON.stringify([itemToAdd]));
-        router.push("/checkout?buyNow=true");
-      });
+      sessionStorage.setItem("ecom_buy_now_item", JSON.stringify([itemToAdd]));
+      router.push("/checkout?buyNow=true");
     } else {
-      // Cart mode: allow guest browsing with auto-reset on page refresh
       const existing = getCartStore();
       const idx = existing.findIndex((i: any) => {
         if (i.id != null && itemToAdd.id != null && String(i.id) === String(itemToAdd.id)) return true;

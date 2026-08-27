@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Product } from "lib/api";
-import { getCartStore, saveCartStore } from "lib/utils";
+import { getCartStore, saveCartStore, isUserLoggedIn } from "lib/utils";
 import { toast } from "sonner";
 
 export function AddToCartButton({ product }: { product: Product }) {
@@ -14,16 +14,9 @@ export function AddToCartButton({ product }: { product: Product }) {
     e.preventDefault();
     e.stopPropagation();
 
-    // 🔒 REQUIRE LOGIN FOR ADD TO CART
-    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
-    if (!token) {
-      toast.error("🔒 Please sign in to add items to your cart", {
-        description: "Redirecting you to the login page...",
-        duration: 2500
-      });
-      setTimeout(() => {
-        router.push("/auth/login");
-      }, 500);
+    // 🔒 REQUIRE LOGIN FOR ADD TO CART — Direct Redirect without Toast Message
+    if (!isUserLoggedIn()) {
+      router.push(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
@@ -34,6 +27,7 @@ export function AddToCartButton({ product }: { product: Product }) {
       handle: product.handle || String(product.id),
       title: product.title,
       price: product.price,
+      compare_at_price: product.compare_at_price || Math.round(product.price * 1.35),
       quantity: 1,
       image: image
     };

@@ -6,7 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuth } from "components/auth/auth-provider";
-import { getUserCartKey, getCartStore, saveCartStore } from "lib/utils";
+import { getUserCartKey, getCartStore, saveCartStore, isUserLoggedIn } from "lib/utils";
 import { BuyNowButton } from "components/auth/buy-now-button";
 import { ProductZoomMagnifier } from "./product-zoom-magnifier";
 import { toast } from "sonner";
@@ -197,16 +197,9 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
   const handleAddToCart = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
 
-    // 🔒 REQUIRE LOGIN FOR ADD TO CART
-    const token = typeof window !== "undefined" ? localStorage.getItem("ecom_token") : null;
-    if (!token) {
-      toast.error("🔒 Please sign in to add items to your cart", {
-        description: "Redirecting you to the login page...",
-        duration: 2500
-      });
-      setTimeout(() => {
-        router.push("/auth/login");
-      }, 500);
+    // 🔒 REQUIRE LOGIN FOR ADD TO CART — Direct Redirect without Toast Message
+    if (!isUserLoggedIn()) {
+      router.push(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
@@ -225,6 +218,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       handle: product.handle,
       title: `${product.title} (${selectedColor}${sizePart})`,
       price: product.price,
+      compare_at_price: product.compare_at_price || Math.round(product.price * 1.35),
       quantity: quantity,
       image: selectedImage
     };

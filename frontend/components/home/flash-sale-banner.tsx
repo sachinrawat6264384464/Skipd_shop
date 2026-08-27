@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { getCartStore, saveCartStore } from "lib/utils";
+import { getCartStore, saveCartStore, isUserLoggedIn } from "lib/utils";
 
 interface FlashSaleItem {
   id: number;
@@ -137,6 +137,12 @@ export function FlashSaleBanner() {
   const handleClaimDeal = (e: React.MouseEvent, item: FlashSaleItem) => {
     e.preventDefault();
     e.stopPropagation();
+
+    // 🔒 REQUIRE LOGIN FOR CLAIMING DEALS — Direct Redirect without Toast Message
+    if (!isUserLoggedIn()) {
+      router.push(`/auth/login?redirect=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
 
     try {
       const existing = getCartStore();

@@ -123,8 +123,8 @@ export default function CartItemsPage() {
     selected: item.selected !== false,
     quantity: Number(item.quantity || 1),
     price: Number(item.price || 999),
-    originalPrice: Number(item.originalPrice || item.compare_at_price || (item.price ? item.price * 1.3 : 1299)),
-    savings: Math.max(0, Number(item.savings || ((item.originalPrice || item.compare_at_price || (item.price ? item.price * 1.3 : 1299)) - Number(item.price || 999)))),
+    originalPrice: Number(item.originalPrice || item.compare_at_price || item.comparePrice || Math.round((Number(item.price) || 999) * 1.35)),
+    savings: Math.max(0, Number(item.savings || ((item.originalPrice || item.compare_at_price || item.comparePrice || Math.round((Number(item.price) || 999) * 1.35)) - Number(item.price || 999)))),
     rating: item.rating || "4.5",
     reviews: item.reviews || "1,240",
     seller: item.seller || "E-COM Official",
@@ -333,10 +333,17 @@ export default function CartItemsPage() {
                     </div>
 
                     {/* Right Price Column */}
-                    <div className="text-right shrink-0 text-xs">
-                      <span className="text-gray-400 line-through block text-[11px]">₹{item.originalPrice.toLocaleString("en-IN")}.00</span>
-                      <span className="text-lg font-black text-gray-900 block">₹{item.price.toLocaleString("en-IN")}.00</span>
-                      <span className="text-[11px] text-emerald-600 font-bold block">You save ₹{item.savings.toLocaleString("en-IN")}.00</span>
+                    <div className="text-right shrink-0 text-xs space-y-0.5">
+                      <span className="text-gray-400 line-through block text-[11px]">₹{item.originalPrice.toLocaleString("en-IN")}</span>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span className="text-lg font-black text-gray-900">₹{item.price.toLocaleString("en-IN")}</span>
+                        {item.originalPrice > item.price && (
+                          <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-200">
+                            {Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}% OFF
+                          </span>
+                        )}
+                      </div>
+                      <span className="text-[11px] text-emerald-600 font-bold block">You save ₹{item.savings.toLocaleString("en-IN")}</span>
                     </div>
 
                   </div>
