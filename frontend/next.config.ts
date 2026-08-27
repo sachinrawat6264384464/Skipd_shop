@@ -1,11 +1,27 @@
-export default {
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  compress: true,
+  reactStrictMode: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
+  },
   experimental: {
     ppr: true,
     inlineCss: true,
     useCache: true,
+    optimizePackageImports: [
+      "lucide-react",
+      "@heroicons/react",
+      "framer-motion",
+      "clsx",
+      "tailwind-merge",
+      "sonner",
+    ],
   },
   images: {
     formats: ["image/avif", "image/webp"],
+    minimumCacheTTL: 86400,
     remotePatterns: [
       {
         protocol: "https",
@@ -31,3 +47,5 @@ export default {
     ];
   },
 };
+
+export default nextConfig;

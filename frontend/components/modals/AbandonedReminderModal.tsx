@@ -20,10 +20,10 @@ export function AbandonedReminderModal() {
 
     checkAbandonedReminder();
 
-    // Poll every 15 seconds to trigger abandoned modal while user browses
+    // Poll every 5 minutes to trigger abandoned modal while user browses
     const interval = setInterval(() => {
       checkAbandonedReminder();
-    }, 15000);
+    }, 300000); // 5 Minutes Interval
 
     return () => clearInterval(interval);
   }, [pathname]);
@@ -60,7 +60,7 @@ export function AbandonedReminderModal() {
   };
 
   const handleRemindLater = () => {
-    const snoozeTime = Date.now() + 10 * 60 * 1000;
+    const snoozeTime = Date.now() + 5 * 60 * 1000; // 5 Minutes Snooze
     sessionStorage.setItem("reminder_snoozed_until", snoozeTime.toString());
     setIsOpen(false);
   };

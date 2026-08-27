@@ -1,14 +1,10 @@
 import { CartProvider } from "components/cart/cart-context";
 import { Navbar } from "components/layout/navbar";
-import { WelcomeToast } from "components/welcome-toast";
 import { GeistSans } from "geist/font/sans";
 import { getCart } from "lib/shopify";
 import { ReactNode } from "react";
 import { Toaster } from "sonner";
 import "./globals.css";
-import { baseUrl } from "lib/utils";
-
-const { SITE_NAME } = process.env;
 
 const siteBaseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
@@ -27,7 +23,7 @@ export const metadata = {
   },
   openGraph: {
     title: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
-    description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones & smart wearables with 24-hour express delivery.",
+    description: "Upgrade your daily setup with studio ANC headphones, gaming phones & smart wearables with 24-hour express delivery.",
     url: "https://e-com-shop.vercel.app",
     siteName: "E-COM Commerce",
     images: [
@@ -52,24 +48,26 @@ export const metadata = {
 import { AuthProvider } from "components/auth/auth-provider";
 import { LanguageProvider } from "components/language/language-context";
 import { WishlistProvider } from "components/wishlist/wishlist-context";
-
 import { NavbarWrapper } from "components/layout/navbar/navbar-wrapper";
 import { ClearLegacyStorage } from "components/layout/clear-legacy-storage";
-import { EmailToastListener } from "components/email/email-toast-listener";
-import FloatingChatbot from "components/chatbot/FloatingChatbot";
-import { AbandonedReminderModal } from "components/modals/AbandonedReminderModal";
-import { SocialProofToast } from "components/social/social-proof-toast";
+import { ClientWidgets } from "components/layout/client-widgets";
 
 export default async function RootLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  // Don't await the fetch, pass the Promise to the context provider
   const cart = getCart();
 
   return (
     <html lang="en" className={GeistSans.variable} suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://images.unsplash.com" />
+        <link rel="preconnect" href="https://cdn.shopify.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://cdn.shopify.com" />
+        <link rel="preconnect" href="https://e-com-ecom.onrender.com" crossOrigin="anonymous" />
+      </head>
       <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white" suppressHydrationWarning>
         <ClearLegacyStorage />
         <LanguageProvider>
@@ -82,11 +80,7 @@ export default async function RootLayout({
                 <main>
                   {children}
                   <Toaster closeButton />
-                  <WelcomeToast />
-                  <EmailToastListener />
-                  <FloatingChatbot />
-                  <AbandonedReminderModal />
-                  <SocialProofToast />
+                  <ClientWidgets />
                 </main>
               </CartProvider>
             </WishlistProvider>

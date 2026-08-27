@@ -251,7 +251,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 return (
                   <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
                     <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
-                      <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
+                      <img src={p.images[0]} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                     </div>
                     <p className="text-[10px] text-gray-700 font-bold group-hover:text-emerald-700 transition line-clamp-2 leading-tight">{p.title}</p>
                     <div className="flex items-center justify-between flex-wrap gap-1">
@@ -356,6 +356,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                         src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                         alt={product.title}
                         fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+                        loading="lazy"
                         className={`object-cover w-full h-full transition duration-500 ${isOutOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
                       />
                     </Link>

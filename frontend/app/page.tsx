@@ -7,8 +7,7 @@ import { FlashSaleBanner } from "components/home/flash-sale-banner";
 import { fetchProducts } from "lib/api";
 import Footer from "components/layout/footer";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 
 export const metadata = {
   title: "E-COM | Modern Direct-to-Consumer Storefront",

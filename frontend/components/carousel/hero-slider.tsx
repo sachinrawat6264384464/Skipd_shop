@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export interface HeroSlide {
   id: number | string;
@@ -232,11 +233,24 @@ export function HeroSlider() {
 
                 {/* Right Image (Full Fill & Cover) */}
                 <div className="relative w-full md:w-[440px] lg:w-[500px] h-60 sm:h-80 md:h-[360px] lg:h-[400px] rounded-3xl overflow-hidden shadow-2xl border-2 border-white/80 shrink-0">
-                  <img
-                    src={slide.imageUrl}
-                    alt={slide.title}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
+                  {idx === 0 ? (
+                    <Image
+                      src={slide.imageUrl}
+                      alt={slide.title}
+                      fill
+                      priority
+                      sizes="(max-width: 768px) 100vw, 500px"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  ) : (
+                    <img
+                      src={slide.imageUrl}
+                      alt={slide.title}
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  )}
                   {slide.badgeText && (
                     <div className="absolute top-4 right-4 bg-red-600 text-white font-black text-xs sm:text-sm px-4 py-1.5 rounded-full shadow-xl animate-pulse tracking-wide">
                       {slide.badgeText}

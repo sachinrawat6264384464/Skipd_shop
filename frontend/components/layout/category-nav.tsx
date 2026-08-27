@@ -5,22 +5,22 @@ import Link from "next/link";
 import { fetchCategories, fetchProducts } from "lib/api";
 
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
-  mobiles: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
-  mobile: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
-  electronics: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
-  watches: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
-  watch: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
-  fashion: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
-  apparel: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
-  footwear: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
-  shoes: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
-  laptops: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
-  laptop: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
-  home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
-  "home-living": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
-  sports: "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800",
-  artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
-  lifestyle: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800"
+  mobiles: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=120&auto=format&fit=crop&q=80",
+  mobile: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=120&auto=format&fit=crop&q=80",
+  electronics: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=120&auto=format&fit=crop&q=80",
+  watches: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=120&auto=format&fit=crop&q=80",
+  watch: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=120&auto=format&fit=crop&q=80",
+  fashion: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=120&auto=format&fit=crop&q=80",
+  apparel: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=120&auto=format&fit=crop&q=80",
+  footwear: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=120&auto=format&fit=crop&q=80",
+  shoes: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=120&auto=format&fit=crop&q=80",
+  laptops: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=120&auto=format&fit=crop&q=80",
+  laptop: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=120&auto=format&fit=crop&q=80",
+  home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=120&auto=format&fit=crop&q=80",
+  "home-living": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=120&auto=format&fit=crop&q=80",
+  sports: "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=120&auto=format&fit=crop&q=80",
+  artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=120&auto=format&fit=crop&q=80",
+  lifestyle: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=120&auto=format&fit=crop&q=80"
 };
 
 function getCategoryImageUrl(c: any): string {
@@ -110,6 +110,8 @@ export function CategoryNav() {
               <img
                 src={cat.image_url}
                 alt={cat.name}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover rounded-full group-hover:scale-110 transition duration-300"
               />
             </div>
