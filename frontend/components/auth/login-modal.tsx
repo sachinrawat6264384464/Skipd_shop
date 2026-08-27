@@ -533,118 +533,107 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   };
 
   return createPortal(
-    <div className="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto font-sans">
-      <div className="relative bg-[#F8FAFC] rounded-3xl overflow-hidden max-w-4xl lg:max-w-5xl w-full max-h-[95vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row border border-gray-200/80 my-auto">
+    <div className="fixed inset-0 z-[99999] bg-[#F8FAFC] w-full h-full min-h-screen overflow-y-auto flex flex-col md:flex-row font-sans">
+      
+      {/* 🟢 LEFT STATIC HERO PANEL (50% Full Height & Width - Dark Emerald Theme) */}
+      <div className="md:w-1/2 min-h-[400px] md:min-h-screen bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white p-8 lg:p-16 flex flex-col justify-between relative overflow-hidden shrink-0 border-r border-emerald-800/40">
         
-        {/* Close Button (Always Sticky Top Right & Accessible) */}
+        {/* Decorative Glowing Orbs */}
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Top Header & Branding */}
+        <div className="space-y-6 z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-emerald-500/30">
+              🛍️
+            </div>
+            <div>
+              <span className="text-2xl font-black tracking-tight text-white block leading-none">SKIPD SHOP</span>
+              <span className="text-[10px] font-extrabold text-emerald-400 tracking-wider uppercase">Official Storefront</span>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-4">
+            <span className="bg-emerald-500/20 text-emerald-300 text-xs font-black px-3.5 py-1.5 rounded-full border border-emerald-400/30 uppercase tracking-wider inline-block">
+              ✨ Customer Portal Access
+            </span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
+              {isForgotView
+                ? "Account Password Recovery"
+                : isRegisterView
+                ? "Create Customer Account"
+                : "Welcome Back to Skipd Store!"}
+            </h1>
+            <p className="text-emerald-100/80 text-xs sm:text-sm lg:text-base leading-relaxed font-medium max-w-md">
+              {isForgotView
+                ? "Verify your registered email to reset your account password securely."
+                : "Manage your orders, track shipments in real-time, view wishlist & enjoy exclusive Supercoin rewards."}
+            </p>
+          </div>
+        </div>
+
+        {/* Middle Feature Highlights List */}
+        <div className="z-10 my-8 space-y-3 max-w-md hidden sm:block">
+          <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+              ⚡
+            </div>
+            <div>
+              <p className="font-extrabold text-white">Express 2-Day Delivery Across India</p>
+              <p className="text-[11px] text-emerald-200/80">Priority shipping on all active verified orders</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+              🔒
+            </div>
+            <div>
+              <p className="font-extrabold text-white">256-bit Encrypted SSL Security</p>
+              <p className="text-[11px] text-emerald-200/80">Protected customer authentication &amp; payments</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+              🎁
+            </div>
+            <div>
+              <p className="font-extrabold text-white">250 Instant Reward Supercoins</p>
+              <p className="text-[11px] text-emerald-200/80">Redeemable on your very next order purchase</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Customer Trust Stats */}
+        <div className="z-10 pt-4 border-t border-emerald-800/60 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex -space-x-2">
+              <span className="w-7 h-7 rounded-full bg-emerald-400 text-emerald-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">S</span>
+              <span className="w-7 h-7 rounded-full bg-teal-400 text-teal-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">R</span>
+              <span className="w-7 h-7 rounded-full bg-green-400 text-green-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">A</span>
+            </div>
+            <span className="text-xs font-extrabold text-emerald-200">50,000+ Happy Customers</span>
+          </div>
+          <span className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-widest">★ 4.9 Verified Rating</span>
+        </div>
+
+      </div>
+
+      {/* 🤍 RIGHT FORM PANEL (50% Full Screen Width) */}
+      <div className="md:w-1/2 bg-white p-6 sm:p-10 lg:p-16 flex flex-col justify-center max-w-xl mx-auto w-full min-h-screen relative font-sans text-gray-800">
+        
+        {/* Sticky Top-Right Close Button */}
         <button
           type="button"
           onClick={handleModalClose}
-          className="absolute top-4 right-4 z-30 w-9 h-9 rounded-full bg-white hover:bg-gray-100 text-gray-900 font-black text-sm flex items-center justify-center cursor-pointer transition shadow-md border border-gray-200"
-          title="Close Modal"
+          className="absolute top-6 right-6 z-30 flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold text-xs px-4 py-2 rounded-xl border border-gray-300 transition cursor-pointer shadow-xs"
+          title="Back to Store"
         >
-          ✕
+          <span>✕</span>
+          <span>Return to Store</span>
         </button>
-
-        {/* 🟢 LEFT COLUMN: Branding, Feature Bullets & Trust Stats (Mirroring Admin Login Page) */}
-        <div className="md:w-1/2 p-6 sm:p-8 lg:p-10 flex flex-col justify-between space-y-6 relative overflow-hidden bg-[#F8FAFC] border-r border-gray-200/60 shrink-0">
-          
-          {/* Ambient Glow */}
-          <div className="absolute top-0 left-0 w-80 h-80 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none" />
-
-          {/* Brand Header */}
-          <div className="space-y-4 z-10">
-            <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-[#059669] text-white flex items-center justify-center font-black text-2xl shadow-lg shadow-emerald-600/20">
-                🛍️
-              </div>
-              <div>
-                <h2 className="text-xl font-black tracking-tight text-gray-900 leading-none">SKIPD SHOP</h2>
-                <p className="text-[11px] text-[#059669] font-extrabold tracking-wide mt-0.5 uppercase">Customer Commerce Portal</p>
-              </div>
-            </div>
-
-            <div>
-              <span className="bg-[#EAF8F2] text-[#059669] border border-emerald-200/80 font-black text-[10px] px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-2xs">
-                <svg className="w-3.5 h-3.5 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <span>Fast. Verified. Protected.</span>
-              </span>
-            </div>
-
-            <div className="space-y-1.5 pt-1">
-              <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight leading-tight">
-                {isForgotView
-                  ? "Account Password Recovery"
-                  : isRegisterView
-                  ? "Create Customer Account"
-                  : "Welcome to Customer Auth Portal"}
-              </h1>
-              <p className="text-gray-500 text-xs font-medium leading-relaxed">
-                {isForgotView
-                  ? "Step-by-step OTP verification to reset your password"
-                  : "Sign in to access your Orders, Wishlist, Real-time Tracking & Rewards"}
-              </p>
-            </div>
-          </div>
-
-          {/* 3 Feature Bullets (SVG icons inside rounded light-green boxes) */}
-          <div className="space-y-3 z-10 hidden sm:block">
-            <div className="flex items-start gap-3 p-3 bg-white border border-gray-200/80 rounded-2xl shadow-2xs">
-              <div className="w-9 h-9 rounded-xl bg-[#EAF8F2] text-[#059669] flex items-center justify-center shrink-0 border border-emerald-200/60">
-                <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="font-extrabold text-gray-900 text-xs">256-bit Encrypted SSL</h4>
-                <p className="text-[11px] text-gray-500 font-medium">Bank-grade security protecting customer accounts &amp; payments.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 bg-white border border-gray-200/80 rounded-2xl shadow-2xs">
-              <div className="w-9 h-9 rounded-xl bg-[#EAF8F2] text-[#059669] flex items-center justify-center shrink-0 border border-emerald-200/60">
-                <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="font-extrabold text-gray-900 text-xs">Real-Time Dispatch Tracking</h4>
-                <p className="text-[11px] text-gray-500 font-medium">Live courier status updates for all active purchases.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 bg-white border border-gray-200/80 rounded-2xl shadow-2xs">
-              <div className="w-9 h-9 rounded-xl bg-[#EAF8F2] text-[#059669] flex items-center justify-center shrink-0 border border-emerald-200/60">
-                <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
-                </svg>
-              </div>
-              <div>
-                <h4 className="font-extrabold text-gray-900 text-xs">Instant Reward Supercoins</h4>
-                <p className="text-[11px] text-gray-500 font-medium">Earn 250 bonus coins automatically on registration.</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom Trust Stat Footer */}
-          <div className="z-10 pt-3 border-t border-gray-200/60 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <div className="flex -space-x-2">
-                <span className="w-6 h-6 rounded-full bg-[#059669] text-white font-black text-[10px] flex items-center justify-center border-2 border-white">S</span>
-                <span className="w-6 h-6 rounded-full bg-teal-600 text-white font-black text-[10px] flex items-center justify-center border-2 border-white">R</span>
-                <span className="w-6 h-6 rounded-full bg-green-600 text-white font-black text-[10px] flex items-center justify-center border-2 border-white">A</span>
-              </div>
-              <span className="font-bold text-gray-800 text-[11px]">50,000+ Happy Shoppers</span>
-            </div>
-            <span className="text-[10px] font-extrabold text-[#059669] bg-[#EAF8F2] px-2 py-0.5 rounded border border-emerald-200">★ 4.9 Rating</span>
-          </div>
-
-        </div>
-
-        {/* 🔒 RIGHT COLUMN: Floating White Customer Auth Card (Mirroring Admin Login Card) */}
-        <div className="md:w-1/2 p-6 sm:p-8 flex flex-col justify-between space-y-4 bg-white font-sans text-gray-800">
           
           {/* Top Shield Header Graphic (Exact match with Admin Login Page) */}
           <div className="flex flex-col items-center text-center space-y-1">
@@ -994,7 +983,6 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           )}
 
         </div>
-      </div>
     </div>,
     document.body
   );
