@@ -133,12 +133,13 @@ export async function fetchProducts(query?: { category?: string; search?: string
 
 export async function fetchProductByHandle(handle: string): Promise<Product | null> {
   const cleanSearch = handle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const baseSearch = cleanSearch.replace(/-\d+.*$/, "");
 
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2500);
+    const timer = setTimeout(() => controller.abort(), 2000);
 
-    const res = await fetch(`${API_BASE_URL}/products/${handle}`, {
+    const res = await fetch(`${API_BASE_URL}/products/${encodeURIComponent(handle)}`, {
       cache: "no-store",
       signal: controller.signal
     });
@@ -149,17 +150,20 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
       if (data && data.id) return data;
     }
   } catch (err) {
-    console.warn("[API SDK Warning] Backend offline or cold-starting.", err);
+    console.warn("[API SDK Warning] Backend product lookup fallback triggered.");
   }
 
-  // Search full product catalog (Live or Mock Fallback)
-  const allProds = await fetchProducts();
+  // Search full product catalog (Live DB or Fallback)
+  const allProds = await fetchProducts().catch(() => []);
+  if (!allProds || allProds.length === 0) return null;
 
   let found = allProds.find(p =>
     p.handle === handle ||
     String(p.id) === handle ||
     (p.handle && p.handle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === cleanSearch) ||
-    p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === cleanSearch
+    p.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") === cleanSearch ||
+    (p.handle && p.handle.toLowerCase().includes(baseSearch)) ||
+    (baseSearch.length > 5 && p.handle && baseSearch.includes(p.handle.toLowerCase()))
   );
   if (found) return found;
 
