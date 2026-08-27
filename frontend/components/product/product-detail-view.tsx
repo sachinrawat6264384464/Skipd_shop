@@ -1558,8 +1558,8 @@ const SUB_NAV_ITEMS = [
                   className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group"
                 >
                   <Link href={`/product/${sp.handle}`} className="space-y-2 block flex-1 cursor-pointer">
-                    <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
-                      <img src={spImg} alt={sp.title} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
+                    <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                      <img src={spImg} alt={sp.title} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-300" />
                       {discountPercent > 0 && (
                         <span className="absolute top-1 left-1 bg-red-600 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded uppercase">
                           -{discountPercent}%
@@ -1623,8 +1623,8 @@ const SUB_NAV_ITEMS = [
                   className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group"
                 >
                   <Link href={`/product/${viewed.handle}`} className="space-y-2 block flex-1 cursor-pointer">
-                    <div className="relative aspect-square bg-white rounded-xl overflow-hidden p-2 border border-gray-100">
-                      <img src={vImg} alt={viewed.title} className="w-full h-full object-contain group-hover:scale-105 transition duration-300" />
+                    <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                      <img src={vImg} alt={viewed.title} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-300" />
                       {vDiscount > 0 && (
                         <span className="absolute top-1 left-1 bg-orange-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded uppercase">
                           -{vDiscount}%

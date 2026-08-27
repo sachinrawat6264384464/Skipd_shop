@@ -12,6 +12,7 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
   const [isHovering, setIsHovering] = useState(false);
   const [lensPosition, setLensPosition] = useState({ x: 50, y: 50, pxX: 0, pxY: 0 });
   const [isFullscreenOpen, setIsFullscreenOpen] = useState(false);
+  const [fitMode, setFitMode] = useState<"cover" | "contain">("cover");
   const containerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -64,18 +65,39 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
         onMouseLeave={() => setIsHovering(false)}
         onMouseMove={handleMouseMove}
         onClick={handleContainerClick}
-        className="relative w-full aspect-square bg-white rounded-3xl border border-gray-200 overflow-hidden p-4 shadow-xs lg:cursor-crosshair cursor-pointer group"
+        className="relative w-full aspect-square bg-slate-100 rounded-3xl border border-gray-200 overflow-hidden shadow-2xs lg:cursor-crosshair cursor-pointer group"
       >
+        {/* Soft Ambient Blurred Background for non-square photos so box is 100% filled & rich */}
+        <div
+          className="absolute inset-0 bg-cover bg-center blur-2xl opacity-30 scale-125 pointer-events-none transition-all duration-300"
+          style={{ backgroundImage: `url(${imageSrc})` }}
+        />
+
+        {/* Main Product Image — Perfectly Fitted to Fill Container Box */}
         <img
           src={imageSrc}
           alt={altText}
-          className="w-full h-full object-contain pointer-events-none select-none"
+          className={`relative z-10 w-full h-full ${
+            fitMode === "cover" ? "object-cover object-center" : "object-contain p-3"
+          } pointer-events-none select-none transition-all duration-200`}
         />
+
+        {/* 🖼️ Floating Fit Mode Toggle (Fill Box / Fit Whole) */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setFitMode(prev => prev === "cover" ? "contain" : "cover");
+          }}
+          className="absolute bottom-3 right-3 z-20 bg-white/90 hover:bg-white text-gray-900 font-extrabold text-[10px] px-3 py-1 rounded-full border border-gray-200 shadow-md backdrop-blur-md transition flex items-center gap-1 cursor-pointer"
+        >
+          <span>{fitMode === "cover" ? "🖼️ Fill Box" : "📐 Fit Whole"}</span>
+        </button>
 
         {/* 🟦 Semi-Transparent Blue Lens Box (Visible ONLY on Desktop >= lg) */}
         {isHovering && (
           <div
-            className="hidden lg:block absolute border-2 border-sky-400 bg-sky-400/25 shadow-md pointer-events-none transition-transform duration-75 ease-out rounded-lg"
+            className="hidden lg:block absolute border-2 border-sky-400 bg-sky-400/25 shadow-md pointer-events-none transition-transform duration-75 ease-out rounded-lg z-30"
             style={{
               width: "120px",
               height: "120px",
@@ -137,7 +159,7 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
             <img
               src={imageSrc}
               alt={altText}
-              className="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl"
+              className="max-w-full max-h-[75vh] object-cover rounded-2xl shadow-2xl"
             />
           </div>
 
