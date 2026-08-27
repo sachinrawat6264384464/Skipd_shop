@@ -31,7 +31,17 @@ function getApiBase(): string {
 
 function getToken(): string | null {
   if (typeof window === "undefined") return null;
-  return localStorage.getItem("ecom_token") || localStorage.getItem("user_token") || localStorage.getItem("token") || null;
+  const directToken = localStorage.getItem("ecom_token") || localStorage.getItem("user_token") || localStorage.getItem("token");
+  if (directToken) return directToken;
+
+  try {
+    const userStr = localStorage.getItem("ecom_user");
+    if (userStr) {
+      const u = JSON.parse(userStr);
+      if (u && u.email) return u.email;
+    }
+  } catch (e) {}
+  return null;
 }
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
