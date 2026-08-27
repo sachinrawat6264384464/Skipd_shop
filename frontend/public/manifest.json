@@ -1,0 +1,21 @@
+{
+  "name": "E-COM B2C Store",
+  "short_name": "E-COM Store",
+  "description": "Fast, Premium E-Commerce Shopping Experience",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/opengraph-image.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/opengraph-image.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

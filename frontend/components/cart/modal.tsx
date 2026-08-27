@@ -7,6 +7,7 @@ import { Fragment, useState, useEffect } from "react";
 import OpenCart from "./open-cart";
 
 import { LoginModal } from "components/auth/login-modal";
+import { CouponBox } from "./coupon-box";
 
 import { getUserCartKey, getCartStore, saveCartStore } from "lib/utils";
 
@@ -17,6 +18,7 @@ export default function CartModal() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount: number } | null>(null);
 
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
@@ -214,9 +216,17 @@ export default function CartModal() {
                   </ul>
 
                   <div className="border-t border-gray-100 pt-4 space-y-3">
+                    <CouponBox
+                      subtotal={subtotal}
+                      onApplyDiscount={(disc, code) => setAppliedCoupon({ code, discount: disc })}
+                      onRemoveCoupon={() => setAppliedCoupon(null)}
+                      appliedCode={appliedCoupon?.code}
+                      appliedDiscount={appliedCoupon?.discount}
+                    />
+
                     <div className="flex justify-between items-center text-sm font-extrabold text-gray-900">
                       <span>Subtotal</span>
-                      <span>₹{subtotal.toLocaleString("en-IN")}</span>
+                      <span>₹{(subtotal - (appliedCoupon?.discount || 0)).toLocaleString("en-IN")}.00</span>
                     </div>
                     <p className="text-[10px] text-gray-400">Taxes and shipping calculated at checkout.</p>
                     <div className="grid grid-cols-2 gap-3 pt-1">

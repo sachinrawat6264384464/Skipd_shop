@@ -172,6 +172,17 @@ async def initialize_and_migrate_all_tables():
             session.add_all(prods)
             print("[SUCCESS] 5 Core Products seeded!")
 
+        # Seed Default Promo Coupons if empty
+        coupon_count_res = await session.execute(select(func.count(Coupon.id)))
+        if (coupon_count_res.scalar() or 0) == 0:
+            coupons = [
+                Coupon(code="WELCOME500", discount_percent=0.0, max_discount=500.0, min_order_amount=1999.0, is_active=True),
+                Coupon(code="FLAT20", discount_percent=20.0, max_discount=1000.0, min_order_amount=2999.0, is_active=True),
+                Coupon(code="FESTIVE10", discount_percent=10.0, max_discount=2000.0, min_order_amount=999.0, is_active=True),
+            ]
+            session.add_all(coupons)
+            print("[SUCCESS] 3 Default Promo Coupons seeded (WELCOME500, FLAT20, FESTIVE10)!")
+
         await session.commit()
         print("\n" + "=" * 70)
         print("SUCCESS: ALL POSTGRESQL TABLES & MIGRATIONS SYNCHRONIZED 100%!")

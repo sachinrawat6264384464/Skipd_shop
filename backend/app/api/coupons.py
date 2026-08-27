@@ -1,80 +1,67 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy.future import select
+from pydantic import BaseModel
+from typing import Optional
+from datetime import datetime
+
 from app.core.database import get_db
 from app.models.models import Coupon
 
-router = APIRouter(prefix="/coupons", tags=["Coupons"])
+router = APIRouter()
 
-@router.post("/validate")
+class CouponValidateSchema(BaseModel):
+    code: str
+    subtotal: float
+
+class CouponResponseSchema(BaseModel):
+    valid: bool
+    code: str
+    discount_amount: float
+    description: str
+    final_subtotal: float
+
+@router.post("/validate", response_model=CouponResponseSchema)
 async def validate_coupon(
-    payload: dict = Body(...),
+    data: CouponValidateSchema,
     db: AsyncSession = Depends(get_db)
 ):
-    """Validate discount coupon code."""
-    code = payload.get("code", "").strip().upper()
-    order_amount = payload.get("order_amount", 0)
-
-    res = await db.execute(select(Coupon).where(Coupon.code == code, Coupon.is_active == True))
+    code_upper = data.code.strip().upper()
+    res = await db.execute(select(Coupon).where(Coupon.code == code_upper, Coupon.is_active == True))
     coupon = res.scalars().first()
 
     if not coupon:
-        raise HTTPException(status_code=400, detail="Invalid or expired coupon code")
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid or expired coupon code. Try WELCOME500 or FLAT20."
+        )
 
-    if order_amount < coupon.min_order_amount:
-        raise HTTPException(status_code=400, detail=f"Minimum order amount for this coupon is ₹{coupon.min_order_amount}")
+    if data.subtotal < coupon.min_order_value:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Minimum order subtotal of ₹{coupon.min_order_value:,.0f} required for coupon {coupon.code}."
+        )
 
-    discount = (order_amount * coupon.discount_percent) / 100.0
-    if coupon.max_discount and discount > coupon.max_discount:
-        discount = coupon.max_discount
+    discount = 0.0
+    if coupon.discount_percent > 0:
+        discount = (data.subtotal * coupon.discount_percent) / 100.0
+        if coupon.max_discount_amount and discount > coupon.max_discount_amount:
+            discount = coupon.max_discount_amount
+    elif coupon.fixed_discount > 0:
+        discount = coupon.fixed_discount
+
+    discount = min(discount, data.subtotal)
+    final_subtotal = max(0.0, data.subtotal - discount)
 
     return {
-        "status": "valid",
+        "valid": True,
         "code": coupon.code,
-        "discount_percent": coupon.discount_percent,
         "discount_amount": round(discount, 2),
-        "final_amount": round(order_amount - discount, 2)
+        "description": coupon.description or "Coupon applied successfully!",
+        "final_subtotal": round(final_subtotal, 2)
     }
 
-
-# ─────────────────────────────────────────────
-# 🏷️ GREEDY ALGORITHM BEST COUPON OPTIMIZER
-# ─────────────────────────────────────────────
-from app.services.coupon_service import coupon_optimizer
-
-@router.post("/best-coupon")
-async def calculate_best_coupon_greedy(
-    payload: dict = Body(...),
-    db: AsyncSession = Depends(get_db)
-):
-    """
-    🏷️ Greedy Choice Algorithm with Max-Heap:
-    Evaluates active coupons and selects the coupon providing maximum monetary savings for the cart total.
-    """
-    cart_total = float(payload.get("cart_total", 0.0))
-    if cart_total <= 0:
-        return {"best_coupon": None, "discount_amount": 0.0, "final_total": cart_total}
-
+@router.get("/active")
+async def list_active_coupons(db: AsyncSession = Depends(get_db)):
     res = await db.execute(select(Coupon).where(Coupon.is_active == True))
-    coupons = res.scalars().all()
-
-    active_list = []
-    if coupons:
-        for c in coupons:
-            active_list.append({
-                "code": c.code,
-                "discount_type": "PERCENTAGE",
-                "discount_value": c.discount_percent,
-                "min_spend": c.min_order_amount,
-                "max_discount": c.max_discount,
-                "description": f"{c.discount_percent}% OFF up to ₹{c.max_discount or 500}"
-            })
-    else:
-        active_list = [
-            {"code": "WELCOME10", "discount_type": "PERCENTAGE", "discount_value": 10.0, "min_spend": 500.0, "max_discount": 300.0, "description": "10% OFF Welcome Discount"},
-            {"code": "FREEDOM25", "discount_type": "PERCENTAGE", "discount_value": 25.0, "min_spend": 2000.0, "max_discount": 1000.0, "description": "25% OFF Mega Sale"},
-            {"code": "SKIPD500", "discount_type": "FLAT", "discount_value": 500.0, "min_spend": 3000.0, "description": "₹500 Flat Super Discount"}
-        ]
-
-    best_deal = coupon_optimizer.find_best_coupons_greedy(active_list, cart_total)
-    return best_deal
+    return res.scalars().all()

@@ -4,7 +4,8 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import Footer from "components/layout/footer";
-import { fetchTrackOrder, fetchUserOrders, getProductImageByTitle, UserOrder } from "lib/api";
+import { fetchTrackOrder, fetchUserOrders, getProductImageByTitle, UserOrder, API_BASE_URL } from "lib/api";
+import { OrderTrackingStepper } from "components/order/order-tracking-stepper";
 
 interface TimelineItem {
   stage_index: number;
@@ -221,11 +222,15 @@ function TrackOrderContent() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 w-full md:w-auto justify-between">
-                  <div className="text-right hidden md:block">
-                    <p className="text-[10px] text-gray-300 font-bold">Delivery OTP</p>
-                    <p className="text-xs font-mono font-black text-emerald-300 tracking-widest">8942</p>
-                  </div>
+                <div className="flex items-center gap-3 w-full md:w-auto justify-between flex-wrap">
+                  <a
+                    href={`${API_BASE_URL}/invoices/${trackingData.order_id}/invoice-html`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-extrabold text-xs px-4 py-2.5 rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                  >
+                    🧾 Download Tax Invoice (GST)
+                  </a>
 
                   <a
                     href="tel:+919876543210"
@@ -235,6 +240,9 @@ function TrackOrderContent() {
                   </a>
                 </div>
               </div>
+
+              {/* Visual Order Stepper Timeline */}
+              <OrderTrackingStepper status={trackingData.status} />
 
               {/* Real-time 7-Stage Timeline Progress */}
               <div className="space-y-4 pt-2">

@@ -86,7 +86,7 @@ export default function Footer() {
       </div>
 
       {/* 🏢 Main Footer Columns */}
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 py-14 grid grid-cols-2 md:grid-cols-6 gap-8 border-b border-gray-200/80">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 py-14 grid grid-cols-2 md:grid-cols-4 gap-8 border-b border-gray-200/80">
         
         {/* Column 1: ABOUT */}
         <div className="space-y-3">
@@ -104,21 +104,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 2: GROUP BRANDS */}
-        <div className="space-y-3">
-          <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-            GROUP BRANDS
-          </h4>
-          <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Technologies</a></li>
-            <li><Link href="/search?collection=fashion" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Apparel</Link></li>
-            <li><Link href="/search?collection=electronics" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Electronics</Link></li>
-            <li><Link href="/track-order" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Express Logistics</Link></li>
-          </ul>
-        </div>
-
-        {/* Column 3: HELP */}
+        {/* Column 2: HELP */}
         <div className="space-y-3">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
@@ -132,7 +118,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 4: CONSUMER POLICY */}
+        {/* Column 3: CONSUMER POLICY */}
         <div className="space-y-3">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
@@ -147,34 +133,19 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 5: Mail Us (Botmartz Details) */}
+        {/* Column 4: Mail Us (Botmartz Details) */}
         <div className="space-y-3 col-span-2 md:col-span-1 border-l border-gray-200/80 pl-0 md:pl-4">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
             MAIL US:
           </h4>
           <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
-            Botmartz Technologies Pvt Ltd,<br />
-            Plot 42, Tech Park Enclave,<br />
-            IT Zone, Outer Ring Road,<br />
-            Bengaluru 560103, Karnataka, India<br />
-            Email: <a href="mailto:support@botmartz.com" className="text-emerald-700 font-bold hover:underline">support@botmartz.com</a><br />
+            Botmartz AI Solution Pvt. Ltd.,<br />
+            50 R, Mangalmurti Krishna Ji Nagar,<br />
+            Behind Mayur Hospital, Indore,<br />
+            Madhya Pradesh, India<br />
+            Email: <a href="mailto:team@botmartz.com" className="text-emerald-700 font-bold hover:underline">team@botmartz.com</a><br />
             Web: <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 font-bold hover:underline">www.botmartz.com</a>
-          </p>
-        </div>
-
-        {/* Column 6: Registered Office (Botmartz Details) */}
-        <div className="space-y-3 col-span-2 md:col-span-1 border-l border-gray-200/80 pl-0 md:pl-4">
-          <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
-            REGISTERED OFFICE:
-          </h4>
-          <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
-            Botmartz Technologies Pvt Ltd,<br />
-            Outer Ring Road, Bengaluru 560103,<br />
-            Karnataka, India<br />
-            CIN: U72900KA2024PTC188888<br />
-            Toll-Free: <a href="tel:18002686278" className="text-emerald-700 font-black hover:underline">1800-BOTMARTZ (1800 268 6278)</a>
           </p>
         </div>
 
@@ -203,7 +174,7 @@ export default function Footer() {
           {/* Copyright */}
           <div>
             <p className="text-gray-500 font-semibold text-[11px]">
-              &copy; 2007-2026 Botmartz Technologies Pvt Ltd. All rights reserved.
+              &copy; 2007-2026 Botmartz AI Solution Pvt. Ltd. All rights reserved.
             </p>
           </div>
 

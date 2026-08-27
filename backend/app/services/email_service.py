@@ -255,19 +255,6 @@ def send_order_confirmation_email(
             <span>{customer_name} — {address_str}</span>
           </div>
 
-          <!-- 📁 SHARED GOOGLE DRIVE ACCESS BOX -->
-          <div style="background: #eff6ff; border: 2px dashed #3b82f6; border-radius: 16px; padding: 18px; margin: 20px 0; text-align: center;">
-            <div style="font-size: 11px; font-weight: 800; color: #1d4ed8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">
-              📁 Shared Google Drive Media &amp; Assets Folder
-            </div>
-            <p style="font-size: 12px; color: #1e40af; margin: 0 0 12px 0;">
-              Access official media files, documents &amp; digital assets on Google Drive:
-            </p>
-            <a href="https://drive.google.com/drive/folders/1Cy1m0r-_4EhjDrBVNzvuMT_KGL48VAdb?usp=sharing" target="_blank" style="display: inline-block; background: #2563eb; color: #ffffff !important; font-weight: 900; text-decoration: none; padding: 10px 22px; border-radius: 12px; font-size: 13px;">
-              📂 Open Shared Google Drive Folder &rsaquo;
-            </a>
-          </div>
-
           <div style="text-align: center; margin: 28px 0 12px 0;">
             <a href="{tracking_url}" class="btn">📦 Track Live Order Shipment &rsaquo;</a>
           </div>
@@ -293,11 +280,6 @@ def send_shipping_update_email(to_email: str, order_number: str, tracking_number
         <p style="font-size: 14px; color: #374151;">Your order <strong>#{order_number}</strong> has been handed over to <strong>{courier_name}</strong>.</p>
         <div style="background: #eff6ff; border-radius: 12px; padding: 16px; margin: 16px 0;">
             <p style="margin: 0; font-weight: bold; color: #1e40af;">Tracking AWB: {tracking_number}</p>
-        </div>
-        <div style="text-align: center; margin-top: 16px;">
-            <a href="https://drive.google.com/drive/folders/1Cy1m0r-_4EhjDrBVNzvuMT_KGL48VAdb?usp=sharing" target="_blank" style="display: inline-block; background: #2563eb; color: #ffffff !important; font-weight: 800; text-decoration: none; padding: 10px 20px; border-radius: 10px; font-size: 12px;">
-              📁 Open Shared Google Drive Folder &rsaquo;
-            </a>
         </div>
     </div>
     """
@@ -360,19 +342,6 @@ def send_welcome_account_email(to_email: str, full_name: str, raw_password: str)
               <span class="label">Account Password:</span>
               <span class="val" style="color: #dc2626;">{raw_password}</span>
             </div>
-          </div>
-
-          <!-- 📁 SHARED GOOGLE DRIVE ACCESS BOX -->
-          <div style="background: #eff6ff; border: 2px dashed #3b82f6; border-radius: 16px; padding: 18px; margin: 20px 0; text-align: center;">
-            <div style="font-size: 11px; font-weight: 800; color: #1d4ed8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;">
-              📁 Shared Google Drive Media &amp; Assets Folder
-            </div>
-            <p style="font-size: 12px; color: #1e40af; margin: 0 0 12px 0;">
-              Access official media files, documents &amp; digital assets on Google Drive:
-            </p>
-            <a href="https://drive.google.com/drive/folders/1Cy1m0r-_4EhjDrBVNzvuMT_KGL48VAdb?usp=sharing" target="_blank" style="display: inline-block; background: #2563eb; color: #ffffff !important; font-weight: 900; text-decoration: none; padding: 10px 22px; border-radius: 12px; font-size: 13px;">
-              📂 Open Shared Google Drive Folder &rsaquo;
-            </a>
           </div>
 
           <div style="background: #fffbeb; border: 1px solid #fef3c7; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; font-size: 12px; color: #92400e;">

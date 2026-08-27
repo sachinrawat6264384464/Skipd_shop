@@ -496,6 +496,27 @@ class Notification(Base):
     user = relationship("User")
 
 
+class UserAddress(Base):
+    __tablename__ = "user_addresses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    full_name = Column(String(150), nullable=False)
+    phone = Column(String(20), nullable=False)
+    address_line1 = Column(Text, nullable=False)
+    address_line2 = Column(Text, nullable=True)
+    city = Column(String(100), nullable=False)
+    state = Column(String(100), nullable=False)
+    pincode = Column(String(20), nullable=False)
+    address_type = Column(String(20), default="Home")
+    is_default = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    user = relationship("User")
+
+
+
+
 
 
 

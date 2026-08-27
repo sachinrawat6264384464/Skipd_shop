@@ -78,7 +78,7 @@ export default function ContactUsPage() {
             </div>
             <h3 className="font-black text-base text-gray-900">Email Support</h3>
             <p className="text-xs text-gray-500">Send an email for order inquiries</p>
-            <p className="font-extrabold text-blue-700 text-sm">support@botmartz.com</p>
+            <p className="font-extrabold text-blue-700 text-sm">team@botmartz.com</p>
           </div>
 
           <div className="bg-white border border-gray-200/80 p-6 rounded-3xl shadow-2xs space-y-3 hover:border-emerald-500 transition duration-300">
@@ -86,8 +86,8 @@ export default function ContactUsPage() {
               📍
             </div>
             <h3 className="font-black text-base text-gray-900">Corporate HQ</h3>
-            <p className="text-xs text-gray-500">Plot 42, Tech Park Enclave, IT Zone</p>
-            <p className="font-extrabold text-gray-800 text-sm">Bengaluru, Karnataka 560103, India</p>
+            <p className="text-xs text-gray-500">50 R, Mangalmurti Krishna Ji Nagar</p>
+            <p className="font-extrabold text-gray-800 text-sm">Indore, Madhya Pradesh, India</p>
           </div>
         </div>
 
@@ -209,15 +209,15 @@ export default function ContactUsPage() {
           <div className="lg:col-span-5 bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-white p-8 rounded-3xl flex flex-col justify-between space-y-6 border border-emerald-900/40">
             <div className="space-y-4">
               <span className="bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px] px-2.5 py-1 rounded-md uppercase">
-                Botmartz Technologies HQ
+                Botmartz AI Solution HQ
               </span>
               <h3 className="text-2xl font-black leading-tight">Visit or Mail Us</h3>
               <p className="text-xs text-gray-300 leading-relaxed font-medium">
-                Botmartz Technologies Pvt Ltd,<br />
-                Plot 42, Tech Park Enclave,<br />
-                IT Zone, Outer Ring Road,<br />
-                Bengaluru 560103, Karnataka, India<br />
-                Email: support@botmartz.com
+                Botmartz AI Solution Pvt. Ltd.,<br />
+                50 R, Mangalmurti Krishna Ji Nagar,<br />
+                Behind Mayur Hospital, Indore,<br />
+                Madhya Pradesh, India<br />
+                Email: team@botmartz.com
               </p>
             </div>
 

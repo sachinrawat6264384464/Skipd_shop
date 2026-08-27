@@ -14,7 +14,7 @@ import {
   getUserWalletBalanceKey,
   getUserSavedCardsKey
 } from "lib/utils";
-import { fetchUserOrders, fetchProducts, UserOrder } from "lib/api";
+import { fetchUserOrders, fetchProducts, UserOrder, API_BASE_URL } from "lib/api";
 
 interface TimelineStep {
   status: string;
@@ -108,19 +108,34 @@ function AccountContent() {
     };
   }, []);
 
-  // 📍 Addresses State
+  // 📍 Addresses State (Connected 100% to PostgreSQL Database API)
   const [addresses, setAddresses] = useState<any[]>([]);
 
-  const loadUserAddresses = () => {
-    const key = getUserAddressesKey();
-    const saved = localStorage.getItem(key);
-    if (saved !== null) {
-      try {
-        setAddresses(JSON.parse(saved));
-        return;
-      } catch (e) {}
+  const loadUserAddresses = async () => {
+    try {
+      const token = localStorage.getItem("ecom_token");
+      if (!token) return;
+      const res = await fetch(`${API_BASE_URL}/addresses`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setAddresses(data.map(a => ({
+            id: a.id,
+            name: a.full_name,
+            phone: a.phone,
+            pincode: a.pincode,
+            address: a.address_line1,
+            landmark: a.address_line2 || "",
+            type: a.address_type,
+            isDefault: a.is_default
+          })));
+        }
+      }
+    } catch (e) {
+      console.warn("Addresses API fetch error");
     }
-    setAddresses([]);
   };
 
   useEffect(() => {
@@ -132,13 +147,6 @@ function AccountContent() {
       window.removeEventListener("ecom_address_changed", loadUserAddresses);
     };
   }, []);
-
-  const saveAddresses = (newAddrs: any[]) => {
-    setAddresses(newAddrs);
-    const key = getUserAddressesKey();
-    localStorage.setItem(key, JSON.stringify(newAddrs));
-    window.dispatchEvent(new Event("ecom_address_changed"));
-  };
 
 
   const [isAddAddressModalOpen, setIsAddAddressModalOpen] = useState(false);
@@ -366,53 +374,59 @@ function AccountContent() {
     setIsAddAddressModalOpen(true);
   };
 
-  const handleDeleteAddress = (id: number) => {
+  const handleDeleteAddress = async (id: number) => {
     if (confirm("Are you sure you want to delete this address?")) {
-      const updated = addresses.filter((a) => a.id !== id);
-      saveAddresses(updated);
+      const token = localStorage.getItem("ecom_token");
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_BASE_URL}/addresses/${id}`, {
+          method: "DELETE",
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+          loadUserAddresses();
+          showToast("📍 Address deleted from PostgreSQL DB.");
+        }
+      } catch (e) {
+        showToast("Error deleting address", "error");
+      }
     }
   };
 
-  const handleSaveAddress = (e: React.FormEvent) => {
+  const handleSaveAddress = async (e: React.FormEvent) => {
     e.preventDefault();
-    let updatedList: any[] = [];
-    if (editingAddress) {
-      updatedList = addresses.map((a) =>
-        a.id === editingAddress.id
-          ? {
-              ...a,
-              name: formName,
-              phone: formPhone,
-              pincode: formPincode,
-              address: formAddress,
-              landmark: formLandmark,
-              type: formType,
-              isDefault: formIsDefault
-            }
-          : formIsDefault
-          ? { ...a, isDefault: false }
-          : a
-      );
-    } else {
-      const newObj = {
-        id: Date.now(),
-        name: formName || user?.user_name || "Customer",
-        phone: formPhone || user?.phone || "+91 9876543210",
-        pincode: formPincode || "560103",
-        address: formAddress,
-        landmark: formLandmark || "Near Central Location",
-        type: formType,
-        isDefault: formIsDefault || addresses.length === 0
-      };
-      if (formIsDefault) {
-        updatedList = addresses.map((a) => ({ ...a, isDefault: false })).concat(newObj);
-      } else {
-        updatedList = [...addresses, newObj];
+    const token = localStorage.getItem("ecom_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/addresses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          full_name: formName || user?.user_name || "Customer",
+          phone: formPhone || "+91 9876543210",
+          pincode: formPincode || "474001",
+          address_line1: formAddress,
+          address_line2: formLandmark,
+          city: "Gwalior",
+          state: "Madhya Pradesh",
+          address_type: formType,
+          is_default: formIsDefault
+        })
+      });
+
+      if (res.ok) {
+        loadUserAddresses();
+        setIsAddAddressModalOpen(false);
+        setEditingAddress(null);
+        showToast("📍 New Delivery Address saved to PostgreSQL DB!");
       }
+    } catch (err) {
+      showToast("Error saving address", "error");
     }
-    saveAddresses(updatedList);
-    setIsAddAddressModalOpen(false);
-    setEditingAddress(null);
   };
 
   // -------------------------------------------------------------

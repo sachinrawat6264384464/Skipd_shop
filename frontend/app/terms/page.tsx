@@ -15,12 +15,47 @@ export default function TermsPage() {
         {/* Title Header */}
         <div className="bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 text-white rounded-3xl p-8 sm:p-10 shadow-xl text-center space-y-3 border border-emerald-900/40">
           <span className="bg-emerald-400/20 text-emerald-300 font-black text-xs px-3.5 py-1 rounded-full uppercase tracking-wider border border-emerald-400/30">
-            Botmartz Technologies &bull; Consumer Protection &amp; Statutory Legal Framework
+            Botmartz AI Solution Pvt. Ltd. &bull; Statutory Terms of Use &amp; Service Agreement
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black">Botmartz Consumer Policies &amp; Legal Terms</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black">Terms of Use &amp; Commercial Terms</h1>
           <p className="text-xs text-gray-300 font-medium max-w-2xl mx-auto">
-            Last Updated: August 27, 2026 &bull; Formulated under Information Technology Act 2000, Consumer Protection (E-Commerce) Rules 2020 &amp; E-Waste Rules 2022
+            Last Updated: August 25, 2025 &bull; Formulated under Information Technology Act 2000, Consumer Protection (E-Commerce) Rules 2020 &amp; E-Waste Rules 2022
           </p>
+        </div>
+
+        {/* 🌐 Terms & Legal Disclaimer Alert Banner */}
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 text-amber-900 text-xs font-semibold space-y-1.5 shadow-2xs">
+          <div className="flex items-center gap-2 font-black text-amber-950 text-sm">
+            <span>⚠️</span> <span>Terms of Use &bull; Language &amp; Legal Disclaimer</span>
+          </div>
+          <p className="text-xs leading-relaxed text-amber-950 font-bold">
+            <strong>Disclaimer:</strong> In the event of any discrepancy, interpretation conflict, or translation variance between language versions, the English legal version of these Terms of Use shall take precedence and prevail.
+          </p>
+        </div>
+
+        {/* 🚀 Enterprise Solution Commercial Demo & Acquisition Banner */}
+        <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-xl space-y-4 border border-emerald-500/30">
+          <div className="flex items-center gap-2">
+            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 font-black text-[10px] uppercase px-3 py-1 rounded-full tracking-wider">
+              ✨ Enterprise E-Commerce Platform Live Showcase
+            </span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-white">
+            Want to Buy or Build a Custom E-Commerce Engine like this?
+          </h2>
+          <p className="text-xs sm:text-sm text-gray-200 leading-relaxed font-medium">
+            This platform is an active production demonstration built by <strong>Botmartz AI Solution Pvt. Ltd.</strong> (Indore, Madhya Pradesh, India). If you are looking to purchase this complete ready-to-scale e-commerce software or want our engineering team to build a custom AI &amp; E-Commerce platform tailored for your business, contact us directly:
+          </p>
+          <div className="bg-white/10 p-4 rounded-2xl border border-white/15 text-xs font-medium space-y-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <span className="font-mono text-emerald-300 font-bold text-xs sm:text-sm">
+                📩 Emails: <a href="mailto:team@botmartz.com" className="text-white hover:underline">team@botmartz.com</a> &bull; <a href="mailto:neelank@botmartz.com" className="text-white hover:underline">neelank@botmartz.com</a>
+              </span>
+              <span className="font-mono text-emerald-300 font-bold text-xs sm:text-sm">
+                📞 Call / WhatsApp: <a href="tel:+919730084626" className="text-white hover:underline font-extrabold">+91 97300 84626</a>
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* Tab Selection */}
@@ -74,7 +109,7 @@ export default function TermsPage() {
               <div>
                 <h3 className="font-extrabold text-sm text-gray-900">1.1 Binding Contractual Relationship</h3>
                 <p className="mt-1">
-                  Welcome to <strong>Botmartz Technologies Pvt Ltd</strong> (&quot;Botmartz&quot;, &quot;Company&quot;, &quot;we&quot;, &quot;our&quot;, &quot;us&quot;). By accessing, browsing, creating an account on <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 font-bold hover:underline">botmartz.com</a>, using our mobile web applications, software APIs, or purchasing products from our catalog, you explicitly agree to be legally bound by these Terms of Use, our Privacy Policy, Return Policy, and all applicable laws of India.
+                  Welcome to <strong>Botmartz AI Solution Pvt. Ltd.</strong> (&quot;Botmartz&quot;, &quot;Company&quot;, &quot;we&quot;, &quot;our&quot;, &quot;us&quot;). By accessing, browsing, creating an account on <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 font-bold hover:underline">botmartz.com</a>, using our mobile web applications, software APIs, or purchasing products from our catalog, you explicitly agree to be legally bound by these Terms of Use, our Privacy Policy, Return Policy, and all applicable laws of India.
                 </p>
               </div>
 
@@ -109,7 +144,7 @@ export default function TermsPage() {
               <div>
                 <h3 className="font-extrabold text-sm text-gray-900">1.6 Intellectual Property Rights &amp; Trademark Protection</h3>
                 <p className="mt-1">
-                  All platform software code, database schemas, UI designs, brand logos, product metadata, and graphic assets are the exclusive intellectual property of Botmartz Technologies Pvt Ltd. Scraping, reverse-engineering, automated data mining, or commercial copying of any site content is strictly prohibited under Indian Copyright Law.
+                  All platform software code, database schemas, UI designs, brand logos, product metadata, and graphic assets are the exclusive intellectual property of Botmartz AI Solution Pvt. Ltd. Scraping, reverse-engineering, automated data mining, or commercial copying of any site content is strictly prohibited under Indian Copyright Law.
                 </p>
               </div>
 
@@ -123,14 +158,14 @@ export default function TermsPage() {
               <div>
                 <h3 className="font-extrabold text-sm text-gray-900">1.8 Limitation of Liability &amp; Indemnification</h3>
                 <p className="mt-1">
-                  To the maximum extent permitted by law, Botmartz Technologies Pvt Ltd shall not be liable for indirect, incidental, punitive, or consequential damages resulting from platform usage, delivery delays by third-party logistics partners, or temporary server maintenance downtime. Total corporate liability shall not exceed the invoice price paid for the specific order.
+                  To the maximum extent permitted by law, Botmartz AI Solution Pvt. Ltd. shall not be liable for indirect, incidental, punitive, or consequential damages resulting from platform usage, delivery delays by third-party logistics partners, or temporary server maintenance downtime. Total corporate liability shall not exceed the invoice price paid for the specific order.
                 </p>
               </div>
 
               <div>
                 <h3 className="font-extrabold text-sm text-gray-900">1.9 Governing Law &amp; Judicial Jurisdiction</h3>
                 <p className="mt-1">
-                  These Terms are governed by and construed in accordance with the laws of India. Any disputes or claims arising out of or in connection with these Terms shall be subject to the exclusive jurisdiction of the Courts in Bengaluru, Karnataka.
+                  These Terms are governed by and construed in accordance with the laws of India. Any disputes or claims arising out of or in connection with these Terms shall be subject to the exclusive jurisdiction of the Courts in Indore, Madhya Pradesh.
                 </p>
               </div>
             </div>
@@ -207,11 +242,10 @@ export default function TermsPage() {
             <div className="bg-emerald-50/70 border border-emerald-200 p-6 rounded-2xl space-y-3">
               <p className="font-black text-emerald-900 text-sm">Designated Grievance Officer: Mr. Rajesh V. Nambiar</p>
               <p className="text-gray-700"><strong>Designation:</strong> Head of Legal Affairs &amp; Consumer Escalations Desk</p>
-              <p className="text-gray-700"><strong>Company:</strong> Botmartz Technologies Pvt Ltd</p>
-              <p className="text-gray-700"><strong>Registered Office:</strong> Plot 42, Tech Park Enclave, IT Zone, Outer Ring Road, Bengaluru, Karnataka 560103, India</p>
-              <p className="text-gray-700"><strong>Direct Grievance Email:</strong> <a href="mailto:grievance@botmartz.com" className="text-emerald-700 font-bold hover:underline font-mono">grievance@botmartz.com</a></p>
-              <p className="text-gray-700"><strong>Customer Support Email:</strong> <a href="mailto:support@botmartz.com" className="text-emerald-700 font-bold hover:underline font-mono">support@botmartz.com</a></p>
-              <p className="text-gray-700"><strong>Toll-Free Escalation Desk:</strong> <a href="tel:18002686278" className="text-emerald-700 font-bold hover:underline">1800-BOTMARTZ (1800 268 6278)</a></p>
+              <p className="text-gray-700"><strong>Company:</strong> Botmartz AI Solution Pvt. Ltd.</p>
+              <p className="text-gray-700"><strong>Registered Office:</strong> 50 R, Mangalmurti Krishna Ji Nagar, Behind Mayur Hospital, Indore, Madhya Pradesh, India</p>
+              <p className="text-gray-700"><strong>Grievance &amp; Support Email:</strong> <a href="mailto:team@botmartz.com" className="text-emerald-700 font-bold hover:underline font-mono">team@botmartz.com</a> &bull; <a href="mailto:neelank@botmartz.com" className="text-emerald-700 font-bold hover:underline font-mono">neelank@botmartz.com</a></p>
+              <p className="text-gray-700"><strong>Direct Escalation Helpline:</strong> <a href="tel:+919730084626" className="text-emerald-700 font-black hover:underline font-mono">+91 97300 84626</a></p>
             </div>
 
             <div className="space-y-4 pt-2">
@@ -221,14 +255,14 @@ export default function TermsPage() {
                 <div className="bg-gray-50 border border-gray-200 p-4 rounded-2xl space-y-1.5">
                   <span className="bg-gray-200 text-gray-800 text-[10px] font-black px-2 py-0.5 rounded uppercase">Level 1</span>
                   <p className="font-bold text-gray-900">Customer Support Ticket</p>
-                  <p className="text-gray-500 text-[11px]">Submit ticket at <Link href="/help" className="text-emerald-700 hover:underline font-bold">botmartz.com/help</Link> or email <span className="font-mono">support@botmartz.com</span>.</p>
+                  <p className="text-gray-500 text-[11px]">Submit ticket at <Link href="/help" className="text-emerald-700 hover:underline font-bold">botmartz.com/help</Link> or email <span className="font-mono">team@botmartz.com</span> / <span className="font-mono">neelank@botmartz.com</span>.</p>
                   <p className="text-emerald-700 font-bold text-[11px]">SLA: 24 Hours Response</p>
                 </div>
 
                 <div className="bg-gray-50 border border-gray-200 p-4 rounded-2xl space-y-1.5">
                   <span className="bg-amber-100 text-amber-900 text-[10px] font-black px-2 py-0.5 rounded uppercase">Level 2</span>
                   <p className="font-bold text-gray-900">Grievance Officer Review</p>
-                  <p className="text-gray-500 text-[11px]">If un-resolved in Level 1, escalate directly to <span className="font-mono">grievance@botmartz.com</span>.</p>
+                  <p className="text-gray-500 text-[11px]">If un-resolved in Level 1, escalate directly to <span className="font-mono">team@botmartz.com</span>.</p>
                   <p className="text-emerald-700 font-bold text-[11px]">SLA: 48 Hours Escalation</p>
                 </div>
 

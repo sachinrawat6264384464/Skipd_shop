@@ -273,8 +273,11 @@ app.include_router(categories_router, prefix=settings.API_V1_STR)
 app.include_router(users_router, prefix=settings.API_V1_STR)
 app.include_router(queries_router, prefix=settings.API_V1_STR)
 app.include_router(wishlist_router, prefix=settings.API_V1_STR)
-app.include_router(roles_router, prefix=settings.API_V1_STR)
-app.include_router(new_arrivals_router, prefix=settings.API_V1_STR)
+from app.api.addresses import router as addresses_router
+from app.api.invoices import router as invoices_router
+
+app.include_router(addresses_router, prefix=f"{settings.API_V1_STR}/addresses", tags=["Addresses"])
+app.include_router(invoices_router, prefix=f"{settings.API_V1_STR}/invoices", tags=["Invoices"])
 app.include_router(abandoned_reminders_router, prefix=settings.API_V1_STR)
 app.include_router(notifications_router, prefix=settings.API_V1_STR)
 app.include_router(returns_router, prefix=settings.API_V1_STR)

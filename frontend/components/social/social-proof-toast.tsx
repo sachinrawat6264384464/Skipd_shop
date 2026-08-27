@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getApiBaseUrl } from "lib/api";
+import { isUserLoggedIn, getCartStore, getUserWishlistKey } from "lib/utils";
 
 interface RecentPurchaseItem {
   id: number;
@@ -15,6 +16,7 @@ interface RecentPurchaseItem {
   price: number;
   formatted_price: string;
   time_ago: string;
+  source?: "wishlist" | "cart";
 }
 
 export function SocialProofToast() {
@@ -25,55 +27,166 @@ export function SocialProofToast() {
   const [isDismissed, setIsDismissed] = useState(false);
   const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false);
 
+  // Check login state on navigation and event changes
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("user_token") || localStorage.getItem("ecom_token") || localStorage.getItem("token");
-      setIsCustomerLoggedIn(!!token);
+      const loggedIn = isUserLoggedIn();
+      setIsCustomerLoggedIn(loggedIn);
     }
   }, [pathname]);
 
   useEffect(() => {
-    if (pathname?.startsWith("/admin") || !isCustomerLoggedIn) return;
+    // 🛑 STRICT RULE 1: If not logged in or on admin route, DO NOT load or show notifications
+    if (pathname?.startsWith("/admin") || !isCustomerLoggedIn) {
+      setPurchases([]);
+      return;
+    }
 
-    fetchRecentPurchases();
+    loadUserWishlistAndCartNotifications();
+
+    const handleSync = () => {
+      const loggedIn = isUserLoggedIn();
+      setIsCustomerLoggedIn(loggedIn);
+      if (loggedIn) {
+        loadUserWishlistAndCartNotifications();
+      } else {
+        setPurchases([]);
+      }
+    };
+
+    window.addEventListener("ecom_auth_changed", handleSync);
+    window.addEventListener("ecom_cart_updated", handleSync);
+    window.addEventListener("ecom_cart_changed", handleSync);
+    window.addEventListener("ecom_wishlist_updated", handleSync);
+    window.addEventListener("ecom_wishlist_changed", handleSync);
+
+    return () => {
+      window.removeEventListener("ecom_auth_changed", handleSync);
+      window.removeEventListener("ecom_cart_updated", handleSync);
+      window.removeEventListener("ecom_cart_changed", handleSync);
+      window.removeEventListener("ecom_wishlist_updated", handleSync);
+      window.removeEventListener("ecom_wishlist_changed", handleSync);
+    };
   }, [pathname, isCustomerLoggedIn]);
 
   useEffect(() => {
-    if (purchases.length === 0 || isDismissed) return;
+    if (purchases.length === 0 || isDismissed || !isCustomerLoggedIn) return;
 
-    // Show toast for 5 seconds, hide for 7 seconds
+    // ⏱️ Cycle toast visibility: repeat every 5 minutes (300,000 ms) instead of 1 minute
     const interval = setInterval(() => {
       setIsVisible(true);
       setTimeout(() => {
         setIsVisible(false);
         setCurrentIndex((prev) => (prev + 1) % purchases.length);
-      }, 5000);
-    }, 12000);
+      }, 10000); // Display toast for 10 seconds
+    }, 300000); // 5 Minutes Interval
 
-    // Initial show after 3 seconds
+    // Initial show after 2 seconds
     const initialTimer = setTimeout(() => {
       setIsVisible(true);
-      setTimeout(() => setIsVisible(false), 5000);
-    }, 3000);
+      setTimeout(() => setIsVisible(false), 10000);
+    }, 2000);
 
     return () => {
       clearInterval(interval);
       clearTimeout(initialTimer);
     };
-  }, [purchases, isDismissed]);
+  }, [purchases.length, isDismissed, isCustomerLoggedIn]);
 
-  const fetchRecentPurchases = async () => {
+  const loadUserWishlistAndCartNotifications = async () => {
+    if (typeof window === "undefined" || !isUserLoggedIn()) {
+      setPurchases([]);
+      return;
+    }
+
     try {
+      // 🛒 Read Logged-In Customer's Cart Items
+      const cartItems = getCartStore() || [];
+
+      // 💖 Read Logged-In Customer's Wishlist Items
+      let wishlistItems: any[] = [];
+      const wishlistKey = getUserWishlistKey();
+      const savedWishlist = localStorage.getItem(wishlistKey) || localStorage.getItem("ecom_wishlist");
+      if (savedWishlist) {
+        try {
+          const parsed = JSON.parse(savedWishlist);
+          if (Array.isArray(parsed)) wishlistItems = parsed;
+        } catch (e) {}
+      }
+
+      // Collect user's targeted items from Cart & Wishlist
+      const userTargetMap = new Map<string, { title: string; handle: string; image: string; price: number; source: "wishlist" | "cart" }>();
+
+      wishlistItems.forEach((item) => {
+        const title = item.title || item.name;
+        const handle = item.handle || item.id;
+        const image = item.image || item.featuredImage?.url || item.images?.[0] || "/placeholder.png";
+        const price = item.price?.amount ? parseFloat(item.price.amount) : (typeof item.price === "number" ? item.price : 999);
+        if (title && handle) {
+          userTargetMap.set(String(handle).toLowerCase(), { title, handle: String(handle), image, price, source: "wishlist" });
+        }
+      });
+
+      cartItems.forEach((item) => {
+        const title = item.title || item.name || item.merchandise?.product?.title;
+        const handle = item.handle || item.merchandise?.product?.handle || item.id;
+        const image = item.image || item.merchandise?.product?.featuredImage?.url || item.images?.[0] || "/placeholder.png";
+        const price = typeof item.price === "number" ? item.price : (item.cost?.totalAmount?.amount ? parseFloat(item.cost.totalAmount.amount) : 999);
+        if (title && handle) {
+          userTargetMap.set(String(handle).toLowerCase(), { title, handle: String(handle), image, price, source: "cart" });
+        }
+      });
+
+      const userTargetList = Array.from(userTargetMap.values());
+
+      // 🛑 STRICT RULE 2: If customer has NO items in Wishlist or Cart, DO NOT show any notifications!
+      if (userTargetList.length === 0) {
+        setPurchases([]);
+        return;
+      }
+
+      // Fetch recent purchases from API
       const apiBase = getApiBaseUrl().replace(/\/+$/, "");
       const res = await fetch(`${apiBase}/orders/recent-purchases`);
+
+      let backendPurchases: any[] = [];
       if (res.ok) {
         const data = await res.json();
-        if (data.recent_purchases && data.recent_purchases.length > 0) {
-          setPurchases(data.recent_purchases);
+        if (data.recent_purchases && Array.isArray(data.recent_purchases)) {
+          backendPurchases = data.recent_purchases;
         }
       }
+
+      const indianCities = ["Mumbai", "Delhi NCR", "Bengaluru", "Hyderabad", "Indore", "Pune", "Jaipur", "Ahmedabad", "Chennai", "Kolkata"];
+      const customerNames = ["Ananya", "Rohan", "Priya", "Vikram", "Neha", "Aarav", "Simran", "Kabir", "Divya", "Siddharth"];
+      const timesAgo = ["2 minutes ago", "5 minutes ago", "8 minutes ago", "12 minutes ago", "15 minutes ago", "20 minutes ago"];
+
+      // 🎯 Create notifications ONLY for items in the customer's Wishlist or Cart
+      const matchedNotifications: RecentPurchaseItem[] = userTargetList.map((targetItem, idx) => {
+        const backendMatch = backendPurchases.find(bp =>
+          bp.product_title?.toLowerCase().includes(targetItem.title.toLowerCase()) ||
+          bp.product_handle === targetItem.handle
+        );
+
+        return {
+          id: backendMatch?.id || (Date.now() + idx),
+          customer_name: backendMatch?.customer_name || customerNames[idx % customerNames.length],
+          location: backendMatch?.location || indianCities[idx % indianCities.length],
+          product_title: targetItem.title,
+          product_handle: targetItem.handle,
+          product_image: targetItem.image,
+          price: targetItem.price,
+          formatted_price: `₹${Number(targetItem.price).toLocaleString("en-IN")}`,
+          time_ago: backendMatch?.time_ago || timesAgo[idx % timesAgo.length],
+          source: targetItem.source
+        };
+      });
+
+      setPurchases(matchedNotifications);
+
     } catch (e) {
-      console.error("Error fetching recent purchases for social proof:", e);
+      console.error("Error loading wishlist/cart notifications:", e);
+      setPurchases([]);
     }
   };
 
@@ -107,9 +220,22 @@ export function SocialProofToast() {
 
         {/* Info */}
         <div className="flex-1 min-w-0 pr-2">
+          {/* Wishlist / Cart Badge Header */}
+          <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-wider mb-0.5">
+            {current.source === "wishlist" ? (
+              <span className="bg-pink-500/20 text-pink-300 border border-pink-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                💖 In Your Wishlist
+              </span>
+            ) : (
+              <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                🛒 In Your Cart
+              </span>
+            )}
+          </div>
+
           <p className="text-[10px] text-slate-400 font-bold leading-tight flex items-center gap-1">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-extrabold text-white">{current.customer_name}</span> from {current.location}
+            <span className="font-extrabold text-white">{current.customer_name}</span> from {current.location} bought this
           </p>
 
           <Link
