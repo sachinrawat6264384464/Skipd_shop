@@ -28,7 +28,7 @@ export async function Navbar() {
         </div>
 
         {/* Right Section: Action Buttons */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 shrink-0">
           <InstantSearchModal />
           <LanguagePicker />
           <NotificationBell />
