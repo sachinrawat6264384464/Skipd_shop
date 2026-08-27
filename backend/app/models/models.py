@@ -111,6 +111,7 @@ class Product(Base):
     tags = Column(JSON, nullable=True)
     meta_title = Column(String(255), nullable=True)
     meta_description = Column(Text, nullable=True)
+    cloudinary_public_id = Column(String(255), nullable=True)
     is_featured = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
 

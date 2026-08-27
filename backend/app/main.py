@@ -232,6 +232,8 @@ ALWAYS_ALLOWED_ORIGINS = [
 cors_origins_env = settings.CORS_ORIGINS if isinstance(settings.CORS_ORIGINS, list) else [settings.CORS_ORIGINS]
 all_allowed_origins = list(set(cors_origins_env + ALWAYS_ALLOWED_ORIGINS))
 
+from fastapi.middleware.gzip import GZipMiddleware
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],   # Allow all origins — public storefront API
@@ -239,6 +241,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 
 # Mount Router
 from app.api.recommendations import router as recommendations_router

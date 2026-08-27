@@ -61,7 +61,8 @@ async def initialize_and_migrate_all_tables():
             ("highlights", "TEXT"),
             ("box_contents", "TEXT"),
             ("meta_title", "VARCHAR(255)"),
-            ("meta_description", "TEXT")
+            ("meta_description", "TEXT"),
+            ("cloudinary_public_id", "VARCHAR(255)")
         ]
         for col_name, col_type in product_cols:
             await conn.execute(text(f"ALTER TABLE products ADD COLUMN IF NOT EXISTS {col_name} {col_type};"))
