@@ -135,7 +135,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
     <div className="space-y-8">
       
       {/* 📦 Top Dynamic Category Grid with "Pick up where you left off" */}
-      <section className="max-w-7xl mx-auto px-4">
+      <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* Card 1: Pick up where you left off (Dynamic User Cart & Orders) */}
@@ -277,7 +277,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
       </section>
 
       {/* 🏷️ DYNAMIC CATEGORY SHOWCASE SECTIONS (Automatically created for EVERY Category in database & admin) */}
-      <section className="max-w-7xl mx-auto px-4 space-y-8">
+      <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6 space-y-8">
         {categorizedProducts.map((catGroup) => (
           <div key={catGroup.slug} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-xs space-y-6">
             
@@ -351,12 +351,12 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                       {isInWishlist(product.id, product.handle) ? "❤️" : "🖤"}
                     </button>
 
-                    <Link href={isOutOfStock ? "#" : `/product/${product.handle}`} className="block relative aspect-square bg-white rounded-xl overflow-hidden p-4 border border-gray-200/60 mt-5">
+                    <Link href={isOutOfStock ? "#" : `/product/${product.handle}`} className="block relative aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-200/60 mt-5">
                       <Image
                         src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                         alt={product.title}
                         fill
-                        className={`object-contain transition duration-300 p-2 ${isOutOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
+                        className={`object-cover w-full h-full transition duration-500 ${isOutOfStock ? "grayscale opacity-70" : "group-hover:scale-105"}`}
                       />
                     </Link>
 

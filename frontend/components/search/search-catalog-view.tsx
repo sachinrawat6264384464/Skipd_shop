@@ -407,12 +407,12 @@ export function SearchCatalogView({
                   </button>
                 </div>
 
-                {/* Compact Product Image Box */}
-                <Link href={`/product/${itemHandle}`} className="block relative h-44 sm:h-52 bg-gray-50/80 rounded-xl overflow-hidden p-3 border border-gray-100 flex items-center justify-center cursor-pointer">
+                {/* Compact Product Image Box (Full Cover Fill) */}
+                <Link href={`/product/${itemHandle}`} className="block relative h-52 sm:h-64 bg-gray-100 rounded-xl overflow-hidden border border-gray-100 flex items-center justify-center cursor-pointer">
                   <img
                     src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                     alt={product.title}
-                    className={`max-h-full max-w-full object-contain rounded-lg transition duration-500 ${
+                    className={`w-full h-full object-cover rounded-lg transition duration-500 ${
                       isOutOfStock ? "grayscale opacity-50" : "group-hover:scale-105"
                     }`}
                   />
