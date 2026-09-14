@@ -618,9 +618,74 @@ export default function AdminProductsPage() {
     }
   };
 
+  function deriveCategoriesFromData(dbCats: any[], prodsList: any[]) {
+    const catMap = new Map<string, any>();
+
+    // 1. Add DB Categories from /categories API
+    if (Array.isArray(dbCats)) {
+      dbCats.forEach((c: any) => {
+        const slug = (c.slug || c.name || "").toLowerCase().trim();
+        if (slug) {
+          catMap.set(slug, {
+            id: c.id || slug,
+            name: c.name || slug.charAt(0).toUpperCase() + slug.slice(1),
+            slug: slug,
+            icon: getCategoryImgSrc(c),
+            image_url: getCategoryImgSrc(c),
+            status: c.status || "Active",
+            count: c.count || 0
+          });
+        }
+      });
+    }
+
+    // 2. Dynamically extract & calculate categories directly from Database Products
+    if (Array.isArray(prodsList)) {
+      prodsList.forEach((p: any) => {
+        let rawName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category_slug || p.category);
+        let rawSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (rawName ? String(rawName).toLowerCase().replace(/[^a-z0-9]+/g, "-") : "general"));
+
+        if (!rawName) rawName = "General";
+        if (!rawSlug) rawSlug = "general";
+
+        const slug = String(rawSlug).toLowerCase().trim();
+        const name = String(rawName).charAt(0).toUpperCase() + String(rawName).slice(1);
+        const prodImage = (p.images && p.images.length > 0) ? p.images[0] : (p.image_url || p.image);
+
+        // Compute exact product count for this category
+        const catProdCount = prodsList.filter((item: any) => {
+          const itemCat = (typeof item.category === "object" ? item.category?.slug || item.category?.name : (item.category_slug || item.category || "")).toLowerCase().trim();
+          return itemCat === slug || itemCat.includes(slug) || slug.includes(itemCat);
+        }).length;
+
+        if (!catMap.has(slug)) {
+          catMap.set(slug, {
+            id: p.category_id || slug,
+            name: name,
+            slug: slug,
+            icon: getCategoryImgSrc({ slug, name, image_url: prodImage }),
+            image_url: getCategoryImgSrc({ slug, name, image_url: prodImage }),
+            status: "Active",
+            count: catProdCount > 0 ? catProdCount : 1
+          });
+        } else {
+          const existing = catMap.get(slug);
+          existing.count = catProdCount > 0 ? catProdCount : (existing.count || 1);
+          if (prodImage && (!existing.image_url || existing.image_url.includes("unsplash"))) {
+            if (prodImage.startsWith("http") || prodImage.startsWith("data:")) {
+              existing.image_url = prodImage;
+              existing.icon = prodImage;
+            }
+          }
+        }
+      });
+    }
+
+    return Array.from(catMap.values());
+  }
+
   useEffect(() => {
-    loadProducts();
-    loadCategories();
+    loadProductsAndCategories();
     loadNewArrivalsData();
     if (typeof window !== "undefined") {
       try {
@@ -642,30 +707,25 @@ export default function AdminProductsPage() {
     }
   }, []);
 
-  async function loadProducts() {
+  async function loadProductsAndCategories() {
     setLoading(true);
     try {
-      const data = await fetchProducts();
-      setProducts(Array.isArray(data) ? data : []);
+      const [prodsData, catsData] = await Promise.all([
+        fetchProducts().catch(() => []),
+        fetchAdminCategories().catch(() => [])
+      ]);
+
+      const prodsList = Array.isArray(prodsData) ? prodsData : [];
+      const dbCatsList = Array.isArray(catsData) ? catsData : [];
+
+      setProducts(prodsList);
+
+      const mergedCategories = deriveCategoriesFromData(dbCatsList, prodsList);
+      setCategories(mergedCategories);
     } catch (e) {
-      console.error("Failed to load products:", e);
+      console.error("Failed to load products and categories from DB:", e);
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function loadCategories() {
-    try {
-      const data = await fetchAdminCategories();
-      if (Array.isArray(data) && data.length > 0) {
-        const processed = data.map((cat: any) => ({
-          ...cat,
-          image_url: getCategoryImgSrc(cat)
-        }));
-        setCategories(processed);
-      }
-    } catch (e) {
-      console.error("Failed to load categories from DB:", e);
     }
   }
 
