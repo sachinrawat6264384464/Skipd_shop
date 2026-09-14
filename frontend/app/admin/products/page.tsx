@@ -1,4 +1,5 @@
 "use client";
+// Admin Catalog & Products Manager Component
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
