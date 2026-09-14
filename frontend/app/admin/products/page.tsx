@@ -3538,7 +3538,7 @@ export default function AdminProductsPage() {
                       showNotification(`📝 Product "${newProduct.title}" saved as Draft!`);
                       // Keep form inputs intact for draft!
                       setShowCreateModal(false);
-                      loadProducts();
+                      await loadProductsAndCategories();
                     }}
                     className="bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 font-bold px-5 py-2.5 rounded-xl transition cursor-pointer"
                   >
