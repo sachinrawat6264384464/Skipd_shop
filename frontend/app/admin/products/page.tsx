@@ -503,62 +503,43 @@ export default function AdminProductsPage() {
     }
   };
 
-  // Sub-Tab Datasets (100% Live from Database + Default Fallback)
-  const DEFAULT_CATEGORIES = [
-    { id: 1, name: "Electronics", slug: "electronics", icon: "⚡", count: 12, status: "Active" },
-    { id: 2, name: "Mobiles & Tablets", slug: "mobiles", icon: "📱", count: 8, status: "Active" },
-    { id: 3, name: "Laptops & Computers", slug: "laptops", icon: "💻", count: 15, status: "Active" },
-    { id: 4, name: "Fashion & Apparel", slug: "fashion", icon: "👕", count: 24, status: "Active" },
-    { id: 5, name: "Footwear & Shoes", slug: "footwear", icon: "👟", count: 18, status: "Active" },
-    { id: 6, name: "Watches & Smartwear", slug: "watches", icon: "⌚", count: 10, status: "Active" },
-    { id: 7, name: "Home & Living", slug: "home", icon: "🏡", count: 14, status: "Active" },
-    { id: 8, name: "Sports & Fitness", slug: "sports", icon: "⚽", count: 9, status: "Active" }
-  ];
+  // Category Image Mapping (Synced 100% with Storefront Category Circle Nav)
+  const CATEGORY_IMAGE_MAP: Record<string, string> = {
+    mobiles: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=120&auto=format&fit=crop&q=80",
+    mobile: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=120&auto=format&fit=crop&q=80",
+    electronics: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=120&auto=format&fit=crop&q=80",
+    watches: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=120&auto=format&fit=crop&q=80",
+    watch: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=120&auto=format&fit=crop&q=80",
+    fashion: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=120&auto=format&fit=crop&q=80",
+    apparel: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=120&auto=format&fit=crop&q=80",
+    footwear: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=120&auto=format&fit=crop&q=80",
+    shoes: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=120&auto=format&fit=crop&q=80",
+    laptops: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=120&auto=format&fit=crop&q=80",
+    laptop: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=120&auto=format&fit=crop&q=80",
+    home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=120&auto=format&fit=crop&q=80",
+    sports: "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=120&auto=format&fit=crop&q=80",
+    artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=120&auto=format&fit=crop&q=80",
+    beauty: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=120&auto=format&fit=crop&q=80"
+  };
 
-  const DEFAULT_SUB_CATEGORIES = [
-    { id: 101, name: "Wireless Headphones & ANC Earbuds", parent: "Electronics", slug: "wireless-headphones", count: 6 },
-    { id: 102, name: "Smartphones & Flagship Mobiles", parent: "Mobiles & Tablets", slug: "smartphones", count: 8 },
-    { id: 103, name: "Gaming Laptops & Ultrabooks", parent: "Laptops & Computers", slug: "gaming-laptops", count: 5 },
-    { id: 104, name: "Men's Graphic Oversized Tees", parent: "Fashion & Apparel", slug: "graphic-tees", count: 12 },
-    { id: 105, name: "Running Sneakers & Formal Shoes", parent: "Footwear & Shoes", slug: "sneakers", count: 10 },
-    { id: 106, name: "Fitness Smartwatches & Bands", parent: "Watches & Smartwear", slug: "smartwatches", count: 7 }
-  ];
+  function getCategoryImgSrc(c: any): string {
+    if (c?.image_url && (c.image_url.startsWith("http") || c.image_url.startsWith("data:") || c.image_url.startsWith("/"))) {
+      return c.image_url;
+    }
+    if (c?.icon && (c.icon.startsWith("http") || c.icon.startsWith("data:") || c.icon.startsWith("/"))) {
+      return c.icon;
+    }
+    const slug = (c?.slug || c?.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+    const prefix = slug.split("-")[0] || slug;
+    return CATEGORY_IMAGE_MAP[slug] || CATEGORY_IMAGE_MAP[prefix] || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=120";
+  }
 
-  const DEFAULT_BRANDS = [
-    { id: 1, name: "Apple", website: "apple.com", logo: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=200", count: 14, status: "Verified" },
-    { id: 2, name: "Samsung", website: "samsung.com", logo: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=200", count: 10, status: "Verified" },
-    { id: 3, name: "Nike", website: "nike.com", logo: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200", count: 18, status: "Verified" },
-    { id: 4, name: "Sony", website: "sony.com", logo: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200", count: 8, status: "Verified" },
-    { id: 5, name: "OnePlus", website: "oneplus.in", logo: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200", count: 6, status: "Verified" },
-    { id: 6, name: "Boat", website: "boat-lifestyle.com", logo: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=200", count: 12, status: "Verified" }
-  ];
-
-  const DEFAULT_ATTRIBUTES = [
-    { id: 1, name: "Color Palette Swatch", type: "Visual Swatch", values: "Pitch Black, Arctic White, Midnight Blue, Emerald Green", count: 15 },
-    { id: 2, name: "Size Option Matrix", type: "Pill Matrix", values: "S, M, L, XL, XXL, UK 7, UK 8, UK 9, UK 10", count: 20 },
-    { id: 3, name: "RAM & Storage Variant", type: "Dropdown Select", values: "8GB+128GB, 12GB+256GB, 16GB+512GB", count: 8 },
-    { id: 4, name: "Fabric Material", type: "Text Label", values: "100% Organic Cotton (240 GSM), Genuine Full-Grain Leather, Stainless Steel", count: 12 }
-  ];
-
-  const DEFAULT_VARIANTS = [
-    { id: "SKU-ANC-BLK-01", product: "Active ANC Wireless Headphones", variant: "Pitch Black • Standard", priceExtra: "₹4,999", stock: 20, status: "In Stock" },
-    { id: "SKU-TEE-COT-L", product: "Minimalist Oversized Graphic Tee", variant: "White • Size L", priceExtra: "₹1,299", stock: 35, status: "In Stock" },
-    { id: "SKU-WATCH-CHRONO", product: "Matte Black Chrono Leather Watch", variant: "Genuine Leather • Water Resistant", priceExtra: "₹3,499", stock: 15, status: "In Stock" },
-    { id: "SKU-NORD-12GB", product: "OnePlus Nord 6 | 12GB+256GB", variant: "12GB RAM + 256GB Storage", priceExtra: "₹44,499", stock: 12, status: "In Stock" }
-  ];
-
-  const DEFAULT_REVIEWS = [
-    { id: 1, author: "Rahul Sharma", rating: 5, date: "2026-09-10", comment: "Amazing product quality and ultra-fast 2-day delivery! Packaging was top notch.", product: "Active ANC Headphones", status: "Approved" },
-    { id: 2, author: "Priya Verma", rating: 5, date: "2026-09-12", comment: "The fabric of the t-shirt is super comfortable and 240 GSM heavy. Highly recommended!", product: "Minimalist Graphic Tee", status: "Approved" },
-    { id: 3, author: "Aman Gupta", rating: 4, date: "2026-09-14", comment: "Great battery life and noise cancellation works like magic on flight travel.", product: "Active ANC Headphones", status: "Approved" }
-  ];
-
-  const [categories, setCategories] = useState<any[]>(DEFAULT_CATEGORIES);
-  const [subCategories, setSubCategories] = useState<any[]>(DEFAULT_SUB_CATEGORIES);
-  const [brands, setBrands] = useState<any[]>(DEFAULT_BRANDS);
-  const [attributes, setAttributes] = useState<any[]>(DEFAULT_ATTRIBUTES);
-  const [variants, setVariants] = useState<any[]>(DEFAULT_VARIANTS);
-  const [reviews, setReviews] = useState<any[]>(DEFAULT_REVIEWS);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [subCategories, setSubCategories] = useState<any[]>([]);
+  const [brands, setBrands] = useState<any[]>([]);
+  const [attributes, setAttributes] = useState<any[]>([]);
+  const [variants, setVariants] = useState<any[]>([]);
+  const [reviews, setReviews] = useState<any[]>([]);
 
   // 🏷️ Dynamically compute matching subcategories created in Sub-Categories Manager for currently selected Category
   const activeSubCategories = useMemo(() => {
@@ -677,10 +658,14 @@ export default function AdminProductsPage() {
     try {
       const data = await fetchAdminCategories();
       if (Array.isArray(data) && data.length > 0) {
-        setCategories(data);
+        const processed = data.map((cat: any) => ({
+          ...cat,
+          image_url: getCategoryImgSrc(cat)
+        }));
+        setCategories(processed);
       }
     } catch (e) {
-      console.error("Failed to load categories:", e);
+      console.error("Failed to load categories from DB:", e);
     }
   }
 
@@ -1552,11 +1537,11 @@ export default function AdminProductsPage() {
                 {categories.map((c) => (
                   <tr key={c.id} className="hover:bg-gray-50 transition">
                     <td className="px-6 py-4 flex items-center gap-3 font-bold text-gray-900 text-sm">
-                      {c.icon && (c.icon.startsWith("data:") || c.icon.startsWith("http") || c.icon.startsWith("/")) ? (
-                        <img src={c.icon} alt={c.name} className="w-9 h-9 rounded-xl object-cover border border-gray-200 shadow-2xs" />
-                      ) : (
-                        <span className="text-xl bg-gray-100 p-2 rounded-xl border border-gray-200">{c.icon || "📁"}</span>
-                      )}
+                      <img 
+                        src={getCategoryImgSrc(c)} 
+                        alt={c.name} 
+                        className="w-9 h-9 rounded-xl object-cover border border-gray-200 shadow-2xs shrink-0 bg-gray-50" 
+                      />
                       <span>{c.name}</span>
                     </td>
                     <td className="px-6 py-4 font-mono text-gray-500 text-[11px]">/category/{c.slug}</td>
