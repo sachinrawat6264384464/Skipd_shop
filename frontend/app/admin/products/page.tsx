@@ -859,7 +859,7 @@ export default function AdminProductsPage() {
         showNotification(`✓ Product #${targetId} ("${newProduct.title}") updated successfully!`);
         setShowCreateModal(false);
         setEditingProduct(null);
-        await loadProducts();
+        await loadProductsAndCategories();
       } else {
         showNotification("Failed to update product", "error");
       }
@@ -900,7 +900,7 @@ export default function AdminProductsPage() {
 
         showNotification(`🚀 Product "${newProduct.title}" created & notification broadcasted to all users!`);
         handleCloseAndResetForm();
-        await loadProducts();
+        await loadProductsAndCategories();
       } else {
         showNotification("Failed to publish product in Neon PostgreSQL DB", "error");
       }
@@ -929,7 +929,7 @@ export default function AdminProductsPage() {
       setProducts(prev => prev.map(p => (p.id === targetId || String(p.id) === String(targetId)) ? { ...p, ...payload } : p));
       showNotification(`✓ Product #${targetId} ("${editingProduct.title}") updated successfully!`);
       setEditingProduct(null);
-      await loadProducts();
+      await loadProductsAndCategories();
     } else {
       showNotification("Failed to update product", "error");
     }
@@ -943,7 +943,7 @@ export default function AdminProductsPage() {
       setProducts(prev => prev.filter(p => p.id !== targetId && String(p.id) !== String(targetId)));
       showNotification(`🗑️ Product #${targetId} removed from database catalog`);
       setDeletingProductId(null);
-      await loadProducts();
+      await loadProductsAndCategories();
     } else {
       showNotification("Failed to delete product", "error");
     }
@@ -952,7 +952,7 @@ export default function AdminProductsPage() {
   const handleBulkSeed = async () => {
     setLoading(true);
     await seedCatalogProducts();
-    await loadProducts();
+    await loadProductsAndCategories();
     showNotification("⚡ Full Catalog Seeded Live into PostgreSQL Database!");
   };
 
