@@ -1,0 +1,52 @@
+===============================================================================
+COMMERCIAL END USER LICENSE AGREEMENT (EULA) & PROPRIETARY LICENSE
+===============================================================================
+Project Name : Skipd Shop / E-COM Commercial Engine
+Developer    : Sachin Rawat
+Organization : Botmartz AI Solution Pvt Ltd
+Copyright (c) 2026 Botmartz AI Solution Pvt Ltd. All Rights Reserved.
+
+IMPORTANT: PLEASE READ THIS LICENSE AGREEMENT CAREFULLY BEFORE USING, DOWNLOADING,
+OR DEPLOYING THIS SOFTWARE CODEBASE.
+
+1. INTELLECTUAL PROPERTY RIGHTS & DEVELOPER CREDIT
+--------------------------------------------------
+This software codebase, underlying architecture, AI integrations, and backend APIs
+were conceptualized and developed by Sachin at Botmartz AI Solution Pvt Ltd. 
+All copyright, trade secrets, patents, and intellectual property rights remain the 
+exclusive property of Botmartz AI Solution Pvt Ltd and Developer Sachin.
+
+2. GRANT OF LICENSE
+-------------------
+Subject to the terms of this Agreement, Licensor (Botmartz AI Solution Pvt Ltd)
+grants the Licensee a non-exclusive, non-transferable, single-instance license to
+execute and deploy this software strictly for one (1) designated domain name.
+
+3. RESTRICTION ON MODIFICATION & RE-DISTRIBUTION
+------------------------------------------------
+(a) UNAUTHORIZED MODIFICATIONS PROHIBITED: Licensee may NOT alter, modify, rewrite,
+    decompile, reverse-engineer, or adapt the core backend architecture, licensing 
+    middleware, or source code without explicit prior WRITTEN CONSENT from 
+    Developer Sachin / Botmartz AI Solution Pvt Ltd.
+(b) NO RESALE OR SUBLICENSING: Licensee shall not sell, lease, rent, sublicense,
+    redistribute, assign, or share the source code or compiled binaries with any third
+    party, market agency, or competitor.
+
+4. LICENSE KEY VERIFICATION & SECURITY
+--------------------------------------
+This codebase includes runtime License Key & Domain Verification security mechanisms.
+Tampering with, bypassing, or disabling the license key middleware invalidates this 
+license agreement immediately and revokes all deployment authorization.
+
+5. DISCLAIMER OF WARRANTY & LIMITATION OF LIABILITY
+---------------------------------------------------
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED.
+IN NO EVENT SHALL DEVELOPER SACHIN OR BOTMARTZ AI SOLUTION PVT LTD BE LIABLE FOR ANY 
+CLAIM, DAMAGES, OR OTHER LIABILITY ARISING FROM, OUT OF, OR IN CONNECTION WITH THE 
+SOFTWARE OR THE USE OF THE SOFTWARE.
+
+===============================================================================
+Licensor     : Botmartz AI Solution Pvt Ltd
+Developer    : Sachin
+Contact      : licensing@botmartz.com
+===============================================================================

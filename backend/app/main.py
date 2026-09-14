@@ -37,12 +37,18 @@ from init_db_tables import initialize_and_migrate_all_tables
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Commercial EULA License & Key Verification
+    from app.core.license_guard import verify_license_status
+    lic_status = verify_license_status()
+    print(f"[Commercial License Status] Mode: {lic_status['status']} | Domain: {lic_status['licensed_domain']}")
+
     # Auto-create & migrate all tables on startup
     try:
         await initialize_and_migrate_all_tables()
         print("[Backend Startup] Master Database Migration & Tables Initialized!")
     except Exception as err:
         print(f"[Backend Startup Warning] DB auto-migration skipped ({err}). Startup continuing...")
+
 
     
     # Seed initial B2C categories and products if database is fresh or categories missing
@@ -278,6 +284,8 @@ from app.api.invoices import router as invoices_router
 
 app.include_router(addresses_router, prefix=f"{settings.API_V1_STR}/addresses", tags=["Addresses"])
 app.include_router(invoices_router, prefix=f"{settings.API_V1_STR}/invoices", tags=["Invoices"])
+from app.core.license_guard import router as license_router
+app.include_router(license_router, prefix=settings.API_V1_STR)
 app.include_router(abandoned_reminders_router, prefix=settings.API_V1_STR)
 app.include_router(notifications_router, prefix=settings.API_V1_STR)
 app.include_router(returns_router, prefix=settings.API_V1_STR)

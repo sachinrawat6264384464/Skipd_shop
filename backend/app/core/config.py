@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     ENVIRONMENT: str = "development"
+    ENVIRONMENTS: str = "development"
     PORT: int = 8000
     
     # Database (Neon Cloud PostgreSQL)

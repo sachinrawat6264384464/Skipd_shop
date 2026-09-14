@@ -9,7 +9,7 @@ export const getApiBaseUrl = () => {
     if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
       return "https://e-com-ecom.onrender.com/api/v1";
     }
-    return envUrl || "http://127.0.0.1:8000/api/v1";
+    return envUrl || "http://127.0.0.1:8080/api/v1";
   }
 
   const envUrl = process.env.NEXT_PUBLIC_API_URL;
