@@ -13,8 +13,8 @@ const NotificationBell = dynamic(() => import("components/notifications/Notifica
 
 export async function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-2xl border-b border-gray-200/80 px-4 sm:px-6 lg:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-xs transition-all">
-      <div className="flex items-center justify-between w-full max-w-[1440px] mx-auto gap-3 sm:gap-6">
+    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-2xl border-b border-gray-200/80 px-4 sm:px-8 lg:px-12 py-3.5 sm:py-4 flex items-center justify-between shadow-xs transition-all w-full">
+      <div className="flex items-center justify-between w-full max-w-full gap-3 sm:gap-6">
         
         {/* Left Section: Mobile Menu, Brand Logo & Dynamic Top Links */}
         <div className="flex items-center gap-3 sm:gap-5 lg:gap-8 shrink-0 min-w-0">

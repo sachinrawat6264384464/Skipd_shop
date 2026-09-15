@@ -98,15 +98,15 @@ export function CategoryNav() {
   if (categories.length === 0) return null;
 
   return (
-    <nav className="bg-white border-b border-gray-200/80 py-4 px-4 overflow-x-auto no-scrollbar font-sans shadow-2xs">
-      <div className="max-w-[1440px] mx-auto flex items-center justify-start sm:justify-center gap-6 md:gap-9 min-w-max">
+    <nav className="w-full bg-white border-b border-gray-200/80 py-4 px-4 sm:px-8 lg:px-12 overflow-x-auto no-scrollbar font-sans shadow-2xs">
+      <div className="w-full max-w-full flex items-center justify-around sm:justify-evenly gap-4 sm:gap-6 md:gap-8 lg:gap-12 min-w-max">
         {categories.map((cat) => (
           <Link
             key={cat.slug}
             href={`/search/${cat.slug}`}
             className="group flex flex-col items-center gap-2 cursor-pointer transition transform hover:-translate-y-1"
           >
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-emerald-500/20 group-hover:border-emerald-600 shadow-2xs group-hover:shadow-md transition duration-300 overflow-hidden bg-gray-50 p-0.5">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full border-2 border-emerald-500/20 group-hover:border-emerald-600 shadow-2xs group-hover:shadow-md transition duration-300 overflow-hidden bg-gray-50 p-0.5">
               <img
                 src={cat.image_url}
                 alt={cat.name}
@@ -115,7 +115,7 @@ export function CategoryNav() {
                 className="w-full h-full object-cover rounded-full group-hover:scale-110 transition duration-300"
               />
             </div>
-            <span className="text-xs font-extrabold text-gray-800 group-hover:text-emerald-700 transition tracking-tight">
+            <span className="text-xs sm:text-sm font-extrabold text-gray-800 group-hover:text-emerald-700 transition tracking-tight">
               {cat.name}
             </span>
           </Link>

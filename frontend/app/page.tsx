@@ -29,12 +29,12 @@ export default async function HomePage() {
       </section>
 
       {/* ⚡ Live Flash Sale Deal Banner */}
-      <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6">
+      <section className="w-full max-w-full px-4 sm:px-6 lg:px-10">
         <FlashSaleBanner />
       </section>
 
       {/* 🚚 Trust & Delivery Features Strip */}
-      <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6 py-2">
+      <section className="w-full max-w-full px-4 sm:px-6 lg:px-10 py-2">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-white border border-gray-200 rounded-2xl p-4 shadow-xs text-center">
           {[
             { icon: "🚚", title: "Free Shipping", sub: "On orders above ₹499" },

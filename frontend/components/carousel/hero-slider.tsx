@@ -196,7 +196,7 @@ export function HeroSlider() {
             <div
               className={`bg-gradient-to-r ${slide.bgGradient || "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"} relative overflow-hidden min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[500px]`}
             >
-              <div className="max-w-[1440px] mx-auto w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10 p-6 sm:p-10 md:p-12 lg:p-16">
+              <div className="w-full max-w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10 p-6 sm:p-10 md:p-12 lg:p-16 px-6 sm:px-12 lg:px-20">
                 {/* Text Content */}
                 <div className="space-y-4 sm:space-y-5 max-w-xl z-10 w-full">
                   <span className={`inline-block border font-black text-xs uppercase px-4 py-1.5 rounded-full tracking-wider shadow-2xs ${slide.tagColor || "bg-emerald-100 text-emerald-800 border-emerald-300"}`}>
