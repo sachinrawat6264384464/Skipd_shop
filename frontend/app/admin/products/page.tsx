@@ -622,25 +622,39 @@ export default function AdminProductsPage() {
   function deriveCategoriesFromData(dbCats: any[], prodsList: any[]) {
     const catMap = new Map<string, any>();
 
-    // 1. Add DB Categories from /categories API
+    // 1. Base Storefront Categories (Always present so Admin Manager 100% matches Storefront Circle Nav)
+    const BASE_STOREFRONT_CATS = [
+      { id: "mobiles", name: "Mobiles & Tablets", slug: "mobiles", icon: getCategoryImgSrc({ slug: "mobiles" }), image_url: getCategoryImgSrc({ slug: "mobiles" }), count: 0, status: "Active" },
+      { id: "electronics", name: "Electronics & Gadgets", slug: "electronics", icon: getCategoryImgSrc({ slug: "electronics" }), image_url: getCategoryImgSrc({ slug: "electronics" }), count: 0, status: "Active" },
+      { id: "watches", name: "Watches & Smartwear", slug: "watches", icon: getCategoryImgSrc({ slug: "watches" }), image_url: getCategoryImgSrc({ slug: "watches" }), count: 0, status: "Active" },
+      { id: "fashion", name: "Fashion & Apparel", slug: "fashion", icon: getCategoryImgSrc({ slug: "fashion" }), image_url: getCategoryImgSrc({ slug: "fashion" }), count: 0, status: "Active" },
+      { id: "home", name: "Home & Living", slug: "home", icon: getCategoryImgSrc({ slug: "home" }), image_url: getCategoryImgSrc({ slug: "home" }), count: 0, status: "Active" },
+      { id: "sports", name: "Sports & Fitness", slug: "sports", icon: getCategoryImgSrc({ slug: "sports" }), image_url: getCategoryImgSrc({ slug: "sports" }), count: 0, status: "Active" },
+      { id: "artisan", name: "Artisan & Handcrafted", slug: "artisan", icon: getCategoryImgSrc({ slug: "artisan" }), image_url: getCategoryImgSrc({ slug: "artisan" }), count: 0, status: "Active" }
+    ];
+
+    BASE_STOREFRONT_CATS.forEach(c => catMap.set(c.slug, c));
+
+    // 2. Add/Merge DB Categories from /categories API
     if (Array.isArray(dbCats) && dbCats.length > 0) {
       dbCats.forEach((c: any) => {
         const slug = (c.slug || c.name || "").toLowerCase().trim();
         if (slug) {
+          const existing = catMap.get(slug);
           catMap.set(slug, {
             id: c.id || slug,
-            name: c.name || slug.charAt(0).toUpperCase() + slug.slice(1),
+            name: c.name || (existing ? existing.name : slug.charAt(0).toUpperCase() + slug.slice(1)),
             slug: slug,
-            icon: getCategoryImgSrc(c),
-            image_url: getCategoryImgSrc(c),
+            icon: getCategoryImgSrc(c) || (existing ? existing.icon : ""),
+            image_url: getCategoryImgSrc(c) || (existing ? existing.image_url : ""),
             status: c.status || "Active",
-            count: c.count || 0
+            count: c.count || (existing ? existing.count : 0)
           });
         }
       });
     }
 
-    // 2. Dynamically extract & calculate categories directly from Database Products
+    // 3. Dynamically merge categories directly from Database Products
     if (Array.isArray(prodsList) && prodsList.length > 0) {
       prodsList.forEach((p: any) => {
         let rawName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category_slug || p.category);
@@ -653,12 +667,6 @@ export default function AdminProductsPage() {
         const name = String(rawName).charAt(0).toUpperCase() + String(rawName).slice(1);
         const prodImage = (p.images && p.images.length > 0) ? p.images[0] : (p.image_url || p.image);
 
-        // Compute exact product count for this category
-        const catProdCount = prodsList.filter((item: any) => {
-          const itemCat = (typeof item.category === "object" ? item.category?.slug || item.category?.name : (item.category_slug || item.category || "")).toLowerCase().trim();
-          return itemCat === slug || itemCat.includes(slug) || slug.includes(itemCat);
-        }).length;
-
         if (!catMap.has(slug)) {
           catMap.set(slug, {
             id: p.category_id || slug,
@@ -667,34 +675,26 @@ export default function AdminProductsPage() {
             icon: getCategoryImgSrc({ slug, name, image_url: prodImage }),
             image_url: getCategoryImgSrc({ slug, name, image_url: prodImage }),
             status: "Active",
-            count: catProdCount > 0 ? catProdCount : 1
+            count: 0
           });
-        } else {
-          const existing = catMap.get(slug);
-          existing.count = catProdCount > 0 ? catProdCount : (existing.count || 1);
-          if (prodImage && (!existing.image_url || existing.image_url.includes("unsplash"))) {
-            if (prodImage.startsWith("http") || prodImage.startsWith("data:")) {
-              existing.image_url = prodImage;
-              existing.icon = prodImage;
-            }
-          }
         }
       });
     }
 
-    // 3. Guaranteed Fallback: If DB categories & products are empty/loading, display standard categories so table is NEVER 0 rows
-    if (catMap.size === 0) {
-      const DEFAULT_CATS = [
-        { id: 1, name: "Electronics", slug: "electronics", icon: getCategoryImgSrc({ slug: "electronics" }), image_url: getCategoryImgSrc({ slug: "electronics" }), count: 12, status: "Active" },
-        { id: 2, name: "Mobiles & Tablets", slug: "mobiles", icon: getCategoryImgSrc({ slug: "mobiles" }), image_url: getCategoryImgSrc({ slug: "mobiles" }), count: 8, status: "Active" },
-        { id: 3, name: "Laptops & Computers", slug: "laptops", icon: getCategoryImgSrc({ slug: "laptops" }), image_url: getCategoryImgSrc({ slug: "laptops" }), count: 15, status: "Active" },
-        { id: 4, name: "Fashion & Apparel", slug: "fashion", icon: getCategoryImgSrc({ slug: "fashion" }), image_url: getCategoryImgSrc({ slug: "fashion" }), count: 24, status: "Active" },
-        { id: 5, name: "Footwear & Shoes", slug: "footwear", icon: getCategoryImgSrc({ slug: "footwear" }), image_url: getCategoryImgSrc({ slug: "footwear" }), count: 18, status: "Active" },
-        { id: 6, name: "Watches & Smartwear", slug: "watches", icon: getCategoryImgSrc({ slug: "watches" }), image_url: getCategoryImgSrc({ slug: "watches" }), count: 10, status: "Active" },
-        { id: 7, name: "Home & Living", slug: "home", icon: getCategoryImgSrc({ slug: "home" }), image_url: getCategoryImgSrc({ slug: "home" }), count: 14, status: "Active" },
-        { id: 8, name: "Sports & Fitness", slug: "sports", icon: getCategoryImgSrc({ slug: "sports" }), image_url: getCategoryImgSrc({ slug: "sports" }), count: 9, status: "Active" }
-      ];
-      DEFAULT_CATS.forEach(c => catMap.set(c.slug, c));
+    // 4. Calculate exact product count for every category in catMap
+    if (Array.isArray(prodsList)) {
+      catMap.forEach((catObj, keySlug) => {
+        const catProdCount = prodsList.filter((item: any) => {
+          const itemCat = (typeof item.category === "object" 
+            ? (item.category?.slug || item.category?.name || "") 
+            : (item.category_slug || item.category_name || item.category || "")
+          ).toLowerCase().trim();
+
+          return itemCat === keySlug || itemCat.includes(keySlug) || keySlug.includes(itemCat);
+        }).length;
+
+        catObj.count = catProdCount;
+      });
     }
 
     return Array.from(catMap.values());
