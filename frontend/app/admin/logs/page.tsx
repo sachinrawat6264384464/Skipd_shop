@@ -7,7 +7,7 @@ export default function AdminSystemLogsPage() {
   const tabs = ["API Logs", "Error Logs", "Audit Logs", "Background Jobs", "System Health"];
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
+    <div className="p-6 md:p-8 space-y-6 w-full max-w-full text-gray-900 font-sans">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div>
           <h1 className="text-2xl font-black text-gray-900">🔐 System Audit, Health &amp; Logs</h1>

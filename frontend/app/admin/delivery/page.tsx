@@ -300,7 +300,7 @@ export default function AdminDeliveryPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
+    <div className="p-6 md:p-8 space-y-6 w-full max-w-full text-gray-900 font-sans">
       
       {/* Toast Notification */}
       {toastMessage && (

@@ -236,7 +236,7 @@ export default function AdminHomepageManagerPage() {
 
   return (
     <div className="min-h-screen bg-[#0b0f19] text-gray-100 flex flex-col justify-between p-6">
-      <div className="max-w-7xl mx-auto w-full space-y-6">
+      <div className="w-full max-w-full space-y-6">
         
         {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-[#111827] border border-gray-800 p-6 rounded-3xl">

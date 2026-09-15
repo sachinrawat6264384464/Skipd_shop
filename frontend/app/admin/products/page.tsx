@@ -983,7 +983,7 @@ export default function AdminProductsPage() {
   const categoriesList = Array.from(new Set(products.map(p => p.category_slug || p.category?.slug || "general"))).filter(Boolean);
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
+    <div className="p-6 md:p-8 space-y-6 w-full max-w-full text-gray-900 font-sans">
       
       {/* Action Notification Toast */}
       {actionMessage && (

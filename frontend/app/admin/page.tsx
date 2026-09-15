@@ -237,7 +237,7 @@ export default function AdminDashboardPage() {
   const lowStockItems = dbProducts.filter(p => (p.stock_quantity ?? 100) <= 20).slice(0, 4);
 
   return (
-    <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
+    <div className="p-6 md:p-8 space-y-6 w-full max-w-full text-gray-900 font-sans">
       
       {/* Action Notification Toast */}
       {restockMsg && (

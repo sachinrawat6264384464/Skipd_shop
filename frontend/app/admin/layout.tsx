@@ -10,8 +10,38 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean | null>(null);
   const [adminUser, setAdminUser] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("ecom_admin_sidebar_collapsed");
+      if (stored === "true") setSidebarCollapsed(true);
+    }
+  }, []);
+
+  const toggleSidebarCollapse = () => {
+    setSidebarCollapsed(prev => {
+      const nextState = !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("ecom_admin_sidebar_collapsed", String(nextState));
+      }
+      return nextState;
+    });
+  };
+
+  // Keyboard shortcut Ctrl + B or Cmd + B to toggle sidebar collapse
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        toggleSidebarCollapse();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Header Interactive States
   const [showNotifications, setShowNotifications] = useState(false);
@@ -318,34 +348,49 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   return (
     <div className="bg-[#F8FAFC] min-h-screen flex text-gray-900 font-sans relative">
       
-      {/* 🖤 Dark Left Sidebar */}
-      <aside className={`w-64 bg-[#0B1329] text-gray-300 flex flex-col justify-between p-4 shrink-0 border-r border-slate-800/80 fixed lg:sticky top-0 h-screen z-50 transition-transform duration-300 ${
+      {/* 🖤 Dark Collapsible Left Sidebar */}
+      <aside className={`bg-[#0B1329] text-gray-300 flex flex-col justify-between p-3 shrink-0 border-r border-slate-800/80 fixed lg:sticky top-0 h-screen z-50 transition-all duration-300 ${
+        sidebarCollapsed ? "lg:w-20" : "lg:w-64"
+      } w-64 ${
         mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       }`}>
-        <div className="space-y-5 overflow-y-auto pr-1">
+        <div className="space-y-4 overflow-y-auto pr-1 no-scrollbar">
           
-          {/* Brand Logo */}
+          {/* Brand Logo & Collapse Toggle Button */}
           <div className="flex items-center justify-between px-2 pt-1">
-            <Link href="/admin" className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-emerald-500 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+            <Link href="/admin" className="flex items-center gap-2.5 overflow-hidden">
+              <div className="w-9 h-9 rounded-2xl bg-emerald-500 text-white font-black text-xl flex items-center justify-center shadow-lg shadow-emerald-500/30 shrink-0">
                 S
               </div>
-              <div>
-                <span className="font-black text-white text-xl tracking-tight block leading-none">E-COM ADMIN</span>
-                <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider">Enterprise OS v3.0</span>
-              </div>
+              {!sidebarCollapsed && (
+                <div className="transition-opacity duration-200">
+                  <span className="font-black text-white text-xl tracking-tight block leading-none whitespace-nowrap">E-COM ADMIN</span>
+                  <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider block whitespace-nowrap">Enterprise OS v3.0</span>
+                </div>
+              )}
             </Link>
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="lg:hidden text-gray-400 hover:text-white text-xs bg-slate-800 p-1.5 rounded-lg cursor-pointer"
-            >
-              ✕
-            </button>
+
+            <div className="flex items-center gap-1">
+              <button
+                onClick={toggleSidebarCollapse}
+                className="hidden lg:flex items-center justify-center w-7 h-7 text-gray-400 hover:text-white bg-slate-800/80 hover:bg-slate-700 rounded-lg transition cursor-pointer text-xs"
+                title={sidebarCollapsed ? "Expand Sidebar (Ctrl + B)" : "Collapse Sidebar (Ctrl + B)"}
+              >
+                {sidebarCollapsed ? "❯" : "❮"}
+              </button>
+
+              <button
+                onClick={() => setMobileOpen(false)}
+                className="lg:hidden text-gray-400 hover:text-white text-xs bg-slate-800 p-1.5 rounded-lg cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
-          {/* User Profile */}
-          <div className="flex items-center gap-3 p-3 bg-[#131E3A] rounded-2xl border border-slate-700/60 shadow-inner">
-            <div className="relative">
+          {/* User Profile Card */}
+          <div className={`flex items-center ${sidebarCollapsed ? "justify-center p-2" : "gap-3 p-3"} bg-[#131E3A] rounded-2xl border border-slate-700/60 shadow-inner transition-all`}>
+            <div className="relative shrink-0">
               <img
                 src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100"
                 alt={adminUser?.name || "Sachin Rawat"}
@@ -353,15 +398,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               />
               <span className="w-3 h-3 rounded-full bg-emerald-500 border-2 border-[#0B1329] absolute bottom-0 right-0"></span>
             </div>
-            <div className="text-xs leading-tight">
-              <p className="font-bold text-white truncate max-w-[120px]">{adminUser?.name || "Sachin Rawat"}</p>
-              <p className="text-[10px] text-emerald-400 font-extrabold truncate max-w-[120px]" title={activeRoleName}>
-                🛡️ {activeRoleName}
-              </p>
-            </div>
+            {!sidebarCollapsed && (
+              <div className="text-xs leading-tight transition-opacity duration-200 overflow-hidden">
+                <p className="font-bold text-white truncate max-w-[120px]">{adminUser?.name || "Sachin Rawat"}</p>
+                <p className="text-[10px] text-emerald-400 font-extrabold truncate max-w-[120px]" title={activeRoleName}>
+                  🛡️ {activeRoleName}
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* Navigation Links (Filtered dynamically by active role permissions) */}
+          {/* Navigation Links */}
           <nav className="space-y-4 text-xs font-medium">
             {filteredNavGroups.length === 0 ? (
               <div className="p-4 bg-slate-900/60 rounded-xl text-center text-slate-400 text-xs">
@@ -370,9 +417,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             ) : (
               filteredNavGroups.map((group, idx) => (
                 <div key={idx} className="space-y-1">
-                  <p className="text-[9px] uppercase font-black text-slate-500 px-3 mb-1.5 tracking-widest">
-                    {group.group}
-                  </p>
+                  {!sidebarCollapsed ? (
+                    <p className="text-[9px] uppercase font-black text-slate-500 px-3 mb-1.5 tracking-widest transition-opacity duration-200">
+                      {group.group}
+                    </p>
+                  ) : (
+                    <div className="h-px bg-slate-800/80 my-2" />
+                  )}
                   {group.links.map((link) => {
                     const active = isActive(link.href);
                     return (
@@ -380,15 +431,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         key={link.href}
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
-                        className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl transition duration-150 ${
+                        title={sidebarCollapsed ? link.title : undefined}
+                        className={`w-full flex items-center ${sidebarCollapsed ? "justify-center px-0 py-2.5" : "justify-between px-3.5 py-2.5"} rounded-xl transition duration-150 ${
                           active
                             ? "bg-emerald-600/90 text-white font-bold shadow-lg shadow-emerald-600/20"
                             : "hover:bg-slate-800/80 text-slate-400 hover:text-white"
                         }`}
                       >
-                        <div className="flex items-center gap-3">
+                        <div className={`flex items-center ${sidebarCollapsed ? "justify-center" : "gap-3"}`}>
                           <span className={active ? "text-white" : "text-slate-400"}>{renderNavIcon(link.href)}</span>
-                          <span className="text-xs">{link.title}</span>
+                          {!sidebarCollapsed && <span className="text-xs whitespace-nowrap">{link.title}</span>}
                         </div>
                       </Link>
                     );
@@ -405,13 +457,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link
             href="/"
             target="_blank"
-            className="flex items-center justify-between p-2.5 bg-slate-900 hover:bg-slate-800 rounded-xl text-slate-300 text-xs font-bold transition group border border-slate-800"
+            title={sidebarCollapsed ? "View Storefront" : undefined}
+            className={`flex items-center ${sidebarCollapsed ? "justify-center p-2.5" : "justify-between p-2.5"} bg-slate-900 hover:bg-slate-800 rounded-xl text-slate-300 text-xs font-bold transition group border border-slate-800`}
           >
             <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              <span>View Storefront</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping shrink-0"></span>
+              {!sidebarCollapsed && <span>View Storefront</span>}
             </div>
-            <span className="text-emerald-400 font-black">↗</span>
+            {!sidebarCollapsed && <span className="text-emerald-400 font-black">↗</span>}
           </Link>
         </div>
       </aside>
