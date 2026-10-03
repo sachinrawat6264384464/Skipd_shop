@@ -128,7 +128,7 @@ export default function OrdersDashboardPage() {
       <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
         <div className="min-h-[75vh] flex flex-col items-center justify-center p-6 text-center">
           <div className="bg-white border border-gray-200 rounded-3xl p-8 max-w-md w-full shadow-lg space-y-5">
-            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-xs">
+            <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto text-3xl font-black border border-blue-100 shadow-xs">
               🔒
             </div>
             <div>
@@ -140,7 +140,7 @@ export default function OrdersDashboardPage() {
 
             <button
               onClick={() => setIsModalOpen(true)}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3 px-6 rounded-xl transition shadow-sm cursor-pointer"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-3 px-6 rounded-xl transition shadow-sm cursor-pointer"
             >
               🔑 Sign In / Register Now
             </button>

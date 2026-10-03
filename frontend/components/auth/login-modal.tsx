@@ -535,12 +535,12 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
   return createPortal(
     <div className="fixed inset-0 z-[99999] bg-[#F8FAFC] w-full h-full min-h-screen overflow-y-auto flex flex-col md:flex-row font-sans">
       
-      {/* 🟢 LEFT STATIC HERO PANEL (50% Full Height & Width - Dark Emerald Theme) */}
-      <div className="md:w-1/2 min-h-[400px] md:min-h-screen bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white p-8 lg:p-16 flex flex-col justify-between relative overflow-hidden shrink-0 border-r border-emerald-800/40">
+      {/* 🟢 LEFT STATIC HERO PANEL (50% Full Height & Width - Electric Blue Theme) */}
+      <div className="md:w-1/2 min-h-[400px] md:min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 text-white p-8 lg:p-16 flex flex-col justify-between relative overflow-hidden shrink-0 border-r border-blue-800/40">
         
         {/* Decorative Glowing Orbs */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header & Branding */}
         <div className="space-y-6 z-10">
@@ -553,7 +553,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           </div>
 
           <div className="space-y-3 pt-4">
-            <span className="bg-emerald-500/20 text-emerald-300 text-xs font-black px-3.5 py-1.5 rounded-full border border-emerald-400/30 uppercase tracking-wider inline-block">
+            <span className="bg-blue-500/20 text-blue-300 text-xs font-black px-3.5 py-1.5 rounded-full border border-blue-400/30 uppercase tracking-wider inline-block">
               ✨ Customer Portal Access
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
@@ -561,9 +561,9 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 ? "Account Password Recovery"
                 : isRegisterView
                 ? "Create Customer Account"
-                : "Welcome Back to Skipd Store!"}
+                : "Welcome Back to BotCom Store!"}
             </h1>
-            <p className="text-emerald-100/80 text-xs sm:text-sm lg:text-base leading-relaxed font-medium max-w-md">
+            <p className="text-blue-100/80 text-xs sm:text-sm lg:text-base leading-relaxed font-medium max-w-md">
               {isForgotView
                 ? "Verify your registered email to reset your account password securely."
                 : "Manage your orders, track shipments in real-time, view wishlist & enjoy exclusive Supercoin rewards."}
@@ -574,47 +574,47 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         {/* Middle Feature Highlights List */}
         <div className="z-10 my-8 space-y-3 max-w-md hidden sm:block">
           <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-blue-500/30 text-sky-300 flex items-center justify-center font-bold text-sm shrink-0">
               ⚡
             </div>
             <div>
               <p className="font-extrabold text-white">Express 2-Day Delivery Across India</p>
-              <p className="text-[11px] text-emerald-200/80">Priority shipping on all active verified orders</p>
+              <p className="text-[11px] text-blue-200/80">Priority shipping on all active verified orders</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-blue-500/30 text-sky-300 flex items-center justify-center font-bold text-sm shrink-0">
               🔒
             </div>
             <div>
               <p className="font-extrabold text-white">256-bit Encrypted SSL Security</p>
-              <p className="text-[11px] text-emerald-200/80">Protected customer authentication &amp; payments</p>
+              <p className="text-[11px] text-blue-200/80">Protected customer authentication &amp; payments</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-blue-500/30 text-sky-300 flex items-center justify-center font-bold text-sm shrink-0">
               🎁
             </div>
             <div>
               <p className="font-extrabold text-white">250 Instant Reward Supercoins</p>
-              <p className="text-[11px] text-emerald-200/80">Redeemable on your very next order purchase</p>
+              <p className="text-[11px] text-blue-200/80">Redeemable on your very next order purchase</p>
             </div>
           </div>
         </div>
 
         {/* Footer Customer Trust Stats */}
-        <div className="z-10 pt-4 border-t border-emerald-800/60 flex items-center justify-between">
+        <div className="z-10 pt-4 border-t border-blue-800/60 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex -space-x-2">
-              <span className="w-7 h-7 rounded-full bg-emerald-400 text-emerald-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">S</span>
-              <span className="w-7 h-7 rounded-full bg-teal-400 text-teal-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">R</span>
-              <span className="w-7 h-7 rounded-full bg-green-400 text-green-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">A</span>
+              <span className="w-7 h-7 rounded-full bg-blue-400 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-slate-950">S</span>
+              <span className="w-7 h-7 rounded-full bg-sky-400 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-slate-950">R</span>
+              <span className="w-7 h-7 rounded-full bg-cyan-400 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-slate-950">A</span>
             </div>
-            <span className="text-xs font-extrabold text-emerald-200">50,000+ Happy Customers</span>
+            <span className="text-xs font-extrabold text-blue-200">50,000+ Happy Customers</span>
           </div>
-          <span className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-widest">★ 4.9 Verified Rating</span>
+          <span className="text-[10px] font-bold text-sky-400/80 uppercase tracking-widest">★ 4.9 Verified Rating</span>
         </div>
 
       </div>
@@ -636,15 +636,15 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
           {/* Top Shield Header Graphic (Exact match with Admin Login Page) */}
           <div className="flex flex-col items-center text-center space-y-1">
             <div className="relative w-12 h-12 flex items-center justify-center">
-              <div className="absolute inset-0 border border-emerald-200 rounded-full opacity-60" />
-              <div className="w-10 h-10 rounded-2xl bg-[#059669] text-white flex items-center justify-center shadow-lg shadow-emerald-600/30">
+              <div className="absolute inset-0 border border-blue-200 rounded-full opacity-60" />
+              <div className="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.66 0 3 1.34 3 3v2h1c.55 0 1 .45 1 1v5c0 .55-.45 1-1 1H8c-.55 0-1-.45-1-1v-5c0-.55.45-1 1-1h1v-2c0-1.66 1.34-3 3-3zm0 2c-.55 0-1 .45-1 1v2h2v-2c0-.55-.45-1-1-1z" />
                 </svg>
               </div>
             </div>
 
-            <span className="bg-[#EAF8F2] text-[#059669] font-black text-[9px] uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+            <span className="bg-blue-50 text-blue-700 font-black text-[9px] uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-blue-200/60">
               🔒 VERIFIED CUSTOMER AUTH
             </span>
 
@@ -663,7 +663,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
 
           {/* Success Banner */}
           {successMsg && (
-            <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs">
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 p-3 rounded-xl text-xs font-bold flex items-center gap-2 shadow-2xs">
               <span>✓</span>
               <span className="flex-1">{successMsg}</span>
             </div>
@@ -758,7 +758,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                     <button
                       type="button"
                       onClick={handleResendOTP}
-                      className="text-emerald-700 font-bold hover:underline cursor-pointer"
+                      className="text-blue-700 font-bold hover:underline cursor-pointer"
                     >
                       🔄 Resend OTP Code
                     </button>
@@ -795,7 +795,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition shadow-sm cursor-pointer uppercase tracking-wider"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition shadow-sm cursor-pointer uppercase tracking-wider"
                   >
                     {loading ? "Saving Password..." : "SAVE NEW PASSWORD & LOGIN"}
                   </button>
@@ -878,7 +878,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition shadow-md shadow-emerald-600/20 cursor-pointer uppercase tracking-wider"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-3.5 rounded-xl transition shadow-md shadow-blue-600/20 cursor-pointer uppercase tracking-wider"
               >
                 {loading
                   ? "Processing..."
@@ -971,7 +971,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 <button
                   type="button"
                   onClick={handleResendOTP}
-                  className="text-emerald-700 font-bold hover:underline cursor-pointer"
+                  className="text-blue-700 font-bold hover:underline cursor-pointer"
                 >
                   🔄 Resend OTP Code
                 </button>

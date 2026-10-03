@@ -821,8 +821,8 @@ function AccountContent() {
     return (
       <div className="min-h-screen bg-[#F4F6F8] text-gray-900 flex items-center justify-center p-4 font-sans">
         <div className="bg-white border border-gray-200/80 rounded-3xl p-8 md:p-12 max-w-md w-full text-center space-y-6 shadow-xl animate-in fade-in zoom-in-95 duration-200">
-          <div className="w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 text-[#059669] flex items-center justify-center mx-auto text-2xl shadow-xs">
-            <svg className="w-8 h-8 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 rounded-2xl bg-blue-50 border border-blue-200 text-blue-600 flex items-center justify-center mx-auto text-2xl shadow-xs">
+            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
@@ -837,7 +837,7 @@ function AccountContent() {
           <div className="pt-2 space-y-3">
             <button
               onClick={() => setIsModalOpen(true)}
-              className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-3.5 px-6 rounded-2xl transition shadow-xs cursor-pointer"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 px-6 rounded-2xl transition shadow-xs cursor-pointer"
             >
               Sign In / Register
             </button>
