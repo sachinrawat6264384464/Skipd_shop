@@ -20,13 +20,13 @@ export default async function HomePage() {
   return (
     <div className="bg-[#FAFAFA] text-gray-900 min-h-screen" suppressHydrationWarning>
       
-      {/* 🏷️ Top Horizontal Category Navigation Bar */}
-      <CategoryNav />
-
       {/* 🟢 Hero Carousel Banner */}
       <section className="w-full">
         <HeroSlider />
       </section>
+
+      {/* 🏷️ Horizontal Category Navigation Bar */}
+      <CategoryNav />
 
       {/* ⚡ Live Flash Sale Deal Banner */}
       <section className="w-full max-w-full px-4 sm:px-6 lg:px-10">
