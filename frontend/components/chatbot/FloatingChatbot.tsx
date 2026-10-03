@@ -43,6 +43,136 @@ export default function FloatingChatbot() {
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const [sessionId] = useState<string>(() => `guest_session_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`);
 
+  // Dragging state & refs for AI Bot Floating Button
+  const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
+  const dragStartRef = useRef<{ mouseX: number; mouseY: number; posX: number; posY: number }>({ mouseX: 0, mouseY: 0, posX: 0, posY: 0 });
+  const hasMovedRef = useRef<boolean>(false);
+  const buttonRef = useRef<HTMLDivElement | null>(null);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (e.button !== 0) return;
+    const rect = buttonRef.current?.getBoundingClientRect();
+    const currentX = rect ? rect.left : (typeof window !== 'undefined' ? window.innerWidth - 110 : 0);
+    const currentY = rect ? rect.top : (typeof window !== 'undefined' ? window.innerHeight - 110 : 0);
+
+    dragStartRef.current = {
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      posX: currentX,
+      posY: currentY
+    };
+    hasMovedRef.current = false;
+
+    const onMouseMove = (moveEvent: MouseEvent) => {
+      const deltaX = moveEvent.clientX - dragStartRef.current.mouseX;
+      const deltaY = moveEvent.clientY - dragStartRef.current.mouseY;
+
+      if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+        hasMovedRef.current = true;
+        setIsDragging(true);
+      }
+
+      let newX = dragStartRef.current.posX + deltaX;
+      let newY = dragStartRef.current.posY + deltaY;
+
+      const botSize = 96;
+      const maxX = typeof window !== 'undefined' ? window.innerWidth - botSize - 12 : 1000;
+      const maxY = typeof window !== 'undefined' ? window.innerHeight - botSize - 12 : 1000;
+
+      newX = Math.max(12, Math.min(maxX, newX));
+      newY = Math.max(12, Math.min(maxY, newY));
+
+      setPosition({ x: newX, y: newY });
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+      setTimeout(() => setIsDragging(false), 50);
+    };
+
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('mouseup', onMouseUp);
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    const rect = buttonRef.current?.getBoundingClientRect();
+    const currentX = rect ? rect.left : (typeof window !== 'undefined' ? window.innerWidth - 110 : 0);
+    const currentY = rect ? rect.top : (typeof window !== 'undefined' ? window.innerHeight - 110 : 0);
+
+    dragStartRef.current = {
+      mouseX: touch.clientX,
+      mouseY: touch.clientY,
+      posX: currentX,
+      posY: currentY
+    };
+    hasMovedRef.current = false;
+
+    const onTouchMove = (moveEvent: TouchEvent) => {
+      const t = moveEvent.touches[0];
+      const deltaX = t.clientX - dragStartRef.current.mouseX;
+      const deltaY = t.clientY - dragStartRef.current.mouseY;
+
+      if (Math.abs(deltaX) > 4 || Math.abs(deltaY) > 4) {
+        hasMovedRef.current = true;
+        setIsDragging(true);
+      }
+
+      let newX = dragStartRef.current.posX + deltaX;
+      let newY = dragStartRef.current.posY + deltaY;
+
+      const botSize = 96;
+      const maxX = typeof window !== 'undefined' ? window.innerWidth - botSize - 12 : 1000;
+      const maxY = typeof window !== 'undefined' ? window.innerHeight - botSize - 12 : 1000;
+
+      newX = Math.max(12, Math.min(maxX, newX));
+      newY = Math.max(12, Math.min(maxY, newY));
+
+      setPosition({ x: newX, y: newY });
+    };
+
+    const onTouchEnd = () => {
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      setTimeout(() => setIsDragging(false), 50);
+    };
+
+    window.addEventListener('touchmove', onTouchMove);
+    window.addEventListener('touchend', onTouchEnd);
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    if (hasMovedRef.current) {
+      e.stopPropagation();
+      e.preventDefault();
+      return;
+    }
+    setIsOpen((prev) => !prev);
+  };
+
+  const getDrawerStyle = (): React.CSSProperties => {
+    if (!position || typeof window === 'undefined') {
+      return {};
+    }
+    let top = position.y - 590;
+    if (top < 15) {
+      top = Math.min(window.innerHeight - 600, position.y + 100);
+    }
+    let left = position.x - 310;
+    if (left < 10) left = 10;
+    if (left + 420 > window.innerWidth) left = window.innerWidth - 430;
+
+    return {
+      position: 'fixed',
+      top: `${Math.max(10, top)}px`,
+      left: `${Math.max(10, left)}px`,
+      bottom: 'auto',
+      right: 'auto'
+    };
+  };
+
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const [messages, setMessages] = useState<Message[]>([
@@ -288,24 +418,43 @@ export default function FloatingChatbot() {
 
   return (
     <>
-      {/* Floating Action Launcher Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-20 h-20 sm:w-24 sm:h-24 bg-transparent border-none outline-none focus:outline-none cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group"
+      {/* Floating Action Launcher Button (Draggable + Soft Glowing Aura) */}
+      <div
+        ref={buttonRef}
+        onClick={handleButtonClick}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        style={
+          position
+            ? { left: `${position.x}px`, top: `${position.y}px`, bottom: 'auto', right: 'auto' }
+            : {}
+        }
+        className={`fixed ${!position ? 'bottom-6 right-6' : ''} z-50 w-20 h-20 sm:w-24 sm:h-24 bg-transparent select-none touch-none ${
+          isDragging ? 'cursor-grabbing scale-115' : 'cursor-grab hover:scale-110'
+        } active:scale-95 transition-transform duration-200 flex items-center justify-center group`}
         aria-label="Open AI Recommender Chatbot"
+        title="Click to chat • Drag to move anywhere"
       >
+        {/* Soft Glowing Aura Effect behind the 3D bot */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-500/40 via-teal-400/50 to-cyan-400/40 blur-xl opacity-80 group-hover:opacity-100 group-hover:scale-135 transition-all duration-300 animate-pulse pointer-events-none -z-10" />
+        <div className="absolute inset-2 rounded-full bg-emerald-400/25 blur-md pointer-events-none -z-10" />
+
         <span className="relative w-full h-full flex items-center justify-center">
           <img
             src="/bot-avatar.png"
             alt="E-COM AI Assistant"
-            className="w-full h-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.35)] group-hover:drop-shadow-[0_15px_25px_rgba(16,185,129,0.4)] transition-all duration-300"
+            draggable={false}
+            className="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(16,185,129,0.5)] group-hover:drop-shadow-[0_15px_35px_rgba(20,184,166,0.75)] transition-all duration-300 pointer-events-none"
           />
         </span>
-      </button>
+      </div>
 
       {/* Main Glassmorphic Chatbot Window Drawer */}
       {isOpen && (
-        <div className="fixed bottom-30 right-6 w-[410px] max-w-[calc(100vw-2rem)] h-[580px] z-50 bg-slate-950/95 backdrop-blur-xl border border-emerald-800/60 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div
+          style={getDrawerStyle()}
+          className={`fixed ${!position ? 'bottom-30 right-6' : ''} w-[410px] max-w-[calc(100vw-2rem)] h-[580px] z-50 bg-slate-950/95 backdrop-blur-xl border border-emerald-800/60 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300`}
+        >
           
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 border-b border-emerald-900/60 flex items-center justify-between">
