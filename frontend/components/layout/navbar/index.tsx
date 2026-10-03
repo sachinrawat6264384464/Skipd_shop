@@ -13,10 +13,10 @@ const NotificationBell = dynamic(() => import("components/notifications/Notifica
 
 export async function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 bg-white/95 backdrop-blur-2xl border-b border-gray-200/80 px-4 sm:px-8 lg:px-12 py-3.5 sm:py-4 flex items-center justify-between shadow-xs transition-all w-full">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-2xl border-b border-gray-200/80 px-4 sm:px-8 lg:px-12 py-2.5 sm:py-3 shadow-2xs transition-all w-full">
       <div className="flex items-center justify-between w-full max-w-full gap-3 sm:gap-6">
         
-        {/* Left Section: Mobile Menu, Brand Logo & Dynamic Top Links */}
+        {/* Left Section: Mobile Hamburger Menu, Brand Logo & Top Category Links */}
         <div className="flex items-center gap-3 sm:gap-5 lg:gap-8 shrink-0 min-w-0">
           <MobileMenu />
 
@@ -24,7 +24,7 @@ export async function Navbar() {
             <img
               src="/2.png"
               alt="BOTCOM Logo"
-              className="h-12 sm:h-14 md:h-16 lg:h-20 max-h-20 w-auto object-contain group-hover:scale-105 transition duration-200"
+              className="h-11 sm:h-13 md:h-15 lg:h-16 max-h-16 w-auto object-contain group-hover:scale-105 transition duration-200"
             />
           </Link>
 
@@ -32,9 +32,11 @@ export async function Navbar() {
         </div>
 
         {/* Right Section: Action Buttons */}
-        <div className="flex items-center gap-3 sm:gap-4 lg:gap-5 shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 shrink-0">
           <InstantSearchModal />
-          <LanguagePicker />
+          <div className="hidden md:block">
+            <LanguagePicker />
+          </div>
           <NotificationBell />
           <UserAccountDropdown />
           <div className="hidden sm:block">
@@ -44,6 +46,6 @@ export async function Navbar() {
         </div>
 
       </div>
-    </nav>
+    </header>
   );
 }

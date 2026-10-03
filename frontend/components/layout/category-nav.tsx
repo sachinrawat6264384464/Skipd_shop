@@ -112,7 +112,7 @@ export function CategoryNav() {
 
   return (
     <nav className="w-full bg-white border-b border-gray-200/80 py-3.5 px-4 sm:px-8 font-sans shadow-2xs">
-      <div className="w-full max-w-7xl mx-auto flex items-center justify-center flex-wrap gap-5 sm:gap-8 md:gap-10 lg:gap-14">
+      <div className="w-full max-w-full mx-auto flex items-center justify-center flex-wrap gap-5 sm:gap-8 md:gap-10 lg:gap-14">
         {categories.map((cat) => (
           <Link
             key={cat.slug}

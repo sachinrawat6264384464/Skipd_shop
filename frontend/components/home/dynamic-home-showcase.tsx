@@ -10,7 +10,7 @@ import { useWishlist } from "components/wishlist/wishlist-context";
 import { toast } from "sonner";
 
 export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Product[] }) {
-  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>(initialProducts || []);
   const [pickUpItems, setPickUpItems] = useState<any[]>([]);
   const [showAllCollections, setShowAllCollections] = useState(false);
   const { isInWishlist, toggleWishlist: ctxToggleWishlist } = useWishlist();

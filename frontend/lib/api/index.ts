@@ -87,132 +87,10 @@ export interface UserOrder {
   deliveryText?: string;
 }
 
-export const FALLBACK_PRODUCTS: Product[] = [
-  {
-    id: 16,
-    title: "Minimalist Heavyweight Graphic Tee 240 GSM",
-    handle: "minimalist-graphic-tee",
-    description: "Heavyweight 240 GSM organic cotton t-shirt with premium screen-printed typography.",
-    price: 1299.0,
-    compare_at_price: 1999.0,
-    images: ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800"],
-    featured: true,
-    category: { name: "Fashion & Apparel", slug: "fashion" },
-    tags: ["fashion", "apparel", "cotton"]
-  },
-  {
-    id: 10,
-    title: "OnePlus Nord 6 5G (12GB+256GB)",
-    handle: "oneplus-nord-6",
-    description: "Snapdragon 8s Gen 4 | Segment-first stable 165FPS gaming | Segment-largest 9000mAh battery | Personalized AI",
-    price: 44499.0,
-    compare_at_price: 52999.0,
-    images: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"],
-    featured: true,
-    category: { name: "Mobiles & Tablets", slug: "mobiles" },
-    tags: ["mobiles", "bestseller", "oneplus"]
-  },
-  {
-    id: 11,
-    title: "Apple Watch Series 9 GPS 45mm Midnight",
-    handle: "apple-watch-series-9",
-    description: "Always-On Retina display, S9 SiP, Double tap gesture, Precision Finding for iPhone.",
-    price: 41900.0,
-    compare_at_price: 44900.0,
-    images: ["https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800"],
-    featured: true,
-    category: { name: "Watches & Smartwear", slug: "watches" },
-    tags: ["watches", "tech"]
-  },
-  {
-    id: 12,
-    title: "Nike Air Force 1 07 Triple White Sneakers",
-    handle: "nike-air-force-1",
-    description: "Classic white leather basketball shoes with responsive Nike Air cushioning.",
-    price: 7495.0,
-    compare_at_price: 8995.0,
-    images: ["https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800"],
-    featured: true,
-    category: { name: "Footwear & Shoes", slug: "footwear" },
-    tags: ["footwear", "sneakers"]
-  },
-  {
-    id: 13,
-    title: "Apple MacBook Air M2 13.6-inch Space Grey",
-    handle: "apple-macbook-air-m2",
-    description: "Apple M2 chip with 8-core CPU, 8-core GPU, 8GB Unified Memory, 256GB SSD Storage.",
-    price: 99990.0,
-    compare_at_price: 114900.0,
-    images: ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800"],
-    featured: true,
-    category: { name: "Laptops & Computers", slug: "laptops" },
-    tags: ["laptops", "apple", "macbook"]
-  },
-  {
-    id: 14,
-    title: "boAt Rockerz 450 Pro Bluetooth Headphones",
-    handle: "boat-rockerz-450-pro",
-    description: "Wireless Bluetooth headphones with 70-hour playback, ASAP charge and 40mm drivers.",
-    price: 1499.0,
-    compare_at_price: 3990.0,
-    images: ["https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800"],
-    featured: true,
-    category: { name: "Electronics & Gadgets", slug: "electronics" },
-    tags: ["electronics", "audio", "headphones"]
-  },
-  {
-    id: 15,
-    title: "Noise ColorFit Pro 5 Smartwatch",
-    handle: "noise-colorfit-pro-5",
-    description: "1.85-inch AMOLED display, BT calling, 100+ sports modes, IP68 water resistant.",
-    price: 3499.0,
-    compare_at_price: 5999.0,
-    images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800"],
-    featured: true,
-    category: { name: "Watches & Smartwear", slug: "watches" },
-    tags: ["watches", "smartwatch"]
-  },
-  {
-    id: 17,
-    title: "RC 4K Camera Pro Toy Drone Quadcopter",
-    handle: "rc-4k-toy-drone",
-    description: "Foldable quadcopter drone with 4K UHD camera, altitude hold, and gesture control.",
-    price: 2499.0,
-    compare_at_price: 4999.0,
-    images: ["https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=800"],
-    featured: true,
-    category: { name: "Electronics & Gadgets", slug: "electronics" },
-    tags: ["electronics", "drone", "gadget"]
-  },
-  {
-    id: 18,
-    title: "Winter Heavy Fleece Trench Jacket Black",
-    handle: "winter-trench-jacket",
-    description: "Insulated fleece-lined winter trench jacket for sub-zero weather protection.",
-    price: 3999.0,
-    compare_at_price: 6999.0,
-    images: ["https://images.unsplash.com/photo-1544441893-675973e31985?w=800"],
-    featured: true,
-    category: { name: "Fashion & Apparel", slug: "fashion" },
-    tags: ["fashion", "winter", "jacket"]
-  },
-  {
-    id: 42,
-    title: "Sony WH-1000XM5 Studio ANC Headphones",
-    handle: "sony-wh-1000xm5",
-    description: "Industry leading noise cancelling headphones with 2 processors and 8 microphones.",
-    price: 24999.0,
-    compare_at_price: 29999.0,
-    images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"],
-    featured: true,
-    category: { name: "Electronics & Gadgets", slug: "electronics" },
-    tags: ["electronics", "audio", "sony", "anc"]
-  }
-];
+export const FALLBACK_PRODUCTS: Product[] = [];
 
 export async function fetchProducts(query?: { category?: string; search?: string; featured?: boolean }): Promise<Product[]> {
   let backendProducts: Product[] = [];
-  let isBackendOk = false;
   try {
     const params = new URLSearchParams();
     if (query?.category) params.append("category", query.category);
@@ -220,7 +98,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
     if (query?.featured !== undefined) params.append("featured", String(query.featured));
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2500);
+    const timer = setTimeout(() => controller.abort(), 8000);
 
     const res = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
       cache: "no-store",
@@ -232,7 +110,6 @@ export async function fetchProducts(query?: { category?: string; search?: string
       const data = await res.json();
       if (Array.isArray(data)) {
         backendProducts = data;
-        isBackendOk = true;
       }
     }
   } catch (err: any) {
@@ -242,7 +119,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
     console.warn("[API SDK Warning] Backend error fetching products.", err);
   }
 
-  let list = isBackendOk ? [...backendProducts] : [];
+  let list = [...backendProducts];
 
   if (query?.featured) list = list.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
