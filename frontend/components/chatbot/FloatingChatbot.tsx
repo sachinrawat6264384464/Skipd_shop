@@ -440,13 +440,11 @@ export default function FloatingChatbot() {
         <div className="absolute inset-2 rounded-full bg-emerald-400/25 blur-md pointer-events-none -z-10" />
 
         <span className="relative w-full h-full flex items-center justify-center">
-          <video
-            src="/bot-video.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(56,189,248,0.6)] group-hover:drop-shadow-[0_15px_35px_rgba(56,189,248,0.85)] transition-all duration-300 pointer-events-none rounded-full"
+          <img
+            src="/bot-avatar.png"
+            alt="E-COM AI Assistant"
+            draggable={false}
+            className="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(56,189,248,0.6)] group-hover:drop-shadow-[0_15px_35px_rgba(56,189,248,0.85)] transition-all duration-300 pointer-events-none"
           />
         </span>
       </div>
@@ -463,7 +461,7 @@ export default function FloatingChatbot() {
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 shrink-0 relative flex items-center justify-center">
                 <img
-                  src="/bot-header-avatar.png"
+                  src="/bot-avatar.png"
                   alt="E-COM AI Assistant"
                   className="w-full h-full object-contain filter drop-shadow-[0_4px_16px_rgba(56,189,248,0.6)]"
                 />
