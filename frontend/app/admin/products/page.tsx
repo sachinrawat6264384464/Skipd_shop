@@ -131,13 +131,23 @@ export default function AdminProductsPage() {
   };
 
   const confirmDeleteCategory = async () => {
-    if (!deletingCategoryId) return;
-    const res = await deleteAdminCategory(deletingCategoryId);
-    if (res) {
-      showNotification(`🗑️ Category deleted from Database`, "error");
-      await loadProductsAndCategories();
-    }
+    const targetId = deletingCategoryId;
+    if (!targetId) return;
+
+    // ⚡ 1. INSTANT OPTIMISTIC UI RESPONSE (<10ms)
     setDeletingCategoryId(null);
+    setCategories(prev => prev.filter(c => String(c.id) !== String(targetId) && String(c.slug) !== String(targetId)));
+    showNotification(`🗑️ Category deleted from Database`, "error");
+
+    // ⚡ 2. Async DB Call & Background Refresh
+    try {
+      await deleteAdminCategory(targetId);
+      loadProductsAndCategories();
+    } catch (e) {
+      console.error("Failed to delete category in DB:", e);
+      showNotification("Failed to delete category in DB", "error");
+      loadProductsAndCategories();
+    }
   };
 
   // Sub-Category Handlers
@@ -974,16 +984,22 @@ export default function AdminProductsPage() {
   };
 
   const confirmDeleteProduct = async () => {
-    if (!deletingProductId) return;
     const targetId = deletingProductId;
-    const res = await deleteAdminProduct(targetId);
-    if (res) {
-      setProducts(prev => prev.filter(p => p.id !== targetId && String(p.id) !== String(targetId)));
-      showNotification(`🗑️ Product #${targetId} removed from database catalog`);
-      setDeletingProductId(null);
-      await loadProductsAndCategories();
-    } else {
-      showNotification("Failed to delete product", "error");
+    if (!targetId) return;
+
+    // ⚡ 1. INSTANT OPTIMISTIC UI RESPONSE (<10ms)
+    setDeletingProductId(null);
+    setProducts(prev => prev.filter(p => p.id !== targetId && String(p.id) !== String(targetId)));
+    showNotification(`🗑️ Product #${targetId} removed from database catalog`, "error");
+
+    // ⚡ 2. Async DB Call & Background Refresh
+    try {
+      await deleteAdminProduct(targetId);
+      loadProductsAndCategories();
+    } catch (e) {
+      console.error("Failed to delete product in DB:", e);
+      showNotification("Failed to delete product in DB", "error");
+      loadProductsAndCategories();
     }
   };
 

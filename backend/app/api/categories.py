@@ -1,10 +1,11 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, func
+from sqlalchemy import select, update, func
 from app.core.database import get_db
 from app.models.models import Category, Product
 from app.schemas.schemas import CategorySchema, CategoryCreate, CategoryUpdate
+from app.core.redis_cache import invalidate_cache_pattern
 
 router = APIRouter(prefix="/categories", tags=["Categories"])
 
@@ -214,14 +215,25 @@ async def update_admin_category(category_id: int, payload: CategoryUpdate, db: A
 
 @router.delete("/admin/{category_id}")
 async def delete_admin_category(category_id: int, db: AsyncSession = Depends(get_db)):
-    """Delete a category from PostgreSQL database."""
+    """Delete a category from PostgreSQL database with smart unlinking of FK products."""
     res = await db.execute(select(Category).where(Category.id == category_id))
     category = res.scalars().first()
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     
+    # 1. Unlink any products assigned to this category in batch
+    await db.execute(update(Product).where(Product.category_id == category_id).values(category_id=None))
+
+    # 2. Delete the category from DB
     await db.delete(category)
     await db.commit()
+
+    # 3. Invalidate Redis Cache immediately
+    try:
+        await invalidate_cache_pattern("products:*")
+    except BaseException:
+        pass
+
     return {"status": "success", "message": f"Category #{category_id} deleted successfully"}
 
 @router.get("/{slug}", response_model=CategorySchema)
