@@ -459,11 +459,11 @@ export default function FloatingChatbot() {
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 border-b border-emerald-900/60 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-full bg-emerald-600/25 border border-emerald-400/50 flex items-center justify-center p-1 shadow-xs">
+              <div className="w-14 h-14 shrink-0 relative flex items-center justify-center">
                 <img
                   src="/bot-avatar.png"
                   alt="E-COM AI Assistant"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain filter drop-shadow-[0_4px_12px_rgba(16,185,129,0.45)]"
                 />
               </div>
               <div>
