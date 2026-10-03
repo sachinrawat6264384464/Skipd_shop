@@ -98,6 +98,8 @@ export default function FloatingChatbot() {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
+    if (!touch) return;
+
     const rect = buttonRef.current?.getBoundingClientRect();
     const currentX = rect ? rect.left : (typeof window !== 'undefined' ? window.innerWidth - 140 : 0);
     const currentY = rect ? rect.top : (typeof window !== 'undefined' ? window.innerHeight - 140 : 0);
@@ -112,6 +114,8 @@ export default function FloatingChatbot() {
 
     const onTouchMove = (moveEvent: TouchEvent) => {
       const t = moveEvent.touches[0];
+      if (!t) return;
+
       const deltaX = t.clientX - dragStartRef.current.mouseX;
       const deltaY = t.clientY - dragStartRef.current.mouseY;
 
