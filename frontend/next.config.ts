@@ -42,7 +42,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/v1/:path*",
-        destination: "https://e-com-ecom.onrender.com/api/v1/:path*",
+        destination: "https://skipd-ecom.onrender.com/api/v1/:path*",
       },
     ];
   },

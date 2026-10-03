@@ -7,7 +7,7 @@ export const getApiBaseUrl = () => {
       return envUrl;
     }
     if (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
-      return "https://e-com-ecom.onrender.com/api/v1";
+      return "https://skipd-ecom.onrender.com/api/v1";
     }
     return envUrl || "http://127.0.0.1:8080/api/v1";
   }
@@ -17,7 +17,7 @@ export const getApiBaseUrl = () => {
     return envUrl;
   }
   if (process.env.NODE_ENV === "production") {
-    return "https://e-com-ecom.onrender.com/api/v1";
+    return "https://skipd-ecom.onrender.com/api/v1";
   }
   return "http://127.0.0.1:8080/api/v1";
 };
