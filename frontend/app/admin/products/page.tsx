@@ -598,8 +598,11 @@ export default function AdminProductsPage() {
     const nextState = !isCurrentlyInDb;
 
     if (nextState) {
-      setNewArrivalDbIds(prev => [...prev, prodIdNum]);
-      setNewArrivalsDbProducts(prev => [...prev, product]);
+      setNewArrivalDbIds(prev => Array.from(new Set([...prev, prodIdNum])));
+      setNewArrivalsDbProducts(prev => {
+        if (prev.some(p => Number(p.id) === prodIdNum)) return prev;
+        return [...prev, product];
+      });
     } else {
       setNewArrivalDbIds(prev => prev.filter(id => id !== prodIdNum));
       setNewArrivalsDbProducts(prev => prev.filter(p => Number(p.id) !== prodIdNum));
@@ -607,6 +610,15 @@ export default function AdminProductsPage() {
 
     const res = await toggleNewArrivalDB(product.id);
     if (res) {
+      if (typeof res.is_new_arrival === "boolean") {
+        const active = res.is_new_arrival;
+        if (active) {
+          setNewArrivalDbIds(prev => Array.from(new Set([...prev, prodIdNum])));
+        } else {
+          setNewArrivalDbIds(prev => prev.filter(id => id !== prodIdNum));
+          setNewArrivalsDbProducts(prev => prev.filter(p => Number(p.id) !== prodIdNum));
+        }
+      }
       showNotification(
         nextState 
           ? `✨ Product "${product.title}" saved to PostgreSQL new_arrivals table!` 

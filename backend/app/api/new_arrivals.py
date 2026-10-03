@@ -29,8 +29,6 @@ async def auto_seed_new_arrivals_if_empty(db: AsyncSession):
 async def get_all_new_arrivals(db: AsyncSession = Depends(get_db)):
     """Fetch all products marked as New Arrivals from dedicated PostgreSQL new_arrivals table (Always Direct DB Query)."""
     try:
-        await auto_seed_new_arrivals_if_empty(db)
-
         query = (
             select(NewArrival)
             .options(
