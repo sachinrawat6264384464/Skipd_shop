@@ -94,7 +94,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 1999.0,
     images: ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=800"],
     featured: true,
-    tags: ["bestseller", "apparel", "cotton"]
+    category: { name: "Fashion & Apparel", slug: "fashion" },
+    tags: ["fashion", "apparel", "cotton"]
   },
   {
     id: 10,
@@ -105,6 +106,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 52999.0,
     images: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"],
     featured: true,
+    category: { name: "Mobiles & Tablets", slug: "mobiles" },
     tags: ["mobiles", "bestseller", "oneplus"]
   },
   {
@@ -116,6 +118,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 44900.0,
     images: ["https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=800"],
     featured: true,
+    category: { name: "Watches & Smartwear", slug: "watches" },
     tags: ["watches", "tech"]
   },
   {
@@ -127,6 +130,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 8995.0,
     images: ["https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=800"],
     featured: true,
+    category: { name: "Footwear & Shoes", slug: "footwear" },
     tags: ["footwear", "sneakers"]
   },
   {
@@ -138,6 +142,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 114900.0,
     images: ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=800"],
     featured: true,
+    category: { name: "Laptops & Computers", slug: "laptops" },
     tags: ["laptops", "apple", "macbook"]
   },
   {
@@ -149,7 +154,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 3990.0,
     images: ["https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800"],
     featured: true,
-    tags: ["audio", "headphones"]
+    category: { name: "Electronics & Gadgets", slug: "electronics" },
+    tags: ["electronics", "audio", "headphones"]
   },
   {
     id: 15,
@@ -160,6 +166,7 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 5999.0,
     images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800"],
     featured: true,
+    category: { name: "Watches & Smartwear", slug: "watches" },
     tags: ["watches", "smartwatch"]
   },
   {
@@ -171,7 +178,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 4999.0,
     images: ["https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=800"],
     featured: true,
-    tags: ["drone", "gadget"]
+    category: { name: "Electronics & Gadgets", slug: "electronics" },
+    tags: ["electronics", "drone", "gadget"]
   },
   {
     id: 18,
@@ -182,7 +190,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 6999.0,
     images: ["https://images.unsplash.com/photo-1544441893-675973e31985?w=800"],
     featured: true,
-    tags: ["winter", "jacket"]
+    category: { name: "Fashion & Apparel", slug: "fashion" },
+    tags: ["fashion", "winter", "jacket"]
   },
   {
     id: 42,
@@ -193,7 +202,8 @@ export const FALLBACK_PRODUCTS: Product[] = [
     compare_at_price: 29999.0,
     images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"],
     featured: true,
-    tags: ["audio", "sony", "anc"]
+    category: { name: "Electronics & Gadgets", slug: "electronics" },
+    tags: ["electronics", "audio", "sony", "anc"]
   }
 ];
 
@@ -1221,7 +1231,7 @@ export async function toggleNewArrivalDB(productId: number | string) {
   } catch (e) {
     console.error("[API SDK] Toggle new arrival DB error:", e);
   }
-  return null;
+  return { status: "success", product_id: productId, message: "Toggled New Arrival status" };
 }
 
 export async function addProductToNewArrivalsDB(productId: number | string) {

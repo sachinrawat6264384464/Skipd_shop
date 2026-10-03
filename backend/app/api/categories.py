@@ -122,11 +122,27 @@ async def list_categories_admin(db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Category).order_by(Category.id.asc()))
     categories = result.scalars().all()
     
+    # Fetch all active products for fallback matching if category_id is missing
+    prods_res = await db.execute(select(Product))
+    all_products = prods_res.scalars().all()
+    
     output = []
     for cat in categories:
-        # Count products assigned to this category
-        count_res = await db.execute(select(func.count(Product.id)).where(Product.category_id == cat.id))
-        prod_count = count_res.scalar() or 0
+        cat_slug = (cat.slug or "").lower().strip()
+        cat_prefix = cat_slug.split("-")[0] if cat_slug else ""
+        
+        # Count products assigned to this category by category_id or tag/slug match
+        prod_count = 0
+        for p in all_products:
+            is_match = False
+            if p.category_id == cat.id:
+                is_match = True
+            elif p.tags and isinstance(p.tags, list):
+                tags_lower = [str(t).lower() for t in p.tags]
+                if cat_slug in tags_lower or cat_prefix in tags_lower:
+                    is_match = True
+            if is_match:
+                prod_count += 1
         
         output.append({
             "id": cat.id,

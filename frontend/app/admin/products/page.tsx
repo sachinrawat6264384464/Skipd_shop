@@ -681,16 +681,42 @@ export default function AdminProductsPage() {
       });
     }
 
-    // 4. Calculate exact product count for every category in catMap
+    // 4. Calculate exact product count for every category in catMap from Database Products
     if (Array.isArray(prodsList)) {
       catMap.forEach((catObj, keySlug) => {
-        const catProdCount = prodsList.filter((item: any) => {
-          const itemCat = (typeof item.category === "object" 
-            ? (item.category?.slug || item.category?.name || "") 
-            : (item.category_slug || item.category_name || item.category || "")
-          ).toLowerCase().trim();
+        const cleanKeySlug = String(keySlug || "").toLowerCase().trim();
+        const keyPrefix = cleanKeySlug.split("-")[0] || cleanKeySlug;
 
-          return itemCat === keySlug || itemCat.includes(keySlug) || keySlug.includes(itemCat);
+        const catProdCount = prodsList.filter((item: any) => {
+          let itemCat = "";
+          if (typeof item.category === "object" && item.category !== null) {
+            itemCat = item.category.slug || item.category.name || "";
+          } else {
+            itemCat = item.category_slug || item.category_name || item.category || "";
+          }
+
+          if (!itemCat && Array.isArray(item.tags) && item.tags.length > 0) {
+            itemCat = item.tags[0];
+          }
+
+          const cleanItemCat = String(itemCat || "").toLowerCase().trim();
+          if (!cleanItemCat) {
+            return cleanKeySlug === "general" || cleanKeySlug === "uncategorized";
+          }
+
+          const itemPrefix = cleanItemCat.split("-")[0] || cleanItemCat;
+
+          // Check direct slug match, tag match or prefix match
+          const hasTagMatch = Array.isArray(item.tags) && item.tags.some((t: any) => {
+            const tagStr = String(t).toLowerCase().trim();
+            return tagStr === cleanKeySlug || tagStr === keyPrefix;
+          });
+
+          return (
+            cleanItemCat === cleanKeySlug ||
+            itemPrefix === keyPrefix ||
+            hasTagMatch
+          );
         }).length;
 
         catObj.count = catProdCount;

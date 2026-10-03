@@ -290,6 +290,7 @@ app.include_router(abandoned_reminders_router, prefix=settings.API_V1_STR)
 app.include_router(notifications_router, prefix=settings.API_V1_STR)
 app.include_router(returns_router, prefix=settings.API_V1_STR)
 app.include_router(reviews_router, prefix=settings.API_V1_STR)
+app.include_router(new_arrivals_router, prefix=settings.API_V1_STR)
 
 @app.get("/")
 async def root():
