@@ -10,52 +10,7 @@ export default function Footer() {
       {/* 🖼️ Browse Categories Grid Section (Placed right above footer content) */}
       <BrowseCategoriesGrid />
       
-      {/* 🚀 Top Trust Perks Ribbon */}
-      <div className="border-b border-gray-100 py-8 px-4 sm:px-6 bg-slate-50/50">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-          
-          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md transition duration-300 group">
-            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
-              ⚡
-            </span>
-            <div>
-              <p className="font-extrabold text-gray-900 text-sm">Express 2-Day Delivery</p>
-              <p className="text-[11px] text-gray-500 font-medium">Lightning-fast shipping across India by Botmartz Express</p>
-            </div>
-          </div>
 
-          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md transition duration-300 group">
-            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
-              🛡️
-            </span>
-            <div>
-              <p className="font-extrabold text-gray-900 text-sm">100% Genuine Guarantee</p>
-              <p className="text-[11px] text-gray-500 font-medium">Direct official brand warranty &amp; verified products</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md transition duration-300 group">
-            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
-              🔄
-            </span>
-            <div>
-              <p className="font-extrabold text-gray-900 text-sm">7-Day Easy Returns</p>
-              <p className="text-[11px] text-gray-500 font-medium">Hassle-free replacement &amp; instant refund policy</p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md transition duration-300 group">
-            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
-              🔒
-            </span>
-            <div>
-              <p className="font-extrabold text-gray-900 text-sm">256-Bit SSL Encrypted</p>
-              <p className="text-[11px] text-gray-500 font-medium">Safe Razorpay UPI &amp; Card Transactions</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
 
       {/* 📧 Newsletter VIP Subscription Section */}
       <div className="border-b border-gray-200/80 py-10 px-4 sm:px-6 bg-gradient-to-r from-blue-50/80 via-sky-50/50 to-blue-50/80">
