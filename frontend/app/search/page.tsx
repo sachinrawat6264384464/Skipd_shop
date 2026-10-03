@@ -4,7 +4,7 @@ import { SearchCatalogView } from "components/search/search-catalog-view";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "All Categories | E-COM Commerce",
+  title: "All Categories | BotCom Commerce",
   description: "Browse all items in our full catalog.",
 };
 

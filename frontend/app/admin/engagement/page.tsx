@@ -771,7 +771,7 @@ export default function AdminEngagementPage() {
                 <label className="font-bold text-gray-700">Voucher Code (Optional)</label>
                 <input
                   type="text"
-                  placeholder="e.g. E-COM-GIFT-1000"
+                  placeholder="e.g. BotCom-GIFT-1000"
                   value={newGcCode}
                   onChange={(e) => setNewGcCode(e.target.value)}
                   className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-medium focus:border-emerald-500 uppercase"

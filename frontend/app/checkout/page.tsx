@@ -288,7 +288,7 @@ export default function CheckoutPage() {
       setShowAddAddrModal(true);
       return;
     }
-    const orderNum = `E-COM-${Math.floor(100000 + Math.random() * 900000)}`;
+    const orderNum = `BotCom-${Math.floor(100000 + Math.random() * 900000)}`;
     setCreatedOrderNumber(orderNum);
     setQrTimer(300);
     setPaymentModalOpen(true);
@@ -340,7 +340,7 @@ export default function CheckoutPage() {
       key: razorpayKey,
       amount: Math.round(finalPayable * 100), // Amount in paise
       currency: "INR",
-      name: "E-COM Commerce",
+      name: "BotCom Commerce",
       description: `Payment for Order #${createdOrderNumber}`,
       image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200",
       handler: function (response: any) {
@@ -1210,7 +1210,7 @@ export default function CheckoutPage() {
             {/* Modal Header */}
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div>
-                <h3 className="text-base font-black text-gray-900">E-COM Gateway — Pay ₹{finalPayable.toLocaleString("en-IN")}</h3>
+                <h3 className="text-base font-black text-gray-900">BotCom Gateway — Pay ₹{finalPayable.toLocaleString("en-IN")}</h3>
                 <p className="text-[11px] text-gray-500">Order Ref: <span className="font-extrabold text-emerald-700">{createdOrderNumber}</span></p>
               </div>
               <button
@@ -1251,7 +1251,7 @@ export default function CheckoutPage() {
 
             {/* TAB 1: REAL SCANNABLE UPI QR CODE & DIRECT INTENT */}
             {selectedMethod === "upi" && (() => {
-              const upiPayUrl = `upi://pay?pa=6264384464@ybl&pn=E-COM%20Commerce&am=${finalPayable.toFixed(2)}&cu=INR&tn=Order%20${createdOrderNumber}`;
+              const upiPayUrl = `upi://pay?pa=6264384464@ybl&pn=BotCom%20Commerce&am=${finalPayable.toFixed(2)}&cu=INR&tn=Order%20${createdOrderNumber}`;
               const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiPayUrl)}`;
 
               return (
@@ -1295,7 +1295,7 @@ export default function CheckoutPage() {
                 {/* 3D Card Preview */}
                 <div className="bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 text-white rounded-3xl p-5 shadow-xl space-y-4">
                   <div className="flex justify-between items-center">
-                    <span className="font-extrabold text-sm tracking-wider">E-COM CARD</span>
+                    <span className="font-extrabold text-sm tracking-wider">BotCom CARD</span>
                     <span className="text-xs font-bold text-amber-400">VISA / MasterCard</span>
                   </div>
                   <p className="font-mono text-base tracking-widest py-2">

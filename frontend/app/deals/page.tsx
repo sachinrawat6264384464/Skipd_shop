@@ -117,7 +117,7 @@ export default function DealsPage() {
             <div className="bg-amber-50/60 border border-orange-200 rounded-3xl p-6 shadow-xs text-center space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-orange-500/20">⚙️</div>
               <h3 className="font-black text-base text-gray-900">AI Tools That Grow Your Business</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">Create listings, generate A+ content, and get growth insights with E-COM Assistant AI listing creator.</p>
+              <p className="text-xs text-gray-600 leading-relaxed">Create listings, generate A+ content, and get growth insights with BotCom Assistant AI listing creator.</p>
             </div>
           </div>
         </div>

@@ -344,7 +344,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     });
   };
 
-  // Toggle E-COM Protect Extended Warranty Plan Add-on
+  // Toggle BotCom Protect Extended Warranty Plan Add-on
   const handleToggleWarranty = () => {
     requireAuth(() => {
       const cartKey = getUserCartKey();
@@ -357,12 +357,12 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
         window.dispatchEvent(new Event("ecom_cart_updated"));
         window.dispatchEvent(new Event("ecom_cart_changed"));
         setWarrantyAdded(false);
-        try { toast.info("🛡️ E-COM Protect Warranty removed from cart."); } catch (e) {}
+        try { toast.info("🛡️ BotCom Protect Warranty removed from cart."); } catch (e) {}
       } else {
         const newItem = {
           id: warrantyId,
           handle: "e-com-protect-1yr-warranty",
-          title: `E-COM Protect 1-Year Extended Warranty`,
+          title: `BotCom Protect 1-Year Extended Warranty`,
           price: 199,
           quantity: 1,
           image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=200"
@@ -372,7 +372,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
         window.dispatchEvent(new Event("ecom_cart_updated"));
         window.dispatchEvent(new Event("ecom_cart_changed"));
         setWarrantyAdded(true);
-        try { toast.success("🛡️ E-COM Protect Warranty (₹199) added to cart!"); } catch (e) {}
+        try { toast.success("🛡️ BotCom Protect Warranty (₹199) added to cart!"); } catch (e) {}
       }
     });
   };
@@ -648,7 +648,7 @@ const SUB_NAV_ITEMS = [
             "sku": (product as any).sku || `SKU-${product.id}`,
             "brand": {
               "@type": "Brand",
-              "name": (product as any).brand || "E-COM"
+              "name": (product as any).brand || "BotCom"
             },
             "offers": {
               "@type": "Offer",
@@ -660,7 +660,7 @@ const SUB_NAV_ITEMS = [
               "availability": (product.stock_quantity ?? 1) > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
               "seller": {
                 "@type": "Organization",
-                "name": "E-COM Store"
+                "name": "BotCom Store"
               }
             },
             "aggregateRating": {
@@ -769,7 +769,7 @@ const SUB_NAV_ITEMS = [
               </div>
             </div>
 
-            {/* 🌟 E-COM Assured Store Guarantee & Highlights Card */}
+            {/* 🌟 BotCom Assured Store Guarantee & Highlights Card */}
             <div className="bg-gradient-to-br from-white via-blue-50/30 to-sky-50/40 border border-blue-200/80 rounded-3xl p-5 shadow-sm space-y-4 text-xs">
               
               {/* Header Badge */}
@@ -779,7 +779,7 @@ const SUB_NAV_ITEMS = [
                     ✓
                   </span>
                   <div>
-                    <h4 className="font-extrabold text-gray-900 text-xs tracking-tight">E-COM Assured Promise</h4>
+                    <h4 className="font-extrabold text-gray-900 text-xs tracking-tight">BotCom Assured Promise</h4>
                     <p className="text-[10px] text-blue-700 font-bold">100% Genuine • Fast Delivery</p>
                   </div>
                 </div>
@@ -845,7 +845,7 @@ const SUB_NAV_ITEMS = [
               <h1 className="text-lg md:text-xl font-bold text-gray-900 leading-snug">
                 {product.title}
               </h1>
-              <p className="text-xs text-blue-700 font-bold mt-1 hover:underline cursor-pointer">Visit the E-COM Official Store</p>
+              <p className="text-xs text-blue-700 font-bold mt-1 hover:underline cursor-pointer">Visit the BotCom Official Store</p>
 
               {/* Rating */}
               <div className="flex items-center gap-2 mt-2 text-xs">
@@ -1261,7 +1261,7 @@ const SUB_NAV_ITEMS = [
                   }
                   return <p className="text-blue-600 font-extrabold text-sm pt-1 flex items-center gap-1"><span>📦</span> In Stock ({maxStock} units available)</p>;
                 })()}
-                <p className="text-[10px] text-gray-500">Ships from and sold by E-COM Official Retail.</p>
+                <p className="text-[10px] text-gray-500">Ships from and sold by BotCom Official Retail.</p>
               </div>
 
               {/* 🛒 Add to Cart (White) & ⚡ Buy Now (Brand Emerald Logo Color) Buttons */}
@@ -1327,13 +1327,13 @@ const SUB_NAV_ITEMS = [
 
             </div>
 
-            {/* 2. 🛡️ E-COM Protection Plan Card */}
+            {/* 2. 🛡️ BotCom Protection Plan Card */}
             <div className={`border rounded-3xl p-5 shadow-2xs space-y-3 text-xs transition-all duration-300 ${
               warrantyAdded ? "bg-blue-50/70 border-blue-300 shadow-blue-500/10" : "bg-white border-gray-200"
             }`}>
               <div className="flex items-center justify-between">
                 <span className="font-extrabold text-gray-900 flex items-center gap-1.5">
-                  <span>🛡️</span> E-COM Protect Plan
+                  <span>🛡️</span> BotCom Protect Plan
                 </span>
                 <span className="text-blue-700 font-black text-sm">₹199</span>
               </div>
@@ -1368,7 +1368,7 @@ const SUB_NAV_ITEMS = [
                   E
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">E-COM Official Retail Hub</p>
+                  <p className="font-bold text-gray-900">BotCom Official Retail Hub</p>
                   <p className="text-[10px] text-blue-600 font-bold">4.9 ★ 98% Positive Feedback</p>
                 </div>
               </div>
@@ -1380,7 +1380,7 @@ const SUB_NAV_ITEMS = [
                 </div>
                 <div className="flex justify-between">
                   <span>Ships from</span>
-                  <span className="font-bold text-gray-900">E-COM Express Logistics</span>
+                  <span className="font-bold text-gray-900">BotCom Express Logistics</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Returns</span>
@@ -1600,7 +1600,7 @@ const SUB_NAV_ITEMS = [
                       )}
                     </div>
                     <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition">{sp.title}</h4>
-                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.8</span> <span className="text-blue-700 font-extrabold">✓ E-COM Assured</span></p>
+                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.8</span> <span className="text-blue-700 font-extrabold">✓ BotCom Assured</span></p>
                     <div>
                       <p className="font-black text-sm text-gray-900">₹{spPrice.toLocaleString("en-IN")}.00</p>
                       {spCompare > spPrice && (

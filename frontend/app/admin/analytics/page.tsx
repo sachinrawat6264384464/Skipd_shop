@@ -88,7 +88,7 @@ export default function AdminAnalyticsPage() {
           }
 
           allOrders.push({
-            id: String(o.order_number || `#E-COM-${o.id}`),
+            id: String(o.order_number || `#BotCom-${o.id}`),
             date: o.created_at ? new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "Today",
             customer: String(o.user?.full_name || o.customer_name || o.user_name || "Customer"),
             email: String(o.customer_email || o.user?.email || "customer@e-com.in"),

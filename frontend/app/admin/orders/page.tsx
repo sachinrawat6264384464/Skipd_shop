@@ -147,7 +147,7 @@ export default function AdminOrdersPage() {
           }
 
           return {
-            id: String(o.order_number || `#E-COM-${o.id}`),
+            id: String(o.order_number || `#BotCom-${o.id}`),
             raw_created_at: o.created_at || new Date().toISOString(),
             date: (() => {
               if (!o.created_at) return "Aug 18, 2026, 01:21 PM";

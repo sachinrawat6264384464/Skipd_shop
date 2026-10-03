@@ -26,12 +26,12 @@ export function sendWelcomeEmail(email: string, username: string) {
   if (!email) return;
   const emailData: EmailReceipt = {
     to: email,
-    subject: `Welcome to E-COM Commerce, ${username}! 🎉`,
+    subject: `Welcome to BotCom Commerce, ${username}! 🎉`,
     type: "WELCOME",
     timestamp: new Date().toISOString(),
     username: username,
     details: {
-      message: `Hi ${username},\n\nWelcome to E-COM Commerce! Your registered account (${email}) has been successfully created.\n\nYour Username: ${username}\nRegistered Email: ${email}\n\nYou can now enjoy fast checkout, track live shipments, and access exclusive deals!`,
+      message: `Hi ${username},\n\nWelcome to BotCom Commerce! Your registered account (${email}) has been successfully created.\n\nYour Username: ${username}\nRegistered Email: ${email}\n\nYou can now enjoy fast checkout, track live shipments, and access exclusive deals!`,
       email: email,
       username: username
     }
@@ -55,7 +55,7 @@ export function sendOrderInvoiceEmail(email: string, username: string, order: an
   if (!email) return;
 
   const itemsList = (order.items || []).map((item: any) => ({
-    title: item.title || item.name || "E-COM Product",
+    title: item.title || item.name || "BotCom Product",
     price: Number(item.price || 0),
     quantity: Number(item.quantity || 1),
     total: Number(item.price || 0) * Number(item.quantity || 1),
@@ -110,7 +110,7 @@ export function sendForgotOTPNotification(email: string, otpCode: string) {
   if (!email) return;
   const emailData: EmailReceipt = {
     to: email,
-    subject: `E-COM Password Reset Verification Code: ${otpCode} 🔒`,
+    subject: `BotCom Password Reset Verification Code: ${otpCode} 🔒`,
     type: "OTP_VERIFICATION",
     timestamp: new Date().toISOString(),
     username: email.split("@")[0] || "User",
@@ -166,7 +166,7 @@ export function sendCampaignPromotionalEmail(campaign: {
         timestamp: new Date().toISOString(),
         username: username,
         details: {
-          message: `Hi ${username},\n\n🎉 ${campaign.title} is now LIVE on E-COM Commerce!\n\nDiscount Offer: ${campaign.discountOffer}\nTagline: ${campaign.subtitle || "Exclusive Limited Time Offer"}\nValid Dates: ${campaign.startDate || "May 25, 2025"} to ${campaign.endDate || "May 31, 2025"}\n\nVisit E-COM Commerce now to grab deals: https://e-com-shop.vercel.app/deals`,
+          message: `Hi ${username},\n\n🎉 ${campaign.title} is now LIVE on BotCom Commerce!\n\nDiscount Offer: ${campaign.discountOffer}\nTagline: ${campaign.subtitle || "Exclusive Limited Time Offer"}\nValid Dates: ${campaign.startDate || "May 25, 2025"} to ${campaign.endDate || "May 31, 2025"}\n\nVisit BotCom Commerce now to grab deals: https://e-com-shop.vercel.app/deals`,
           campaign_title: campaign.title,
           discount: campaign.discountOffer,
           email: email

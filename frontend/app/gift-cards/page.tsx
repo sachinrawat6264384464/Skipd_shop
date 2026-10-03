@@ -120,7 +120,7 @@ export default function GiftCardsPage() {
       const voucherItem = {
         id: Date.now(),
         handle: `e-com-voucher-${brandName.toLowerCase().replace(/\s+/g, "-")}`,
-        title: `E-COM ${brandName} Digital Store Voucher (₹${amount.toLocaleString("en-IN")})`,
+        title: `BotCom ${brandName} Digital Store Voucher (₹${amount.toLocaleString("en-IN")})`,
         price: amount,
         quantity: 1,
         image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400",
@@ -222,7 +222,7 @@ export default function GiftCardsPage() {
 
                 <div className="flex justify-between items-start relative z-10">
                   <div>
-                    <span className="text-[10px] font-black tracking-widest text-emerald-400 uppercase">E-COM VIP GIFT VAULT</span>
+                    <span className="text-[10px] font-black tracking-widest text-emerald-400 uppercase">BotCom VIP GIFT VAULT</span>
                     <h3 className="text-lg font-black text-white tracking-wider font-mono">₹5,000 STORE VOUCHER</h3>
                   </div>
                   <div className="w-10 h-8 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center font-bold text-amber-300 text-xs shadow-inner">
@@ -236,7 +236,7 @@ export default function GiftCardsPage() {
                 <div className="flex justify-between items-end relative z-10 font-mono">
                   <div>
                     <p className="text-[9px] text-gray-400 uppercase tracking-widest">GIFT CODE</p>
-                    <p className="text-xs font-black text-emerald-300 tracking-wider">E-COM-GIFT-8942-2026</p>
+                    <p className="text-xs font-black text-emerald-300 tracking-wider">BotCom-GIFT-8942-2026</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[9px] text-gray-400 uppercase tracking-widest">VALID FOR</p>
@@ -583,7 +583,7 @@ export default function GiftCardsPage() {
                               savings: p.compare_at_price - p.price,
                               image: p.image,
                               rating: p.rating,
-                              seller: "E-COM Official",
+                              seller: "BotCom Official",
                               delivery: "Delivery in 2 days | Free Delivery",
                               selected: true
                             }}
@@ -604,7 +604,7 @@ export default function GiftCardsPage() {
                               savings: p.compare_at_price - p.price,
                               image: p.image,
                               rating: p.rating,
-                              seller: "E-COM Official",
+                              seller: "BotCom Official",
                               delivery: "Delivery in 2 days | Free Delivery",
                               selected: true
                             }}

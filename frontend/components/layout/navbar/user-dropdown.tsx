@@ -95,7 +95,7 @@ export function UserAccountDropdown() {
             {/* Header info */}
             <div className="p-4 bg-blue-50/70 border-b border-blue-100 space-y-1">
               <p className="font-extrabold text-sm text-gray-900">{user.user_name}</p>
-              <p className="text-[11px] text-gray-500 truncate">{user.email || "customer@e-com.in"}</p>
+              <p className="text-[11px] text-gray-500 truncate">{user.email || "customer@botcom.in"}</p>
             </div>
 
             {/* Menu Links */}

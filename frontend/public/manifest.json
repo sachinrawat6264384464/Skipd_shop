@@ -1,6 +1,6 @@
 {
-  "name": "E-COM B2C Store",
-  "short_name": "E-COM Store",
+  "name": "BotCom B2C Store",
+  "short_name": "BotCom Store",
   "description": "Fast, Premium E-Commerce Shopping Experience",
   "start_url": "/",
   "display": "standalone",

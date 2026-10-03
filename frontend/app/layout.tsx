@@ -26,16 +26,16 @@ export const metadata = {
     index: true,
   },
   openGraph: {
-    title: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
+    title: "BotCom Commerce | Next-Gen E-Commerce & Personal Tech",
     description: "Upgrade your daily setup with studio ANC headphones, gaming phones & smart wearables with 24-hour express delivery.",
     url: "https://e-com-shop.vercel.app",
-    siteName: "E-COM Commerce",
+    siteName: "BotCom Commerce",
     images: [
       {
         url: "https://e-com-shop.vercel.app/og-image.png",
         width: 1200,
         height: 630,
-        alt: "E-COM Commerce Storefront Preview"
+        alt: "BotCom Commerce Storefront Preview"
       }
     ],
     locale: "en_US",
@@ -43,8 +43,8 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
-    description: "Upgrade your daily setup with studio ANC headphones, gaming phones & smart wearables on E-COM Commerce.",
+    title: "BotCom Commerce | Next-Gen E-Commerce & Personal Tech",
+    description: "Upgrade your daily setup with studio ANC headphones, gaming phones & smart wearables on BotCom Commerce.",
     images: ["https://e-com-shop.vercel.app/og-image.png"]
   }
 };

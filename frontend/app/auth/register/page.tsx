@@ -318,7 +318,7 @@ export default function CustomerRegisterPage() {
                 </svg>
               </div>
               <h3 className="text-lg font-black text-gray-900">Sign in with Google</h3>
-              <p className="text-xs text-gray-500 font-medium">Choose an account to create account on <span className="font-bold text-gray-900">E-COM Commerce</span></p>
+              <p className="text-xs text-gray-500 font-medium">Choose an account to create account on <span className="font-bold text-gray-900">BotCom Commerce</span></p>
             </div>
 
             {/* Google Accounts Selection List */}

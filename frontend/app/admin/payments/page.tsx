@@ -237,7 +237,7 @@ export default function AdminPaymentsPage() {
       const colors = ["bg-purple-600", "bg-emerald-600", "bg-amber-500", "bg-blue-600", "bg-[#8b5cf6]", "bg-rose-500"];
       const formatted = deduplicatedRaw.map((t: any, idx: number) => ({
         id: t.id || `PAY-${99201 + idx}`,
-        orderId: t.orderId || `#E-COM-${25879 - idx}`,
+        orderId: t.orderId || `#BotCom-${25879 - idx}`,
         customerName: t.customerName || "Store Customer",
         customerEmail: t.customerEmail || "customer@e-com.in",
         avatarBg: colors[idx % colors.length] || "bg-emerald-600",

@@ -364,7 +364,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </div>
               {!sidebarCollapsed && (
                 <div className="transition-opacity duration-200">
-                  <span className="font-black text-white text-xl tracking-tight block leading-none whitespace-nowrap">E-COM ADMIN</span>
+                  <span className="font-black text-white text-xl tracking-tight block leading-none whitespace-nowrap">BotCom ADMIN</span>
                   <span className="text-[9px] text-emerald-400 font-bold uppercase tracking-wider block whitespace-nowrap">Enterprise OS v3.0</span>
                 </div>
               )}

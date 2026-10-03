@@ -19,7 +19,7 @@ export default function AdminSettingsPage() {
   // Complete Storefront Settings State
   const [settings, setSettings] = useState({
     // General Settings
-    storeName: "E-COM Commerce",
+    storeName: "BotCom Commerce",
     storeTagline: "India's #1 Express E-Commerce Storefront",
     currency: "INR (₹)",
     supportEmail: "support@e-com.in",

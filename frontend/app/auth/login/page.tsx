@@ -294,7 +294,7 @@ export default function CustomerLoginPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. customer@e-com.in"
+                  placeholder="e.g. customer@botcom.in"
                   value={emailOrPhone}
                   onChange={(e) => {
                     setEmailOrPhone(e.target.value);
@@ -393,7 +393,7 @@ export default function CustomerLoginPage() {
               <input
                 type="text"
                 required
-                placeholder="e.g. customer@e-com.in or +91 9876543210"
+                placeholder="e.g. customer@botcom.in or +91 9876543210"
                 value={emailOrPhone}
                 onChange={(e) => setEmailOrPhone(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition font-medium"
@@ -505,7 +505,7 @@ export default function CustomerLoginPage() {
                 </svg>
               </div>
               <h3 className="text-lg font-black text-gray-900">Sign in with Google</h3>
-              <p className="text-xs text-gray-500 font-medium">Choose an account to continue to <span className="font-bold text-gray-900">E-COM Commerce</span></p>
+              <p className="text-xs text-gray-500 font-medium">Choose an account to continue to <span className="font-bold text-gray-900">BotCom Commerce</span></p>
             </div>
 
             {/* Google Accounts Selection List */}

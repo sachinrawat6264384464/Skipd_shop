@@ -183,7 +183,7 @@ export default function FloatingChatbot() {
     {
       id: 'welcome-1',
       sender: 'ai',
-      text: 'Namaste! 👋 I am your E-COM AI Recommender. Ask me for product recommendations by price, categories, or deals!\n\n🔒 Guest users can send **3 free messages**. Login for unlimited access!',
+      text: 'Namaste! 👋 I am your BotCom AI Recommender. Ask me for product recommendations by price, categories, or deals!\n\n🔒 Guest users can send **3 free messages**. Login for unlimited access!',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -314,7 +314,7 @@ export default function FloatingChatbot() {
             formatted_price: `₹${p.price.toLocaleString("en-IN")}`,
             image_url: p.images?.[0] || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300",
             rating: 4.8,
-            category_name: typeof p.category === "object" ? p.category?.name : (p.category || "E-COM Collection")
+            category_name: typeof p.category === "object" ? p.category?.name : (p.category || "BotCom Collection")
           }));
 
           data = {
@@ -468,12 +468,12 @@ export default function FloatingChatbot() {
               <div className="w-14 h-14 shrink-0 relative flex items-center justify-center">
                 <img
                   src="/bot-header-avatar.png"
-                  alt="E-COM AI Assistant"
+                  alt="BotCom AI Assistant"
                   className="w-full h-full object-contain filter drop-shadow-[0_4px_16px_rgba(56,189,248,0.6)]"
                 />
               </div>
               <div>
-                <h3 className="text-white font-black text-sm tracking-wide">E-COM AI Assistant</h3>
+                <h3 className="text-white font-black text-sm tracking-wide">BotCom AI Assistant</h3>
                 <p className="text-xs text-sky-400 font-bold flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
                   Active Recommender

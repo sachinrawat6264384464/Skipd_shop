@@ -10,7 +10,7 @@ import Footer from "components/layout/footer";
 export const revalidate = 60;
 
 export const metadata = {
-  title: "E-COM | Modern Direct-to-Consumer Storefront",
+  title: "BotCom | Modern Direct-to-Consumer Storefront",
   description: "Explore premium electronics, fashion, footwear, and accessories with instant Razorpay checkout and live tracking.",
 };
 

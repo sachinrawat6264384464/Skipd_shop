@@ -224,7 +224,7 @@ export default function AdminDashboardPage() {
 
   // Real recent orders from live store activity
   const recentOrders = dbOrders.slice(0, 5).map((ord: any) => ({
-    id: ord.order_number ? `#${ord.order_number}` : `#E-COM-${ord.id}`,
+    id: ord.order_number ? `#${ord.order_number}` : `#BotCom-${ord.id}`,
     customer: ord.user?.full_name || ord.customer_name || ord.user_name || "Customer",
     date: ord.created_at ? new Date(ord.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "Today",
     amount: `₹${Number(ord.total_amount || ord.total || 0).toLocaleString("en-IN")}`,
@@ -251,7 +251,7 @@ export default function AdminDashboardPage() {
         <div>
           <h1 className="text-2xl font-black text-gray-900">⚡ Store Control Center</h1>
           <p className="text-xs text-gray-500 font-medium mt-0.5">
-            Real-time analytics and management for E-COM Commerce • <span className="text-emerald-700 font-bold">{dbProducts.length} PostgreSQL Products Sync</span>
+            Real-time analytics and management for BotCom Commerce • <span className="text-emerald-700 font-bold">{dbProducts.length} PostgreSQL Products Sync</span>
           </p>
         </div>
 

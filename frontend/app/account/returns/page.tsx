@@ -153,7 +153,7 @@ export default function ReturnsPage() {
               <input
                 type="text"
                 required
-                placeholder="e.g. 101 or E-COM-101"
+                placeholder="e.g. 101 or BotCom-101"
                 value={orderIdInput}
                 onChange={(e) => setOrderIdInput(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 font-semibold text-gray-900 focus:outline-none focus:border-emerald-500"

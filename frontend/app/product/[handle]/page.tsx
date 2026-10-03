@@ -14,13 +14,13 @@ export async function generateMetadata(props: {
   
   if (!product) {
     return {
-      title: "Product Not Found | E-COM Commerce",
+      title: "Product Not Found | BotCom Commerce",
       description: "The requested product is not available in our store catalog."
     };
   }
 
   return {
-    title: `${product.title} - Best Deals & Fast Delivery | E-COM`,
+    title: `${product.title} - Best Deals & Fast Delivery | BotCom`,
     description: product.description?.slice(0, 155) || `Buy ${product.title} at best price with 100% genuine quality guarantee and fast delivery.`,
     openGraph: {
       title: product.title,

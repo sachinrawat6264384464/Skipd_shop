@@ -50,7 +50,7 @@ export default function AdminDeliveryPage() {
 
   // New Shipment Form State
   const [newAwb, setNewAwb] = useState("");
-  const [newOrderId, setNewOrderId] = useState("#E-COM-25880");
+  const [newOrderId, setNewOrderId] = useState("#BotCom-25880");
   const [newCourier, setNewCourier] = useState("Delhivery Surface");
   const [newDestination, setNewDestination] = useState("Gwalior, Madhya Pradesh");
   const [newPin, setNewPin] = useState("474001");
@@ -60,7 +60,7 @@ export default function AdminDeliveryPage() {
   const [trackSearchCode, setTrackSearchCode] = useState("SR-8849201");
   const [activeTrackingData, setActiveTrackingData] = useState<any>({
     awbCode: "SR-8849201",
-    orderId: "#E-COM-25879",
+    orderId: "#BotCom-25879",
     customer: "Amit Sharma (+91 98765 43210)",
     courier: "Delhivery Surface",
     destination: "Gwalior, Madhya Pradesh - 474001",
@@ -81,7 +81,7 @@ export default function AdminDeliveryPage() {
     { id: 1, name: "Delhivery Surface", type: "Ground Logistics", status: "Active", rating: "4.9 ★", speed: "2-3 Days", apiKey: "dlh_live_9048102948" },
     { id: 2, name: "BlueDart Express Air", type: "Air Cargo", status: "Active", rating: "4.95 ★", speed: "1-2 Days", apiKey: "bdt_air_8019382103" },
     { id: 3, name: "Xpressbees", type: "Standard Surface", status: "Active", rating: "4.7 ★", speed: "3-4 Days", apiKey: "xpb_live_7493829104" },
-    { id: 4, name: "Ekart Logistics", type: "E-Com Express", status: "Active", rating: "4.8 ★", speed: "2-3 Days", apiKey: "ekt_live_1092837465" },
+    { id: 4, name: "Ekart Logistics", type: "BotCom Express", status: "Active", rating: "4.8 ★", speed: "2-3 Days", apiKey: "ekt_live_1092837465" },
     { id: 5, name: "Shadowfax Hyperlocal", type: "Same-Day Delivery", status: "Inactive", rating: "4.5 ★", speed: "Same Day", apiKey: "sdf_live_5566778899" }
   ]);
 
@@ -137,7 +137,7 @@ export default function AdminDeliveryPage() {
           return {
             id: s.id || idx + 1,
             awbCode: s.awbCode || `SR-884920${idx+1}`,
-            orderId: s.orderId || `#E-COM-2587${9-idx}`,
+            orderId: s.orderId || `#BotCom-2587${9-idx}`,
             customerName: s.customerName || "Customer",
             customerEmail: s.customerEmail || "customer@gmail.com",
             customerPhone: s.customerPhone || "+91 98765 43210",
@@ -891,7 +891,7 @@ export default function AdminDeliveryPage() {
           <div className="flex gap-2">
             <input
               type="text"
-              placeholder="Enter AWB Code (e.g. SR-8849201) or Order ID (#E-COM-25879)..."
+              placeholder="Enter AWB Code (e.g. SR-8849201) or Order ID (#BotCom-25879)..."
               value={trackSearchCode}
               onChange={(e) => setTrackSearchCode(e.target.value)}
               className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-3 text-xs font-mono font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"

@@ -39,7 +39,7 @@ export function PWAInstallPrompt() {
       <div className="flex items-center gap-3">
         <span className="text-2xl bg-blue-500/20 p-2 rounded-xl border border-blue-400/30">📲</span>
         <div>
-          <h4 className="font-extrabold text-xs text-sky-400">Install E-COM App</h4>
+          <h4 className="font-extrabold text-xs text-sky-400">Install BotCom App</h4>
           <p className="text-[10px] text-gray-300 font-medium">Fast 1-Tap Shopping & Offline Deals</p>
         </div>
       </div>

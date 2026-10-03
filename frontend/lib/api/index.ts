@@ -355,7 +355,7 @@ export async function createCheckoutSession(checkoutData: any) {
 
   return {
     id: 101,
-    order_number: `E-COM-${Math.floor(100000 + Math.random() * 900000)}`,
+    order_number: `BotCom-${Math.floor(100000 + Math.random() * 900000)}`,
     total_amount: checkoutData.total || 1299,
     currency: "INR",
     status: "PENDING_PAYMENT",
@@ -406,7 +406,7 @@ export async function fetchLiveTracking(awbOrOrder: string): Promise<TrackingDat
   }
 
   return {
-    order_number: awbOrOrder.startsWith("SR-") ? "E-COM-984201" : awbOrOrder,
+    order_number: awbOrOrder.startsWith("SR-") ? "BotCom-984201" : awbOrOrder,
     awb_code: awbOrOrder,
     courier_name: "Shiprocket Express Air (BlueDart)",
     current_status: "IN_TRANSIT",
@@ -485,7 +485,7 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
 
           return {
             id: String(o.id),
-            order_number: o.order_number || `E-COM-${o.id}`,
+            order_number: o.order_number || `BotCom-${o.id}`,
             date: formattedDate,
             total: o.total_amount || 0,
             title: prodTitle,

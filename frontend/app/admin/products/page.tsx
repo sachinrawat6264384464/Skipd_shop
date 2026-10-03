@@ -873,7 +873,7 @@ export default function AdminProductsPage() {
     const payload = {
       title: newProduct.title,
       handle: newProduct.handle || newProduct.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
-      description: newProduct.description || newProduct.short_description || "Premium quality product from E-COM Commerce catalog.",
+      description: newProduct.description || newProduct.short_description || "Premium quality product from BotCom Commerce catalog.",
       price: parseFloat(newProduct.price),
       compare_at_price: newProduct.compare_at_price ? parseFloat(newProduct.compare_at_price) : undefined,
       stock_quantity: parseInt(newProduct.stock_quantity) || 0,

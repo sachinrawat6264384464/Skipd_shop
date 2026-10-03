@@ -252,7 +252,7 @@ function AccountContent() {
     const giftCardItem = {
       id: Date.now(),
       handle: `e-com-gift-card-${card.amount}`,
-      title: `E-COM ${card.label} Digital Gift Voucher (₹${card.amount.toLocaleString("en-IN")})`,
+      title: `BotCom ${card.label} Digital Gift Voucher (₹${card.amount.toLocaleString("en-IN")})`,
       price: card.amount,
       quantity: 1,
       image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400",
@@ -280,7 +280,7 @@ function AccountContent() {
     localStorage.setItem(walletKey, newWallet.toString());
     window.dispatchEvent(new Event("ecom_wallet_balance_changed"));
 
-    showToast(`💳 ₹${amountNum.toLocaleString("en-IN")} added to E-COM Pay Wallet! New Balance: ₹${newWallet.toLocaleString("en-IN")}`);
+    showToast(`💳 ₹${amountNum.toLocaleString("en-IN")} added to BotCom Pay Wallet! New Balance: ₹${newWallet.toLocaleString("en-IN")}`);
     setShowAddWalletModal(false);
   };
 
@@ -437,7 +437,7 @@ function AccountContent() {
   const [trackingSearchError, setTrackingSearchError] = useState("");
 
   const trackableOrders = userOrders.map((o: any) => ({
-    order_number: o.order_number || (o.id ? `E-COM-${o.id}` : "E-COM-984201"),
+    order_number: o.order_number || (o.id ? `BotCom-${o.id}` : "BotCom-984201"),
     created_at: o.date || o.created_at || "Today",
     delivered_at: o.delivered_at,
     total_amount: Number(o.total || o.total_amount || 0),
@@ -499,7 +499,7 @@ function AccountContent() {
     return [
       {
         status: "Order Confirmed & Placed",
-        location: "E-COM Fulfillment Hub, Mumbai",
+        location: "BotCom Fulfillment Hub, Mumbai",
         timestamp: `${placedTimeStr} • Confirmed ✓`,
         completed: true
       },
@@ -545,7 +545,7 @@ function AccountContent() {
     if (match) {
       setSelectedTrackOrderId(match.order_number);
     } else {
-      setTrackingSearchError(`No order found matching "${trackingInput}". Try E-COM-984201.`);
+      setTrackingSearchError(`No order found matching "${trackingInput}". Try BotCom-984201.`);
     }
   };
 
@@ -609,7 +609,7 @@ function AccountContent() {
               }
             }
 
-            const orderId = ord.id || ord.order_number || ord.orderNumber || `#E-COM-${Math.floor(10000 + Math.random() * 90000)}`;
+            const orderId = ord.id || ord.order_number || ord.orderNumber || `#BotCom-${Math.floor(10000 + Math.random() * 90000)}`;
             const isExpired = Date.now() - orderTimestamp > 24 * 3600 * 1000;
 
             if (ord.items && Array.isArray(ord.items) && ord.items.length > 0) {
@@ -683,7 +683,7 @@ function AccountContent() {
     const existing = JSON.parse(localStorage.getItem(key) || "[]");
     
     const dbProds = await fetchProducts();
-    const newOrderId = `#E-COM-${Math.floor(10000 + Math.random() * 90000)}`;
+    const newOrderId = `#BotCom-${Math.floor(10000 + Math.random() * 90000)}`;
 
     const randomProd = dbProds.length > 0 
       ? dbProds[Math.floor(Math.random() * dbProds.length)]
@@ -812,7 +812,7 @@ function AccountContent() {
   };
 
   const notifications = [
-    { id: 1, title: "Shipment Dispatched", text: "Your order E-COM-984201 is on its way via BlueDart Courier.", time: "2 hours ago" },
+    { id: 1, title: "Shipment Dispatched", text: "Your order BotCom-984201 is on its way via BlueDart Courier.", time: "2 hours ago" },
     { id: 2, title: "Supercoins Credited", text: "250 Supercoins added to your wallet.", time: "1 day ago" }
   ];
 
@@ -1429,7 +1429,7 @@ function AccountContent() {
                     <form onSubmit={handleTrackingSearch} className="flex flex-col sm:flex-row gap-2.5">
                       <input
                         type="text"
-                        placeholder="e.g. E-COM-984201"
+                        placeholder="e.g. BotCom-984201"
                         value={trackingInput}
                         onChange={(e) => setTrackingInput(e.target.value)}
                         className="flex-1 min-w-0 bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-600 focus:outline-none uppercase tracking-wider font-mono"
@@ -1676,7 +1676,7 @@ function AccountContent() {
                         <div>
                           <p className="font-extrabold text-gray-900 text-sm">No Purchased Orders Found</p>
                           <p className="text-gray-500 max-w-sm mx-auto mt-1">
-                            When you place an order on E-COM Commerce, your purchased items will automatically appear here with a 24-hour return window!
+                            When you place an order on BotCom Commerce, your purchased items will automatically appear here with a 24-hour return window!
                           </p>
                         </div>
                         <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
@@ -2206,7 +2206,7 @@ function AccountContent() {
                   </div>
                   <div>
                     <p className="text-2xl font-black text-gray-900">₹{walletBalance.toLocaleString("en-IN")}</p>
-                    <p className="text-xs text-gray-500 font-extrabold">E-COM Pay Wallet</p>
+                    <p className="text-xs text-gray-500 font-extrabold">BotCom Pay Wallet</p>
                   </div>
                 </button>
 
@@ -2437,7 +2437,7 @@ function AccountContent() {
                     <div key={ord.id || ord.order_number} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                       <div className="space-y-1">
                         <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
-                          {ord.order_number || ord.id || "E-COM-ORDER"} • {ord.date || "Today"}
+                          {ord.order_number || ord.id || "BotCom-ORDER"} • {ord.date || "Today"}
                         </span>
                         <h4 className="font-black text-gray-900 text-sm">{ord.title || "Purchased Product"}</h4>
                         <p className="text-xs text-gray-500 font-bold">Total: ₹{(ord.total || ord.total_amount || 0).toLocaleString("en-IN")}</p>
@@ -2470,7 +2470,7 @@ function AccountContent() {
                 <div className="flex flex-wrap justify-between items-center gap-4 relative z-10">
                   <div>
                     <span className="bg-amber-400 text-gray-900 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
-                      🎁 E-COM GIFT CARD VAULT
+                      🎁 BotCom GIFT CARD VAULT
                     </span>
                     <h2 className="text-2xl md:text-3xl font-black mt-2">Gift Cards &amp; Store Credits</h2>
                     <p className="text-xs text-gray-300 max-w-md mt-1">
@@ -2489,7 +2489,7 @@ function AccountContent() {
                 <form onSubmit={handleRedeemGiftCard} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <input
                     type="text"
-                    placeholder="Gift Card Code (e.g. E-COM-GIFT-992)"
+                    placeholder="Gift Card Code (e.g. BotCom-GIFT-992)"
                     value={giftCardCode}
                     onChange={(e) => setGiftCardCode(e.target.value)}
                     required
@@ -2549,7 +2549,7 @@ function AccountContent() {
               <div className="bg-gradient-to-r from-emerald-700 via-emerald-800 to-teal-900 text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-wrap justify-between items-center gap-4">
                 <div>
                   <span className="bg-white/20 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
-                    💳 E-COM PAY WALLET
+                    💳 BotCom PAY WALLET
                   </span>
                   <h2 className="text-2xl md:text-3xl font-black mt-2">Saved Cards &amp; Wallet Balance</h2>
                   <p className="text-xs text-emerald-100 max-w-md mt-1">
@@ -2664,7 +2664,7 @@ function AccountContent() {
                     <span className="bg-amber-400 text-gray-900 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
                       ⚡ PLUS VIP ZONE
                     </span>
-                    <h2 className="text-2xl md:text-3xl font-black mt-2 text-amber-400">E-COM SuperCoins</h2>
+                    <h2 className="text-2xl md:text-3xl font-black mt-2 text-amber-400">BotCom SuperCoins</h2>
                     <p className="text-xs text-gray-300 max-w-md mt-1">
                       Earn 5 SuperCoins for every ₹100 spent. Redeem coins for instant cash discounts &amp; free shipping!
                     </p>
@@ -3193,7 +3193,7 @@ function AccountContent() {
           <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl text-xs">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div>
-                <h3 className="text-base font-black text-gray-900">🛡️ E-COM Official 24-Hour Return Policy</h3>
+                <h3 className="text-base font-black text-gray-900">🛡️ BotCom Official 24-Hour Return Policy</h3>
                 <p className="text-xs text-gray-500">Guaranteed instant replacement or full refund</p>
               </div>
               <button onClick={() => setShowReturnPolicyModal(false)} className="text-gray-400 hover:text-gray-900 text-lg font-bold cursor-pointer">✕</button>
@@ -3230,7 +3230,7 @@ function AccountContent() {
           <div className="bg-white border border-gray-200 rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl text-xs">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div>
-                <h3 className="text-base font-black text-gray-900">💳 Add Money to E-COM Pay Wallet</h3>
+                <h3 className="text-base font-black text-gray-900">💳 Add Money to BotCom Pay Wallet</h3>
                 <p className="text-xs text-gray-500">1-Click Instant Top-up via UPI or Card</p>
               </div>
               <button onClick={() => setShowAddWalletModal(false)} className="text-gray-400 hover:text-gray-900 text-lg font-bold cursor-pointer">✕</button>

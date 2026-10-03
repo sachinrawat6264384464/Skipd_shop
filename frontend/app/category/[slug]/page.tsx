@@ -11,7 +11,7 @@ export async function generateMetadata(props: {
   const rawSlug = params.slug;
   const formattedTitle = rawSlug.replace(/-/g, " ").toUpperCase();
   return {
-    title: `${formattedTitle} | E-COM Store`,
+    title: `${formattedTitle} | BotCom Store`,
     description: `Explore premium ${formattedTitle} with instant shipping and 1-year official warranty.`,
   };
 }

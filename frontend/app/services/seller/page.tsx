@@ -49,7 +49,7 @@ export default function SellerPage() {
         <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white rounded-3xl p-8 md:p-12 shadow-lg flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="space-y-4 max-w-xl">
             <span className="bg-white text-emerald-900 font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider">
-              E-COM Marketplace Seller Portal
+              BotCom Marketplace Seller Portal
             </span>
             <h1 className="text-3xl md:text-5xl font-black">Sell to Millions of Customers Across India</h1>
             <p className="text-emerald-100 text-xs md:text-sm leading-relaxed">

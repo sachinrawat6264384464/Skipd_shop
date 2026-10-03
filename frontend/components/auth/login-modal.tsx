@@ -922,7 +922,7 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
                 >
                   {isRegisterView
                     ? "Existing User? Log in to your account"
-                    : "New to E-COM? Create an account"}
+                    : "New to BotCom? Create an account"}
                 </button>
               </div>
 

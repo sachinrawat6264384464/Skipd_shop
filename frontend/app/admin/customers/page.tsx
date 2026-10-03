@@ -165,7 +165,7 @@ export default function AdminCustomersCRMPage() {
           productTitle: matchedProd?.title || r.product_title || "Store Catalog Item",
           productPrice: matchedProd?.price ? `₹${Number(matchedProd.price).toLocaleString("en-IN")}` : r.product_price || "₹2,999",
           productImage: (matchedProd?.images && matchedProd.images.length > 0) ? matchedProd.images[0] : r.product_image,
-          orderId: `#E-COM-${25870 + r.id}`,
+          orderId: `#BotCom-${25870 + r.id}`,
           date: r.created_at ? new Date(r.created_at).toLocaleDateString() : "May 25, 2025",
           time: "10:30 AM",
           status: idx === 2 ? "Pending" : idx === 4 ? "Rejected" : "Approved",
