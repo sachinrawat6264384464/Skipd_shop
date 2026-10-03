@@ -187,17 +187,17 @@ export function FlashSaleBanner() {
   const formatDigit = (num: number) => String(num).padStart(2, "0");
 
   return (
-    <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-red-950 border border-red-900/40 rounded-3xl p-6 shadow-2xl text-white my-8 overflow-hidden relative font-sans">
+    <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 border border-indigo-500/30 rounded-3xl p-6 shadow-2xl text-white my-8 overflow-hidden relative font-sans">
       
       {/* Glow Effects */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
       {/* Banner Header */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 bg-red-600/20 border border-red-500/40 px-3 py-1 rounded-full text-red-400 font-black text-xs uppercase tracking-wider mb-2">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-ping" />
+          <div className="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-400/40 px-3 py-1 rounded-full text-cyan-300 font-black text-xs uppercase tracking-wider mb-2">
+            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
             <span>⚡ Live Flash Deal</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
@@ -210,15 +210,15 @@ export function FlashSaleBanner() {
         <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-2xl">
           <span className="text-xs text-slate-400 font-extrabold uppercase mr-1">Ends In:</span>
           <div className="flex items-center gap-1.5 font-mono text-sm font-black text-amber-400">
-            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-amber-500/30">
+            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-blue-500/30">
               {formatDigit(timeLeft.hours)}
             </span>
             <span>:</span>
-            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-amber-500/30">
+            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-blue-500/30">
               {formatDigit(timeLeft.minutes)}
             </span>
             <span>:</span>
-            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-amber-500/30 text-red-400">
+            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-cyan-500/40 text-cyan-300">
               {formatDigit(timeLeft.seconds)}
             </span>
           </div>
@@ -230,7 +230,7 @@ export function FlashSaleBanner() {
         {flashItems.map((item) => (
           <div
             key={item.id}
-            className="bg-slate-900/80 border border-slate-800 hover:border-red-500/50 rounded-2xl p-4 transition duration-200 flex flex-col justify-between space-y-3 group"
+            className="bg-slate-900/80 border border-slate-800 hover:border-blue-500/60 rounded-2xl p-4 transition duration-200 flex flex-col justify-between space-y-3 group"
           >
             <div>
               {/* Product Image + Discount Pill */}
@@ -242,18 +242,18 @@ export function FlashSaleBanner() {
                   decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                 />
-                <span className="absolute top-2 left-2 bg-red-600 text-white font-black text-[10px] px-2 py-0.5 rounded-md shadow-md uppercase">
+                <span className="absolute top-2 left-2 bg-blue-600 text-white font-black text-[10px] px-2 py-0.5 rounded-md shadow-md uppercase">
                   -{item.discount_percent}% OFF
                 </span>
               </Link>
 
-              <h3 className="font-extrabold text-white text-xs truncate group-hover:text-amber-400 transition">
+              <h3 className="font-extrabold text-white text-xs truncate group-hover:text-cyan-300 transition">
                 <Link href={`/product/${item.handle}`}>{item.title}</Link>
               </h3>
 
               {/* Price Row */}
               <div className="flex items-baseline gap-2 pt-1">
-                <span className="text-base font-black text-amber-400">
+                <span className="text-base font-black text-cyan-300">
                   ₹{item.price.toLocaleString("en-IN")}
                 </span>
                 <span className="text-xs text-slate-500 line-through font-bold">
@@ -266,18 +266,18 @@ export function FlashSaleBanner() {
             <div className="space-y-2 pt-2 border-t border-slate-800">
               <div className="flex justify-between text-[10px] font-bold text-slate-400">
                 <span>Stock Claimed</span>
-                <span className="text-amber-400">{item.sold_percent}% Sold</span>
+                <span className="text-cyan-300">{item.sold_percent}% Sold</span>
               </div>
               <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
                 <div
-                  className="h-full bg-gradient-to-r from-amber-500 to-red-500 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-500"
                   style={{ width: `${item.sold_percent}%` }}
                 />
               </div>
 
               <button
                 onClick={(e) => handleClaimDeal(e, item)}
-                className="w-full py-2.5 bg-gradient-to-r from-red-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                className="w-full py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1 active:scale-95"
               >
                 ⚡ Claim Deal &rsaquo;
               </button>
