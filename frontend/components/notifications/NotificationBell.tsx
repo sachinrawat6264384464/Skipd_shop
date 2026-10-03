@@ -157,7 +157,7 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2.5 rounded-full bg-gray-50/80 hover:bg-emerald-50 border border-gray-200/90 hover:border-emerald-300 text-gray-700 hover:text-emerald-700 transition-all duration-200 cursor-pointer shadow-2xs group flex items-center justify-center"
+        className="relative p-2.5 rounded-full bg-gray-50/80 hover:bg-blue-50 border border-gray-200/90 hover:border-blue-300 text-gray-700 hover:text-blue-700 transition-all duration-200 cursor-pointer shadow-2xs group flex items-center justify-center"
         title="Notifications"
       >
         <svg className="w-5 h-5 group-hover:scale-105 transition duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -179,7 +179,7 @@ export function NotificationBell() {
               <span className="text-lg">🔔</span>
               <h4 className="font-extrabold text-sm tracking-wide">Live Store Alerts</h4>
               {unreadCount > 0 && (
-                <span className="bg-emerald-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-full">
+                <span className="bg-blue-600 text-white font-black text-[10px] px-2 py-0.5 rounded-full">
                   {unreadCount} New
                 </span>
               )}
@@ -189,7 +189,7 @@ export function NotificationBell() {
               {unreadCount > 0 && (
                 <button
                   onClick={handleMarkAllRead}
-                  className="text-[11px] text-emerald-400 hover:underline font-bold cursor-pointer"
+                  className="text-[11px] text-sky-400 hover:underline font-bold cursor-pointer"
                 >
                   Mark read
                 </button>
@@ -219,10 +219,10 @@ export function NotificationBell() {
                     if (!n.is_read) handleMarkSingleRead(n.id);
                   }}
                   className={`p-3.5 transition flex items-start gap-3 cursor-pointer group ${
-                    n.is_read ? "bg-white hover:bg-gray-50 opacity-80" : "bg-emerald-50/60 hover:bg-emerald-50 border-l-4 border-emerald-500 font-semibold"
+                    n.is_read ? "bg-white hover:bg-gray-50 opacity-80" : "bg-blue-50/60 hover:bg-blue-50 border-l-4 border-blue-600 font-semibold"
                   }`}
                 >
-                  <div className="w-8.5 h-8.5 rounded-2xl bg-emerald-100/80 text-emerald-800 flex items-center justify-center text-base shrink-0 font-bold shadow-2xs">
+                  <div className="w-8.5 h-8.5 rounded-2xl bg-blue-100/80 text-blue-800 flex items-center justify-center text-base shrink-0 font-bold shadow-2xs">
                     {n.type === "sale" ? "⚡" : n.type === "product" ? "🚀" : n.type === "order" ? "📦" : "📢"}
                   </div>
 
@@ -236,7 +236,7 @@ export function NotificationBell() {
                       <Link
                         href={n.link}
                         onClick={() => setIsOpen(false)}
-                        className="inline-block text-[10px] text-emerald-700 font-bold mt-1.5 hover:underline"
+                        className="inline-block text-[10px] text-blue-700 font-bold mt-1.5 hover:underline"
                       >
                         View Details &rsaquo;
                       </Link>

@@ -136,7 +136,7 @@ export function CustomerReviewsSection() {
                       <div className="flex items-center gap-2">
                         <h5 className="font-bold text-sm text-gray-900">{rev.author}</h5>
                         {rev.verified && (
-                          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">
+                          <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold">
                             ✓ Verified Buyer
                           </span>
                         )}
@@ -159,7 +159,7 @@ export function CustomerReviewsSection() {
 
                 <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
                   <span>Was this review helpful?</span>
-                  <button className="hover:text-emerald-600 font-bold transition flex items-center gap-1">
+                  <button className="hover:text-blue-600 font-bold transition flex items-center gap-1">
                     👍 Helpful ({rev.likes})
                   </button>
                 </div>
@@ -181,7 +181,7 @@ export function CustomerReviewsSection() {
                   type="text"
                   value={newReview.author}
                   onChange={(e) => setNewReview({ ...newReview, author: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-gray-900 focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>
@@ -191,7 +191,7 @@ export function CustomerReviewsSection() {
                 <select
                   value={newReview.rating}
                   onChange={(e) => setNewReview({ ...newReview, rating: Number(e.target.value) })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-gray-900 focus:border-blue-500 focus:outline-none"
                 >
                   <option value={5}>★★★★★ (5/5 Stars - Excellent)</option>
                   <option value={4}>★★★★☆ (4/5 Stars - Good)</option>
@@ -205,7 +205,7 @@ export function CustomerReviewsSection() {
                   rows={3}
                   value={newReview.comment}
                   onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl p-3 text-gray-900 focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>

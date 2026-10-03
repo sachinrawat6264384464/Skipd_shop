@@ -26,7 +26,7 @@ export interface HeroSlide {
 const DEFAULT_SLIDES: HeroSlide[] = [
   {
     id: 1,
-    tag: "🌿 SUMMER SALE",
+    tag: "⚡ SUMMER SALE",
     title: "Refresh Your Style This ",
     highlightText: "Summer",
     description: "Discover up to 60% OFF on top-rated electronics, fashion, and lifestyle essentials. Guaranteed fast delivery across India.",
@@ -37,10 +37,10 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600",
     bgImageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&auto=format&fit=crop",
     badgeText: "60% OFF",
-    bgGradient: "from-slate-950/95 via-slate-900/85 to-emerald-950/70",
-    tagColor: "bg-emerald-500/20 text-emerald-300 border-emerald-400/40",
-    highlightColor: "text-emerald-400",
-    btnColor: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/30"
+    bgGradient: "from-slate-950/95 via-slate-900/85 to-blue-950/70",
+    tagColor: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+    highlightColor: "text-sky-400",
+    btnColor: "bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-600/30"
   },
   {
     id: 2,
@@ -55,10 +55,10 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600",
     bgImageUrl: "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1600&auto=format&fit=crop",
     badgeText: "70% OFF",
-    bgGradient: "from-slate-950/95 via-slate-900/85 to-amber-950/70",
-    tagColor: "bg-amber-500/20 text-amber-300 border-amber-400/40",
-    highlightColor: "text-amber-400",
-    btnColor: "bg-amber-600 hover:bg-amber-500 text-white shadow-xl shadow-amber-600/30"
+    bgGradient: "from-slate-950/95 via-slate-900/85 to-indigo-950/70",
+    tagColor: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+    highlightColor: "text-sky-400",
+    btnColor: "bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-600/30"
   },
   {
     id: 3,
@@ -232,7 +232,7 @@ export function HeroSlider() {
 
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight drop-shadow-md">
                     {slide.title}
-                    <span className={slide.highlightColor || "text-emerald-400"}>{slide.highlightText}</span>
+                    <span className={slide.highlightColor || "text-sky-400"}>{slide.highlightText}</span>
                   </h1>
 
                   <p className="text-gray-200 text-xs sm:text-sm md:text-base font-medium leading-relaxed max-w-lg drop-shadow-sm">
@@ -242,7 +242,7 @@ export function HeroSlider() {
                   <div className="flex flex-wrap items-center gap-3.5 pt-3">
                     <Link
                       href={slide.primaryButtonHref || "/search"}
-                      className={`font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl transition shadow-xl cursor-pointer flex items-center gap-2 ${slide.btnColor || "bg-emerald-600 hover:bg-emerald-500 text-white"}`}
+                      className={`font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl transition shadow-xl cursor-pointer flex items-center gap-2 ${slide.btnColor || "bg-blue-600 hover:bg-blue-500 text-white"}`}
                     >
                       <span>{slide.primaryButtonText || "SHOP NOW"}</span>
                       <span>&rarr;</span>
@@ -330,7 +330,7 @@ export function HeroSlider() {
                 key={i}
                 onClick={() => goToSlide(i)}
                 className={`h-2 rounded-full transition-all duration-400 cursor-pointer ${
-                  currentIndex === i ? "w-6 bg-emerald-600 shadow-xs" : "w-2 bg-gray-400 hover:bg-gray-600"
+                  currentIndex === i ? "w-6 bg-blue-600 shadow-xs" : "w-2 bg-gray-400 hover:bg-gray-600"
                 }`}
                 title={`Go to slide ${i + 1}`}
               />

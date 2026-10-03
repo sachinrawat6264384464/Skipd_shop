@@ -15,9 +15,9 @@ export function RewardsBanner() {
 
   return (
     <>
-      <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-100/60 border border-emerald-200 rounded-2xl p-4 my-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-2xs">
+      <div className="bg-gradient-to-r from-blue-50 via-sky-50 to-blue-100/60 border border-blue-200 rounded-2xl p-4 my-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-2xs">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xl shadow-xs">
+          <div className="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl shadow-xs">
             🪙
           </div>
           <div>
@@ -37,7 +37,7 @@ export function RewardsBanner() {
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white border border-gray-200 p-6 rounded-3xl max-w-sm w-full text-gray-900 text-center shadow-2xl">
-            <div className="w-12 h-12 rounded-full bg-emerald-100 border border-emerald-300 mx-auto flex items-center justify-center text-2xl mb-3">
+            <div className="w-12 h-12 rounded-full bg-blue-100 border border-blue-300 mx-auto flex items-center justify-center text-2xl mb-3">
               🎁
             </div>
             <h4 className="text-xl font-bold">Refer a Friend, Get ₹250</h4>
@@ -46,7 +46,7 @@ export function RewardsBanner() {
             </p>
 
             <div className="my-5 p-3.5 bg-gray-50 border border-gray-200 rounded-2xl flex justify-between items-center text-xs font-mono">
-              <span className="text-emerald-700 font-bold">{referralCode}</span>
+              <span className="text-blue-700 font-bold">{referralCode}</span>
               <button
                 onClick={copyReferral}
                 className="bg-gray-900 hover:bg-black px-3.5 py-1.5 rounded-xl text-white font-sans text-xs font-bold transition shadow-xs"

@@ -105,7 +105,7 @@ export function FrequentlyBoughtTogether({ productId }: BundleProps) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <span className="bg-emerald-500/20 text-emerald-300 font-extrabold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full border border-emerald-500/30">
+            <span className="bg-blue-500/20 text-blue-300 font-extrabold text-[10px] uppercase tracking-wider px-3 py-1 rounded-full border border-blue-500/30">
               ⚡ Bundle Special Offer
             </span>
             <span className="text-xs text-amber-400 font-bold">Save 10% Extra</span>
@@ -130,7 +130,7 @@ export function FrequentlyBoughtTogether({ productId }: BundleProps) {
                 <div
                   onClick={() => toggleItem(item.id)}
                   className={`relative p-3 rounded-2xl border transition cursor-pointer w-36 sm:w-40 bg-slate-900/90 text-center space-y-2 ${
-                    isSelected ? "border-emerald-500 ring-2 ring-emerald-500/20" : "border-slate-800 opacity-60 hover:opacity-100"
+                    isSelected ? "border-blue-500 ring-2 ring-blue-500/20" : "border-slate-800 opacity-60 hover:opacity-100"
                   }`}
                 >
                   {/* Selection Checkbox */}
@@ -140,12 +140,12 @@ export function FrequentlyBoughtTogether({ productId }: BundleProps) {
                       checked={isSelected}
                       disabled={isMain}
                       onChange={() => toggleItem(item.id)}
-                      className="w-4 h-4 accent-emerald-500 rounded cursor-pointer"
+                      className="w-4 h-4 accent-blue-600 rounded cursor-pointer"
                     />
                   </div>
 
                   {isMain && (
-                    <span className="absolute top-2 right-2 text-[9px] font-black bg-emerald-500 text-slate-950 px-2 py-0.5 rounded-full">
+                    <span className="absolute top-2 right-2 text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full">
                       This Item
                     </span>
                   )}
@@ -163,7 +163,7 @@ export function FrequentlyBoughtTogether({ productId }: BundleProps) {
                     {item.title}
                   </p>
 
-                  <p className="text-xs font-black text-emerald-400">
+                  <p className="text-xs font-black text-sky-400">
                     ₹{item.price?.toLocaleString("en-IN")}
                   </p>
                 </div>
@@ -192,7 +192,7 @@ export function FrequentlyBoughtTogether({ productId }: BundleProps) {
               )}
             </div>
             {hasMultipleSelected && (
-              <p className="text-xs text-emerald-400 font-extrabold mt-0.5">
+              <p className="text-xs text-sky-400 font-extrabold mt-0.5">
                  You Save ₹{totalSavings.toLocaleString("en-IN")} (10% Off)
               </p>
             )}
@@ -201,7 +201,7 @@ export function FrequentlyBoughtTogether({ productId }: BundleProps) {
           <button
             onClick={handleAddBundleToCart}
             disabled={selectedItems.length === 0}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 disabled:opacity-50 text-slate-950 font-black text-xs py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
+            className="w-full bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-black text-xs py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider"
           >
             <span>🛒 Add Bundle To Cart</span>
           </button>

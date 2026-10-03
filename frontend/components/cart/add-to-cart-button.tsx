@@ -60,8 +60,8 @@ export function AddToCartButton({ product }: { product: Product }) {
       onClick={handleAddToCart}
       className={`w-full py-2.5 px-4 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center gap-2 shadow-xs ${
         added
-          ? "bg-emerald-700 text-white"
-          : "bg-emerald-600 hover:bg-emerald-700 text-white"
+          ? "bg-blue-700 text-white"
+          : "bg-blue-600 hover:bg-blue-700 text-white"
       }`}
     >
       <span>{added ? "✓ Added to Cart" : "🛒 Add to Cart"}</span>

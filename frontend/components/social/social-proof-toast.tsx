@@ -227,26 +227,26 @@ export function SocialProofToast() {
                 💖 In Your Wishlist
               </span>
             ) : (
-              <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
                 🛒 In Your Cart
               </span>
             )}
           </div>
 
           <p className="text-[10px] text-slate-400 font-bold leading-tight flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
             <span className="font-extrabold text-white">{current.customer_name}</span> from {current.location} bought this
           </p>
 
           <Link
             href={`/product/${current.product_handle}`}
-            className="block text-xs font-extrabold text-white truncate hover:text-emerald-400 transition mt-0.5"
+            className="block text-xs font-extrabold text-white truncate hover:text-sky-400 transition mt-0.5"
           >
             {current.product_title}
           </Link>
 
           <div className="flex items-center justify-between text-[10px] pt-1">
-            <span className="font-black text-emerald-400">{current.formatted_price}</span>
+            <span className="font-black text-sky-400">{current.formatted_price}</span>
             <span className="text-slate-400 font-medium">{current.time_ago}</span>
           </div>
         </div>

@@ -116,7 +116,7 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
       </p>
 
       {/* 📱 Mobile Helper Caption */}
-      <p className="flex lg:hidden text-xs font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full mt-2.5 items-center gap-1.5 shadow-2xs">
+      <p className="flex lg:hidden text-xs font-extrabold text-blue-700 bg-blue-50 border border-blue-200 px-3 py-1.5 rounded-full mt-2.5 items-center gap-1.5 shadow-2xs">
         <span>🔍</span> Tap image for HD Fullscreen View
       </p>
 
@@ -143,7 +143,7 @@ export function ProductZoomMagnifier({ imageSrc, altText }: ProductZoomMagnifier
           
           {/* Header Bar */}
           <div className="w-full flex items-center justify-between text-white pt-2">
-            <span className="text-xs font-black uppercase tracking-wider text-emerald-400">
+            <span className="text-xs font-black uppercase tracking-wider text-sky-400">
               HD Image Preview
             </span>
             <button

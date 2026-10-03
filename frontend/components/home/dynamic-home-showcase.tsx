@@ -152,7 +152,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
 
                 return (
                   <Link key={i} href={item.href || "/orders"} className="group space-y-1 block cursor-pointer">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
+                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-blue-400 transition">
                       <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                       {offPercent > 0 && (
                         <div className="absolute top-1 left-1 bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded shadow-2xs">
@@ -160,7 +160,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                         </div>
                       )}
                     </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-emerald-700 transition line-clamp-2 leading-tight">{item.label}</p>
+                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-blue-600 transition line-clamp-2 leading-tight">{item.label}</p>
                     <div className="flex flex-wrap items-baseline gap-1">
                       <span className="text-xs font-black text-gray-900">{item.price}</span>
                       {item.mrp && <span className="text-[9px] text-gray-400 line-through">{item.mrp}</span>}
@@ -183,14 +183,14 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                 return (
                   <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
+                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-blue-400 transition">
                       <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                     </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-emerald-700 transition line-clamp-2 leading-tight">{p.title}</p>
+                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-blue-600 transition line-clamp-2 leading-tight">{p.title}</p>
                     <div className="flex items-center justify-between flex-wrap gap-1">
                       <span className="text-xs font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
                       {stock > 5 ? (
-                        <span className="text-[8px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded">In Stock</span>
+                        <span className="text-[8px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded">In Stock</span>
                       ) : stock > 0 ? (
                         <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1 py-0.2 rounded animate-pulse">Only {stock} left!</span>
                       ) : (
@@ -216,17 +216,17 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                 return (
                   <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
+                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-blue-400 transition">
                       <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                       <div className="absolute top-1 left-1 bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded">
                         {offPercent}% OFF
                       </div>
                     </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-emerald-700 transition line-clamp-2 leading-tight">{p.title}</p>
+                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-blue-600 transition line-clamp-2 leading-tight">{p.title}</p>
                     <div className="flex items-center justify-between flex-wrap gap-1">
                       <span className="text-xs font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
                       {stock > 5 ? (
-                        <span className="text-[8px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded">In Stock</span>
+                        <span className="text-[8px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded">In Stock</span>
                       ) : stock > 0 ? (
                         <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1 py-0.2 rounded animate-pulse">Only {stock} left!</span>
                       ) : (
@@ -251,14 +251,14 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                 return (
                   <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-emerald-400 transition">
+                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-blue-400 transition">
                       <img src={p.images[0]} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
                     </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-emerald-700 transition line-clamp-2 leading-tight">{p.title}</p>
+                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-blue-600 transition line-clamp-2 leading-tight">{p.title}</p>
                     <div className="flex items-center justify-between flex-wrap gap-1">
                       <span className="text-xs font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
                       {stock > 5 ? (
-                        <span className="text-[8px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded">In Stock</span>
+                        <span className="text-[8px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded">In Stock</span>
                       ) : stock > 0 ? (
                         <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1 py-0.2 rounded animate-pulse">Only {stock} left!</span>
                       ) : (
@@ -291,7 +291,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
               
               <Link
                 href={`/category/${catGroup.slug}`}
-                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-2xs"
+                className="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-extrabold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-2xs"
               >
                 <span>Explore More</span>
                 <span>&rarr;</span>
@@ -317,7 +317,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     }`}
                   >
                     {offPercent > 0 && !isOutOfStock && (
-                      <span className="absolute top-2 left-2 z-10 bg-emerald-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
+                      <span className="absolute top-2 left-2 z-10 bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
                         -{offPercent}%
                       </span>
                     )}
@@ -325,7 +325,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     {/* Stock Quantity Badge */}
                     <div className="absolute top-2 left-2 z-10">
                       {stock > 5 ? (
-                        <span className="bg-slate-900/85 backdrop-blur-sm text-emerald-400 font-extrabold text-[9px] px-1.5 py-0.5 rounded-md border border-slate-700">
+                        <span className="bg-slate-900/85 backdrop-blur-sm text-sky-400 font-extrabold text-[9px] px-1.5 py-0.5 rounded-md border border-slate-700">
                           📦 In Stock ({stock} left)
                         </span>
                       ) : stock > 0 ? (
@@ -364,7 +364,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     </Link>
 
                     <div className="space-y-1">
-                      <h3 className="font-bold text-xs text-gray-900 group-hover:text-emerald-700 transition line-clamp-2 leading-snug">
+                      <h3 className="font-bold text-xs text-gray-900 group-hover:text-blue-600 transition line-clamp-2 leading-snug">
                         <Link href={isOutOfStock ? "#" : `/product/${product.handle}`}>{product.title}</Link>
                       </h3>
                       <div className="flex items-baseline gap-2">
@@ -398,7 +398,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                         className={`font-black text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs ${
                           isOutOfStock
                             ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-                            : "bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                            : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                         }`}
                       >
                         {isOutOfStock ? "Unavailable" : "⚡ Buy Now"}
@@ -418,7 +418,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
           <div className="text-center pt-2 pb-4">
             <button
               onClick={() => setShowAllCollections(!showAllCollections)}
-              className="bg-white hover:bg-emerald-50 text-emerald-700 border-2 border-emerald-500/80 hover:border-emerald-600 font-extrabold text-sm px-8 py-3.5 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer inline-flex items-center gap-2 group"
+              className="bg-white hover:bg-blue-50 text-blue-700 border-2 border-blue-500/80 hover:border-blue-600 font-extrabold text-sm px-8 py-3.5 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer inline-flex items-center gap-2 group"
             >
               <span>{showAllCollections ? "Show Fewer Categories ▲" : `Show More Categories (${categorizedProducts.length - 2} More) ▼`}</span>
             </button>

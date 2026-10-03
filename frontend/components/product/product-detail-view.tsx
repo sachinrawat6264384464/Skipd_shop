@@ -622,10 +622,10 @@ const SUB_NAV_ITEMS = [
                   key={link.slug}
                   href={`/category/${link.slug}`}
                   onClick={() => setOpenSubNav(null)}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-emerald-50 text-gray-800 font-bold transition border border-gray-100"
+                  className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-blue-50 text-gray-800 font-bold transition border border-gray-100"
                 >
                   <span>{link.name}</span>
-                  <span className="text-emerald-600 font-black text-sm">&rsaquo;</span>
+                  <span className="text-blue-600 font-black text-sm">&rsaquo;</span>
                 </Link>
               ))}
             </div>
@@ -722,7 +722,7 @@ const SUB_NAV_ITEMS = [
             <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-4 text-xs">
               <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                 <h3 className="font-black text-gray-900 text-sm">Product Highlights &amp; Specs</h3>
-                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                   VERIFIED ITEM
                 </span>
               </div>
@@ -730,19 +730,19 @@ const SUB_NAV_ITEMS = [
               {/* Highlights List */}
               <div className="space-y-2.5">
                 <div className="flex items-center gap-2.5 text-gray-700">
-                  <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center shrink-0">⚡</span>
+                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0">⚡</span>
                   <span className="font-semibold text-[11px]">Express 2-Day Doorstep Delivery</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-gray-700">
-                  <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center shrink-0">🛡️</span>
+                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0">🛡️</span>
                   <span className="font-semibold text-[11px]">100% Original Sourced from Official Brand</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-gray-700">
-                  <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center shrink-0">🔄</span>
+                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0">🔄</span>
                   <span className="font-semibold text-[11px]">7 Days Easy Doorstep Replacement</span>
                 </div>
                 <div className="flex items-center gap-2.5 text-gray-700">
-                  <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center shrink-0">🏷️</span>
+                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0">🏷️</span>
                   <span className="font-semibold text-[11px]">Guaranteed Lowest Price &amp; Extra Coupons</span>
                 </div>
               </div>
@@ -757,40 +757,40 @@ const SUB_NAV_ITEMS = [
                     type="text"
                     defaultValue="474001"
                     placeholder="Enter 6-digit Pincode"
-                    className="flex-1 bg-gray-50 border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-900 focus:outline-none focus:border-emerald-500"
+                    className="flex-1 bg-gray-50 border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-900 focus:outline-none focus:border-blue-500"
                   />
-                  <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer">
                     Check
                   </button>
                 </div>
-                <p className="text-[10px] text-emerald-700 font-bold flex items-center gap-1 pt-0.5">
+                <p className="text-[10px] text-blue-700 font-bold flex items-center gap-1 pt-0.5">
                   <span>✓</span> Free Express Shipping Available for 474001
                 </p>
               </div>
             </div>
 
             {/* 🌟 E-COM Assured Store Guarantee & Highlights Card */}
-            <div className="bg-gradient-to-br from-white via-emerald-50/30 to-teal-50/40 border border-emerald-200/80 rounded-3xl p-5 shadow-sm space-y-4 text-xs">
+            <div className="bg-gradient-to-br from-white via-blue-50/30 to-sky-50/40 border border-blue-200/80 rounded-3xl p-5 shadow-sm space-y-4 text-xs">
               
               {/* Header Badge */}
-              <div className="flex justify-between items-center border-b border-emerald-100 pb-3">
+              <div className="flex justify-between items-center border-b border-blue-100 pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-xl bg-emerald-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+                  <span className="w-8 h-8 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
                     ✓
                   </span>
                   <div>
                     <h4 className="font-extrabold text-gray-900 text-xs tracking-tight">E-COM Assured Promise</h4>
-                    <p className="text-[10px] text-emerald-700 font-bold">100% Genuine • Fast Delivery</p>
+                    <p className="text-[10px] text-blue-700 font-bold">100% Genuine • Fast Delivery</p>
                   </div>
                 </div>
-                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full border border-emerald-200">
+                <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-1 rounded-full border border-blue-200">
                   VERIFIED
                 </span>
               </div>
 
               {/* 4 Trust Highlights Grid */}
               <div className="space-y-2.5 pt-0.5">
-                <div className="flex items-start gap-3 bg-white/80 border border-emerald-100/80 p-2.5 rounded-2xl shadow-2xs">
+                <div className="flex items-start gap-3 bg-white/80 border border-blue-100/80 p-2.5 rounded-2xl shadow-2xs">
                   <span className="text-lg shrink-0">🚚</span>
                   <div>
                     <h5 className="font-bold text-gray-900 text-[11px]">Same-Day Dispatch &amp; Express Shipping</h5>
@@ -798,7 +798,7 @@ const SUB_NAV_ITEMS = [
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 bg-white/80 border border-emerald-100/80 p-2.5 rounded-2xl shadow-2xs">
+                <div className="flex items-start gap-3 bg-white/80 border border-blue-100/80 p-2.5 rounded-2xl shadow-2xs">
                   <span className="text-lg shrink-0">🛡️</span>
                   <div>
                     <h5 className="font-bold text-gray-900 text-[11px]">1-Year Brand Warranty</h5>
@@ -806,7 +806,7 @@ const SUB_NAV_ITEMS = [
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 bg-white/80 border border-emerald-100/80 p-2.5 rounded-2xl shadow-2xs">
+                <div className="flex items-start gap-3 bg-white/80 border border-blue-100/80 p-2.5 rounded-2xl shadow-2xs">
                   <span className="text-lg shrink-0">🔄</span>
                   <div>
                     <h5 className="font-bold text-gray-900 text-[11px]">7 Days Easy Return &amp; Exchange</h5>
@@ -814,7 +814,7 @@ const SUB_NAV_ITEMS = [
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 bg-white/80 border border-emerald-100/80 p-2.5 rounded-2xl shadow-2xs">
+                <div className="flex items-start gap-3 bg-white/80 border border-blue-100/80 p-2.5 rounded-2xl shadow-2xs">
                   <span className="text-lg shrink-0">💳</span>
                   <div>
                     <h5 className="font-bold text-gray-900 text-[11px]">Pay on Delivery (COD Available)</h5>
@@ -824,10 +824,10 @@ const SUB_NAV_ITEMS = [
               </div>
 
               {/* Satisfaction Meter */}
-              <div className="bg-emerald-600 text-white rounded-2xl p-3 flex items-center justify-between text-[11px] shadow-sm">
+              <div className="bg-blue-600 text-white rounded-2xl p-3 flex items-center justify-between text-[11px] shadow-sm">
                 <div>
                   <p className="font-black text-xs">99.4% Customer Satisfaction</p>
-                  <p className="text-[10px] text-emerald-100 font-medium">Based on 12,450+ verified orders</p>
+                  <p className="text-[10px] text-blue-100 font-medium">Based on 12,450+ verified orders</p>
                 </div>
                 <div className="text-right">
                   <span className="text-amber-300 font-black text-sm">4.9 ★</span>
@@ -845,12 +845,12 @@ const SUB_NAV_ITEMS = [
               <h1 className="text-lg md:text-xl font-bold text-gray-900 leading-snug">
                 {product.title}
               </h1>
-              <p className="text-xs text-emerald-700 font-bold mt-1 hover:underline cursor-pointer">Visit the E-COM Official Store</p>
+              <p className="text-xs text-blue-700 font-bold mt-1 hover:underline cursor-pointer">Visit the E-COM Official Store</p>
 
               {/* Rating */}
               <div className="flex items-center gap-2 mt-2 text-xs">
                 <span className="text-amber-500 font-bold">4.3 ★★★★☆</span>
-                <span className="text-emerald-700 font-bold hover:underline cursor-pointer">(1,732 ratings)</span>
+                <span className="text-blue-700 font-bold hover:underline cursor-pointer">(1,732 ratings)</span>
                 <span className="text-gray-300">|</span>
                 <span className="text-gray-500 font-medium">3k+ purchased in last month</span>
               </div>
@@ -894,7 +894,7 @@ const SUB_NAV_ITEMS = [
                     onClick={() => setSelectedColor(col.name)}
                     className={`w-8 h-8 rounded-full border-2 transition cursor-pointer flex items-center justify-center ${col.bg} ${
                       selectedColor === col.name
-                        ? "border-gray-900 ring-2 ring-emerald-400 ring-offset-2 scale-110 shadow-sm"
+                        ? "border-gray-900 ring-2 ring-sky-400 ring-offset-2 scale-110 shadow-sm"
                         : "border-gray-300 hover:border-gray-500 opacity-80 hover:opacity-100"
                     }`}
                     title={col.name}
@@ -934,7 +934,7 @@ const SUB_NAV_ITEMS = [
                         <button
                           type="button"
                           onClick={() => setShowSizeChart(true)}
-                          className="text-gray-700 hover:text-emerald-700 font-bold flex items-center gap-1.5 underline underline-offset-2 cursor-pointer"
+                          className="text-gray-700 hover:text-blue-700 font-bold flex items-center gap-1.5 underline underline-offset-2 cursor-pointer"
                         >
                           <span>📏</span> Size Chart
                         </button>
@@ -985,7 +985,7 @@ const SUB_NAV_ITEMS = [
                       <div className="flex justify-between items-center">
                         <p className="font-bold text-gray-900">Quantity:</p>
                         {maxStock > 0 && (
-                          <span className={`text-[11px] font-black ${maxStock <= 5 ? "text-amber-700" : "text-emerald-700"}`}>
+                          <span className={`text-[11px] font-black ${maxStock <= 5 ? "text-amber-700" : "text-blue-700"}`}>
                             (Max limit: {maxStock} available)
                           </span>
                         )}
@@ -1039,8 +1039,8 @@ const SUB_NAV_ITEMS = [
                         }}
                         className={`w-14 h-14 rounded-full border-2 flex items-center justify-center transition shrink-0 cursor-pointer shadow-sm ${
                           isInWishlist(product.id)
-                            ? "bg-emerald-50 border-emerald-500 text-emerald-600 scale-105"
-                            : "bg-white border-emerald-400 text-emerald-500 hover:border-emerald-600 hover:bg-emerald-50"
+                            ? "bg-blue-50 border-blue-500 text-blue-600 scale-105"
+                            : "bg-white border-blue-400 text-blue-500 hover:border-blue-600 hover:bg-blue-50"
                         }`}
                         title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
                       >
@@ -1057,7 +1057,7 @@ const SUB_NAV_ITEMS = [
                         className={`flex-1 font-black text-sm py-4 px-6 rounded-full transition text-center tracking-wider uppercase ${
                           isOutOfStock
                             ? "bg-gray-200 text-gray-400 border border-gray-300 cursor-not-allowed opacity-80"
-                            : "bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white shadow-md shadow-emerald-600/30 cursor-pointer"
+                            : "bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-md shadow-blue-600/30 cursor-pointer"
                         }`}
                       >
                         {isOutOfStock ? "🚫 OUT OF STOCK" : (cartAddedToast ? "✓ ADDED TO CART!" : "ADD TO CART")}
@@ -1099,7 +1099,7 @@ const SUB_NAV_ITEMS = [
                 <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider">📦 WHAT IS IN THE BOX</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-[11px] font-semibold text-gray-700">
                   {parsedBoxContents.map((boxItem, idx) => (
-                    <div key={idx} className="p-3 bg-white rounded-2xl border border-gray-200/90 shadow-2xs hover:border-emerald-300 transition flex flex-col items-center justify-center gap-1.5 min-h-[90px]">
+                    <div key={idx} className="p-3 bg-white rounded-2xl border border-gray-200/90 shadow-2xs hover:border-blue-300 transition flex flex-col items-center justify-center gap-1.5 min-h-[90px]">
                       {boxItem.image ? (
                         <img src={boxItem.image} alt={boxItem.title} className="w-10 h-10 object-contain rounded-lg p-0.5" />
                       ) : (
@@ -1118,7 +1118,7 @@ const SUB_NAV_ITEMS = [
                 <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
                   <span>⚙️</span> Technical Specifications &amp; Attributes
                 </h4>
-                <span className="bg-emerald-50 text-emerald-700 font-extrabold text-[10px] px-2 py-0.5 rounded-full border border-emerald-200">
+                <span className="bg-blue-50 text-blue-700 font-extrabold text-[10px] px-2 py-0.5 rounded-full border border-blue-200">
                   Full 32-Field Specs
                 </span>
               </div>
@@ -1181,7 +1181,7 @@ const SUB_NAV_ITEMS = [
                 {(product as any).gst_rate != null && (
                   <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
                     <span className="text-gray-400 font-bold block text-[9px] uppercase">GST Rate %</span>
-                    <span className="font-black text-emerald-700">{(product as any).gst_rate}% GST</span>
+                    <span className="font-black text-blue-700">{(product as any).gst_rate}% GST</span>
                   </div>
                 )}
                 {(product as any).hsn_code && (
@@ -1220,10 +1220,10 @@ const SUB_NAV_ITEMS = [
             </div>
 
             {/* 🏆 Brand Trust Card */}
-            <div className="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-3 space-y-1 text-xs">
+            <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-3 space-y-1 text-xs">
               <div className="flex items-center justify-between">
                 <span className="font-black text-gray-900 text-sm">{(product as any).brand || "Skipd"} Official Retail</span>
-                <span className="bg-emerald-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded">Verified</span>
+                <span className="bg-blue-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded">Verified</span>
               </div>
               <p className="text-[11px] text-gray-700 font-medium">⭐ 85% Positive Ratings (from 100K+ customers)</p>
               <p className="text-[10px] text-gray-500">100K+ orders from this brand recently | 11+ years experience</p>
@@ -1238,17 +1238,17 @@ const SUB_NAV_ITEMS = [
             <div className="bg-white border border-gray-300 rounded-3xl p-5 shadow-md space-y-4">
               
               {/* Prime Badge */}
-              <div className="bg-emerald-50/80 border border-emerald-200 rounded-2xl p-3 text-xs space-y-1">
-                <div className="flex items-center gap-1 font-black text-emerald-800 text-sm">
+              <div className="bg-blue-50/80 border border-blue-200 rounded-2xl p-3 text-xs space-y-1">
+                <div className="flex items-center gap-1 font-black text-blue-800 text-sm">
                   <span>prime</span>
                 </div>
                 <p className="text-[11px] text-gray-600 leading-tight">Enjoy unlimited free same-day/1-day delivery &amp; extra offers.</p>
-                <button className="text-[10px] font-bold text-emerald-700 hover:underline cursor-pointer">Join Prime &rsaquo;&rsaquo;</button>
+                <button className="text-[10px] font-bold text-blue-700 hover:underline cursor-pointer">Join Prime &rsaquo;&rsaquo;</button>
               </div>
 
               {/* Delivery Info */}
               <div className="space-y-1 text-xs text-gray-700">
-                <p className="font-bold text-emerald-700">FREE delivery Saturday, Aug 15.</p>
+                <p className="font-bold text-blue-700">FREE delivery Saturday, Aug 15.</p>
                 <p className="text-[11px] text-gray-500">📍 Deliver to Gwalior 474001</p>
                 {(() => {
                   const numId = typeof product.id === "number" ? product.id : (parseInt(String(product.id || "").replace(/[^0-9]/g, "")) || 1);
@@ -1259,7 +1259,7 @@ const SUB_NAV_ITEMS = [
                   if (maxStock <= 5) {
                     return <p className="text-amber-900 font-black text-xs pt-1 bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg animate-pulse flex items-center gap-1"><span>⚡</span> Low Stock: Only {maxStock} left in stock!</p>;
                   }
-                  return <p className="text-emerald-600 font-extrabold text-sm pt-1 flex items-center gap-1"><span>📦</span> In Stock ({maxStock} units available)</p>;
+                  return <p className="text-blue-600 font-extrabold text-sm pt-1 flex items-center gap-1"><span>📦</span> In Stock ({maxStock} units available)</p>;
                 })()}
                 <p className="text-[10px] text-gray-500">Ships from and sold by E-COM Official Retail.</p>
               </div>
@@ -1286,7 +1286,7 @@ const SUB_NAV_ITEMS = [
                     <button
                       type="button"
                       onClick={handleBuyNow}
-                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-emerald-600/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-blue-600/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       ⚡ Buy Now
                     </button>
@@ -1329,13 +1329,13 @@ const SUB_NAV_ITEMS = [
 
             {/* 2. 🛡️ E-COM Protection Plan Card */}
             <div className={`border rounded-3xl p-5 shadow-2xs space-y-3 text-xs transition-all duration-300 ${
-              warrantyAdded ? "bg-emerald-50/70 border-emerald-300 shadow-emerald-500/10" : "bg-white border-gray-200"
+              warrantyAdded ? "bg-blue-50/70 border-blue-300 shadow-blue-500/10" : "bg-white border-gray-200"
             }`}>
               <div className="flex items-center justify-between">
                 <span className="font-extrabold text-gray-900 flex items-center gap-1.5">
                   <span>🛡️</span> E-COM Protect Plan
                 </span>
-                <span className="text-emerald-700 font-black text-sm">₹199</span>
+                <span className="text-blue-700 font-black text-sm">₹199</span>
               </div>
               <p className="text-gray-500 text-[11px] leading-tight">Add 1-Year Extended Warranty covering accidental damage &amp; battery replacement.</p>
               <button
@@ -1343,7 +1343,7 @@ const SUB_NAV_ITEMS = [
                 onClick={handleToggleWarranty}
                 className={`w-full font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs ${
                   warrantyAdded 
-                    ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20" 
+                    ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20" 
                     : "bg-gray-100 hover:bg-gray-200 text-gray-900"
                 }`}
               >
@@ -1369,7 +1369,7 @@ const SUB_NAV_ITEMS = [
                 </div>
                 <div>
                   <p className="font-bold text-gray-900">E-COM Official Retail Hub</p>
-                  <p className="text-[10px] text-emerald-600 font-bold">4.9 ★ 98% Positive Feedback</p>
+                  <p className="text-[10px] text-blue-600 font-bold">4.9 ★ 98% Positive Feedback</p>
                 </div>
               </div>
 
@@ -1398,7 +1398,7 @@ const SUB_NAV_ITEMS = [
                   <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=200" alt="EVA Case" className="w-9 h-9 object-contain rounded-lg bg-white p-0.5" />
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-gray-900 truncate">EVA Hard Storage Case</p>
-                    <p className="font-black text-emerald-700 text-xs">₹400.00</p>
+                    <p className="font-black text-blue-700 text-xs">₹400.00</p>
                   </div>
                   <button
                     type="button"
@@ -1410,7 +1410,7 @@ const SUB_NAV_ITEMS = [
                       }
                     }}
                     className={`font-extrabold text-[10px] px-3 py-1.5 rounded-xl transition cursor-pointer ${
-                      addon1Added ? "bg-emerald-600 text-white" : "bg-gray-900 hover:bg-black text-white"
+                      addon1Added ? "bg-blue-600 text-white" : "bg-gray-900 hover:bg-black text-white"
                     }`}
                   >
                     {addon1Added ? "✓ Added" : "+ Add"}
@@ -1421,7 +1421,7 @@ const SUB_NAV_ITEMS = [
                   <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200" alt="Fast Charger" className="w-9 h-9 object-contain rounded-lg bg-white p-0.5" />
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-gray-900 truncate">65W Fast Wall Adapter</p>
-                    <p className="font-black text-emerald-700 text-xs">₹599.00</p>
+                    <p className="font-black text-blue-700 text-xs">₹599.00</p>
                   </div>
                   <button
                     type="button"
@@ -1433,7 +1433,7 @@ const SUB_NAV_ITEMS = [
                       }
                     }}
                     className={`font-extrabold text-[10px] px-3 py-1.5 rounded-xl transition cursor-pointer ${
-                      addon2Added ? "bg-emerald-600 text-white" : "bg-gray-900 hover:bg-black text-white"
+                      addon2Added ? "bg-blue-600 text-white" : "bg-gray-900 hover:bg-black text-white"
                     }`}
                   >
                     {addon2Added ? "✓ Added" : "+ Add"}
@@ -1454,7 +1454,7 @@ const SUB_NAV_ITEMS = [
             <h3 className="text-base font-black text-gray-900 uppercase tracking-wider flex items-center gap-2">
               <span>Frequently Bought Together</span>
             </h3>
-            <span className="text-xs font-bold text-emerald-700">Eligible for Free Delivery</span>
+            <span className="text-xs font-bold text-blue-700">Eligible for Free Delivery</span>
           </div>
           
           <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
@@ -1463,7 +1463,7 @@ const SUB_NAV_ITEMS = [
             <div className="flex flex-wrap items-center gap-4 flex-1">
               {/* Item 1: Main Product */}
               <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 w-56 space-y-2 text-xs relative shadow-2xs">
-                <span className="absolute top-3 right-3 text-emerald-600 font-bold text-sm">✓</span>
+                <span className="absolute top-3 right-3 text-blue-600 font-bold text-sm">✓</span>
                 <img src={selectedImage} alt={product.title} className="w-20 h-20 object-contain mx-auto rounded-lg" />
                 <p className="font-bold text-gray-900 line-clamp-2 leading-tight">This item: {product.title}</p>
                 <p className="font-black text-gray-900">₹{product.price.toLocaleString("en-IN")}.00</p>
@@ -1475,10 +1475,10 @@ const SUB_NAV_ITEMS = [
                   <span className="text-2xl font-black text-gray-400">+</span>
                   <div
                     onClick={() => setAddon1Added(false)}
-                    className="bg-gray-50 border border-emerald-300 rounded-2xl p-4 w-60 space-y-2 text-xs relative cursor-pointer hover:bg-emerald-50/50 transition shadow-2xs group"
+                    className="bg-gray-50 border border-blue-300 rounded-2xl p-4 w-60 space-y-2 text-xs relative cursor-pointer hover:bg-blue-50/50 transition shadow-2xs group"
                     title="Click to remove from combo"
                   >
-                    <span className="absolute top-3 right-3 text-emerald-600 font-bold text-sm">✓</span>
+                    <span className="absolute top-3 right-3 text-blue-600 font-bold text-sm">✓</span>
                     <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400" alt="EVA Case" className="w-20 h-20 object-contain mx-auto rounded-lg" />
                     <p className="font-bold text-gray-900 line-clamp-2 leading-tight">GadgetBite Headphone Carrying Hard EVA Case</p>
                     <div className="flex justify-between items-center pt-1">
@@ -1495,10 +1495,10 @@ const SUB_NAV_ITEMS = [
                   <span className="text-2xl font-black text-gray-400">+</span>
                   <div
                     onClick={() => setAddon2Added(false)}
-                    className="bg-gray-50 border border-emerald-300 rounded-2xl p-4 w-60 space-y-2 text-xs relative cursor-pointer hover:bg-emerald-50/50 transition shadow-2xs group"
+                    className="bg-gray-50 border border-blue-300 rounded-2xl p-4 w-60 space-y-2 text-xs relative cursor-pointer hover:bg-blue-50/50 transition shadow-2xs group"
                     title="Click to remove from combo"
                   >
-                    <span className="absolute top-3 right-3 text-emerald-600 font-bold text-sm">✓</span>
+                    <span className="absolute top-3 right-3 text-blue-600 font-bold text-sm">✓</span>
                     <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" alt="Fast Charger" className="w-20 h-20 object-contain mx-auto rounded-lg" />
                     <p className="font-bold text-gray-900 line-clamp-2 leading-tight">65W Fast Wall Adapter Charger</p>
                     <div className="flex justify-between items-center pt-1">
@@ -1519,7 +1519,7 @@ const SUB_NAV_ITEMS = [
                         setAddon1Added(true);
                         handleAddAddon({ id: 9901, title: "EVA Hard Storage Case", price: 400, image: "https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400" }, () => {});
                       }}
-                      className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold text-xs px-3 py-2 rounded-xl border border-emerald-200 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                      className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-extrabold text-xs px-3 py-2 rounded-xl border border-blue-200 transition cursor-pointer flex items-center gap-1 shadow-2xs"
                     >
                       <span>+ Add EVA Storage Case (₹400)</span>
                     </button>
@@ -1531,7 +1531,7 @@ const SUB_NAV_ITEMS = [
                         setAddon2Added(true);
                         handleAddAddon({ id: 9902, title: "65W Fast Wall Adapter", price: 599, image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400" }, () => {});
                       }}
-                      className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold text-xs px-3 py-2 rounded-xl border border-emerald-200 transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                      className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-extrabold text-xs px-3 py-2 rounded-xl border border-blue-200 transition cursor-pointer flex items-center gap-1 shadow-2xs"
                     >
                       <span>+ Add 65W Charger (₹599)</span>
                     </button>
@@ -1550,7 +1550,7 @@ const SUB_NAV_ITEMS = [
               <button
                 type="button"
                 onClick={handleBuyCombo}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-emerald-600/20 text-center block cursor-pointer uppercase tracking-wider"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-blue-600/20 text-center block cursor-pointer uppercase tracking-wider"
               >
                 ⚡ Buy Combo ({1 + (addon1Added ? 1 : 0) + (addon2Added ? 1 : 0)} Items)
               </button>
@@ -1588,7 +1588,7 @@ const SUB_NAV_ITEMS = [
               return (
                 <div
                   key={sIdx}
-                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group"
+                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-blue-400 transition group"
                 >
                   <Link href={`/product/${sp.handle}`} className="space-y-2 block flex-1 cursor-pointer">
                     <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
@@ -1599,8 +1599,8 @@ const SUB_NAV_ITEMS = [
                         </span>
                       )}
                     </div>
-                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{sp.title}</h4>
-                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.8</span> <span className="text-emerald-700 font-extrabold">✓ E-COM Assured</span></p>
+                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition">{sp.title}</h4>
+                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.8</span> <span className="text-blue-700 font-extrabold">✓ E-COM Assured</span></p>
                     <div>
                       <p className="font-black text-sm text-gray-900">₹{spPrice.toLocaleString("en-IN")}.00</p>
                       {spCompare > spPrice && (
@@ -1623,7 +1623,7 @@ const SUB_NAV_ITEMS = [
                       mode="buy"
                       productObj={sp}
                       productHandle={sp.handle}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-xs cursor-pointer"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-xs cursor-pointer"
                     >
                       ⚡ Buy Now
                     </BuyNowButton>
@@ -1653,7 +1653,7 @@ const SUB_NAV_ITEMS = [
               return (
                 <div
                   key={vIdx}
-                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-emerald-400 transition group"
+                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-blue-400 transition group"
                 >
                   <Link href={`/product/${viewed.handle}`} className="space-y-2 block flex-1 cursor-pointer">
                     <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
@@ -1664,8 +1664,8 @@ const SUB_NAV_ITEMS = [
                         </span>
                       )}
                     </div>
-                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-emerald-700 transition">{viewed.title}</h4>
-                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.7</span> <span className="text-emerald-700 font-extrabold">✓ Verified Quality</span></p>
+                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition">{viewed.title}</h4>
+                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.7</span> <span className="text-blue-700 font-extrabold">✓ Verified Quality</span></p>
                     <div>
                       <p className="font-black text-sm text-gray-900">₹{vPrice.toLocaleString("en-IN")}.00</p>
                       {vCompare > vPrice && (
@@ -1688,7 +1688,7 @@ const SUB_NAV_ITEMS = [
                       mode="buy"
                       productObj={viewed}
                       productHandle={viewed.handle}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-xs cursor-pointer"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-xs cursor-pointer"
                     >
                       ⚡ Buy Now
                     </BuyNowButton>
@@ -1740,25 +1740,25 @@ const SUB_NAV_ITEMS = [
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 font-medium">
-                  <tr className={selectedSize === "6" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <tr className={selectedSize === "6" ? "bg-blue-50 font-bold text-blue-800" : ""}>
                     <td className="p-2.5 border border-gray-200 font-black">6</td>
                     <td className="p-2.5 border border-gray-200">24.5 cm</td>
                     <td className="p-2.5 border border-gray-200">7</td>
                     <td className="p-2.5 border border-gray-200">39</td>
                   </tr>
-                  <tr className={selectedSize === "7" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <tr className={selectedSize === "7" ? "bg-blue-50 font-bold text-blue-800" : ""}>
                     <td className="p-2.5 border border-gray-200 font-black">7</td>
                     <td className="p-2.5 border border-gray-200">25.5 cm</td>
                     <td className="p-2.5 border border-gray-200">8</td>
                     <td className="p-2.5 border border-gray-200">40.5</td>
                   </tr>
-                  <tr className={selectedSize === "8" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <tr className={selectedSize === "8" ? "bg-blue-50 font-bold text-blue-800" : ""}>
                     <td className="p-2.5 border border-gray-200 font-black">8</td>
                     <td className="p-2.5 border border-gray-200">26.5 cm</td>
                     <td className="p-2.5 border border-gray-200">9</td>
                     <td className="p-2.5 border border-gray-200">42</td>
                   </tr>
-                  <tr className={selectedSize === "9" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <tr className={selectedSize === "9" ? "bg-blue-50 font-bold text-blue-800" : ""}>
                     <td className="p-2.5 border border-gray-200 font-black">9</td>
                     <td className="p-2.5 border border-gray-200">27.5 cm</td>
                     <td className="p-2.5 border border-gray-200">10</td>
@@ -1777,25 +1777,25 @@ const SUB_NAV_ITEMS = [
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 font-medium">
-                  <tr className={selectedSize === "S" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <tr className={selectedSize === "S" ? "bg-blue-50 font-bold text-blue-800" : ""}>
                     <td className="p-2.5 border border-gray-200 font-black">S</td>
                     <td className="p-2.5 border border-gray-200">36 - 38"</td>
                     <td className="p-2.5 border border-gray-200">30 - 32"</td>
                     <td className="p-2.5 border border-gray-200">27"</td>
                   </tr>
-                  <tr className={selectedSize === "M" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <tr className={selectedSize === "M" ? "bg-blue-50 font-bold text-blue-800" : ""}>
                     <td className="p-2.5 border border-gray-200 font-black">M</td>
                     <td className="p-2.5 border border-gray-200">38 - 40"</td>
                     <td className="p-2.5 border border-gray-200">32 - 34"</td>
                     <td className="p-2.5 border border-gray-200">28"</td>
                   </tr>
-                  <tr className={selectedSize === "L" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <tr className={selectedSize === "L" ? "bg-blue-50 font-bold text-blue-800" : ""}>
                     <td className="p-2.5 border border-gray-200 font-black">L</td>
                     <td className="p-2.5 border border-gray-200">40 - 42"</td>
                     <td className="p-2.5 border border-gray-200">34 - 36"</td>
                     <td className="p-2.5 border border-gray-200">29"</td>
                   </tr>
-                  <tr className={selectedSize === "XL" ? "bg-emerald-50 font-bold text-emerald-800" : ""}>
+                  <tr className={selectedSize === "XL" ? "bg-blue-50 font-bold text-blue-800" : ""}>
                     <td className="p-2.5 border border-gray-200 font-black">XL</td>
                     <td className="p-2.5 border border-gray-200">42 - 44"</td>
                     <td className="p-2.5 border border-gray-200">36 - 38"</td>
@@ -1805,7 +1805,7 @@ const SUB_NAV_ITEMS = [
               </table>
             )}
 
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-[11px] text-emerald-900 font-bold">
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-3 text-[11px] text-blue-900 font-bold">
               💡 Tip: If you prefer a relaxed fit, we recommend selecting one size larger.
             </div>
 

@@ -21,7 +21,7 @@ export function OrderTrackingStepper({ status }: OrderTrackingStepperProps) {
         <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
           <span>📦 Order Tracking Stepper Timeline</span>
         </h3>
-        <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">
+        <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">
           LIVE STATUS: {status}
         </span>
       </div>
@@ -37,9 +37,9 @@ export function OrderTrackingStepper({ status }: OrderTrackingStepperProps) {
               key={step.key}
               className={`relative flex flex-col items-center text-center p-3 rounded-2xl border transition ${
                 isCurrent
-                  ? "bg-emerald-50/80 border-emerald-400 ring-2 ring-emerald-200"
+                  ? "bg-blue-50/80 border-blue-400 ring-2 ring-blue-200"
                   : isCompleted
-                  ? "bg-emerald-50/30 border-emerald-200"
+                  ? "bg-blue-50/30 border-blue-200"
                   : "bg-gray-50 border-gray-200 opacity-60"
               }`}
             >
@@ -47,7 +47,7 @@ export function OrderTrackingStepper({ status }: OrderTrackingStepperProps) {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-sm mb-2 shadow-xs transition ${
                   isCompleted || isCurrent
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-blue-600 text-white"
                     : "bg-gray-200 text-gray-500"
                 }`}
               >

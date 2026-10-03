@@ -38,7 +38,7 @@ export function PincodeChecker() {
   return (
     <div className="my-4 p-4 rounded-2xl bg-gray-50 border border-gray-200">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-emerald-700 font-extrabold text-sm">📍 Delivery &amp; Availability Check</span>
+        <span className="text-blue-700 font-extrabold text-sm">📍 Delivery &amp; Availability Check</span>
       </div>
       
       <form onSubmit={handleCheck} className="flex gap-2 mt-3">
@@ -48,7 +48,7 @@ export function PincodeChecker() {
           placeholder="Enter 6-digit Pincode (e.g. 400001)"
           value={pincode}
           onChange={(e) => setPincode(e.target.value.replace(/\D/g, ""))}
-          className="flex-1 bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:border-emerald-500 focus:outline-none"
+          className="flex-1 bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:outline-none"
         />
         <button
           type="submit"
@@ -61,9 +61,9 @@ export function PincodeChecker() {
 
       {result && (
         <div className="mt-4 pt-3 border-t border-gray-200 space-y-1.5 text-xs">
-          <div className="flex items-center justify-between text-emerald-700 font-bold">
+          <div className="flex items-center justify-between text-blue-700 font-bold">
             <span>✓ Serviceable to Pincode {pincode}</span>
-            <span className="bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg text-[10px] font-bold">
+            <span className="bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-lg text-[10px] font-bold">
               {result.estimated_delivery}
             </span>
           </div>

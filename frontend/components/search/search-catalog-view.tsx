@@ -237,7 +237,7 @@ export function SearchCatalogView({
 
           {/* Banner Content Overlay */}
           <div className="relative z-10 h-full flex flex-col justify-center px-6 sm:px-12 max-w-2xl space-y-3 text-white">
-            <span className="bg-emerald-500/90 backdrop-blur-md text-white text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border border-emerald-300/40 inline-block self-start shadow-md">
+            <span className="bg-blue-600/90 backdrop-blur-md text-white text-[10px] font-black tracking-widest uppercase px-3 py-1 rounded-full border border-blue-400/40 inline-block self-start shadow-md">
               {currentBanner.tag}
             </span>
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight drop-shadow-md">
@@ -271,7 +271,7 @@ export function SearchCatalogView({
                     key={i}
                     onClick={() => setActiveSlide(i)}
                     className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      i === activeSlide ? "w-7 bg-emerald-500 shadow-md" : "w-2.5 bg-white/50 hover:bg-white"
+                      i === activeSlide ? "w-7 bg-blue-600 shadow-md" : "w-2.5 bg-white/50 hover:bg-white"
                     }`}
                   />
                 ))}
@@ -317,7 +317,7 @@ export function SearchCatalogView({
               <button
                 onClick={() => setViewMode("grid")}
                 className={`p-1.5 rounded-xl font-bold transition cursor-pointer ${
-                  viewMode === "grid" ? "bg-white text-emerald-700 shadow-2xs" : "text-gray-400 hover:bg-gray-200"
+                  viewMode === "grid" ? "bg-white text-blue-700 shadow-2xs" : "text-gray-400 hover:bg-gray-200"
                 }`}
                 title="Grid View"
               >
@@ -326,7 +326,7 @@ export function SearchCatalogView({
               <button
                 onClick={() => setViewMode("list")}
                 className={`p-1.5 rounded-xl font-bold transition cursor-pointer ${
-                  viewMode === "list" ? "bg-white text-emerald-700 shadow-2xs" : "text-gray-400 hover:bg-gray-200"
+                  viewMode === "list" ? "bg-white text-blue-700 shadow-2xs" : "text-gray-400 hover:bg-gray-200"
                 }`}
                 title="List View"
               >
@@ -346,7 +346,7 @@ export function SearchCatalogView({
           <div className="flex justify-center gap-3 mt-4">
             <Link
               href="/admin/products"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
             >
               + Add Products in Admin Panel &rarr;
             </Link>
@@ -388,7 +388,7 @@ export function SearchCatalogView({
                           -{discountPercent}% OFF
                         </span>
                         {idx % 2 === 1 && (
-                          <span className="bg-emerald-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase">
+                          <span className="bg-blue-600 text-white text-[9px] font-black px-2 py-0.5 rounded-md uppercase">
                             Bestseller
                           </span>
                         )}
@@ -429,7 +429,7 @@ export function SearchCatalogView({
                 {/* Details */}
                 <div className="space-y-2 flex-1 flex flex-col justify-between w-full">
                   <div>
-                    <h3 className="font-bold text-xs text-gray-900 group-hover:text-emerald-700 transition line-clamp-2 leading-snug">
+                    <h3 className="font-bold text-xs text-gray-900 group-hover:text-blue-600 transition line-clamp-2 leading-snug">
                       <Link href={`/product/${itemHandle}`}>{product.title}</Link>
                     </h3>
                   </div>
@@ -464,7 +464,7 @@ export function SearchCatalogView({
                       <BuyNowButton
                         productHandle={itemHandle}
                         productObj={product}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
                         ⚡ Buy Now
                       </BuyNowButton>
@@ -519,7 +519,7 @@ export function SearchCatalogView({
 
                 <div className="flex-1 space-y-3 w-full flex flex-col justify-between">
                   <div className="space-y-1.5">
-                    <h3 className="font-extrabold text-base text-gray-900 group-hover:text-emerald-700 transition leading-snug">
+                    <h3 className="font-extrabold text-base text-gray-900 group-hover:text-blue-600 transition leading-snug">
                       <Link href={`/product/${itemHandle}`}>{product.title}</Link>
                     </h3>
                     <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">
@@ -547,7 +547,7 @@ export function SearchCatalogView({
                       <BuyNowButton
                         productHandle={itemHandle}
                         productObj={product}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-2.5 px-5 rounded-xl transition text-center flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-2.5 px-5 rounded-xl transition text-center flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                       >
                         ⚡ Buy Now
                       </BuyNowButton>
@@ -581,7 +581,7 @@ export function SearchCatalogView({
                 onClick={() => handlePageChange(num)}
                 className={`web-page-btn w-8 h-8 rounded-xl font-bold flex items-center justify-center transition cursor-pointer ${
                   isCurrent
-                    ? "bg-emerald-600 text-white shadow-xs"
+                    ? "bg-blue-600 text-white shadow-xs"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >

@@ -24,7 +24,7 @@ export function WhatsAppFloatingWidget() {
         <div className="mb-3 bg-neutral-900 border border-neutral-800 p-4 rounded-2xl shadow-2xl w-72 text-white animate-in fade-in slide-in-from-bottom-2">
           <div className="flex justify-between items-center pb-3 border-b border-neutral-800">
             <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-500 animate-pulse"></span>
               <h5 className="font-bold text-xs">E-COM WhatsApp Support</h5>
             </div>
             <button onClick={() => setOpen(false)} className="text-neutral-400 hover:text-white text-xs font-bold">
@@ -39,7 +39,7 @@ export function WhatsAppFloatingWidget() {
           <div className="space-y-2">
             <button
               onClick={() => handleOpenWhatsApp("Hi, I want to track my order status!")}
-              className="w-full text-left bg-neutral-950 hover:bg-neutral-800 border border-neutral-800 p-2 rounded-lg text-xs transition text-emerald-400 font-medium"
+              className="w-full text-left bg-neutral-950 hover:bg-neutral-800 border border-neutral-800 p-2 rounded-lg text-xs transition text-sky-400 font-medium"
             >
               🚚 Track My Order Status
             </button>
@@ -55,7 +55,7 @@ export function WhatsAppFloatingWidget() {
 
       <button
         onClick={() => setOpen(!open)}
-        className="w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-full shadow-2xl flex items-center justify-center text-2xl transition-transform hover:scale-110 focus:ring-4 focus:ring-emerald-400/50 cursor-pointer"
+        className="w-14 h-14 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-full shadow-2xl flex items-center justify-center text-2xl transition-transform hover:scale-110 focus:ring-4 focus:ring-blue-400/50 cursor-pointer"
         title="Chat on WhatsApp"
       >
         💬

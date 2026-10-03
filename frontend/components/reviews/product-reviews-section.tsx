@@ -149,7 +149,7 @@ export function ProductReviewsSection({ productId, productTitle }: ProductReview
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Share your real experience with this product..."
-          className="w-full bg-white border border-gray-300 rounded-xl p-3 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full bg-white border border-gray-300 rounded-xl p-3 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
         <input
@@ -157,14 +157,14 @@ export function ProductReviewsSection({ productId, productTitle }: ProductReview
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
           placeholder="Optional Photo URL (Cloudinary / Unsplash photo link)"
-          className="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="w-full bg-white border border-gray-300 rounded-xl p-2.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
 
         <div className="flex justify-end">
           <button
             type="submit"
             disabled={submitting}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-2 rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-2 rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50"
           >
             {submitting ? "Submitting..." : "Submit Verified Review"}
           </button>
@@ -182,7 +182,7 @@ export function ProductReviewsSection({ productId, productTitle }: ProductReview
             <div key={rev.id} className="border-b border-gray-100 pb-4 space-y-1.5 text-xs">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-gray-900">{rev.user_name || "Verified Customer"}</span>
-                <span className="text-[10px] text-emerald-700 font-extrabold bg-emerald-50 px-2 py-0.5 rounded-md">
+                <span className="text-[10px] text-blue-700 font-extrabold bg-blue-50 px-2 py-0.5 rounded-md">
                   ✓ Verified Purchase
                 </span>
               </div>

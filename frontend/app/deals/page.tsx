@@ -195,7 +195,7 @@ export default function DealsPage() {
                         </div>
                         <div className="flex items-center justify-between text-[11px] pt-1">
                           <span className="bg-gray-800 text-white font-bold px-2 py-0.5 rounded">Earlier ₹{item.earlier}</span>
-                          <span className="bg-emerald-600 text-white font-bold px-2 py-0.5 rounded">Now ₹{item.now}</span>
+                          <span className="bg-blue-600 text-white font-bold px-2 py-0.5 rounded">Now ₹{item.now}</span>
                         </div>
                       </div>
                     </Link>
@@ -220,7 +220,7 @@ export default function DealsPage() {
                           }}
                           productHandle={item.handle}
                           productTitle={item.title}
-                          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black py-2.5 rounded-2xl text-center transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
+                          className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-black py-2.5 rounded-2xl text-center transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                         >
                           <span>🪙</span> Save ₹{item.save} / unit
                         </BuyNowButton>
