@@ -54,7 +54,7 @@ export default async function ProductPage(props: {
           </div>
           <Link
             href="/"
-            className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-6 py-3 rounded-xl transition shadow-md"
+            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-6 py-3 rounded-xl transition shadow-md"
           >
             ← Back to Storefront
           </Link>

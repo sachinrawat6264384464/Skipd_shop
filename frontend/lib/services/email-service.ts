@@ -87,8 +87,8 @@ export function sendOrderInvoiceEmail(email: string, username: string, order: an
       owner_contact: {
         owner_name: "Sachin Rawat (Store Founder & Owner)",
         phone: "+91 98765 43210",
-        email: "owner@e-com.in / support@e-com.in",
-        helpdesk: "https://e-com-shop.vercel.app/help"
+        email: "owner@botcom.in / support@botcom.in",
+        helpdesk: "https://botcom-shop.vercel.app/help"
       }
     }
   };
@@ -152,7 +152,7 @@ export function sendCampaignPromotionalEmail(campaign: {
   try {
     // Gather registered customers
     const registeredUsers = JSON.parse(localStorage.getItem("ecom_registered_users") || "[]");
-    const sampleEmails = ["sachinrawat6264384464@gmail.com", "customer@e-com.in", "amit@gmail.com", "priya@yahoo.com"];
+    const sampleEmails = ["sachinrawat6264384464@gmail.com", "customer@botcom.in", "amit@gmail.com", "priya@yahoo.com"];
 
     const userEmails = registeredUsers.map((u: any) => typeof u === "string" ? u : u.email).filter(Boolean);
     const targetEmails = Array.from(new Set([...userEmails, ...sampleEmails]));
@@ -166,7 +166,7 @@ export function sendCampaignPromotionalEmail(campaign: {
         timestamp: new Date().toISOString(),
         username: username,
         details: {
-          message: `Hi ${username},\n\n🎉 ${campaign.title} is now LIVE on BotCom Commerce!\n\nDiscount Offer: ${campaign.discountOffer}\nTagline: ${campaign.subtitle || "Exclusive Limited Time Offer"}\nValid Dates: ${campaign.startDate || "May 25, 2025"} to ${campaign.endDate || "May 31, 2025"}\n\nVisit BotCom Commerce now to grab deals: https://e-com-shop.vercel.app/deals`,
+          message: `Hi ${username},\n\n🎉 ${campaign.title} is now LIVE on BotCom Commerce!\n\nDiscount Offer: ${campaign.discountOffer}\nTagline: ${campaign.subtitle || "Exclusive Limited Time Offer"}\nValid Dates: ${campaign.startDate || "May 25, 2025"} to ${campaign.endDate || "May 31, 2025"}\n\nVisit BotCom Commerce now to grab deals: https://botcom-shop.vercel.app/deals`,
           campaign_title: campaign.title,
           discount: campaign.discountOffer,
           email: email

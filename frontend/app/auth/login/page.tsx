@@ -161,33 +161,33 @@ export default function CustomerLoginPage() {
   return (
     <div className="min-h-screen bg-gray-50 text-gray-900 flex flex-col md:flex-row w-full font-sans overflow-x-hidden">
       
-      {/* 🟢 LEFT STATIC HERO PANEL (50% Full Screen Height - Dark Emerald Theme) */}
-      <div className="md:w-1/2 bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-950 text-white p-8 lg:p-16 flex flex-col justify-between relative overflow-hidden shrink-0 border-r border-emerald-800/40 min-h-[400px] md:min-h-screen">
+      {/* 🟢 LEFT STATIC HERO PANEL (50% Full Screen Height - Electric Blue Theme) */}
+      <div className="md:w-1/2 bg-gradient-to-br from-slate-950 via-blue-950 to-indigo-950 text-white p-8 lg:p-16 flex flex-col justify-between relative overflow-hidden shrink-0 border-r border-blue-800/40 min-h-[400px] md:min-h-screen">
         
         {/* Decorative Glowing Orbs */}
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header & Branding */}
         <div className="space-y-6 z-10">
           <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition">
+            <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-blue-500/30 group-hover:scale-105 transition">
               🛍️
             </div>
             <div>
-              <span className="text-2xl font-black tracking-tight text-white block leading-none">SKIPD SHOP</span>
-              <span className="text-[10px] font-bold text-emerald-400 tracking-wider uppercase">Official Storefront</span>
+              <span className="text-2xl font-black tracking-tight text-white block leading-none">BOTCOM SHOP</span>
+              <span className="text-[10px] font-bold text-sky-400 tracking-wider uppercase">Official Storefront</span>
             </div>
           </Link>
 
           <div className="space-y-3 pt-4">
-            <span className="bg-emerald-500/20 text-emerald-300 text-xs font-black px-3.5 py-1.5 rounded-full border border-emerald-400/30 uppercase tracking-wider inline-block">
+            <span className="bg-blue-500/20 text-blue-300 text-xs font-black px-3.5 py-1.5 rounded-full border border-blue-400/30 uppercase tracking-wider inline-block">
               ✨ Customer Portal Access
             </span>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white leading-tight tracking-tight">
-              {isForgotView ? "Account Password Recovery" : "Welcome Back to Skipd Store!"}
+              {isForgotView ? "Account Password Recovery" : "Welcome Back to BotCom Store!"}
             </h1>
-            <p className="text-emerald-100/80 text-xs sm:text-sm lg:text-base leading-relaxed font-medium max-w-md">
+            <p className="text-blue-100/80 text-xs sm:text-sm lg:text-base leading-relaxed font-medium max-w-md">
               {isForgotView
                 ? "Verify your registered email to reset your account password securely."
                 : "Manage your orders, track shipments in real-time, view wishlist & enjoy exclusive Supercoin rewards."}
@@ -198,47 +198,47 @@ export default function CustomerLoginPage() {
         {/* Middle Feature Highlights List */}
         <div className="z-10 my-8 space-y-3 max-w-md">
           <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-blue-500/30 text-sky-300 flex items-center justify-center font-bold text-sm shrink-0">
               ⚡
             </div>
             <div>
               <p className="font-extrabold text-white">Express 2-Day Delivery Across India</p>
-              <p className="text-[11px] text-emerald-200/80">Priority shipping on all active verified orders</p>
+              <p className="text-[11px] text-blue-200/80">Priority shipping on all active verified orders</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-blue-500/30 text-sky-300 flex items-center justify-center font-bold text-sm shrink-0">
               🔒
             </div>
             <div>
               <p className="font-extrabold text-white">256-bit Encrypted SSL Security</p>
-              <p className="text-[11px] text-emerald-200/80">Protected customer authentication & payments</p>
+              <p className="text-[11px] text-blue-200/80">Protected customer authentication & payments</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 p-3.5 bg-white/10 backdrop-blur-md rounded-2xl border border-white/15 text-xs">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/30 text-emerald-300 flex items-center justify-center font-bold text-sm shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-blue-500/30 text-sky-300 flex items-center justify-center font-bold text-sm shrink-0">
               🎁
             </div>
             <div>
               <p className="font-extrabold text-white">250 Instant Reward Supercoins</p>
-              <p className="text-[11px] text-emerald-200/80">Redeemable on your very next order purchase</p>
+              <p className="text-[11px] text-blue-200/80">Redeemable on your very next order purchase</p>
             </div>
           </div>
         </div>
 
         {/* Footer Customer Trust Stats */}
-        <div className="z-10 pt-4 border-t border-emerald-800/60 flex items-center justify-between">
+        <div className="z-10 pt-4 border-b-0 border-blue-800/60 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="flex -space-x-2">
-              <span className="w-7 h-7 rounded-full bg-emerald-400 text-emerald-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">S</span>
-              <span className="w-7 h-7 rounded-full bg-teal-400 text-teal-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">R</span>
-              <span className="w-7 h-7 rounded-full bg-green-400 text-green-950 font-black text-xs flex items-center justify-center border-2 border-emerald-950">A</span>
+              <span className="w-7 h-7 rounded-full bg-blue-400 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-slate-950">S</span>
+              <span className="w-7 h-7 rounded-full bg-sky-400 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-slate-950">R</span>
+              <span className="w-7 h-7 rounded-full bg-cyan-400 text-slate-950 font-black text-xs flex items-center justify-center border-2 border-slate-950">A</span>
             </div>
-            <span className="text-xs font-extrabold text-emerald-200">50,000+ Happy Customers</span>
+            <span className="text-xs font-extrabold text-blue-200">50,000+ Happy Customers</span>
           </div>
-          <span className="text-[10px] font-bold text-emerald-400/80 uppercase tracking-widest">★ 4.9 Verified Rating</span>
+          <span className="text-[10px] font-bold text-sky-400/80 uppercase tracking-widest">★ 4.9 Verified Rating</span>
         </div>
 
       </div>
@@ -251,7 +251,7 @@ export default function CustomerLoginPage() {
           <div className="flex bg-gray-100 p-1.5 rounded-2xl mb-8 border border-gray-200">
             <button
               type="button"
-              className="flex-1 py-3 text-xs font-black rounded-xl bg-white text-emerald-700 shadow-sm border border-gray-200 transition"
+              className="flex-1 py-3 text-xs font-black rounded-xl bg-white text-blue-700 shadow-sm border border-gray-200 transition"
             >
               🔐 LOGIN TO ACCOUNT
             </button>
@@ -274,7 +274,7 @@ export default function CustomerLoginPage() {
 
         {/* Success Banner */}
         {successMsg && (
-          <div className="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold px-4 py-3.5 rounded-2xl flex items-center gap-2 shadow-2xs">
+          <div className="mb-6 bg-blue-50 border border-blue-200 text-blue-800 text-xs font-bold px-4 py-3.5 rounded-2xl flex items-center gap-2 shadow-2xs">
             <span>✅</span>
             <span>{successMsg}</span>
           </div>
@@ -305,13 +305,13 @@ export default function CustomerLoginPage() {
                     emailCheckStatus === "error"
                       ? "border-red-500 bg-red-50/30"
                       : emailCheckStatus === "verified"
-                      ? "border-emerald-500 bg-emerald-50/30"
-                      : "border-gray-300 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20"
+                      ? "border-blue-500 bg-blue-50/30"
+                      : "border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20"
                   }`}
                 />
 
                 {emailCheckStatus === "verified" && (
-                  <div className="mt-2 text-xs font-extrabold text-emerald-700 flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 p-3 rounded-xl">
+                  <div className="mt-2 text-xs font-extrabold text-blue-700 flex items-center gap-1.5 bg-blue-50 border border-blue-200 p-3 rounded-xl">
                     <span>✓ Registered Email Verified</span>
                   </div>
                 )}
@@ -320,7 +320,7 @@ export default function CustomerLoginPage() {
               <button
                 type="submit"
                 disabled={emailCheckStatus === "checking"}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-4 rounded-2xl transition shadow-lg shadow-emerald-600/25 cursor-pointer uppercase tracking-wider"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-4 rounded-2xl transition shadow-lg shadow-blue-600/25 cursor-pointer uppercase tracking-wider"
               >
                 {emailCheckStatus === "checking" ? "Verifying Registered Email..." : "VERIFY EMAIL & CONTINUE"}
               </button>
@@ -332,7 +332,7 @@ export default function CustomerLoginPage() {
                     setIsForgotView(false);
                     setError("");
                   }}
-                  className="text-xs text-gray-500 font-bold hover:text-emerald-700 hover:underline cursor-pointer"
+                  className="text-xs text-gray-500 font-bold hover:text-blue-700 hover:underline cursor-pointer"
                 >
                   ← Return to Login
                 </button>
@@ -354,7 +354,7 @@ export default function CustomerLoginPage() {
                   placeholder="Enter new password (min 6 chars)"
                   value={newForgotPass}
                   onChange={(e) => setNewForgotPass(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition"
                 />
               </div>
 
@@ -366,14 +366,14 @@ export default function CustomerLoginPage() {
                   placeholder="Re-enter new password"
                   value={confirmForgotPass}
                   onChange={(e) => setConfirmForgotPass(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-4 rounded-2xl transition shadow-lg shadow-emerald-600/25 cursor-pointer uppercase tracking-wider"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-4 rounded-2xl transition shadow-lg shadow-blue-600/25 cursor-pointer uppercase tracking-wider"
               >
                 {loading ? "Updating Password..." : "SAVE NEW PASSWORD & LOGIN"}
               </button>
@@ -396,7 +396,7 @@ export default function CustomerLoginPage() {
                 placeholder="e.g. customer@botcom.in or +91 9876543210"
                 value={emailOrPhone}
                 onChange={(e) => setEmailOrPhone(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition font-medium"
+                className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition font-medium"
               />
             </div>
 
@@ -412,7 +412,7 @@ export default function CustomerLoginPage() {
                     setSuccessMsg("");
                     setEmailCheckStatus("idle");
                   }}
-                  className="text-xs text-emerald-700 font-bold hover:underline cursor-pointer"
+                  className="text-xs text-blue-700 font-bold hover:underline cursor-pointer"
                 >
                   Forgot Password?
                 </button>
@@ -423,17 +423,17 @@ export default function CustomerLoginPage() {
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition font-medium"
+                className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-4 text-sm text-gray-900 focus:border-blue-600 focus:ring-2 focus:ring-blue-500/20 focus:outline-none transition font-medium"
               />
             </div>
 
             <p className="text-[11px] text-gray-500 leading-normal">
-              By continuing, you agree to Skipd Store's{" "}
-              <Link href="/terms" className="text-emerald-700 font-bold hover:underline">
+              By continuing, you agree to BotCom Store's{" "}
+              <Link href="/terms" className="text-blue-700 font-bold hover:underline">
                 Terms of Service
               </Link>{" "}
               and{" "}
-              <Link href="/terms" className="text-emerald-700 font-bold hover:underline">
+              <Link href="/terms" className="text-blue-700 font-bold hover:underline">
                 Privacy Policy
               </Link>
               .
@@ -442,7 +442,7 @@ export default function CustomerLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm py-4 rounded-2xl transition shadow-lg shadow-emerald-600/30 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-sm py-4 rounded-2xl transition shadow-lg shadow-blue-600/30 cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
             >
               <span>{loading ? "Verifying Credentials..." : "LOGIN TO ACCOUNT"}</span>
               <span>&rarr;</span>

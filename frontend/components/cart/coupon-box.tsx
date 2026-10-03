@@ -54,23 +54,23 @@ export function CouponBox({
   };
 
   return (
-    <div className="bg-emerald-50/50 border border-emerald-200/70 rounded-2xl p-3.5 space-y-2 text-xs">
+    <div className="bg-blue-50/50 border border-blue-200/70 rounded-2xl p-3.5 space-y-2 text-xs">
       <div className="flex justify-between items-center">
-        <span className="font-extrabold text-emerald-900 flex items-center gap-1">
+        <span className="font-extrabold text-blue-900 flex items-center gap-1">
           <span>🎁 Have a Promo Coupon Code?</span>
         </span>
-        <span className="text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100 px-2 py-0.5 rounded-full">
+        <span className="text-[10px] font-bold text-blue-700 uppercase bg-blue-100 px-2 py-0.5 rounded-full">
           Live Offers
         </span>
       </div>
 
       {appliedCode ? (
-        <div className="flex items-center justify-between bg-white border border-emerald-300 p-2.5 rounded-xl shadow-2xs">
+        <div className="flex items-center justify-between bg-white border border-blue-300 p-2.5 rounded-xl shadow-2xs">
           <div className="flex items-center gap-2">
-            <span className="bg-emerald-600 text-white font-black text-[10px] px-2 py-0.5 rounded">
+            <span className="bg-blue-600 text-white font-black text-[10px] px-2 py-0.5 rounded">
               ✓ {appliedCode}
             </span>
-            <span className="font-bold text-emerald-800 text-xs">
+            <span className="font-bold text-blue-800 text-xs">
               Saved ₹{appliedDiscount.toLocaleString("en-IN")}.00
             </span>
           </div>
@@ -89,12 +89,12 @@ export function CouponBox({
             value={code}
             onChange={(e) => setCode(e.target.value.toUpperCase())}
             placeholder="Try WELCOME500 or FLAT20"
-            className="flex-1 bg-white border border-emerald-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 uppercase placeholder:normal-case placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="flex-1 bg-white border border-blue-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 uppercase placeholder:normal-case placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
             disabled={loading}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-2 rounded-xl transition cursor-pointer disabled:opacity-50"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-black px-4 py-2 rounded-xl transition cursor-pointer disabled:opacity-50"
           >
             {loading ? "..." : "Apply"}
           </button>
@@ -106,14 +106,14 @@ export function CouponBox({
         <button
           type="button"
           onClick={() => setCode("WELCOME500")}
-          className="bg-white hover:bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 px-2 py-0.5 rounded-md cursor-pointer transition"
+          className="bg-white hover:bg-blue-100 text-blue-800 font-bold border border-blue-200 px-2 py-0.5 rounded-md cursor-pointer transition"
         >
           🏷️ WELCOME500 (₹500 Off)
         </button>
         <button
           type="button"
           onClick={() => setCode("FLAT20")}
-          className="bg-white hover:bg-emerald-100 text-emerald-800 font-bold border border-emerald-200 px-2 py-0.5 rounded-md cursor-pointer transition"
+          className="bg-white hover:bg-blue-100 text-blue-800 font-bold border border-blue-200 px-2 py-0.5 rounded-md cursor-pointer transition"
         >
           🏷️ FLAT20 (20% Off)
         </button>

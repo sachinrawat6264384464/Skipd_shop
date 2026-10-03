@@ -967,7 +967,7 @@ export async function verifyOTP(emailOrPhone: string, otp: string) {
   return {
     access_token: "jwt_token_demo_ecom_2026",
     user_name: name,
-    email: emailOrPhone.includes("@") ? emailOrPhone : "customer@e-com.in",
+    email: emailOrPhone.includes("@") ? emailOrPhone : "customer@botcom.in",
     phone: !emailOrPhone.includes("@") ? emailOrPhone : "9876543210",
     can_change_password: true,
     message: "OTP verified successfully!"
@@ -1029,8 +1029,8 @@ export async function checkEmailRegistered(email: string) {
     "sachin.rawat@email.com",
     "sachinrawat6264384464@gmail.com",
     "familyzila1213@gmail.com",
-    "customer@e-com.in",
-    "admin@e-com.in",
+    "customer@botcom.in",
+    "admin@botcom.in",
     "sachin.rawat@example.com"
   ];
 
