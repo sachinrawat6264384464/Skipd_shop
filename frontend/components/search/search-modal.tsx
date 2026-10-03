@@ -89,12 +89,12 @@ export function InstantSearchModal() {
       {/* 🔍 Search Trigger Button in Navbar (Sleek Circular Vector Icon Button) */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gray-100/90 hover:bg-emerald-50 text-gray-700 hover:text-emerald-600 border border-gray-200/80 hover:border-emerald-300 transition-all duration-200 cursor-pointer shadow-2xs hover:scale-105 group"
+        className="flex items-center justify-center w-10 h-10 rounded-2xl bg-gray-100/90 hover:bg-blue-50 text-gray-700 hover:text-blue-600 border border-gray-200/80 hover:border-blue-300 transition-all duration-200 cursor-pointer shadow-2xs hover:scale-105 group"
         title="Search store (Cmd + K)"
         aria-label="Search Store"
       >
         <svg
-          className="w-5 h-5 text-gray-700 group-hover:text-emerald-600 transition-colors"
+          className="w-5 h-5 text-gray-700 group-hover:text-blue-600 transition-colors"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -115,7 +115,7 @@ export function InstantSearchModal() {
             
             {/* Search Input Bar */}
             <div className="relative flex items-center border-b border-gray-100 pb-3">
-              <svg className="w-5 h-5 text-emerald-600 absolute left-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-blue-600 absolute left-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
@@ -143,7 +143,7 @@ export function InstantSearchModal() {
                     <button
                       key={tag}
                       onClick={() => setQuery(tag)}
-                      className="bg-gray-100 hover:bg-emerald-50 hover:text-emerald-700 text-gray-700 font-semibold px-3.5 py-1.5 rounded-xl border border-gray-200 transition cursor-pointer"
+                      className="bg-gray-100 hover:bg-blue-50 hover:text-blue-700 text-gray-700 font-semibold px-3.5 py-1.5 rounded-xl border border-gray-200 transition cursor-pointer"
                     >
                       {tag}
                     </button>
@@ -169,7 +169,7 @@ export function InstantSearchModal() {
                       key={product.id}
                       href={`/product/${product.handle}`}
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center justify-between gap-4 p-3 rounded-2xl bg-gray-50 hover:bg-emerald-50/80 border border-gray-100 hover:border-emerald-300 transition group cursor-pointer"
+                      className="flex items-center justify-between gap-4 p-3 rounded-2xl bg-gray-50 hover:bg-blue-50/80 border border-gray-100 hover:border-blue-300 transition group cursor-pointer"
                     >
                       <div className="flex items-center gap-3">
                         <img
@@ -178,7 +178,7 @@ export function InstantSearchModal() {
                           className="w-12 h-12 object-contain bg-white rounded-xl p-1 border border-gray-200 shrink-0"
                         />
                         <div>
-                          <p className="font-bold text-xs text-gray-900 group-hover:text-emerald-800 transition">
+                          <p className="font-bold text-xs text-gray-900 group-hover:text-blue-800 transition">
                             {product.title}
                           </p>
                           <span className="text-[10px] text-gray-500 font-medium">
@@ -202,7 +202,7 @@ export function InstantSearchModal() {
               <Link
                 href={`/search?q=${encodeURIComponent(query)}`}
                 onClick={() => setIsOpen(false)}
-                className="font-bold text-emerald-600 hover:underline"
+                className="font-bold text-blue-600 hover:underline"
               >
                 View all store results →
               </Link>

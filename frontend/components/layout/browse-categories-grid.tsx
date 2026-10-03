@@ -114,7 +114,7 @@ export function BrowseCategoriesGrid() {
                   <span className="inline-block text-white font-black text-sm sm:text-base tracking-wider uppercase drop-shadow-md">
                     {cat.name}
                   </span>
-                  <span className="block text-[10px] sm:text-xs text-emerald-300 font-bold group-hover:translate-x-1 transition duration-200">
+                  <span className="block text-[10px] sm:text-xs text-sky-300 font-bold group-hover:translate-x-1 transition duration-200">
                     Explore Store &rarr;
                   </span>
                 </div>

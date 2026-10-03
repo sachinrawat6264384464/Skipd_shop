@@ -48,10 +48,10 @@ export function NavLinks() {
         <button
           type="button"
           onClick={() => setIsCatOpen((prev) => !prev)}
-          className="px-4 py-2.5 rounded-xl hover:bg-emerald-50/80 transition flex items-center gap-2 font-black text-base text-gray-900 hover:text-emerald-700 cursor-pointer border-none bg-transparent"
+          className="px-4 py-2.5 rounded-xl hover:bg-blue-50/80 transition flex items-center gap-2 font-black text-base text-gray-900 hover:text-blue-600 cursor-pointer border-none bg-transparent"
         >
           <span>Categories</span>
-          <span className={`text-xs text-emerald-600 transition-transform duration-200 ${isCatOpen ? "rotate-180" : ""}`}>
+          <span className={`text-xs text-blue-600 transition-transform duration-200 ${isCatOpen ? "rotate-180" : ""}`}>
             ▼
           </span>
         </button>
@@ -70,7 +70,7 @@ export function NavLinks() {
               href="/search"
               prefetch={false}
               onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-emerald-50/80 text-emerald-900 font-black hover:bg-emerald-100/80 transition text-sm"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-50/80 text-blue-900 font-black hover:bg-blue-100/80 transition text-sm"
             >
               <span className="text-base">🛍️</span> All Categories &amp; Catalog
             </Link>
@@ -119,7 +119,7 @@ export function NavLinks() {
         <Link
           href="/deals"
           prefetch={false}
-          className="px-4 py-2.5 rounded-xl text-emerald-700 font-black hover:bg-emerald-50 transition flex items-center gap-2 text-base"
+          className="px-4 py-2.5 rounded-xl text-blue-600 font-black hover:bg-blue-50 transition flex items-center gap-2 text-base"
         >
           <span>Deals</span>
           <span className="bg-red-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs animate-pulse">
@@ -147,10 +147,10 @@ export function NavLinks() {
         <Link
           href="/new-arrivals"
           prefetch={false}
-          className="px-4 py-2.5 rounded-xl text-gray-900 font-black hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center gap-2 text-base"
+          className="px-4 py-2.5 rounded-xl text-gray-900 font-black hover:bg-blue-50 hover:text-blue-600 transition flex items-center gap-2 text-base"
         >
           <span>New Arrivals</span>
-          <span className="bg-emerald-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+          <span className="bg-blue-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
             NEW
           </span>
         </Link>

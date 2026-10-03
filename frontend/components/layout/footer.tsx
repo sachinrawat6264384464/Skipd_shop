@@ -14,8 +14,8 @@ export default function Footer() {
       <div className="border-b border-gray-100 py-8 px-4 sm:px-6 bg-slate-50/50">
         <div className="max-w-[1440px] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
           
-          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-md transition duration-300 group">
-            <span className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
+          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md transition duration-300 group">
+            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
               ⚡
             </span>
             <div>
@@ -24,8 +24,8 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-md transition duration-300 group">
-            <span className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
+          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md transition duration-300 group">
+            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
               🛡️
             </span>
             <div>
@@ -34,8 +34,8 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-md transition duration-300 group">
-            <span className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
+          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md transition duration-300 group">
+            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
               🔄
             </span>
             <div>
@@ -44,8 +44,8 @@ export default function Footer() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-emerald-400 hover:shadow-md transition duration-300 group">
-            <span className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
+          <div className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-200/80 shadow-2xs hover:border-blue-400 hover:shadow-md transition duration-300 group">
+            <span className="w-11 h-11 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center font-black text-xl group-hover:scale-110 transition duration-300">
               🔒
             </span>
             <div>
@@ -58,14 +58,14 @@ export default function Footer() {
       </div>
 
       {/* 📧 Newsletter VIP Subscription Section */}
-      <div className="border-b border-gray-200/80 py-10 px-4 sm:px-6 bg-gradient-to-r from-emerald-50/80 via-teal-50/50 to-emerald-50/80">
+      <div className="border-b border-gray-200/80 py-10 px-4 sm:px-6 bg-gradient-to-r from-blue-50/80 via-sky-50/50 to-blue-50/80">
         <div className="max-w-[1440px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="space-y-1 text-center lg:text-left">
             <h3 className="text-lg md:text-xl font-black text-gray-900 tracking-tight flex items-center justify-center lg:justify-start gap-2">
-              <span className="text-emerald-600">✨</span> Join the Botmartz Commerce VIP Club
+              <span className="text-blue-600">✨</span> Join the Botmartz Commerce VIP Club
             </h3>
             <p className="text-xs text-gray-600 font-medium">
-              Get exclusive deals, early flash sale access, and <span className="text-emerald-700 font-extrabold">₹500 instant discount</span> on your first order.
+              Get exclusive deals, early flash sale access, and <span className="text-blue-700 font-extrabold">₹500 instant discount</span> on your first order.
             </p>
           </div>
 
@@ -73,11 +73,11 @@ export default function Footer() {
             <input
               type="email"
               placeholder="Enter your email address..."
-              className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 shadow-2xs transition"
+              className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-xs text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-2xs transition"
             />
             <button
               type="submit"
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-xl transition cursor-pointer shrink-0 shadow-md shadow-emerald-600/20"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl transition cursor-pointer shrink-0 shadow-md shadow-blue-600/20"
             >
               Subscribe
             </button>
@@ -91,45 +91,45 @@ export default function Footer() {
         {/* Column 1: ABOUT */}
         <div className="space-y-3">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
             ABOUT
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><Link href="/contact" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Contact Us</Link></li>
-            <li><Link href="/about" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">About Botmartz</Link></li>
-            <li><Link href="/careers" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Careers</Link></li>
-            <li><Link href="/about#stories" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Stories</Link></li>
-            <li><Link href="/about#press" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Press Releases</Link></li>
-            <li><Link href="/about#corporate" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Corporate Info</Link></li>
+            <li><Link href="/contact" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Contact Us</Link></li>
+            <li><Link href="/about" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">About Botmartz</Link></li>
+            <li><Link href="/careers" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Careers</Link></li>
+            <li><Link href="/about#stories" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Botmartz Stories</Link></li>
+            <li><Link href="/about#press" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Press Releases</Link></li>
+            <li><Link href="/about#corporate" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Corporate Info</Link></li>
           </ul>
         </div>
 
         {/* Column 2: HELP */}
         <div className="space-y-3">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
             HELP
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><Link href="/help?tab=payments" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Payments</Link></li>
-            <li><Link href="/shipping" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Shipping &amp; Delivery</Link></li>
-            <li><Link href="/account/returns" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Cancellation &amp; Returns</Link></li>
-            <li><Link href="/help" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">FAQ &amp; Help Center</Link></li>
+            <li><Link href="/help?tab=payments" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Payments</Link></li>
+            <li><Link href="/shipping" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Shipping &amp; Delivery</Link></li>
+            <li><Link href="/account/returns" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Cancellation &amp; Returns</Link></li>
+            <li><Link href="/help" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">FAQ &amp; Help Center</Link></li>
           </ul>
         </div>
 
         {/* Column 3: CONSUMER POLICY */}
         <div className="space-y-3">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
             POLICY
           </h4>
           <ul className="space-y-2 text-gray-600 font-medium text-xs">
-            <li><Link href="/terms" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Terms Of Use</Link></li>
-            <li><Link href="/terms?tab=privacy" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Security &amp; Privacy</Link></li>
-            <li><Link href="/store-sitemap" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Sitemap</Link></li>
-            <li><Link href="/terms?tab=grievance" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">Grievance Redressal</Link></li>
-            <li><Link href="/terms?tab=epr" className="hover:text-emerald-700 hover:translate-x-1 transition duration-150 inline-block">EPR Compliance</Link></li>
+            <li><Link href="/terms" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Terms Of Use</Link></li>
+            <li><Link href="/terms?tab=privacy" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Security &amp; Privacy</Link></li>
+            <li><Link href="/store-sitemap" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Sitemap</Link></li>
+            <li><Link href="/terms?tab=grievance" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Grievance Redressal</Link></li>
+            <li><Link href="/terms?tab=epr" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">EPR Compliance</Link></li>
           </ul>
         </div>
 
@@ -137,15 +137,15 @@ export default function Footer() {
         <div className="space-y-3 col-span-2 md:col-span-1 border-l border-gray-200/80 pl-0 md:pl-4">
           <img src="/2.png" alt="BOTCOM Logo" className="h-12 object-contain mb-1" />
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
             MAIL US:
           </h4>
           <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
             Botmartz Technologies Private Limited,<br />
             50, Manglamurti Shri Krishna Ji Nagar, Khajrana,<br />
             Indore - 452016, Madhya Pradesh, India<br />
-            Email: <a href="mailto:team@botmartz.com" className="text-emerald-700 font-bold hover:underline">team@botmartz.com</a><br />
-            Web: <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 font-bold hover:underline">www.botmartz.com</a>
+            Email: <a href="mailto:team@botmartz.com" className="text-blue-700 font-bold hover:underline">team@botmartz.com</a><br />
+            Web: <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 font-bold hover:underline">www.botmartz.com</a>
           </p>
         </div>
 
@@ -157,16 +157,16 @@ export default function Footer() {
           
           {/* Services Links */}
           <div className="flex flex-wrap items-center gap-6 font-extrabold text-gray-800">
-            <Link href="/services/advertise" className="hover:text-emerald-700 transition">
+            <Link href="/services/advertise" className="hover:text-blue-700 transition">
               Advertise
             </Link>
-            <Link href="/gift-cards" className="hover:text-emerald-700 transition">
+            <Link href="/gift-cards" className="hover:text-blue-700 transition">
               Gift Cards
             </Link>
-            <Link href="/help" className="hover:text-emerald-700 transition">
+            <Link href="/help" className="hover:text-blue-700 transition">
               Help Center
             </Link>
-            <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="hover:text-emerald-700 transition">
+            <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="hover:text-blue-700 transition">
               Botmartz Corporate
             </a>
           </div>
@@ -182,8 +182,8 @@ export default function Footer() {
           <div className="flex items-center gap-2">
             <span className="bg-white border border-gray-200 shadow-2xs text-[10px] font-black px-2.5 py-1 rounded-lg text-gray-900">VISA</span>
             <span className="bg-white border border-gray-200 shadow-2xs text-[10px] font-black px-2.5 py-1 rounded-lg text-gray-900">MasterCard</span>
-            <span className="bg-emerald-50 border border-emerald-200 shadow-2xs text-[10px] font-black px-2.5 py-1 rounded-lg text-emerald-800">Razorpay</span>
-            <span className="bg-emerald-50 border border-emerald-200 shadow-2xs text-[10px] font-black px-2.5 py-1 rounded-lg text-emerald-800">UPI</span>
+            <span className="bg-blue-50 border border-blue-200 shadow-2xs text-[10px] font-black px-2.5 py-1 rounded-lg text-blue-800">Razorpay</span>
+            <span className="bg-blue-50 border border-blue-200 shadow-2xs text-[10px] font-black px-2.5 py-1 rounded-lg text-blue-800">UPI</span>
             <span className="bg-white border border-gray-200 shadow-2xs text-[10px] font-black px-2.5 py-1 rounded-lg text-gray-900">Shiprocket</span>
           </div>
 
