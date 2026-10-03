@@ -327,20 +327,13 @@ export async function fetchCategories(): Promise<Category[]> {
 
     if (dbRes.ok) {
       const dbCats = await dbRes.json();
-      if (Array.isArray(dbCats) && dbCats.length > 0) return dbCats;
+      if (Array.isArray(dbCats)) return dbCats;
     }
   } catch (e) { }
 
-  return [
-    { id: 1, name: "Mobiles", slug: "mobiles" },
-    { id: 2, name: "Electronics", slug: "electronics" },
-    { id: 3, name: "Watches", slug: "watches" },
-    { id: 4, name: "Fashion", slug: "fashion" },
-    { id: 5, name: "Home & Living", slug: "home" },
-    { id: 6, name: "Sports", slug: "sports" },
-    { id: 7, name: "Artisan", slug: "artisan" }
-  ];
+  return [];
 }
+
 
 export async function createCheckoutSession(checkoutData: any) {
   try {

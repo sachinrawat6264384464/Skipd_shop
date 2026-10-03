@@ -213,25 +213,51 @@ async def delete_admin_category(category_id: int, db: AsyncSession = Depends(get
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     
+    cat_id = category.id
     cat_slug = (category.slug or "").lower().strip()
     cat_name = (category.name or "").lower().strip()
     cat_prefix = cat_slug.split("-")[0] if cat_slug else ""
 
-    # 1. Fetch all products to find matches by category_id or tag/slug match
+    # 1. Fetch all products to find matches by category_id, sub_category, tags, title, or handle
     all_prods_res = await db.execute(select(Product))
     all_products = all_prods_res.scalars().all()
 
     target_prod_ids = []
     for p in all_products:
         is_match = False
-        if p.category_id == category.id:
+        if p.category_id == cat_id:
             is_match = True
-        elif p.tags and isinstance(p.tags, list):
-            tags_lower = [str(t).lower() for t in p.tags]
-            if cat_slug in tags_lower or cat_name in tags_lower or (cat_prefix and cat_prefix in tags_lower):
+        
+        # Check sub_category string match
+        sub_cat = (p.sub_category or "").lower().strip()
+        if not is_match and sub_cat:
+            if cat_slug in sub_cat or cat_name in sub_cat or (cat_prefix and len(cat_prefix) >= 3 and cat_prefix in sub_cat) or sub_cat in cat_slug or sub_cat in cat_name:
                 is_match = True
+
+        # Check tags (whether list or pipe-separated string)
+        if not is_match and p.tags:
+            tag_tokens = []
+            if isinstance(p.tags, list):
+                for t in p.tags:
+                    tag_tokens.extend(str(t).lower().replace("|", " ").replace(",", " ").replace("-", " ").split())
+            else:
+                tag_tokens = str(p.tags).lower().replace("|", " ").replace(",", " ").replace("-", " ").split()
+
+            for token in tag_tokens:
+                if token and (token == cat_slug or token == cat_prefix or token in cat_slug or token in cat_name):
+                    is_match = True
+                    break
+
+        # Check handle & title for orphaned products (category_id is None)
+        if not is_match and not p.category_id:
+            p_handle = (p.handle or "").lower()
+            p_title = (p.title or "").lower()
+            if cat_slug in p_handle or (cat_prefix and len(cat_prefix) >= 3 and cat_prefix in p_handle) or cat_slug in p_title:
+                is_match = True
+
         if is_match:
             target_prod_ids.append(p.id)
+
 
     # 2. Batch cascade delete all foreign key dependencies for these products
     if target_prod_ids:
