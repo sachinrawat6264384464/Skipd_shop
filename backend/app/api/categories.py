@@ -83,16 +83,12 @@ DEFAULT_CATEGORIES_DATA = [
 ]
 
 async def ensure_default_categories(db: AsyncSession):
-    """Ensure default categories exist in PostgreSQL database without overwriting admin updates."""
+    """Ensure default categories exist ONLY if PostgreSQL Category table is completely empty."""
     try:
         existing_res = await db.execute(select(Category))
         existing_cats = existing_res.scalars().all()
-        existing_map = {c.slug: c for c in existing_cats}
-        
-        added_or_updated = False
-        for item in DEFAULT_CATEGORIES_DATA:
-            cat_obj = existing_map.get(item["slug"])
-            if not cat_obj:
+        if not existing_cats:
+            for item in DEFAULT_CATEGORIES_DATA:
                 db.add(Category(
                     name=item["name"],
                     slug=item["slug"],
@@ -101,12 +97,10 @@ async def ensure_default_categories(db: AsyncSession):
                     description=item["description"],
                     status="Active"
                 ))
-                added_or_updated = True
-                
-        if added_or_updated:
             await db.commit()
     except Exception as e:
         print(f"[Categories API Warning] Auto-seed error: {e}")
+
 
 @router.get("", response_model=List[CategorySchema])
 async def list_categories(db: AsyncSession = Depends(get_db)):

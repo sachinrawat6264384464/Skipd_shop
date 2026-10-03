@@ -66,24 +66,22 @@ async def lifespan(app: FastAPI):
 
             existing_res = await db.execute(select(Category))
             existing_cats = existing_res.scalars().all()
-            existing_slugs = {c.slug for c in existing_cats}
 
-            cats_to_add = []
-            for item in default_cats:
-                if item["slug"] not in existing_slugs:
-                    cats_to_add.append(
-                        Category(
-                            name=item["name"],
-                            slug=item["slug"],
-                            icon=item["icon"],
-                            description=item["description"],
-                            status="Active"
-                        )
+            if not existing_cats:
+                cats_to_add = [
+                    Category(
+                        name=item["name"],
+                        slug=item["slug"],
+                        icon=item["icon"],
+                        description=item["description"],
+                        status="Active"
                     )
-            if cats_to_add:
+                    for item in default_cats
+                ]
                 db.add_all(cats_to_add)
                 await db.commit()
                 print(f"[Backend Startup] Seeded {len(cats_to_add)} default categories into PostgreSQL database!")
+
 
             res = await db.execute(select(Product))
             if not res.scalars().first():
