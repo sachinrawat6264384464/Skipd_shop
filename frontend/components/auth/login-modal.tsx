@@ -545,13 +545,11 @@ export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
         {/* Top Header & Branding */}
         <div className="space-y-6 z-10">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500 flex items-center justify-center text-white font-black text-2xl shadow-lg shadow-emerald-500/30">
-              🛍️
-            </div>
-            <div>
-              <span className="text-2xl font-black tracking-tight text-white block leading-none">SKIPD SHOP</span>
-              <span className="text-[10px] font-extrabold text-emerald-400 tracking-wider uppercase">Official Storefront</span>
-            </div>
+            <img
+              src="/2.png"
+              alt="BOTCOM Logo"
+              className="h-10 sm:h-12 object-contain bg-white/90 p-2 rounded-2xl shadow-lg border border-white/40"
+            />
           </div>
 
           <div className="space-y-3 pt-4">

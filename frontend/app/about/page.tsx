@@ -222,22 +222,22 @@ export default function AboutPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-gray-700 font-medium">
               <div className="bg-gray-50 border border-gray-200 p-5 rounded-2xl space-y-2">
                 <p className="font-extrabold text-gray-900 text-sm">Corporate Identification Number (CIN)</p>
-                <p className="font-mono text-emerald-700 font-bold">U72900KA2024PTC188888</p>
+                <p className="font-mono text-emerald-700 font-bold">U62020MP2026PTC084044</p>
                 <p className="text-gray-500 text-[11px]">Registered under the Companies Act, Ministry of Corporate Affairs, Govt of India.</p>
               </div>
 
               <div className="bg-gray-50 border border-gray-200 p-5 rounded-2xl space-y-2">
                 <p className="font-extrabold text-gray-900 text-sm">GSTIN Registration</p>
-                <p className="font-mono text-blue-700 font-bold">29AAAAB9999A1Z8</p>
-                <p className="text-gray-500 text-[11px]">State Jurisdiction: Commercial Tax Office, Bengaluru, Karnataka.</p>
+                <p className="font-mono text-blue-700 font-bold">23AAOCB7309L1ZE</p>
+                <p className="text-gray-500 text-[11px]">State Jurisdiction: Commercial Tax Office, Indore, Madhya Pradesh.</p>
               </div>
 
               <div className="bg-gray-50 border border-gray-200 p-5 rounded-2xl space-y-2 col-span-1 md:col-span-2">
                 <p className="font-extrabold text-gray-900 text-sm">Registered Office Address</p>
                 <p className="text-gray-600 leading-relaxed">
                   Botmartz Technologies Private Limited,<br />
-                  Plot 42, Tech Park Enclave, IT Zone, Outer Ring Road,<br />
-                  Bengaluru, 560103, Karnataka, India<br />
+                  50, Manglamurti Shri Krishna Ji Nagar, Khajrana,<br />
+                  Indore - 452016, Madhya Pradesh, India<br />
                   Email: support@botmartz.com | Website: www.botmartz.com
                 </p>
               </div>

@@ -108,6 +108,7 @@ async def request_otp(payload: dict = Body(...), db: AsyncSession = Depends(get_
     return {
         "status": "success",
         "message": f"6-digit OTP sent to {email_or_phone}",
+        "otp_demo": otp_code,
         "expires_in_seconds": 60
     }
 
@@ -115,8 +116,8 @@ async def request_otp(payload: dict = Body(...), db: AsyncSession = Depends(get_
 @router.post("/verify-otp")
 async def verify_otp(payload: dict = Body(...), db: AsyncSession = Depends(get_db)):
     """Verify 6-digit OTP. On successful match, OTP is permanently deleted immediately!"""
-    email_or_phone = payload.get("email_or_phone", "").strip().lower()
-    user_otp = payload.get("otp", "").strip()
+    email_or_phone = (payload.get("email_or_phone") or "").strip().lower()
+    user_otp = (payload.get("otp") or "").strip()
 
     if not email_or_phone or not user_otp:
         raise HTTPException(status_code=400, detail="Email/Phone and OTP code are required")

@@ -135,15 +135,15 @@ export default function Footer() {
 
         {/* Column 4: Mail Us (Botmartz Details) */}
         <div className="space-y-3 col-span-2 md:col-span-1 border-l border-gray-200/80 pl-0 md:pl-4">
+          <img src="/2.png" alt="BOTCOM Logo" className="h-12 object-contain mb-1" />
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
             MAIL US:
           </h4>
           <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
-            Botmartz AI Solution Pvt. Ltd.,<br />
-            50 R, Mangalmurti Krishna Ji Nagar,<br />
-            Behind Mayur Hospital, Indore,<br />
-            Madhya Pradesh, India<br />
+            Botmartz Technologies Private Limited,<br />
+            50, Manglamurti Shri Krishna Ji Nagar, Khajrana,<br />
+            Indore - 452016, Madhya Pradesh, India<br />
             Email: <a href="mailto:team@botmartz.com" className="text-emerald-700 font-bold hover:underline">team@botmartz.com</a><br />
             Web: <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-emerald-700 font-bold hover:underline">www.botmartz.com</a>
           </p>

@@ -21,10 +21,11 @@ const DEFAULT_SLIDES = [
     secondaryButtonText: "EXPLORE DEALS",
     secondaryButtonHref: "/deals",
     imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600",
+    bgImageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&auto=format&fit=crop",
     badgeText: "60% OFF",
-    bgGradient: "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80",
-    tagColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
-    btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white"
+    bgGradient: "from-slate-950/95 via-slate-900/85 to-emerald-950/70",
+    tagColor: "bg-emerald-500/20 text-emerald-300 border-emerald-400/40",
+    btnColor: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/30"
   },
   {
     id: 2,
@@ -37,10 +38,11 @@ const DEFAULT_SLIDES = [
     secondaryButtonText: "VIEW OFFERS",
     secondaryButtonHref: "/search",
     imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600",
+    bgImageUrl: "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1600&auto=format&fit=crop",
     badgeText: "70% OFF",
-    bgGradient: "from-amber-50 via-orange-50 to-amber-100 border-amber-200/80",
-    tagColor: "bg-orange-100 text-orange-800 border-orange-300",
-    btnColor: "bg-orange-600 hover:bg-orange-700 text-white"
+    bgGradient: "from-slate-950/95 via-slate-900/85 to-amber-950/70",
+    tagColor: "bg-amber-500/20 text-amber-300 border-amber-400/40",
+    btnColor: "bg-amber-600 hover:bg-amber-500 text-white shadow-xl shadow-amber-600/30"
   },
   {
     id: 3,
@@ -53,10 +55,11 @@ const DEFAULT_SLIDES = [
     secondaryButtonText: "SEE ALL SPECS",
     secondaryButtonHref: "/product/active-anc-headphones",
     imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600",
+    bgImageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop",
     badgeText: "50% OFF",
-    bgGradient: "from-blue-50 via-indigo-50 to-blue-100 border-blue-200/80",
-    tagColor: "bg-blue-100 text-blue-800 border-blue-300",
-    btnColor: "bg-blue-600 hover:bg-blue-700 text-white"
+    bgGradient: "from-slate-950/95 via-slate-900/85 to-blue-950/70",
+    tagColor: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+    btnColor: "bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-600/30"
   }
 ];
 

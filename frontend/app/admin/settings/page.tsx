@@ -24,7 +24,7 @@ export default function AdminSettingsPage() {
     currency: "INR (₹)",
     supportEmail: "support@e-com.in",
     supportPhone: "+91 98765 43210",
-    storeAddress: "A-42, Tech Park, Gwalior, MP - 474001",
+    storeAddress: "50, Manglamurti Shri Krishna Ji Nagar, Khajrana, Indore, MP - 452016",
 
     // Store Settings
     maintenanceMode: false,

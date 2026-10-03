@@ -15,10 +15,12 @@ export interface HeroSlide {
   secondaryButtonText: string;
   secondaryButtonHref: string;
   imageUrl: string;
+  bgImageUrl?: string;
   badgeText: string;
-  bgGradient: string;
-  tagColor: string;
-  btnColor: string;
+  bgGradient?: string;
+  tagColor?: string;
+  btnColor?: string;
+  highlightColor?: string;
 }
 
 const DEFAULT_SLIDES: HeroSlide[] = [
@@ -33,10 +35,12 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "EXPLORE DEALS",
     secondaryButtonHref: "/deals",
     imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600",
+    bgImageUrl: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&auto=format&fit=crop",
     badgeText: "60% OFF",
-    bgGradient: "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80",
-    tagColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
-    btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20"
+    bgGradient: "from-slate-950/95 via-slate-900/85 to-emerald-950/70",
+    tagColor: "bg-emerald-500/20 text-emerald-300 border-emerald-400/40",
+    highlightColor: "text-emerald-400",
+    btnColor: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/30"
   },
   {
     id: 2,
@@ -49,10 +53,12 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "VIEW OFFERS",
     secondaryButtonHref: "/search",
     imageUrl: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600",
+    bgImageUrl: "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1600&auto=format&fit=crop",
     badgeText: "70% OFF",
-    bgGradient: "from-amber-50 via-orange-50 to-amber-100 border-amber-200/80",
-    tagColor: "bg-orange-100 text-orange-800 border-orange-300",
-    btnColor: "bg-orange-600 hover:bg-orange-700 text-white shadow-orange-600/20"
+    bgGradient: "from-slate-950/95 via-slate-900/85 to-amber-950/70",
+    tagColor: "bg-amber-500/20 text-amber-300 border-amber-400/40",
+    highlightColor: "text-amber-400",
+    btnColor: "bg-amber-600 hover:bg-amber-500 text-white shadow-xl shadow-amber-600/30"
   },
   {
     id: 3,
@@ -65,10 +71,12 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "SEE ALL SPECS",
     secondaryButtonHref: "/product/active-anc-headphones",
     imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600",
+    bgImageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop",
     badgeText: "50% OFF",
-    bgGradient: "from-blue-50 via-indigo-50 to-blue-100 border-blue-200/80",
-    tagColor: "bg-blue-100 text-blue-800 border-blue-300",
-    btnColor: "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
+    bgGradient: "from-slate-950/95 via-slate-900/85 to-blue-950/70",
+    tagColor: "bg-blue-500/20 text-blue-300 border-blue-400/40",
+    highlightColor: "text-cyan-400",
+    btnColor: "bg-blue-600 hover:bg-blue-500 text-white shadow-xl shadow-blue-600/30"
   }
 ];
 
@@ -194,28 +202,47 @@ export function HeroSlider() {
         {slides.map((slide, idx) => (
           <div key={slide.id || idx} className="w-full shrink-0">
             <div
-              className={`bg-gradient-to-r ${slide.bgGradient || "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80"} relative overflow-hidden min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[500px]`}
+              className="relative overflow-hidden min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[500px] flex items-center"
             >
-              <div className="w-full max-w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10 p-6 sm:p-10 md:p-12 lg:p-16 px-6 sm:px-12 lg:px-20">
+              {/* 🖼️ Full-width Background Image Layer */}
+              <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+                <img
+                  src={
+                    slide.bgImageUrl ||
+                    (idx === 2
+                      ? "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop"
+                      : idx === 1
+                      ? "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1600&auto=format&fit=crop"
+                      : "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&auto=format&fit=crop")
+                  }
+                  alt="Hero Slide Background"
+                  className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000"
+                />
+                {/* Sleek Frosted Glass Overlay for Crystal-Clear Text Legibility */}
+                <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgGradient || "from-slate-950/95 via-slate-900/85 to-blue-950/70"} backdrop-blur-[1px]`} />
+              </div>
+
+              {/* Slide Foreground Content */}
+              <div className="relative z-10 w-full max-w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10 p-6 sm:p-10 md:p-12 lg:p-16 px-6 sm:px-12 lg:px-20">
                 {/* Text Content */}
-                <div className="space-y-4 sm:space-y-5 max-w-xl z-10 w-full">
-                  <span className={`inline-block border font-black text-xs uppercase px-4 py-1.5 rounded-full tracking-wider shadow-2xs ${slide.tagColor || "bg-emerald-100 text-emerald-800 border-emerald-300"}`}>
+                <div className="space-y-4 sm:space-y-5 max-w-xl w-full">
+                  <span className={`inline-block border font-black text-xs uppercase px-4 py-1.5 rounded-full tracking-wider shadow-sm backdrop-blur-md ${slide.tagColor || "bg-blue-500/20 text-blue-300 border-blue-400/40"}`}>
                     {slide.tag}
                   </span>
 
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight tracking-tight">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight drop-shadow-md">
                     {slide.title}
-                    <span className="text-emerald-600 font-black">{slide.highlightText}</span>
+                    <span className={slide.highlightColor || "text-emerald-400"}>{slide.highlightText}</span>
                   </h1>
 
-                  <p className="text-gray-600 text-xs sm:text-sm md:text-base font-medium leading-relaxed max-w-lg">
+                  <p className="text-gray-200 text-xs sm:text-sm md:text-base font-medium leading-relaxed max-w-lg drop-shadow-sm">
                     {slide.description}
                   </p>
 
                   <div className="flex flex-wrap items-center gap-3.5 pt-3">
                     <Link
                       href={slide.primaryButtonHref || "/search"}
-                      className={`font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl transition shadow-lg cursor-pointer flex items-center gap-2 ${slide.btnColor || "bg-emerald-600 hover:bg-emerald-700 text-white"}`}
+                      className={`font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl transition shadow-xl cursor-pointer flex items-center gap-2 ${slide.btnColor || "bg-emerald-600 hover:bg-emerald-500 text-white"}`}
                     >
                       <span>{slide.primaryButtonText || "SHOP NOW"}</span>
                       <span>&rarr;</span>
@@ -223,7 +250,7 @@ export function HeroSlider() {
                     {slide.secondaryButtonText && (
                       <Link
                         href={slide.secondaryButtonHref || "/deals"}
-                        className="bg-white hover:bg-gray-50 text-gray-800 border-2 border-gray-300 font-black text-xs sm:text-sm px-5 py-3.5 rounded-2xl transition shadow-2xs cursor-pointer"
+                        className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md font-black text-xs sm:text-sm px-5 py-3.5 rounded-2xl transition shadow-2xs cursor-pointer"
                       >
                         {slide.secondaryButtonText}
                       </Link>
@@ -232,7 +259,7 @@ export function HeroSlider() {
                 </div>
 
                 {/* Right Image (Full Fill & Cover) */}
-                <div className="relative w-full md:w-[440px] lg:w-[500px] h-60 sm:h-80 md:h-[360px] lg:h-[400px] rounded-3xl overflow-hidden shadow-2xl border-2 border-white/80 shrink-0">
+                <div className="relative w-full md:w-[440px] lg:w-[500px] h-60 sm:h-80 md:h-[360px] lg:h-[400px] rounded-3xl overflow-hidden shadow-2xl border-2 border-white/30 shrink-0">
                   {idx === 0 ? (
                     <Image
                       src={slide.imageUrl}

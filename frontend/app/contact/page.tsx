@@ -86,8 +86,8 @@ export default function ContactUsPage() {
               📍
             </div>
             <h3 className="font-black text-base text-gray-900">Corporate HQ</h3>
-            <p className="text-xs text-gray-500">50 R, Mangalmurti Krishna Ji Nagar</p>
-            <p className="font-extrabold text-gray-800 text-sm">Indore, Madhya Pradesh, India</p>
+            <p className="text-xs text-gray-500">50, Manglamurti Shri Krishna Ji Nagar, Khajrana</p>
+            <p className="font-extrabold text-gray-800 text-sm">Indore - 452016, Madhya Pradesh, India</p>
           </div>
         </div>
 
@@ -213,16 +213,15 @@ export default function ContactUsPage() {
               </span>
               <h3 className="text-2xl font-black leading-tight">Visit or Mail Us</h3>
               <p className="text-xs text-gray-300 leading-relaxed font-medium">
-                Botmartz AI Solution Pvt. Ltd.,<br />
-                50 R, Mangalmurti Krishna Ji Nagar,<br />
-                Behind Mayur Hospital, Indore,<br />
-                Madhya Pradesh, India<br />
+                Botmartz Technologies Private Limited,<br />
+                50, Manglamurti Shri Krishna Ji Nagar, Khajrana,<br />
+                Indore - 452016, Madhya Pradesh, India<br />
                 Email: team@botmartz.com
               </p>
             </div>
 
             <div className="space-y-3 border-t border-white/10 pt-4 text-xs font-medium">
-              <p className="text-gray-300">🏢 <strong>CIN:</strong> U72900KA2024PTC188888</p>
+              <p className="text-gray-300">🏢 <strong>CIN:</strong> U62020MP2026PTC084044</p>
               <p className="text-gray-300">⏰ <strong>Working Hours:</strong> Mon-Sat 9 AM - 8 PM IST</p>
               <p className="text-emerald-400 font-bold">⚡ Fast 2-Hour Response Time Guaranteed</p>
             </div>

@@ -769,7 +769,47 @@ function AccountContent() {
     { code: "FREEDOM50", discount: "50% OFF", minOrder: "Min order ₹999", expiry: "Valid till 25 Aug 2026" }
   ];
 
-  const { wishlist } = useWishlist();
+  const { wishlist, removeFromWishlist } = useWishlist();
+
+  const handleMoveToCartFromWishlist = (item: any) => {
+    try {
+      const cartKey = getUserCartKey();
+      const stored = localStorage.getItem(cartKey);
+      let items = stored ? JSON.parse(stored) : [];
+
+      const existingIdx = items.findIndex((i: any) =>
+        String(i.id) === String(item.id) || (item.handle && i.handle === item.handle)
+      );
+
+      if (existingIdx > -1) {
+        items[existingIdx].quantity = (items[existingIdx].quantity || 1) + 1;
+      } else {
+        items.push({
+          id: item.id,
+          handle: item.handle || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : String(item.id)),
+          title: item.title,
+          price: item.price || 999,
+          compare_at_price: item.compare_at_price,
+          quantity: 1,
+          image: item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+        });
+      }
+
+      localStorage.setItem(cartKey, JSON.stringify(items));
+      window.dispatchEvent(new Event("ecom_cart_updated"));
+      window.dispatchEvent(new Event("ecom_cart_changed"));
+
+      removeFromWishlist(item.id);
+      showToast(`🛒 Moved to Cart! "${item.title}" added to your cart.`);
+    } catch (e) {
+      showToast("Something went wrong. Please try again.", "error");
+    }
+  };
+
+  const handleRemoveFromWishlist = (item: any) => {
+    removeFromWishlist(item.id);
+    showToast(`💔 Removed "${item.title || 'Item'}" from your Wishlist.`, "info");
+  };
 
   const notifications = [
     { id: 1, title: "Shipment Dispatched", text: "Your order E-COM-984201 is on its way via BlueDart Courier.", time: "2 hours ago" },
@@ -2691,29 +2731,75 @@ function AccountContent() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {wishlist.map((item: any) => (
-                    <div key={item.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-2xs space-y-3 flex flex-col justify-between">
+                    <div key={item.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-2xs space-y-3 flex flex-col justify-between group hover:border-emerald-300 transition duration-200 relative">
                       <div className="space-y-2">
-                        <img src={item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"} alt={item.title} className="w-full h-36 object-contain rounded-xl bg-gray-50 p-2" />
-                        <h4 className="font-bold text-xs text-gray-900 line-clamp-2">{item.title}</h4>
-                        <p className="font-black text-gray-900 text-sm">₹{item.price?.toLocaleString("en-IN") || "999"}</p>
+                        {/* Image preview with floating remove trash button */}
+                        <div className="relative w-full h-40 bg-gray-50 rounded-xl p-2 flex items-center justify-center overflow-hidden border border-gray-100">
+                          <img
+                            src={item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"}
+                            alt={item.title}
+                            className="w-full h-full object-contain group-hover:scale-105 transition duration-200"
+                          />
+                          <button
+                            onClick={() => handleRemoveFromWishlist(item)}
+                            className="absolute top-2 right-2 bg-white/90 hover:bg-red-50 text-gray-400 hover:text-red-600 w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-sm transition cursor-pointer border border-gray-200"
+                            title="Remove from Wishlist"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+
+                        <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">
+                          {item.category || "Saved Product"}
+                        </span>
+                        <h4 className="font-bold text-xs text-gray-900 line-clamp-2 leading-tight">
+                          {item.title}
+                        </h4>
+                        <div className="flex items-baseline gap-2">
+                          <p className="font-black text-gray-900 text-sm">₹{item.price?.toLocaleString("en-IN") || "999"}</p>
+                          {item.compare_at_price && (
+                            <span className="text-xs text-gray-400 line-through">₹{item.compare_at_price.toLocaleString("en-IN")}</span>
+                          )}
+                        </div>
                       </div>
-                      <button
-                        onClick={() => {
-                          const buyNowItem = [{
-                            id: item.id,
-                            handle: item.handle || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : String(item.id)),
-                            title: item.title,
-                            price: item.price || 999,
-                            quantity: 1,
-                            image: item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
-                          }];
-                          sessionStorage.setItem("ecom_buy_now_item", JSON.stringify(buyNowItem));
-                          router.push("/checkout?buyNow=true");
-                        }}
-                        className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-2.5 rounded-xl text-center cursor-pointer shadow-xs transition active:scale-98"
-                      >
-                        ⚡ Buy Now &rsaquo;
-                      </button>
+
+                      {/* Action buttons */}
+                      <div className="space-y-2 pt-2 border-t border-gray-100">
+                        <button
+                          onClick={() => handleMoveToCartFromWishlist(item)}
+                          className="w-full bg-white hover:bg-emerald-50 text-emerald-800 border-2 border-emerald-600 font-extrabold text-xs py-2 rounded-xl text-center cursor-pointer shadow-2xs transition flex items-center justify-center gap-1.5"
+                        >
+                          🛒 Move to Cart
+                        </button>
+
+                        <div className="grid grid-cols-3 gap-2">
+                          <button
+                            onClick={() => {
+                              const buyNowItem = [{
+                                id: item.id,
+                                handle: item.handle || (item.title ? item.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : String(item.id)),
+                                title: item.title,
+                                price: item.price || 999,
+                                quantity: 1,
+                                image: item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"
+                              }];
+                              sessionStorage.setItem("ecom_buy_now_item", JSON.stringify(buyNowItem));
+                              router.push("/checkout?buyNow=true");
+                            }}
+                            className="col-span-2 bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-2 rounded-xl text-center cursor-pointer shadow-xs transition"
+                          >
+                            ⚡ Buy Now
+                          </button>
+
+                          <button
+                            onClick={() => handleRemoveFromWishlist(item)}
+                            className="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-extrabold text-xs py-2 rounded-xl transition flex items-center justify-center cursor-pointer"
+                            title="Remove from Wishlist"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>

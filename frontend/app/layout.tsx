@@ -13,10 +13,14 @@ const siteBaseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
 export const metadata = {
   metadataBase: new URL(siteBaseUrl),
   title: {
-    default: "E-COM Commerce | Next-Gen E-Commerce & Personal Tech",
-    template: "%s | E-COM Commerce",
+    default: "BOTCOM Store | Next-Gen E-Commerce & Personal Tech",
+    template: "%s | BOTCOM Store",
   },
-  description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones, 4K Smart TVs & smart wearables on E-COM Commerce.",
+  description: "Upgrade your daily setup with 165FPS gaming phones, studio ANC headphones, 4K Smart TVs & smart wearables on BOTCOM Store.",
+  icons: {
+    icon: "/2.png",
+    apple: "/2.png",
+  },
   robots: {
     follow: true,
     index: true,

@@ -20,11 +20,12 @@ export async function Navbar() {
         <div className="flex items-center gap-3 sm:gap-5 lg:gap-8 shrink-0 min-w-0">
           <MobileMenu />
 
-          <Link href="/" prefetch={false} className="flex items-center gap-2.5 text-gray-900 font-black text-xl sm:text-2xl tracking-tight shrink-0 group">
-            <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 text-white flex items-center justify-center font-black text-base sm:text-lg shadow-md shadow-emerald-500/25 group-hover:scale-105 transition duration-200">
-              E
-            </span>
-            <span className="truncate tracking-tight font-black group-hover:text-emerald-700 transition">E-COM</span>
+          <Link href="/" prefetch={false} className="flex items-center shrink-0 group py-0.5">
+            <img
+              src="/2.png"
+              alt="BOTCOM Logo"
+              className="h-12 sm:h-14 md:h-16 lg:h-20 max-h-20 w-auto object-contain group-hover:scale-105 transition duration-200"
+            />
           </Link>
 
           <NavLinks />

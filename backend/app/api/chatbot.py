@@ -130,7 +130,10 @@ async def chatbot_recommend_route(
     # 5. Detect Conversational Intents
     is_compare_intent = any(w in msg_lower for w in ["compare", "vs", "difference", "which is better"])
     is_cheaper_intent = any(w in msg_lower for w in ["cheaper", "cheapest", "lower price", "less price", "affordable"])
-    is_rating_intent = any(w in msg_lower for w in ["rating", "best rated", "highest rated", "top rated", "star"])
+    is_rating_intent = any(w in msg_lower for w in ["rating", "best rated", "highest rated", "top rated", "star", "best rating"])
+    is_deals_intent = any(w in msg_lower for w in ["deal", "deals", "best deals", "offer", "offers", "discount", "bestseller", "bestsellers", "sale"])
+    is_mobiles_intent = any(w in msg_lower for w in ["mobile", "mobiles", "phone", "phones", "smartphone", "smartphones", "oneplus", "nord", "iphone"])
+    is_tees_intent = any(w in msg_lower for w in ["tee", "tees", "shirt", "shirts", "graphic tee", "apparel", "clothing", "fashion"])
     is_feature_refinement = any(w in msg_lower for w in ["battery", "sound", "wireless", "noise", "bass", "comfort", "gaming", "camera", "display", "anc"])
 
     # 6. Fetch Products from Database
@@ -151,9 +154,23 @@ async def chatbot_recommend_route(
         res = await db.execute(select(Product).options(selectinload(Product.category)).where(Product.is_active == True))
         matched_products = list(res.scalars().all())
 
-    # 7. Apply Keyword / Feature Filtering & TF-IDF Similarity
+    # 7. Apply Specific Category & Tag Filtering
+    if is_mobiles_intent:
+        filtered_mobiles = [p for p in matched_products if (p.category and p.category.slug in ["mobiles", "electronics"]) or "mobiles" in (p.tags or []) or "oneplus" in p.title.lower() or "nord" in p.title.lower()]
+        if filtered_mobiles:
+            matched_products = filtered_mobiles
+    elif is_tees_intent:
+        filtered_tees = [p for p in matched_products if (p.category and p.category.slug == "fashion") or "apparel" in (p.tags or []) or "tee" in p.title.lower() or "shirt" in p.title.lower()]
+        if filtered_tees:
+            matched_products = filtered_tees
+    elif is_deals_intent:
+        filtered_deals = [p for p in matched_products if (p.compare_at_price and p.compare_at_price > p.price) or p.featured or "bestseller" in (p.tags or [])]
+        if filtered_deals:
+            matched_products = filtered_deals
+
+    # 8. Apply Keyword / Feature Filtering & TF-IDF Similarity
     search_text = user_message if not is_feature_refinement else f"{history_context} {user_message}"
-    stopwords = {"show", "give", "me", "the", "top", "trending", "best", "for", "with", "find", "get", "some", "product", "products", "item", "items", "one", "ones", "option", "options"}
+    stopwords = {"show", "give", "me", "the", "top", "trending", "best", "deals", "deal", "products", "under", "price", "for", "with", "find", "get", "some", "product", "item", "items", "one", "ones", "option", "options"}
     search_terms = [w for w in re.findall(r'\b\w+\b', search_text.lower()) if len(w) >= 3 and w not in stopwords]
 
     if search_terms:
@@ -168,23 +185,21 @@ async def chatbot_recommend_route(
             filtered.sort(key=lambda x: x[1], reverse=True)
             matched_products = [x[0] for x in filtered]
 
-    # 8. Sort / Action Processing
+    # 9. Sort / Action Processing
     if is_cheaper_intent:
         matched_products.sort(key=lambda x: x.price)
     elif is_rating_intent:
-        # Highest price/popular as proxy for best rating in demo DB
         matched_products.sort(key=lambda x: (x.price, x.id), reverse=True)
 
     top_products = matched_products[:4]
 
-    # 9. Format Products Cards Payload
+    # 10. Format Products Cards Payload
     formatted_cards = []
     for prod in top_products:
         img_url = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300"
         if prod.images and len(prod.images) > 0:
             img_url = prod.images[0] if isinstance(prod.images, list) else prod.images
 
-        # Assign rating based on product ID
         rating_score = round(4.5 + (prod.id % 5) * 0.1, 1)
 
         formatted_cards.append({
@@ -198,7 +213,7 @@ async def chatbot_recommend_route(
             "category_name": prod.category.name if prod.category else "E-COM Collection"
         })
 
-    # 10. Generate Conversational AI Response & Next Follow-Up Suggestion
+    # 11. Generate Conversational AI Response & Next Follow-Up Suggestion
     response_text = ""
     suggested_actions = []
 
@@ -212,6 +227,24 @@ async def chatbot_recommend_route(
             f"• **Top Rated Choice**: {p1['title'] if p1['rating'] >= p2['rating'] else p2['title']} has higher customer satisfaction."
         )
         suggested_actions = ["⚡ Show cheaper options", "⭐ Best rating", "🛒 Add to Cart"]
+
+    elif is_deals_intent and formatted_cards:
+        response_text = (
+            f"🔥 Here are our top **Best Deals & Bestsellers** with discounts up to 50% off! 👇"
+        )
+        suggested_actions = ["Products under ₹500", "📱 Latest Mobiles", "👕 Graphic Tees", "⭐ Top Rated"]
+
+    elif is_mobiles_intent and formatted_cards:
+        response_text = (
+            f"📱 Here are top **Flagship Mobiles & Smartphones**! 👇"
+        )
+        suggested_actions = ["🔥 Best Deals", "⚡ Show cheaper ones", "⭐ Top Rated"]
+
+    elif is_tees_intent and formatted_cards:
+        response_text = (
+            f"👕 Here are our trending **240 GSM Heavyweight Oversized Graphic Tees**! 👇"
+        )
+        suggested_actions = ["🔥 Best Deals", "📱 Latest Mobiles", "Products under ₹500"]
 
     elif is_rating_intent and formatted_cards:
         top_item = formatted_cards[0]
@@ -235,14 +268,13 @@ async def chatbot_recommend_route(
         suggested_actions = ["⚡ Show cheaper ones", "⭐ Best rating", "⚖️ Compare top 2"]
 
     else:
-        # Initial query response with interactive follow-up question
         count_num = len(formatted_cards)
         price_clause = f" under ₹{int(max_p):,}" if max_p else ""
+        query_topic = user_message.title()
         response_text = (
-            f"I found **{count_num} top options**{price_clause}! 👋\n\n"
-            f"Do you care more about **sound quality & bass** or **long battery life**?"
+            f"✨ Found **{count_num} top product recommendation(s)** for '{query_topic}'{price_clause}! 👇"
         )
-        suggested_actions = ["🔋 Long Battery Life", "🎵 Premium Sound & Bass", "⚡ Show cheaper ones", "⭐ Best Rating"]
+        suggested_actions = ["🔥 Best Deals", "⚡ Show cheaper ones", "⭐ Top Rated"]
 
     return {
         "response_text": response_text,
