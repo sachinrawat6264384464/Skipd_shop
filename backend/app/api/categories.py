@@ -1,7 +1,7 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, delete, func
+from sqlalchemy import select, update, delete, func, text
 from app.core.database import get_db
 from app.models.models import Category, Product, OrderItem, WishlistItem, CartItem, Review, InventoryLog, SaleProduct, ProductVariant, NewArrival
 from app.schemas.schemas import CategorySchema, CategoryCreate, CategoryUpdate
@@ -269,9 +269,30 @@ async def delete_admin_category(category_id: int, db: AsyncSession = Depends(get
         await db.execute(delete(SaleProduct).where(SaleProduct.product_id.in_(target_prod_ids)))
         await db.execute(delete(ProductVariant).where(ProductVariant.product_id.in_(target_prod_ids)))
         await db.execute(delete(NewArrival).where(NewArrival.product_id.in_(target_prod_ids)))
+
+        # Clean up optional/dynamic tables referencing product_id
+        for tbl_name, col_name in [
+            ("return_requests", "product_id"),
+            ("product_queries", "product_id"),
+            ("user_views", "product_id"),
+            ("user_activities", "product_id"),
+            ("search_history", "clicked_product_id"),
+            ("product_embeddings", "product_id"),
+            ("recommendations", "product_id"),
+        ]:
+            try:
+                await db.execute(text(f"DELETE FROM {tbl_name} WHERE {col_name} = ANY(:pids)"), {"pids": list(target_prod_ids)})
+            except Exception:
+                pass
         
         # 3. Delete the matching products
         await db.execute(delete(Product).where(Product.id.in_(target_prod_ids)))
+
+    # Clean up user_activities pointing directly to category_id
+    try:
+        await db.execute(text("DELETE FROM user_activities WHERE category_id = :cid"), {"cid": cat_id})
+    except Exception as e:
+        print(f"[FK Cleanup Warning] user_activities: {e}")
 
     # 4. Delete the category itself from DB
     await db.delete(category)

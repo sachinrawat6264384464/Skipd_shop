@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, Query, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, text
 from sqlalchemy.orm import selectinload
 from app.core.database import get_db
 from app.models.models import Product, Category, ProductVariant, WishlistItem, CartItem, Review, InventoryLog, SaleProduct, OrderItem
@@ -483,6 +483,22 @@ async def admin_delete_product(product_id: int, db: AsyncSession = Depends(get_d
         await db.execute(delete(InventoryLog).where(InventoryLog.product_id == product_id))
         await db.execute(delete(SaleProduct).where(SaleProduct.product_id == product_id))
         await db.execute(delete(ProductVariant).where(ProductVariant.product_id == product_id))
+
+        # Additional table cleanups for raw tables in Postgres
+        for tbl_name, col_name in [
+            ("return_requests", "product_id"),
+            ("product_queries", "product_id"),
+            ("user_views", "product_id"),
+            ("user_activities", "product_id"),
+            ("search_history", "clicked_product_id"),
+            ("product_embeddings", "product_id"),
+            ("recommendations", "product_id"),
+            ("new_arrivals", "product_id")
+        ]:
+            try:
+                await db.execute(text(f"DELETE FROM {tbl_name} WHERE {col_name} = :pid"), {"pid": product_id})
+            except Exception:
+                pass
 
         await db.delete(product)
         await db.commit()
