@@ -643,66 +643,25 @@ export default function AdminProductsPage() {
   function deriveCategoriesFromData(dbCats: any[], prodsList: any[]) {
     const catMap = new Map<string, any>();
 
-    // 1. Base Storefront Categories (Always present so Admin Manager 100% matches Storefront Circle Nav)
-    const BASE_STOREFRONT_CATS = [
-      { id: "mobiles", name: "Mobiles & Tablets", slug: "mobiles", icon: getCategoryImgSrc({ slug: "mobiles" }), image_url: getCategoryImgSrc({ slug: "mobiles" }), count: 0, status: "Active" },
-      { id: "electronics", name: "Electronics & Gadgets", slug: "electronics", icon: getCategoryImgSrc({ slug: "electronics" }), image_url: getCategoryImgSrc({ slug: "electronics" }), count: 0, status: "Active" },
-      { id: "watches", name: "Watches & Smartwear", slug: "watches", icon: getCategoryImgSrc({ slug: "watches" }), image_url: getCategoryImgSrc({ slug: "watches" }), count: 0, status: "Active" },
-      { id: "fashion", name: "Fashion & Apparel", slug: "fashion", icon: getCategoryImgSrc({ slug: "fashion" }), image_url: getCategoryImgSrc({ slug: "fashion" }), count: 0, status: "Active" },
-      { id: "home", name: "Home & Living", slug: "home", icon: getCategoryImgSrc({ slug: "home" }), image_url: getCategoryImgSrc({ slug: "home" }), count: 0, status: "Active" },
-      { id: "sports", name: "Sports & Fitness", slug: "sports", icon: getCategoryImgSrc({ slug: "sports" }), image_url: getCategoryImgSrc({ slug: "sports" }), count: 0, status: "Active" },
-      { id: "artisan", name: "Artisan & Handcrafted", slug: "artisan", icon: getCategoryImgSrc({ slug: "artisan" }), image_url: getCategoryImgSrc({ slug: "artisan" }), count: 0, status: "Active" }
-    ];
-
-    BASE_STOREFRONT_CATS.forEach(c => catMap.set(c.slug, c));
-
-    // 2. Add/Merge DB Categories from /categories API
+    // Add/Merge DB Categories from /categories API directly from PostgreSQL
     if (Array.isArray(dbCats) && dbCats.length > 0) {
       dbCats.forEach((c: any) => {
         const slug = (c.slug || c.name || "").toLowerCase().trim();
         if (slug) {
-          const existing = catMap.get(slug);
           catMap.set(slug, {
-            id: c.id || slug,
-            name: c.name || (existing ? existing.name : slug.charAt(0).toUpperCase() + slug.slice(1)),
+            id: c.id,
+            name: c.name,
             slug: slug,
-            icon: getCategoryImgSrc(c) || (existing ? existing.icon : ""),
-            image_url: getCategoryImgSrc(c) || (existing ? existing.image_url : ""),
+            icon: getCategoryImgSrc(c),
+            image_url: getCategoryImgSrc(c),
             status: c.status || "Active",
-            count: c.count || (existing ? existing.count : 0)
+            count: c.count || 0
           });
         }
       });
     }
 
-    // 3. Dynamically merge categories directly from Database Products
-    if (Array.isArray(prodsList) && prodsList.length > 0) {
-      prodsList.forEach((p: any) => {
-        let rawName = typeof p.category === "object" ? p.category?.name : (p.category_name || p.category_slug || p.category);
-        let rawSlug = typeof p.category === "object" ? p.category?.slug : (p.category_slug || (rawName ? String(rawName).toLowerCase().replace(/[^a-z0-9]+/g, "-") : "general"));
-
-        if (!rawName) rawName = "General";
-        if (!rawSlug) rawSlug = "general";
-
-        const slug = String(rawSlug).toLowerCase().trim();
-        const name = String(rawName).charAt(0).toUpperCase() + String(rawName).slice(1);
-        const prodImage = (p.images && p.images.length > 0) ? p.images[0] : (p.image_url || p.image);
-
-        if (!catMap.has(slug)) {
-          catMap.set(slug, {
-            id: p.category_id || slug,
-            name: name,
-            slug: slug,
-            icon: getCategoryImgSrc({ slug, name, image_url: prodImage }),
-            image_url: getCategoryImgSrc({ slug, name, image_url: prodImage }),
-            status: "Active",
-            count: 0
-          });
-        }
-      });
-    }
-
-    // 4. Calculate exact product count for every category in catMap from Database Products
+    // Calculate exact product count for every category in catMap from Database Products
     if (Array.isArray(prodsList)) {
       catMap.forEach((catObj, keySlug) => {
         const cleanKeySlug = String(keySlug || "").toLowerCase().trim();

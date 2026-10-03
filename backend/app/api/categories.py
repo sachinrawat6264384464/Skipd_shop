@@ -111,7 +111,6 @@ async def ensure_default_categories(db: AsyncSession):
 @router.get("", response_model=List[CategorySchema])
 async def list_categories(db: AsyncSession = Depends(get_db)):
     """Fetch all product categories from PostgreSQL DB."""
-    await ensure_default_categories(db)
     result = await db.execute(select(Category).order_by(Category.id.asc()))
     categories = result.scalars().all()
     return categories
@@ -119,7 +118,6 @@ async def list_categories(db: AsyncSession = Depends(get_db)):
 @router.get("/admin/all")
 async def list_categories_admin(db: AsyncSession = Depends(get_db)):
     """Fetch all product categories with associated products count for Admin panel."""
-    await ensure_default_categories(db)
     result = await db.execute(select(Category).order_by(Category.id.asc()))
     categories = result.scalars().all()
     
