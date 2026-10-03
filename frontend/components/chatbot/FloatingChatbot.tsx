@@ -462,13 +462,10 @@ export default function FloatingChatbot() {
           <div className="p-4 bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 border-b border-white/20 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 shrink-0 relative flex items-center justify-center">
-                <video
-                  src="/bot-video.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="w-full h-full object-contain filter drop-shadow-[0_4px_16px_rgba(56,189,248,0.6)] rounded-full"
+                <img
+                  src="/bot-header-avatar.png"
+                  alt="E-COM AI Assistant"
+                  className="w-full h-full object-contain filter drop-shadow-[0_4px_16px_rgba(56,189,248,0.6)]"
                 />
               </div>
               <div>
