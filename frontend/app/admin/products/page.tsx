@@ -772,9 +772,8 @@ export default function AdminProductsPage() {
       const dbCatsList = Array.isArray(catsData) ? catsData : [];
 
       setProducts(prodsList);
-      if (dbCatsList.length > 0) {
-        setCategories(dbCatsList);
-      }
+      setCategories(dbCatsList);
+
     } catch (e) {
       console.error("Failed to load products and categories from DB:", e);
     } finally {
