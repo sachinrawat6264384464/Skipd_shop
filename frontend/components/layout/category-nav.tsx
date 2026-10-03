@@ -5,6 +5,7 @@ import Link from "next/link";
 import { fetchCategories, fetchProducts } from "lib/api";
 
 const RELIABLE_SPORTS_IMAGE = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&auto=format&fit=crop&q=80";
+const RELIABLE_BEAUTY_IMAGE = "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=300&auto=format&fit=crop&q=80";
 
 const CATEGORY_IMAGE_MAP: Record<string, string> = {
   mobiles: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300&auto=format&fit=crop&q=80",
@@ -21,6 +22,12 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300&auto=format&fit=crop&q=80",
   "home-living": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300&auto=format&fit=crop&q=80",
   sports: RELIABLE_SPORTS_IMAGE,
+  "sports-fitness": RELIABLE_SPORTS_IMAGE,
+  fitness: RELIABLE_SPORTS_IMAGE,
+  beauty: RELIABLE_BEAUTY_IMAGE,
+  "beauty-care": RELIABLE_BEAUTY_IMAGE,
+  skincare: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=300&auto=format&fit=crop&q=80",
+  cosmetics: RELIABLE_BEAUTY_IMAGE,
   artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=300&auto=format&fit=crop&q=80",
   lifestyle: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=300&auto=format&fit=crop&q=80"
 };
@@ -28,10 +35,13 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
 function getFallbackForSlug(slug: string): string {
   const cleanSlug = (slug || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const prefix = cleanSlug.split("-")[0] || cleanSlug;
+  if (cleanSlug.includes("beauty") || prefix === "beauty" || cleanSlug.includes("skincare") || cleanSlug.includes("care")) {
+    return RELIABLE_BEAUTY_IMAGE;
+  }
   return CATEGORY_IMAGE_MAP[cleanSlug] || CATEGORY_IMAGE_MAP[prefix] || RELIABLE_SPORTS_IMAGE;
 }
 
-function getCategoryImageUrl(c: any): string {
+function getCategoryImageUrl(c: any, prodsList: any[] = []): string {
   const rawUrl = c.image_url || c.icon || "";
   if (rawUrl.includes("photo-1517649763962-0c623266010b")) {
     return RELIABLE_SPORTS_IMAGE;
@@ -39,6 +49,18 @@ function getCategoryImageUrl(c: any): string {
   if (rawUrl && (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("data:") || rawUrl.startsWith("/"))) {
     return rawUrl;
   }
+
+  // Try to find first product image for this category if rawUrl is null/emoji
+  const catSlug = (c.slug || c.name || "").toLowerCase();
+  const matchedProd = prodsList.find((p: any) => {
+    const pCat = (typeof p.category === "object" ? p.category?.slug || p.category?.name : (p.category_slug || p.category_name || p.category) || "").toLowerCase();
+    return pCat.includes(catSlug) || catSlug.includes(pCat);
+  });
+
+  if (matchedProd && matchedProd.image && (matchedProd.image.startsWith("http") || matchedProd.image.startsWith("/"))) {
+    return matchedProd.image;
+  }
+
   return getFallbackForSlug(c.slug || c.name);
 }
 
@@ -58,7 +80,7 @@ export function CategoryNav() {
               activeMap.set(c.slug, {
                 name: c.name,
                 slug: c.slug,
-                image_url: getCategoryImageUrl(c)
+                image_url: getCategoryImageUrl(c, prods)
               });
             }
           });
@@ -73,7 +95,7 @@ export function CategoryNav() {
               activeMap.set(catSlug, {
                 name: String(catName).charAt(0).toUpperCase() + String(catName).slice(1),
                 slug: catSlug,
-                image_url: getCategoryImageUrl({ name: catName, slug: catSlug })
+                image_url: getCategoryImageUrl({ name: catName, slug: catSlug }, prods)
               });
             }
           });
@@ -89,13 +111,13 @@ export function CategoryNav() {
   if (categories.length === 0) return null;
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200/80 py-4 px-4 sm:px-8 lg:px-12 overflow-x-auto no-scrollbar font-sans shadow-2xs">
-      <div className="w-full max-w-full flex items-center justify-around sm:justify-evenly gap-4 sm:gap-6 md:gap-8 lg:gap-12 min-w-max">
+    <nav className="w-full bg-white border-b border-gray-200/80 py-3.5 px-4 sm:px-8 font-sans shadow-2xs">
+      <div className="w-full max-w-7xl mx-auto flex items-center justify-center flex-wrap gap-5 sm:gap-8 md:gap-10 lg:gap-14">
         {categories.map((cat) => (
           <Link
             key={cat.slug}
             href={`/search/${cat.slug}`}
-            className="group flex flex-col items-center gap-2 cursor-pointer transition transform hover:-translate-y-1"
+            className="group flex flex-col items-center gap-1.5 cursor-pointer transition transform hover:-translate-y-1"
           >
             <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full border-2 border-emerald-500/20 group-hover:border-emerald-600 shadow-2xs group-hover:shadow-md transition duration-300 overflow-hidden bg-gray-50 p-0.5 relative">
               <img
@@ -110,7 +132,7 @@ export function CategoryNav() {
                 className="w-full h-full object-cover rounded-full group-hover:scale-110 transition duration-300"
               />
             </div>
-            <span className="text-xs sm:text-sm font-extrabold text-gray-800 group-hover:text-emerald-700 transition tracking-tight">
+            <span className="text-xs sm:text-sm font-extrabold text-gray-800 group-hover:text-emerald-700 transition tracking-tight text-center">
               {cat.name}
             </span>
           </Link>

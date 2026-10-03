@@ -20,6 +20,11 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
   "home-living": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
   sports: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
+  "sports-fitness": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
+  fitness: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
+  beauty: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800",
+  "beauty-care": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800",
+  skincare: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800",
   artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
   lifestyle: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800"
 };
@@ -31,6 +36,9 @@ function getCategoryImageUrl(c: any): string {
   }
   const slug = (c.slug || c.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const prefix = slug.split("-")[0] || slug;
+  if (slug.includes("beauty") || prefix === "beauty" || slug.includes("skincare") || slug.includes("care")) {
+    return "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800";
+  }
   return CATEGORY_IMAGE_MAP[slug] || CATEGORY_IMAGE_MAP[prefix] || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800";
 }
 

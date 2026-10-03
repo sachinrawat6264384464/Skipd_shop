@@ -555,8 +555,12 @@ export default function AdminProductsPage() {
     laptop: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=120&auto=format&fit=crop&q=80",
     home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=120&auto=format&fit=crop&q=80",
     sports: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=120&auto=format&fit=crop&q=80",
+    "sports-fitness": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=120&auto=format&fit=crop&q=80",
+    fitness: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=120&auto=format&fit=crop&q=80",
     artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=120&auto=format&fit=crop&q=80",
-    beauty: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=120&auto=format&fit=crop&q=80"
+    beauty: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=120&auto=format&fit=crop&q=80",
+    "beauty-care": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=120&auto=format&fit=crop&q=80",
+    skincare: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=120&auto=format&fit=crop&q=80"
   };
 
   function getCategoryImgSrc(c: any): string {
@@ -568,6 +572,9 @@ export default function AdminProductsPage() {
     }
     const slug = (c?.slug || c?.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const prefix = slug.split("-")[0] || slug;
+    if (slug.includes("beauty") || prefix === "beauty" || slug.includes("skincare") || slug.includes("care")) {
+      return "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=120&auto=format&fit=crop&q=80";
+    }
     return CATEGORY_IMAGE_MAP[slug] || CATEGORY_IMAGE_MAP[prefix] || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=120";
   }
 
