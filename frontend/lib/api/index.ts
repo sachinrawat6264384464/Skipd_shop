@@ -230,7 +230,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
 
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
+      if (Array.isArray(data)) {
         backendProducts = data;
         isBackendOk = true;
       }
@@ -242,7 +242,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
     console.warn("[API SDK Warning] Backend error fetching products.", err);
   }
 
-  let list = (isBackendOk && backendProducts.length > 0) ? [...backendProducts] : [...FALLBACK_PRODUCTS];
+  let list = isBackendOk ? [...backendProducts] : [];
 
   if (query?.featured) list = list.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
@@ -253,6 +253,7 @@ export async function fetchProducts(query?: { category?: string; search?: string
   }
   return list;
 }
+
 
 export async function fetchProductByHandle(handle: string): Promise<Product | null> {
   const cleanSearch = handle.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -276,9 +277,9 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
     console.warn("[API SDK Warning] Backend product lookup fallback triggered.");
   }
 
-  // Get products catalog (Live DB or Fallback Catalog)
-  const allProds = await fetchProducts().catch(() => FALLBACK_PRODUCTS);
-  const catalog = (allProds && allProds.length > 0) ? allProds : FALLBACK_PRODUCTS;
+  // Get products catalog directly from Live DB
+  const allProds = await fetchProducts().catch(() => []);
+  const catalog = (allProds && Array.isArray(allProds)) ? allProds : [];
 
   // 1. Exact match by handle or numeric ID
   let found = catalog.find(p => p.handle === handle || String(p.id) === handle);
@@ -310,8 +311,8 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
     return bestProduct;
   }
 
-  // 4. Default return first catalog product so user NEVER gets "Product Not Found" page crash
-  return (catalog[0] || FALLBACK_PRODUCTS[0]) ?? null;
+  return catalog[0] ?? null;
+
 }
 
 export async function fetchCategories(): Promise<Category[]> {
