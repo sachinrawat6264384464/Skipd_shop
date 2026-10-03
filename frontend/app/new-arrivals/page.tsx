@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Product, Category, fetchProducts, fetchCategories, fetchNewArrivalsDB, FALLBACK_PRODUCTS } from "lib/api";
+import { Product, Category, fetchCategories, fetchNewArrivalsDB } from "lib/api";
 import { AddToCartButton } from "components/cart/add-to-cart-button";
 
 export default function NewArrivalsPage() {
