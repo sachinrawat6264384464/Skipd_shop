@@ -93,7 +93,7 @@ export function RecommendedProductsGrid({ productId, title = "You Might Also Lik
             🤖 AI Matched
           </span>
         </div>
-        <Link href="/search" className="text-xs font-bold text-emerald-600 hover:text-emerald-700">
+        <Link href="/search" className="text-xs font-bold text-blue-600 hover:text-blue-700">
           View All Catalog →
         </Link>
       </div>
@@ -131,7 +131,7 @@ export function RecommendedProductsGrid({ productId, title = "You Might Also Lik
                   <p className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">
                     {prod.category}
                   </p>
-                  <h4 className="font-extrabold text-slate-900 text-xs line-clamp-2 leading-snug group-hover:text-emerald-600 transition">
+                  <h4 className="font-extrabold text-slate-900 text-xs line-clamp-2 leading-snug group-hover:text-blue-600 transition">
                     {prod.title}
                   </h4>
                 </div>
@@ -152,7 +152,7 @@ export function RecommendedProductsGrid({ productId, title = "You Might Also Lik
 
                 <button
                   onClick={() => handleQuickAdd(prod)}
-                  className="bg-slate-900 hover:bg-emerald-600 text-white font-bold text-[10px] px-2.5 py-1.5 rounded-lg transition shrink-0 cursor-pointer"
+                  className="bg-slate-900 hover:bg-blue-600 text-white font-bold text-[10px] px-2.5 py-1.5 rounded-lg transition shrink-0 cursor-pointer"
                   title="Quick Add"
                 >
                   + Add

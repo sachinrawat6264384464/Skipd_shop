@@ -49,8 +49,8 @@ export function ShoppableInstagramGrid() {
               <div className="space-y-1">
                 <p className="text-xs font-extrabold text-white line-clamp-1">{p.title}</p>
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-emerald-400 font-black">₹{p.price.toLocaleString("en-IN")}</p>
-                  <span className="bg-emerald-500 text-white font-black text-[10px] uppercase px-2.5 py-1 rounded-lg shadow-xs group-hover:bg-emerald-400 transition">
+                  <p className="text-sm text-sky-400 font-black">₹{p.price.toLocaleString("en-IN")}</p>
+                  <span className="bg-blue-600 text-white font-black text-[10px] uppercase px-2.5 py-1 rounded-lg shadow-xs group-hover:bg-blue-500 transition">
                     🛒 Shop Look &rsaquo;
                   </span>
                 </div>

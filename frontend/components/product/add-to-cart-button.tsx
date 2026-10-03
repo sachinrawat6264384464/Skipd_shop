@@ -11,7 +11,7 @@ export function AddToCartButton({ productHandle }: { productHandle: string }) {
     <div className="space-y-3 pt-4">
       <Link
         href={`/checkout?product=${productHandle}`}
-        className="w-full bg-emerald-500 hover:bg-emerald-400 text-black text-center font-black text-sm py-4 rounded-2xl transition shadow-md shadow-emerald-500/20 block"
+        className="w-full bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white text-center font-black text-sm py-4 rounded-2xl transition shadow-md shadow-blue-600/30 block"
       >
         💳 Buy Now with Razorpay
       </Link>
