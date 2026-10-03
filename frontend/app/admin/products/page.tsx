@@ -3637,6 +3637,38 @@ export default function AdminProductsPage() {
         </div>
       )}
 
+      {/* 🗑️ CATEGORY DELETE CONFIRMATION MODAL */}
+      {deletingCategoryId && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-sm w-full space-y-4 text-center shadow-2xl">
+            <div className="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto text-2xl font-black border border-red-200">
+              📂🗑️
+            </div>
+            <div>
+              <h3 className="text-lg font-black text-gray-900">Delete Category &amp; Products?</h3>
+              <p className="text-xs text-gray-500 mt-1 font-medium">
+                Are you sure you want to permanently delete Category #{deletingCategoryId} and ALL its mapped products from the PostgreSQL Database?
+              </p>
+            </div>
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => setDeletingCategoryId(null)}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl transition cursor-pointer text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDeleteCategory}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-black py-2.5 rounded-xl transition shadow-xs cursor-pointer text-xs"
+              >
+                Yes, Delete All
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {/* 👁️ FULL 32-ATTRIBUTE PRODUCT SPECS INSPECTOR MODAL */}
       {viewProductSpecs && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-150">
