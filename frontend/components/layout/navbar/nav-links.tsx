@@ -36,7 +36,7 @@ export function NavLinks() {
   }, []);
 
   return (
-    <ul className="hidden lg:flex items-center gap-2.5 xl:gap-4 text-xs font-bold text-gray-800 whitespace-nowrap">
+    <ul className="hidden lg:flex items-center gap-3 xl:gap-5 text-base font-black text-gray-900 whitespace-nowrap">
       
       {/* 📁 Categories Dropdown */}
       <li
@@ -48,55 +48,55 @@ export function NavLinks() {
         <button
           type="button"
           onClick={() => setIsCatOpen((prev) => !prev)}
-          className="px-3.5 py-2 rounded-xl hover:bg-gray-100/90 transition flex items-center gap-1.5 font-extrabold text-gray-900 cursor-pointer border-none bg-transparent"
+          className="px-4 py-2.5 rounded-xl hover:bg-emerald-50/80 transition flex items-center gap-2 font-black text-base text-gray-900 hover:text-emerald-700 cursor-pointer border-none bg-transparent"
         >
           <span>Categories</span>
-          <span className={`text-[10px] text-emerald-600 transition-transform duration-200 ${isCatOpen ? "rotate-180" : ""}`}>
+          <span className={`text-xs text-emerald-600 transition-transform duration-200 ${isCatOpen ? "rotate-180" : ""}`}>
             ▼
           </span>
         </button>
 
-        {/* Hover & Click Categories Dropdown Card (Invisible hover bridge + zero gap) */}
+        {/* Hover & Click Categories Dropdown Card */}
         <div
-          className={`absolute top-full left-0 pt-1.5 w-64 z-50 transition-all duration-200 ${
+          className={`absolute top-full left-0 pt-2 w-72 z-50 transition-all duration-200 ${
             isCatOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"
           }`}
         >
-          <div className="bg-white/95 backdrop-blur-2xl border border-gray-200/90 rounded-2xl shadow-2xl p-3 text-xs space-y-1.5">
-            <div className="text-[10px] font-black uppercase text-gray-400 px-3 py-1 tracking-wider border-b border-gray-100">
+          <div className="bg-white/95 backdrop-blur-2xl border border-gray-200/90 rounded-2xl shadow-2xl p-3.5 text-sm space-y-1.5">
+            <div className="text-xs font-black uppercase text-gray-400 px-3 py-1 tracking-wider border-b border-gray-100">
               Shop By Category
             </div>
             <Link
               href="/search"
               prefetch={false}
               onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl bg-emerald-50/80 text-emerald-900 font-black hover:bg-emerald-100/80 transition"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-emerald-50/80 text-emerald-900 font-black hover:bg-emerald-100/80 transition text-sm"
             >
-              <span>🛍️</span> All Categories &amp; Catalog
+              <span className="text-base">🛍️</span> All Categories &amp; Catalog
             </Link>
             <Link
               href="/search/tech"
               prefetch={false}
               onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-bold transition"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
             >
-              <span>🎧</span> Electronics &amp; Gadgets
+              <span className="text-base">🎧</span> Electronics &amp; Gadgets
             </Link>
             <Link
               href="/search/apparel"
               prefetch={false}
               onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-bold transition"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
             >
-              <span>👕</span> Fashion &amp; Clothing
+              <span className="text-base">👕</span> Fashion &amp; Clothing
             </Link>
             <Link
               href="/search/lifestyle"
               prefetch={false}
               onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-gray-100 text-gray-800 font-bold transition"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
             >
-              <span>⌚</span> Watches &amp; Accessories
+              <span className="text-base">⌚</span> Watches &amp; Accessories
             </Link>
 
             {/* 🎁 Gift Cards Dropdown Link - ONLY SHOW WHEN LOGGED IN */}
@@ -105,9 +105,9 @@ export function NavLinks() {
                 href="/gift-cards"
                 prefetch={false}
                 onClick={() => setIsCatOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-amber-50 text-amber-900 font-extrabold transition border-t border-gray-100 mt-1 pt-2"
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-amber-50 text-amber-900 font-black transition border-t border-gray-100 mt-1.5 pt-2.5 text-sm"
               >
-                <span>🎁</span> Gift Cards &amp; Rewards
+                <span className="text-base">🎁</span> Gift Cards &amp; Rewards
               </Link>
             )}
           </div>
@@ -119,10 +119,10 @@ export function NavLinks() {
         <Link
           href="/deals"
           prefetch={false}
-          className="px-3.5 py-2 rounded-xl text-emerald-700 font-black hover:bg-emerald-50 transition flex items-center gap-1.5"
+          className="px-4 py-2.5 rounded-xl text-emerald-700 font-black hover:bg-emerald-50 transition flex items-center gap-2 text-base"
         >
           <span>Deals</span>
-          <span className="bg-red-600 text-white font-black text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider shadow-2xs animate-pulse">
+          <span className="bg-red-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs animate-pulse">
             HOT
           </span>
         </Link>
@@ -134,9 +134,9 @@ export function NavLinks() {
           <Link
             href="/gift-cards"
             prefetch={false}
-            className="px-3.5 py-2 rounded-xl text-amber-800 font-extrabold hover:bg-amber-50 transition flex items-center gap-1.5"
+            className="px-4 py-2.5 rounded-xl text-amber-800 font-black hover:bg-amber-50 transition flex items-center gap-2 text-base"
           >
-            <span>🎁</span>
+            <span className="text-lg">🎁</span>
             <span>Gift Cards</span>
           </Link>
         </li>
@@ -147,10 +147,10 @@ export function NavLinks() {
         <Link
           href="/new-arrivals"
           prefetch={false}
-          className="px-3.5 py-2 rounded-xl text-gray-900 font-extrabold hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center gap-1.5"
+          className="px-4 py-2.5 rounded-xl text-gray-900 font-black hover:bg-emerald-50 hover:text-emerald-700 transition flex items-center gap-2 text-base"
         >
           <span>New Arrivals</span>
-          <span className="bg-emerald-600 text-white font-black text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider shadow-2xs">
+          <span className="bg-emerald-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
             NEW
           </span>
         </Link>
