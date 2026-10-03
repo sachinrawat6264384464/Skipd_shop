@@ -453,23 +453,23 @@ export default function FloatingChatbot() {
       {isOpen && (
         <div
           style={getDrawerStyle()}
-          className={`fixed ${!position ? 'bottom-34 right-10 sm:bottom-38 sm:right-14' : ''} w-[410px] max-w-[calc(100vw-2rem)] h-[580px] z-50 bg-slate-950/95 backdrop-blur-xl border border-emerald-800/60 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300`}
+          className={`fixed ${!position ? 'bottom-34 right-10 sm:bottom-38 sm:right-14' : ''} w-[410px] max-w-[calc(100vw-2rem)] h-[580px] z-50 bg-gradient-to-b from-slate-950 via-blue-950/95 to-slate-950 backdrop-blur-2xl border-2 border-white/90 rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300`}
         >
           
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 border-b border-emerald-900/60 flex items-center justify-between">
+          <div className="p-4 bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950 border-b border-white/20 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-14 h-14 shrink-0 relative flex items-center justify-center">
                 <img
                   src="/bot-avatar.png"
                   alt="E-COM AI Assistant"
-                  className="w-full h-full object-contain filter drop-shadow-[0_4px_12px_rgba(16,185,129,0.45)]"
+                  className="w-full h-full object-contain filter drop-shadow-[0_4px_16px_rgba(56,189,248,0.6)]"
                 />
               </div>
               <div>
                 <h3 className="text-white font-black text-sm tracking-wide">E-COM AI Assistant</h3>
-                <p className="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <p className="text-xs text-sky-400 font-bold flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse shadow-[0_0_8px_rgba(56,189,248,0.8)]"></span>
                   Active Recommender
                 </p>
               </div>
@@ -483,7 +483,7 @@ export default function FloatingChatbot() {
           </div>
 
           {/* Chat Messages Stream */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-4 text-sm scrollbar-thin scrollbar-thumb-slate-700">
+          <div className="flex-1 p-4 overflow-y-auto space-y-4 text-sm scrollbar-thin scrollbar-thumb-blue-900/60">
             {messages.map((msg) => (
               <div
                 key={msg.id}
@@ -492,10 +492,10 @@ export default function FloatingChatbot() {
                 <div
                   className={`max-w-[88%] p-3.5 rounded-2xl ${
                     msg.sender === 'user'
-                      ? 'bg-emerald-600 text-white font-medium rounded-br-none shadow-md'
+                      ? 'bg-gradient-to-r from-blue-600 to-sky-600 text-white font-medium rounded-br-none shadow-md shadow-blue-900/40'
                       : msg.isGuardrail
-                      ? 'bg-amber-900/40 border border-amber-500/40 text-amber-200 rounded-bl-none'
-                      : 'bg-slate-900/90 border border-slate-800 text-slate-100 rounded-bl-none shadow-xs'
+                      ? 'bg-amber-950/60 border border-amber-500/40 text-amber-200 rounded-bl-none'
+                      : 'bg-slate-900/90 border border-blue-500/30 text-slate-100 rounded-bl-none shadow-sm'
                   }`}
                 >
                   <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
@@ -507,7 +507,7 @@ export default function FloatingChatbot() {
                         <div
                           key={prod.id}
                           onClick={() => handleProductClick(prod.handle)}
-                          className="flex items-center gap-3 p-2.5 bg-slate-900/90 hover:bg-emerald-950/70 border border-slate-800 hover:border-emerald-500/50 rounded-xl cursor-pointer transition-all duration-200 group"
+                          className="flex items-center gap-3 p-2.5 bg-slate-900/90 hover:bg-blue-950/80 border border-blue-900/60 hover:border-sky-400/70 rounded-xl cursor-pointer transition-all duration-200 group"
                         >
                           <img
                             src={prod.image_url}
@@ -515,15 +515,15 @@ export default function FloatingChatbot() {
                             className="w-14 h-14 object-cover rounded-lg border border-slate-700 group-hover:scale-105 transition-transform duration-200"
                           />
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-xs font-semibold text-white truncate group-hover:text-emerald-400 transition-colors">
+                            <h4 className="text-xs font-semibold text-white truncate group-hover:text-sky-300 transition-colors">
                               {prod.title}
                             </h4>
                             <p className="text-xs text-slate-400 mt-0.5">{prod.category_name}</p>
                             <div className="flex items-center justify-between mt-1">
-                              <span className="text-xs font-bold text-emerald-400">{prod.formatted_price}</span>
+                              <span className="text-xs font-bold text-sky-400">{prod.formatted_price}</span>
                             </div>
                           </div>
-                          <span className="text-slate-500 group-hover:text-emerald-400 text-sm font-bold pr-1">→</span>
+                          <span className="text-slate-500 group-hover:text-sky-400 text-sm font-bold pr-1">→</span>
                         </div>
                       ))}
                     </div>
@@ -531,12 +531,12 @@ export default function FloatingChatbot() {
 
                   {/* Dynamic Suggested Action Chips */}
                   {msg.suggestedActions && msg.suggestedActions.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1.5 pt-2 border-t border-slate-800">
+                    <div className="mt-3 flex flex-wrap gap-1.5 pt-2 border-t border-blue-900/40">
                       {msg.suggestedActions.map((action, aIdx) => (
                         <button
                           key={aIdx}
                           onClick={() => handleSendMessage(action.replace(/^[^a-zA-Z0-9\s]+/, '').trim() || action)}
-                          className="text-[11px] bg-emerald-950/80 hover:bg-emerald-900 text-emerald-200 border border-emerald-500/40 rounded-full px-2.5 py-1 font-semibold transition cursor-pointer"
+                          className="text-[11px] bg-blue-950/80 hover:bg-blue-900 text-sky-200 border border-sky-500/40 rounded-full px-2.5 py-1 font-semibold transition cursor-pointer"
                         >
                           {action}
                         </button>
@@ -552,8 +552,8 @@ export default function FloatingChatbot() {
             ))}
 
             {loading && (
-              <div className="flex items-center gap-2 text-slate-400 text-xs p-2">
-                <span className="animate-spin text-emerald-400 text-base">⚙️</span>
+              <div className="flex items-center gap-2 text-slate-300 text-xs p-2">
+                <span className="animate-spin text-sky-400 text-base">⚙️</span>
                 Finding top product recommendations...
               </div>
             )}
@@ -561,41 +561,41 @@ export default function FloatingChatbot() {
           </div>
 
           {/* Preset Recommendation Prompt Chips */}
-          <div className="px-3 py-2 bg-slate-950 border-t border-slate-800/80 flex gap-2 overflow-x-auto no-scrollbar">
+          <div className="px-3 py-2 bg-slate-950/90 border-t border-blue-900/60 flex gap-2 overflow-x-auto no-scrollbar">
             <button
               onClick={() => handleSendMessage('Products under ₹500')}
-              className="text-xs bg-slate-900 hover:bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 hover:border-emerald-500/60 rounded-full px-3 py-1 whitespace-nowrap transition-all cursor-pointer"
+              className="text-xs bg-slate-900 hover:bg-blue-950/90 text-sky-300 border border-blue-500/40 hover:border-sky-400/70 rounded-full px-3 py-1 whitespace-nowrap transition-all cursor-pointer"
             >
               🏷️ Products under ₹500
             </button>
             <button
               onClick={() => handleSendMessage('Trending Graphic Tees')}
-              className="text-xs bg-slate-900 hover:bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 hover:border-emerald-500/60 rounded-full px-3 py-1 whitespace-nowrap transition-all cursor-pointer"
+              className="text-xs bg-slate-900 hover:bg-blue-950/90 text-sky-300 border border-blue-500/40 hover:border-sky-400/70 rounded-full px-3 py-1 whitespace-nowrap transition-all cursor-pointer"
             >
               👕 Graphic Tees
             </button>
             <button
               onClick={() => handleSendMessage('100 to 300 price products')}
-              className="text-xs bg-slate-900 hover:bg-emerald-950/80 text-emerald-300 border border-emerald-800/80 hover:border-emerald-500/60 rounded-full px-3 py-1 whitespace-nowrap transition-all cursor-pointer"
+              className="text-xs bg-slate-900 hover:bg-blue-950/90 text-sky-300 border border-blue-500/40 hover:border-sky-400/70 rounded-full px-3 py-1 whitespace-nowrap transition-all cursor-pointer"
             >
               💰 ₹100-₹300 Range
             </button>
           </div>
 
           {/* Input Footer */}
-          <div className="p-3 bg-slate-950 border-t border-slate-800 flex items-center gap-2">
+          <div className="p-3 bg-slate-950 border-t border-blue-900/60 flex items-center gap-2">
             <input
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Ask e.g. 'Products under ₹500'..."
-              className="flex-1 bg-slate-900 border border-slate-700/80 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+              className="flex-1 bg-slate-900 border border-blue-500/40 rounded-xl px-3.5 py-2 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-sky-400 shadow-inner"
             />
             <button
               onClick={() => handleSendMessage()}
               disabled={loading || !inputMessage.trim()}
-              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold px-4 py-2 rounded-xl text-sm disabled:opacity-50 transition-all cursor-pointer shadow-md"
+              className="bg-gradient-to-r from-blue-600 via-sky-600 to-blue-500 hover:from-blue-500 hover:to-sky-400 text-white font-bold px-4 py-2 rounded-xl text-sm disabled:opacity-50 transition-all cursor-pointer shadow-md shadow-blue-500/30"
             >
               Send
             </button>
