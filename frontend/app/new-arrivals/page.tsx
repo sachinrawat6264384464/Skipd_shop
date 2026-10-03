@@ -14,32 +14,21 @@ export default function NewArrivalsPage() {
 
   useEffect(() => {
     async function loadData() {
-      // ⚡ Instant initialization: Render products immediately (<50ms) so page never hangs in skeleton state
       try {
-        setProducts(FALLBACK_PRODUCTS);
-        setLoading(false);
+        setLoading(true);
 
         const [dbNewArrivals, cats] = await Promise.all([
           fetchNewArrivalsDB().catch(() => []),
           fetchCategories().catch(() => [])
         ]);
         
-        let newDrops = dbNewArrivals || [];
-        if (newDrops.length === 0) {
-          const liveProds = await fetchProducts().catch(() => []);
-          if (Array.isArray(liveProds) && liveProds.length > 0) {
-            newDrops = liveProds;
-          }
-        }
-        
-        if (newDrops.length > 0) {
-          setProducts(newDrops);
-        }
+        setProducts(Array.isArray(dbNewArrivals) ? dbNewArrivals : []);
         if (cats && cats.length > 0) {
           setCategories(cats);
         }
       } catch (err) {
         console.error("Error loading new arrivals data:", err);
+      } finally {
         setLoading(false);
       }
     }
