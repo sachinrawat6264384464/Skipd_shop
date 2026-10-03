@@ -1101,26 +1101,59 @@ export default function AdminInventoryPage() {
                   </div>
                 )}
 
-                {/* Footer Buttons */}
-                <div className="flex gap-2.5">
+                {/* Download Dataset Action Buttons */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => {
                       const a = document.createElement("a");
-                      a.href = "/ecom_10_products_full_spec.csv";
-                      a.download = "ecom_10_products_full_spec.csv";
+                      a.href = "/sports_fitness_10_products.csv";
+                      a.download = "sports_fitness_10_products.csv";
                       a.click();
-                      showToast("📥 10-Product Full Spec CSV (with all 18 form step columns) downloaded!");
+                      showToast("📥 Sports & Fitness 10-Product CSV Downloaded!");
                     }}
-                    className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer"
+                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1 cursor-pointer transition"
                   >
-                    <span>📥</span>
-                    <span>Download 10-Product Full Spec CSV</span>
+                    <span>⚽</span>
+                    <span>Sports &amp; Fitness (10 CSV)</span>
                   </button>
 
                   <button
+                    type="button"
+                    onClick={() => {
+                      const a = document.createElement("a");
+                      a.href = "/beauty_care_10_products.csv";
+                      a.download = "beauty_care_10_products.csv";
+                      a.click();
+                      showToast("📥 Beauty & Care 10-Product CSV Downloaded!");
+                    }}
+                    className="bg-purple-50 hover:bg-purple-100 text-purple-800 border border-purple-200 font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1 cursor-pointer transition"
+                  >
+                    <span>✨</span>
+                    <span>Beauty &amp; Care (10 CSV)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const a = document.createElement("a");
+                      a.href = "/sports_and_beauty_20_products.csv";
+                      a.download = "sports_and_beauty_20_products.csv";
+                      a.click();
+                      showToast("📥 Combined 20-Product Dataset Downloaded!");
+                    }}
+                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1 cursor-pointer transition"
+                  >
+                    <span>📦</span>
+                    <span>All 20-Products CSV</span>
+                  </button>
+                </div>
+
+                {/* Footer Buttons */}
+                <div className="flex justify-end pt-1">
+                  <button
                     onClick={() => { setShowImportModal(false); setBulkImages([]); }}
-                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-4 py-2.5 rounded-xl text-xs cursor-pointer"
+                    className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-5 py-2.5 rounded-xl text-xs cursor-pointer"
                   >
                     Close
                   </button>
