@@ -12,6 +12,7 @@ import { toast } from "sonner";
 export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [pickUpItems, setPickUpItems] = useState<any[]>([]);
+  const [showAllCollections, setShowAllCollections] = useState(false);
   const { isInWishlist, toggleWishlist: ctxToggleWishlist } = useWishlist();
 
   const handleToggleWishlist = (product: Product) => {
@@ -276,9 +277,9 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
         </div>
       </section>
 
-      {/* 🏷️ DYNAMIC CATEGORY SHOWCASE SECTIONS (Automatically created for EVERY Category in database & admin) */}
+      {/* 🏷️ DYNAMIC CATEGORY SHOWCASE SECTIONS (Initially 2 categories with Show More toggle) */}
       <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6 space-y-8">
-        {categorizedProducts.map((catGroup) => (
+        {(showAllCollections ? categorizedProducts : categorizedProducts.slice(0, 2)).map((catGroup) => (
           <div key={catGroup.slug} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-xs space-y-6">
             
             {/* Category Header with Title & Explore More Button */}
@@ -411,6 +412,18 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
 
           </div>
         ))}
+
+        {/* 🔘 Show More Categories Button */}
+        {categorizedProducts.length > 2 && (
+          <div className="text-center pt-2 pb-4">
+            <button
+              onClick={() => setShowAllCollections(!showAllCollections)}
+              className="bg-white hover:bg-emerald-50 text-emerald-700 border-2 border-emerald-500/80 hover:border-emerald-600 font-extrabold text-sm px-8 py-3.5 rounded-2xl shadow-sm hover:shadow-md transition cursor-pointer inline-flex items-center gap-2 group"
+            >
+              <span>{showAllCollections ? "Show Fewer Categories ▲" : `Show More Categories (${categorizedProducts.length - 2} More) ▼`}</span>
+            </button>
+          </div>
+        )}
       </section>
 
     </div>

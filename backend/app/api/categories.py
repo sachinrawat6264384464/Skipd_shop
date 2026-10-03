@@ -62,7 +62,7 @@ DEFAULT_CATEGORIES_DATA = [
         "name": "Sports & Fitness",
         "slug": "sports",
         "icon": "⚽",
-        "image_url": "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800",
+        "image_url": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
         "description": "Athletic gear, fitness equipment and sportswear"
     },
     {

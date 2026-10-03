@@ -160,14 +160,24 @@ export default function AdminCategoriesPage() {
                     footwear: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
                     laptops: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
                     home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
-                    sports: "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800"
+                    sports: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800"
                   };
                   const catImg = isValidImg ? rawUrl : (fallbackMap[cat.slug] || fallbackMap[(cat.slug || "").split("-")[0]] || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800");
 
                   return (
                     <tr key={cat.id} className="hover:bg-gray-50 transition">
                       <td className="px-6 py-4 flex items-center gap-3">
-                        <img src={catImg} alt={cat.name} className="w-10 h-10 rounded-xl object-cover border border-emerald-500/30 shadow-2xs" />
+                        <img
+                          src={catImg}
+                          alt={cat.name}
+                          onError={(e) => {
+                            const fallback = "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800";
+                            if (e.currentTarget.src !== fallback) {
+                              e.currentTarget.src = fallback;
+                            }
+                          }}
+                          className="w-10 h-10 rounded-xl object-cover border border-emerald-500/30 shadow-2xs"
+                        />
                         <span className="font-bold text-gray-900 text-sm">{cat.name}</span>
                       </td>
                     <td className="px-6 py-4 font-mono text-emerald-700 font-bold">/category/{cat.slug}</td>

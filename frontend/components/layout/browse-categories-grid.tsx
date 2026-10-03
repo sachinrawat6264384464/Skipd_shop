@@ -13,7 +13,7 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   laptops: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
   home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
   "home-living": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
-  sports: "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800",
+  sports: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
   artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
   crafts: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
   beauty: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800",
@@ -83,9 +83,9 @@ export function BrowseCategoriesGrid() {
             const isPlaceholder = !rawUrl || rawUrl.includes("via.placeholder") || rawUrl.includes("open-shop") || rawUrl.includes("OPEN");
             
             const slugKey = (cat.slug || cat.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-            const bgImage = !isPlaceholder && (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("/") || rawUrl.startsWith("data:"))
+            const bgImage = !isPlaceholder && !rawUrl.includes("photo-1517649763962-0c623266010b") && (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("/") || rawUrl.startsWith("data:"))
               ? rawUrl
-              : CATEGORY_IMAGE_MAP[slugKey] || CATEGORY_IMAGE_MAP[slugKey.split("-")[0]] || "https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800";
+              : CATEGORY_IMAGE_MAP[slugKey] || CATEGORY_IMAGE_MAP[slugKey.split("-")[0]] || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800";
 
             return (
               <Link
@@ -97,6 +97,12 @@ export function BrowseCategoriesGrid() {
                 <img
                   src={bgImage}
                   alt={cat.name}
+                  onError={(e) => {
+                    const fallback = "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800";
+                    if (e.currentTarget.src !== fallback) {
+                      e.currentTarget.src = fallback;
+                    }
+                  }}
                   className="absolute inset-0 h-full w-full object-cover group-hover:scale-108 transition duration-500 ease-out"
                 />
 

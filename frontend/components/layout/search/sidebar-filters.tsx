@@ -19,7 +19,7 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   laptop: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
   home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
   "home-living": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
-  sports: "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800",
+  sports: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
   artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
   lifestyle: "https://images.unsplash.com/photo-1511556532299-8f662fc26c06?w=800"
 };
@@ -156,7 +156,15 @@ export function CatalogSidebarFilters() {
                     {cat.slug === "all" ? (
                       <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xs">☷</span>
                     ) : (
-                      <img src={cat.image_url} alt={cat.name} className="w-5 h-5 rounded-full object-cover border border-gray-200 shadow-2xs" />
+                      <img
+                        src={cat.image_url}
+                        alt={cat.name}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800";
+                        }}
+                        className="w-5 h-5 rounded-full object-cover border border-gray-200 shadow-2xs"
+                      />
                     )}
                     <span>{cat.name}</span>
                   </div>

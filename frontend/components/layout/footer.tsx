@@ -174,7 +174,7 @@ export default function Footer() {
           {/* Copyright */}
           <div>
             <p className="text-gray-500 font-semibold text-[11px]">
-              &copy; 2007-2026 Botmartz AI Solution Pvt. Ltd. All rights reserved.
+              &copy; 2026 Botmartz AI Solution Pvt. Ltd. All rights reserved.
             </p>
           </div>
 
