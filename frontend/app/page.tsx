@@ -33,25 +33,7 @@ export default async function HomePage() {
         <FlashSaleBanner />
       </section>
 
-      {/* 🚚 Trust & Delivery Features Strip */}
-      <section className="w-full max-w-full px-4 sm:px-6 lg:px-10 py-2">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 bg-white border border-gray-200 rounded-2xl p-4 shadow-xs text-center">
-          {[
-            { icon: "🚚", title: "Free Shipping", sub: "On orders above ₹499" },
-            { icon: "⚡", title: "Instant Dispatch", sub: "Dispatched within 24 hours" },
-            { icon: "🛡️", title: "Secure Payment", sub: "100% secure payment" },
-            { icon: "🏆", title: "Best Quality", sub: "Premium products only" },
-          ].map((item) => (
-            <div key={item.title} className="flex items-center justify-center gap-3 p-2">
-              <span className="text-2xl">{item.icon}</span>
-              <div className="text-left">
-                <h4 className="font-bold text-xs text-gray-900">{item.title}</h4>
-                <p className="text-[11px] text-gray-500">{item.sub}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+
 
       {/* 📦 Dynamic Home Showcase: Pick up where you left off & Category Showcase Blocks */}
       <div className="py-4">
