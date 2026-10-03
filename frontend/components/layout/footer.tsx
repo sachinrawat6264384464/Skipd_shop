@@ -86,9 +86,35 @@ export default function Footer() {
       </div>
 
       {/* 🏢 Main Footer Columns */}
-      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 py-14 grid grid-cols-2 md:grid-cols-4 gap-8 border-b border-gray-200/80">
+      <div className="mx-auto max-w-[1440px] px-4 sm:px-6 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 border-b border-gray-200/80">
         
-        {/* Column 1: ABOUT */}
+        {/* Column 1 (Far Left): Brand Logo & Mail Info */}
+        <div className="space-y-4 lg:col-span-2 pr-0 lg:pr-6">
+          <Link href="/" className="inline-block">
+            <img
+              src="/2.png"
+              alt="BOTCOM Logo"
+              className="h-16 sm:h-20 md:h-24 w-auto object-contain hover:scale-105 transition duration-200"
+            />
+          </Link>
+          <p className="text-gray-600 text-xs font-semibold leading-relaxed">
+            Botmartz Technologies Private Limited — Fast, Premium AI-Powered E-Commerce Shopping Experience across India.
+          </p>
+          <div className="pt-2 text-[11px] text-gray-600 space-y-1 border-t border-gray-100">
+            <p className="font-extrabold text-gray-900 uppercase tracking-wider text-xs flex items-center gap-1.5 mb-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
+              Corporate Headquarters:
+            </p>
+            <p>50, Manglamurti Shri Krishna Ji Nagar, Khajrana, Indore - 452016, M.P.</p>
+            <p>
+              Email: <a href="mailto:team@botmartz.com" className="text-blue-700 font-bold hover:underline font-mono">team@botmartz.com</a>
+              {" • "}
+              Web: <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 font-bold hover:underline font-mono">www.botmartz.com</a>
+            </p>
+          </div>
+        </div>
+
+        {/* Column 2: ABOUT */}
         <div className="space-y-3">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
@@ -104,7 +130,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 2: HELP */}
+        {/* Column 3: HELP */}
         <div className="space-y-3">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
@@ -118,7 +144,7 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Column 3: CONSUMER POLICY */}
+        {/* Column 4: POLICY */}
         <div className="space-y-3">
           <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
@@ -131,22 +157,6 @@ export default function Footer() {
             <li><Link href="/terms?tab=grievance" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">Grievance Redressal</Link></li>
             <li><Link href="/terms?tab=epr" className="hover:text-blue-700 hover:translate-x-1 transition duration-150 inline-block">EPR Compliance</Link></li>
           </ul>
-        </div>
-
-        {/* Column 4: Mail Us (Botmartz Details) */}
-        <div className="space-y-3 col-span-2 md:col-span-1 border-l border-gray-200/80 pl-0 md:pl-4">
-          <img src="/2.png" alt="BOTCOM Logo" className="h-12 object-contain mb-1" />
-          <h4 className="text-gray-900 font-extrabold uppercase text-xs tracking-wider flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-            MAIL US:
-          </h4>
-          <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
-            Botmartz Technologies Private Limited,<br />
-            50, Manglamurti Shri Krishna Ji Nagar, Khajrana,<br />
-            Indore - 452016, Madhya Pradesh, India<br />
-            Email: <a href="mailto:team@botmartz.com" className="text-blue-700 font-bold hover:underline">team@botmartz.com</a><br />
-            Web: <a href="https://botmartz.com" target="_blank" rel="noopener noreferrer" className="text-blue-700 font-bold hover:underline">www.botmartz.com</a>
-          </p>
         </div>
 
       </div>

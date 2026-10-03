@@ -136,15 +136,15 @@ export function LanguagePicker() {
       {/* 🌐 Ultra-Professional Language Selector Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-xs font-bold text-gray-800 bg-gray-100/90 hover:bg-emerald-50 hover:text-emerald-700 border border-gray-200/80 hover:border-emerald-300 px-3.5 py-2.5 rounded-2xl transition-all duration-200 cursor-pointer shadow-2xs group"
+        className="flex items-center gap-2 text-xs font-bold text-gray-800 bg-gray-100/90 hover:bg-blue-50 hover:text-blue-600 border border-gray-200/80 hover:border-blue-300 px-3.5 py-2.5 rounded-2xl transition-all duration-200 cursor-pointer shadow-2xs group"
         title="Select Store Language"
       >
         <span className="text-sm shrink-0">{currentLangObj.flag}</span>
-        <span className="font-black text-[11px] uppercase tracking-wider text-gray-900 group-hover:text-emerald-700">
+        <span className="font-black text-[11px] uppercase tracking-wider text-gray-900 group-hover:text-blue-600">
           {currentLangObj.region} &nbsp;{currentLangObj.code}
         </span>
         <svg
-          className={`w-3.5 h-3.5 text-gray-400 group-hover:text-emerald-600 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
+          className={`w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -162,7 +162,7 @@ export function LanguagePicker() {
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
                 🌐 STORE LANGUAGE
               </span>
-              <span className="text-[10px] font-bold text-emerald-600">Auto-Sync</span>
+              <span className="text-[10px] font-bold text-blue-600">Auto-Sync</span>
             </div>
 
             {LANGUAGES.map((lang) => (
@@ -174,7 +174,7 @@ export function LanguagePicker() {
                 }}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-left cursor-pointer ${
                   selectedLang === lang.code
-                    ? "bg-emerald-50 text-emerald-900 font-black border border-emerald-200/80 shadow-2xs"
+                    ? "bg-blue-50 text-blue-900 font-black border border-blue-200/80 shadow-2xs"
                     : "text-gray-700 hover:bg-gray-100 font-semibold"
                 }`}
               >
@@ -186,7 +186,7 @@ export function LanguagePicker() {
                   </div>
                 </div>
                 {selectedLang === lang.code && (
-                  <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                  <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">
                     ✓
                   </span>
                 )}

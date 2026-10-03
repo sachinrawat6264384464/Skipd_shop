@@ -18,8 +18,8 @@ export default function OpenCart({
   return (
     <div className="flex flex-col items-center justify-center cursor-pointer group px-2 py-1 rounded-xl hover:bg-gray-100/90 transition">
       {/* 🛒 Cart Icon Container */}
-      <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200/80 group-hover:bg-emerald-100 transition-colors shadow-2xs">
-        <ShoppingCartIcon className="h-5 w-5 text-emerald-800 transition-transform group-hover:scale-110" />
+      <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-800 border border-blue-200/80 group-hover:bg-blue-100 transition-colors shadow-2xs">
+        <ShoppingCartIcon className="h-5 w-5 text-blue-800 transition-transform group-hover:scale-110" />
 
         {/* 🔴 Cart Badge Count - ONLY SHOWN WHEN CUSTOMER IS LOGGED IN */}
         {isLoggedIn && (
@@ -31,7 +31,7 @@ export default function OpenCart({
 
       {/* 💰 Live Cart Subtotal Amount UNDERNEATH Cart icon - ONLY SHOWN WHEN CUSTOMER IS LOGGED IN */}
       {isLoggedIn && (
-        <span className="font-black text-[10px] text-gray-900 group-hover:text-emerald-700 transition tracking-tight mt-0.5">
+        <span className="font-black text-[10px] text-gray-900 group-hover:text-blue-600 transition tracking-tight mt-0.5">
           {formattedTotal}
         </span>
       )}

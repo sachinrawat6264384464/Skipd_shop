@@ -134,7 +134,7 @@ export default function CartModal() {
               <div className="flex items-center justify-between border-b border-gray-100 pb-4">
                 <div>
                   <h3 className="text-lg font-black text-gray-900">Cart Items</h3>
-                  <p className="text-xs text-emerald-700 font-bold">{totalQuantity} Items in your cart</p>
+                  <p className="text-xs text-blue-600 font-bold">{totalQuantity} Items in your cart</p>
                 </div>
                 <button aria-label="Close cart" onClick={closeCart} className="text-gray-500 hover:text-gray-900 font-black text-xl cursor-pointer">
                   ✕
@@ -156,7 +156,7 @@ export default function CartModal() {
                   <Link
                     href="/search"
                     onClick={closeCart}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-2.5 px-6 rounded-xl transition shadow-xs"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-2.5 px-6 rounded-xl transition shadow-xs"
                   >
                     Explore Store &rarr;
                   </Link>
@@ -173,18 +173,18 @@ export default function CartModal() {
                       return (
                         <li key={item.id} className="flex gap-4 p-3 bg-gray-50 border border-gray-200 rounded-2xl relative group items-center">
                           <Link href={`/product/${item.handle || item.id}`} onClick={closeCart} className="flex gap-3 flex-1 min-w-0 group/item cursor-pointer items-center">
-                            <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-white shrink-0 border border-gray-200 group-hover/item:border-emerald-400 transition">
+                            <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-white shrink-0 border border-gray-200 group-hover/item:border-blue-400 transition">
                               <img src={item.image} alt={item.title} className="h-full w-full object-contain p-1 group-hover/item:scale-105 transition duration-200" />
                             </div>
                             <div className="flex-1 min-w-0 text-xs space-y-1">
-                              <h4 className="font-bold text-gray-900 truncate group-hover/item:text-emerald-700 transition">{item.title}</h4>
+                              <h4 className="font-bold text-gray-900 truncate group-hover/item:text-blue-600 transition">{item.title}</h4>
                               <div className="flex items-center justify-between gap-2">
                                 <div className="flex items-baseline gap-1.5 flex-wrap">
                                   <span className="font-black text-sm text-gray-900">₹{currentPrice.toLocaleString("en-IN")}</span>
                                   {hasDiscount && (
                                     <>
                                       <span className="text-[11px] text-gray-400 line-through font-medium">₹{comparePrice.toLocaleString("en-IN")}</span>
-                                      <span className="text-[9px] font-black text-emerald-700 bg-emerald-100 px-1 py-0.2 rounded border border-emerald-200">
+                                      <span className="text-[9px] font-black text-blue-700 bg-blue-100 px-1 py-0.2 rounded border border-blue-200">
                                         {offPercent}% OFF
                                       </span>
                                     </>
@@ -257,7 +257,7 @@ export default function CartModal() {
                       <Link
                         href="/checkout"
                         onClick={handleCheckoutClick}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs py-3 text-center rounded-xl transition shadow-xs"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs py-3 text-center rounded-xl transition shadow-xs"
                       >
                         Proceed to Checkout
                       </Link>

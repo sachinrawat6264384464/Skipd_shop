@@ -68,11 +68,11 @@ export default function NewArrivalsPage() {
     <div className="min-h-screen bg-slate-50/60 pb-16 font-sans">
       
       {/* 🌟 PREMIUM NEW ARRIVALS HERO HEADER (EXACT REDESIGN FROM DESIGN SPEC) */}
-      <div className="relative overflow-hidden bg-[#041510] text-white py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-b border-emerald-500/20 shadow-2xl">
+      <div className="relative overflow-hidden bg-[#030e1a] text-white py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-b border-blue-500/20 shadow-2xl">
         
         {/* Ambient Glow Effects */}
-        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-[1440px] mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -81,7 +81,7 @@ export default function NewArrivalsPage() {
             <div className="lg:col-span-7 space-y-6 text-center sm:text-left">
               
               {/* Capsule Badge */}
-              <div className="inline-flex items-center gap-2 bg-[#0B3528]/90 border border-emerald-500/40 text-emerald-300 px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide shadow-inner backdrop-blur-md">
+              <div className="inline-flex items-center gap-2 bg-blue-950/90 border border-blue-500/40 text-sky-300 px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide shadow-inner backdrop-blur-md">
                 <span>✨</span>
                 <span>JUST LANDED • SHOP THE LATEST</span>
               </div>
@@ -89,7 +89,7 @@ export default function NewArrivalsPage() {
               {/* Main Headline */}
               <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
                 New Arrivals &amp;{" "}
-                <span className="text-[#00E676] drop-shadow-[0_0_25px_rgba(0,230,118,0.3)]">
+                <span className="text-sky-400 drop-shadow-[0_0_25px_rgba(56,189,248,0.4)]">
                   Fresh Drops
                 </span>
               </h1>
@@ -101,7 +101,7 @@ export default function NewArrivalsPage() {
 
               {/* 3 Feature Pillars */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 max-w-xl">
-                <div className="flex items-center gap-2.5 bg-white/5 border border-emerald-500/20 p-3 rounded-2xl backdrop-blur-xs">
+                <div className="flex items-center gap-2.5 bg-white/5 border border-blue-500/20 p-3 rounded-2xl backdrop-blur-xs">
                   <span className="text-xl">🛡️</span>
                   <div>
                     <p className="text-xs font-black text-white">100% Original</p>
@@ -109,7 +109,7 @@ export default function NewArrivalsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2.5 bg-white/5 border border-emerald-500/20 p-3 rounded-2xl backdrop-blur-xs">
+                <div className="flex items-center gap-2.5 bg-white/5 border border-blue-500/20 p-3 rounded-2xl backdrop-blur-xs">
                   <span className="text-xl">💼</span>
                   <div>
                     <p className="text-xs font-black text-white">Easy Returns</p>
@@ -117,7 +117,7 @@ export default function NewArrivalsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2.5 bg-white/5 border border-emerald-500/20 p-3 rounded-2xl backdrop-blur-xs">
+                <div className="flex items-center gap-2.5 bg-white/5 border border-blue-500/20 p-3 rounded-2xl backdrop-blur-xs">
                   <span className="text-xl">🚚</span>
                   <div>
                     <p className="text-xs font-black text-white">Fast Delivery</p>
@@ -130,7 +130,7 @@ export default function NewArrivalsPage() {
               <div className="pt-2">
                 <a
                   href="#products-grid"
-                  className="bg-[#00E676] hover:bg-[#00C853] text-gray-950 font-black text-sm px-8 py-3.5 rounded-2xl transition duration-200 shadow-xl shadow-emerald-500/20 inline-flex items-center gap-2 cursor-pointer border-none"
+                  className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white font-black text-sm px-8 py-3.5 rounded-2xl transition duration-200 shadow-xl shadow-blue-600/30 inline-flex items-center gap-2 cursor-pointer border-none"
                 >
                   <span>SHOP NOW</span>
                   <span className="text-base font-black">&rarr;</span>
@@ -141,21 +141,21 @@ export default function NewArrivalsPage() {
 
             {/* RIGHT 5-COL: Product Showcase Card */}
             <div className="lg:col-span-5 relative flex justify-center">
-              <div className="relative w-full max-w-md bg-gradient-to-b from-[#0B2E24] to-[#051812] border border-emerald-500/30 rounded-3xl p-3 shadow-2xl overflow-hidden group">
+              <div className="relative w-full max-w-md bg-gradient-to-b from-[#0e2a47] to-[#051224] border border-blue-500/30 rounded-3xl p-3 shadow-2xl overflow-hidden group">
                 
                 {/* Top-Right Pill Badge */}
-                <div className="absolute top-6 right-6 z-20 bg-teal-900/90 border border-teal-400/40 text-teal-300 text-[11px] font-black px-3 py-1 rounded-full backdrop-blur-md uppercase tracking-wider shadow-lg">
+                <div className="absolute top-6 right-6 z-20 bg-blue-900/90 border border-sky-400/40 text-sky-300 text-[11px] font-black px-3 py-1 rounded-full backdrop-blur-md uppercase tracking-wider shadow-lg">
                   ✨ NEW COLLECTION
                 </div>
 
                 {/* Showcase Image */}
-                <div className="relative h-72 sm:h-80 w-full rounded-2xl overflow-hidden bg-emerald-950/40 border border-emerald-500/10">
+                <div className="relative h-72 sm:h-80 w-full rounded-2xl overflow-hidden bg-blue-950/40 border border-blue-500/10">
                   <img
                     src="/new_arrivals_showcase.png"
                     alt="New Collection Showcase"
                     className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#041510] via-transparent to-transparent opacity-80" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#030e1a] via-transparent to-transparent opacity-80" />
                 </div>
 
                 {/* Bottom Left Floating Glassmorphism Overlay */}
@@ -165,7 +165,7 @@ export default function NewArrivalsPage() {
                     <span>{products.length} NEW DROPS</span>
                   </div>
                   <div className="h-px bg-white/20 w-full" />
-                  <div className="flex items-center gap-2 text-emerald-400 text-[11px] font-bold">
+                  <div className="flex items-center gap-2 text-sky-400 text-[11px] font-bold">
                     <span>🏷️</span>
                     <span>100% QUALITY ASSURED</span>
                   </div>
@@ -180,12 +180,12 @@ export default function NewArrivalsPage() {
       </div>
 
       {/* 🎟️ TICKER RIBBON BAR */}
-      <div className="bg-[#020B08] border-b border-emerald-500/30 py-2.5 px-4 text-center overflow-hidden">
-        <div className="inline-flex items-center justify-center gap-4 text-xs font-black tracking-wider text-emerald-400 uppercase">
+      <div className="bg-[#020b18] border-b border-blue-500/30 py-2.5 px-4 text-center overflow-hidden">
+        <div className="inline-flex items-center justify-center gap-4 text-xs font-black tracking-wider text-sky-400 uppercase">
           <span>🏷️ LIMITED STOCK</span>
-          <span className="text-emerald-700">•</span>
+          <span className="text-blue-500">•</span>
           <span>⏰ SHOP BEFORE IT'S GONE!</span>
-          <span className="text-emerald-700">•</span>
+          <span className="text-blue-500">•</span>
           <span>🚚 FREE SHIPPING ON ORDERS ABOVE ₹499</span>
         </div>
       </div>
@@ -202,7 +202,7 @@ export default function NewArrivalsPage() {
               onClick={() => setSelectedCategory("all")}
               className={`px-4 py-2 rounded-2xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
                 selectedCategory === "all"
-                  ? "bg-emerald-600 text-white shadow-xs"
+                  ? "bg-blue-600 text-white shadow-xs"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
@@ -217,7 +217,7 @@ export default function NewArrivalsPage() {
                   onClick={() => setSelectedCategory(cat.slug)}
                   className={`px-4 py-2 rounded-2xl text-xs font-extrabold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
                     selectedCategory === cat.slug
-                      ? "bg-emerald-600 text-white shadow-xs"
+                      ? "bg-blue-600 text-white shadow-xs"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                   }`}
                 >

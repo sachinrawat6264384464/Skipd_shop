@@ -53,7 +53,7 @@ export function UserAccountDropdown() {
       <>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl transition shadow-xs cursor-pointer whitespace-nowrap"
+          className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl transition shadow-xs cursor-pointer whitespace-nowrap"
         >
           <span className="inline sm:hidden">Sign In</span>
           <span className="hidden sm:inline">Sign In / Register</span>
@@ -76,7 +76,7 @@ export function UserAccountDropdown() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 text-xs font-bold text-gray-900 bg-gray-100/90 border border-gray-200/80 hover:bg-gray-200/90 p-1 sm:px-3 sm:py-1.5 rounded-2xl transition cursor-pointer shadow-2xs"
       >
-        <div className="w-7 h-7 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0">
+        <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0">
           {initials}
         </div>
         <span className="font-bold text-xs text-gray-900 leading-none hidden sm:inline">
@@ -93,7 +93,7 @@ export function UserAccountDropdown() {
             className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-3xl shadow-2xl overflow-hidden z-50 text-xs text-gray-800 animate-in fade-in zoom-in-95 duration-150"
           >
             {/* Header info */}
-            <div className="p-4 bg-emerald-50/70 border-b border-emerald-100 space-y-1">
+            <div className="p-4 bg-blue-50/70 border-b border-blue-100 space-y-1">
               <p className="font-extrabold text-sm text-gray-900">{user.user_name}</p>
               <p className="text-[11px] text-gray-500 truncate">{user.email || "customer@e-com.in"}</p>
             </div>
@@ -112,7 +112,7 @@ export function UserAccountDropdown() {
               <Link
                 href="/orders"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-emerald-50 text-emerald-800 font-bold transition"
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-blue-800 font-bold transition"
               >
                 <span>📦</span>
                 <span>My Orders &amp; Tracking</span>
