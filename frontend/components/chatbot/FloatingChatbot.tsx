@@ -53,8 +53,8 @@ export default function FloatingChatbot() {
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0) return;
     const rect = buttonRef.current?.getBoundingClientRect();
-    const currentX = rect ? rect.left : (typeof window !== 'undefined' ? window.innerWidth - 110 : 0);
-    const currentY = rect ? rect.top : (typeof window !== 'undefined' ? window.innerHeight - 110 : 0);
+    const currentX = rect ? rect.left : (typeof window !== 'undefined' ? window.innerWidth - 140 : 0);
+    const currentY = rect ? rect.top : (typeof window !== 'undefined' ? window.innerHeight - 140 : 0);
 
     dragStartRef.current = {
       mouseX: e.clientX,
@@ -77,11 +77,11 @@ export default function FloatingChatbot() {
       let newY = dragStartRef.current.posY + deltaY;
 
       const botSize = 96;
-      const maxX = typeof window !== 'undefined' ? window.innerWidth - botSize - 12 : 1000;
-      const maxY = typeof window !== 'undefined' ? window.innerHeight - botSize - 12 : 1000;
+      const maxX = typeof window !== 'undefined' ? window.innerWidth - botSize - 32 : 1000;
+      const maxY = typeof window !== 'undefined' ? window.innerHeight - botSize - 32 : 1000;
 
-      newX = Math.max(12, Math.min(maxX, newX));
-      newY = Math.max(12, Math.min(maxY, newY));
+      newX = Math.max(32, Math.min(maxX, newX));
+      newY = Math.max(32, Math.min(maxY, newY));
 
       setPosition({ x: newX, y: newY });
     };
@@ -99,8 +99,8 @@ export default function FloatingChatbot() {
   const handleTouchStart = (e: React.TouchEvent) => {
     const touch = e.touches[0];
     const rect = buttonRef.current?.getBoundingClientRect();
-    const currentX = rect ? rect.left : (typeof window !== 'undefined' ? window.innerWidth - 110 : 0);
-    const currentY = rect ? rect.top : (typeof window !== 'undefined' ? window.innerHeight - 110 : 0);
+    const currentX = rect ? rect.left : (typeof window !== 'undefined' ? window.innerWidth - 140 : 0);
+    const currentY = rect ? rect.top : (typeof window !== 'undefined' ? window.innerHeight - 140 : 0);
 
     dragStartRef.current = {
       mouseX: touch.clientX,
@@ -124,11 +124,11 @@ export default function FloatingChatbot() {
       let newY = dragStartRef.current.posY + deltaY;
 
       const botSize = 96;
-      const maxX = typeof window !== 'undefined' ? window.innerWidth - botSize - 12 : 1000;
-      const maxY = typeof window !== 'undefined' ? window.innerHeight - botSize - 12 : 1000;
+      const maxX = typeof window !== 'undefined' ? window.innerWidth - botSize - 32 : 1000;
+      const maxY = typeof window !== 'undefined' ? window.innerHeight - botSize - 32 : 1000;
 
-      newX = Math.max(12, Math.min(maxX, newX));
-      newY = Math.max(12, Math.min(maxY, newY));
+      newX = Math.max(32, Math.min(maxX, newX));
+      newY = Math.max(32, Math.min(maxY, newY));
 
       setPosition({ x: newX, y: newY });
     };
@@ -429,7 +429,7 @@ export default function FloatingChatbot() {
             ? { left: `${position.x}px`, top: `${position.y}px`, bottom: 'auto', right: 'auto' }
             : {}
         }
-        className={`fixed ${!position ? 'bottom-6 right-6' : ''} z-50 w-20 h-20 sm:w-24 sm:h-24 bg-transparent select-none touch-none ${
+        className={`fixed ${!position ? 'bottom-10 right-10 sm:bottom-14 sm:right-14' : ''} z-50 w-20 h-20 sm:w-24 sm:h-24 bg-transparent select-none touch-none ${
           isDragging ? 'cursor-grabbing scale-115' : 'cursor-grab hover:scale-110'
         } active:scale-95 transition-transform duration-200 flex items-center justify-center group`}
         aria-label="Open AI Recommender Chatbot"
@@ -453,7 +453,7 @@ export default function FloatingChatbot() {
       {isOpen && (
         <div
           style={getDrawerStyle()}
-          className={`fixed ${!position ? 'bottom-30 right-6' : ''} w-[410px] max-w-[calc(100vw-2rem)] h-[580px] z-50 bg-slate-950/95 backdrop-blur-xl border border-emerald-800/60 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300`}
+          className={`fixed ${!position ? 'bottom-34 right-10 sm:bottom-38 sm:right-14' : ''} w-[410px] max-w-[calc(100vw-2rem)] h-[580px] z-50 bg-slate-950/95 backdrop-blur-xl border border-emerald-800/60 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300`}
         >
           
           {/* Header */}
