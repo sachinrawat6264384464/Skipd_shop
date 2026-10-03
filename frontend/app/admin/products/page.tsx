@@ -134,10 +134,35 @@ export default function AdminProductsPage() {
     const targetId = deletingCategoryId;
     if (!targetId) return;
 
+    // Find targeted category details for matching products
+    const targetCat = categories.find(c => String(c.id) === String(targetId) || String(c.slug) === String(targetId));
+    const catId = targetCat?.id;
+    const catSlug = (targetCat?.slug || String(targetId)).toLowerCase().trim();
+    const catName = (targetCat?.name || "").toLowerCase().trim();
+    const catPrefix = catSlug.split("-")[0] || catSlug;
+
     // ⚡ 1. INSTANT OPTIMISTIC UI RESPONSE (<10ms)
     setDeletingCategoryId(null);
     setCategories(prev => prev.filter(c => String(c.id) !== String(targetId) && String(c.slug) !== String(targetId)));
-    showNotification(`🗑️ Category deleted from Database`, "error");
+
+    // Cascade remove all products mapped to this deleted category from state immediately
+    setProducts(prev => prev.filter(p => {
+      if (catId && p.category_id === catId) return false;
+      
+      const pCatSlug = (p.category_slug || p.category?.slug || p.category_name || p.category || "").toLowerCase().trim();
+      const pCatPrefix = pCatSlug.split("-")[0] || pCatSlug;
+      if (catSlug && (pCatSlug === catSlug || pCatPrefix === catPrefix)) return false;
+      if (catName && pCatSlug === catName) return false;
+
+      if (p.tags && Array.isArray(p.tags)) {
+        const tagsLower = p.tags.map((t: any) => String(t).toLowerCase().trim());
+        if (catSlug && tagsLower.includes(catSlug)) return false;
+        if (catPrefix && tagsLower.includes(catPrefix)) return false;
+      }
+      return true;
+    }));
+
+    showNotification(`🗑️ Category & mapped products deleted from Database`, "error");
 
     // ⚡ 2. Async DB Call & Background Refresh
     try {
@@ -149,6 +174,7 @@ export default function AdminProductsPage() {
       loadProductsAndCategories();
     }
   };
+
 
   // Sub-Category Handlers
   const handleCreateSubCategory = (e: React.FormEvent) => {
@@ -1280,12 +1306,19 @@ export default function AdminProductsPage() {
 
                           {/* CATEGORY & BRAND */}
                           <td className="px-4 py-4 min-w-[140px]">
-                            <span className="bg-gray-100 text-gray-800 text-[10px] font-bold px-2 py-0.5 rounded border border-gray-200 capitalize block w-max mb-1">
-                              {p.category_slug || p.category?.name || "General"}
-                            </span>
-                            <p className="text-[11px] font-extrabold text-emerald-700">{p.brand || "Skipd Store"}</p>
+                            {(() => {
+                              const matchingCat = categories.find(c => c.id === p.category_id || (c.slug && (c.slug === p.category_slug || c.slug === p.category?.slug)));
+                              const rawName = matchingCat ? matchingCat.name : (p.category_name || p.category?.name || (p.category_slug ? p.category_slug.replace(/-/g, " ") : (p.tags && p.tags[0] ? String(p.tags[0]).replace(/-/g, " ") : "General")));
+                              return (
+                                <span className="bg-emerald-50 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200 capitalize block w-max mb-1">
+                                  📂 {rawName}
+                                </span>
+                              );
+                            })()}
+                            <p className="text-[11px] font-extrabold text-gray-800">{p.brand || "Skipd Store"}</p>
                             {p.sub_category && <p className="text-[10px] text-gray-400">{p.sub_category}</p>}
                           </td>
+
 
                           {/* PRICING & COST */}
                           <td className="px-4 py-4 min-w-[140px]">

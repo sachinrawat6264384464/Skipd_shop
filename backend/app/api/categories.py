@@ -1,9 +1,9 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Body
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update, func
+from sqlalchemy import select, update, delete, func
 from app.core.database import get_db
-from app.models.models import Category, Product
+from app.models.models import Category, Product, OrderItem, WishlistItem, CartItem, Review, InventoryLog, SaleProduct, ProductVariant, NewArrival
 from app.schemas.schemas import CategorySchema, CategoryCreate, CategoryUpdate
 from app.core.redis_cache import invalidate_cache_pattern
 
@@ -213,26 +213,63 @@ async def update_admin_category(category_id: int, payload: CategoryUpdate, db: A
 
 @router.delete("/admin/{category_id}")
 async def delete_admin_category(category_id: int, db: AsyncSession = Depends(get_db)):
-    """Delete a category from PostgreSQL database with smart unlinking of FK products."""
+    """Delete a category from PostgreSQL database with cascade deletion of all mapped products."""
     res = await db.execute(select(Category).where(Category.id == category_id))
     category = res.scalars().first()
     if not category:
         raise HTTPException(status_code=404, detail="Category not found")
     
-    # 1. Unlink any products assigned to this category in batch
-    await db.execute(update(Product).where(Product.category_id == category_id).values(category_id=None))
+    cat_slug = (category.slug or "").lower().strip()
+    cat_name = (category.name or "").lower().strip()
+    cat_prefix = cat_slug.split("-")[0] if cat_slug else ""
 
-    # 2. Delete the category from DB
+    # 1. Fetch all products to find matches by category_id or tag/slug match
+    all_prods_res = await db.execute(select(Product))
+    all_products = all_prods_res.scalars().all()
+
+    target_prod_ids = []
+    for p in all_products:
+        is_match = False
+        if p.category_id == category.id:
+            is_match = True
+        elif p.tags and isinstance(p.tags, list):
+            tags_lower = [str(t).lower() for t in p.tags]
+            if cat_slug in tags_lower or cat_name in tags_lower or (cat_prefix and cat_prefix in tags_lower):
+                is_match = True
+        if is_match:
+            target_prod_ids.append(p.id)
+
+    # 2. Batch cascade delete all foreign key dependencies for these products
+    if target_prod_ids:
+        await db.execute(delete(OrderItem).where(OrderItem.product_id.in_(target_prod_ids)))
+        await db.execute(delete(WishlistItem).where(WishlistItem.product_id.in_(target_prod_ids)))
+        await db.execute(delete(CartItem).where(CartItem.product_id.in_(target_prod_ids)))
+        await db.execute(delete(Review).where(Review.product_id.in_(target_prod_ids)))
+        await db.execute(delete(InventoryLog).where(InventoryLog.product_id.in_(target_prod_ids)))
+        await db.execute(delete(SaleProduct).where(SaleProduct.product_id.in_(target_prod_ids)))
+        await db.execute(delete(ProductVariant).where(ProductVariant.product_id.in_(target_prod_ids)))
+        await db.execute(delete(NewArrival).where(NewArrival.product_id.in_(target_prod_ids)))
+        
+        # 3. Delete the matching products
+        await db.execute(delete(Product).where(Product.id.in_(target_prod_ids)))
+
+    # 4. Delete the category itself from DB
     await db.delete(category)
     await db.commit()
 
-    # 3. Invalidate Redis Cache immediately
+    # 5. Invalidate Redis Cache immediately across products and categories
     try:
         await invalidate_cache_pattern("products:*")
+        await invalidate_cache_pattern("categories:*")
+        await invalidate_cache_pattern("catalog:*")
     except BaseException:
         pass
 
-    return {"status": "success", "message": f"Category #{category_id} deleted successfully"}
+    return {
+        "status": "success", 
+        "message": f"Category #{category_id} ({category.name}) and {len(target_prod_ids)} mapped product(s) deleted successfully"
+    }
+
 
 @router.get("/{slug}", response_model=CategorySchema)
 async def get_category(slug: str, db: AsyncSession = Depends(get_db)):
