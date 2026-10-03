@@ -291,32 +291,36 @@ export default function FloatingChatbot() {
       {/* Floating Action Launcher Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 p-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center border-2 border-emerald-400/40 cursor-pointer"
+        className="fixed bottom-6 right-6 z-50 w-20 h-20 sm:w-24 sm:h-24 bg-transparent border-none outline-none focus:outline-none cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center group"
         aria-label="Open AI Recommender Chatbot"
       >
-        <span className="relative flex items-center justify-center">
-          <span className="text-2xl">🤖</span>
-          <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-          </span>
+        <span className="relative w-full h-full flex items-center justify-center">
+          <img
+            src="/bot-avatar.png"
+            alt="E-COM AI Assistant"
+            className="w-full h-full object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.35)] group-hover:drop-shadow-[0_15px_25px_rgba(16,185,129,0.4)] transition-all duration-300"
+          />
         </span>
       </button>
 
       {/* Main Glassmorphic Chatbot Window Drawer */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-[400px] max-w-[calc(100vw-2rem)] h-[560px] z-50 bg-slate-950/95 backdrop-blur-xl border border-emerald-900/50 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed bottom-30 right-6 w-[410px] max-w-[calc(100vw-2rem)] h-[580px] z-50 bg-slate-950/95 backdrop-blur-xl border border-emerald-800/60 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-emerald-950/90 via-slate-900 to-slate-950 border-b border-emerald-900/50 flex items-center justify-between">
+          <div className="p-4 bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 border-b border-emerald-900/60 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-emerald-600/30 border border-emerald-400/40 flex items-center justify-center text-xl shadow-xs">
-                🤖
+              <div className="w-11 h-11 rounded-full bg-emerald-600/25 border border-emerald-400/50 flex items-center justify-center p-1 shadow-xs">
+                <img
+                  src="/bot-avatar.png"
+                  alt="E-COM AI Assistant"
+                  className="w-full h-full object-contain"
+                />
               </div>
               <div>
-                <h3 className="text-white font-bold text-sm tracking-wide">E-COM AI Assistant</h3>
-                <p className="text-xs text-emerald-400 flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <h3 className="text-white font-black text-sm tracking-wide">E-COM AI Assistant</h3>
+                <p className="text-xs text-emerald-400 font-bold flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                   Active Recommender
                 </p>
               </div>
