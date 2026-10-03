@@ -597,6 +597,7 @@ export default function AdminProductsPage() {
     const isCurrentlyInDb = newArrivalDbIds.includes(prodIdNum);
     const nextState = !isCurrentlyInDb;
 
+    // Optimistically update local UI state immediately
     if (nextState) {
       setNewArrivalDbIds(prev => Array.from(new Set([...prev, prodIdNum])));
       setNewArrivalsDbProducts(prev => {
@@ -608,27 +609,25 @@ export default function AdminProductsPage() {
       setNewArrivalsDbProducts(prev => prev.filter(p => Number(p.id) !== prodIdNum));
     }
 
-    const res = await toggleNewArrivalDB(product.id);
+    // Call explicit backend endpoints: add when turning ON, remove when turning OFF
+    let res: any = null;
+    if (nextState) {
+      res = await addProductToNewArrivalsDB(product.id);
+    } else {
+      res = await removeProductFromNewArrivalsDB(product.id);
+    }
+
     if (res) {
-      if (typeof res.is_new_arrival === "boolean") {
-        const active = res.is_new_arrival;
-        if (active) {
-          setNewArrivalDbIds(prev => Array.from(new Set([...prev, prodIdNum])));
-        } else {
-          setNewArrivalDbIds(prev => prev.filter(id => id !== prodIdNum));
-          setNewArrivalsDbProducts(prev => prev.filter(p => Number(p.id) !== prodIdNum));
-        }
-      }
       showNotification(
         nextState 
           ? `✨ Product "${product.title}" saved to PostgreSQL new_arrivals table!` 
           : `Removed "${product.title}" from PostgreSQL new_arrivals table`
       );
-      await loadNewArrivalsData();
     } else {
       showNotification("Failed to update new_arrivals DB table", "error");
-      await loadNewArrivalsData();
     }
+
+    await loadNewArrivalsData();
   };
 
   function deriveCategoriesFromData(dbCats: any[], prodsList: any[]) {

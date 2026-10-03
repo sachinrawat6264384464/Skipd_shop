@@ -35,10 +35,27 @@ export default function NewArrivalsPage() {
     loadData();
   }, []);
 
+  function isProductInCategory(p: any, targetCatSlug: string): boolean {
+    if (!targetCatSlug || targetCatSlug === "all") return true;
+    const catObj = p.category;
+    const pSlug = (catObj?.slug || p.category_slug || (typeof p.category === "string" ? p.category : "")).toLowerCase().trim();
+    const pName = (catObj?.name || p.category_name || (typeof p.category === "string" ? p.category : "")).toLowerCase().trim();
+    const target = targetCatSlug.toLowerCase().trim();
+    const targetPrefix = target.split("-")[0];
+
+    return (
+      pSlug === target ||
+      pName === target ||
+      (pSlug && pSlug.startsWith(targetPrefix)) ||
+      (pName && pName.includes(targetPrefix)) ||
+      (target && pSlug.includes(target))
+    );
+  }
+
   // Filter products by selected category
   const filteredProducts = selectedCategory === "all"
     ? products
-    : products.filter(p => (p.category?.slug || (p as any).category_slug) === selectedCategory);
+    : products.filter(p => isProductInCategory(p, selectedCategory));
 
   // Apply sorting
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -193,7 +210,7 @@ export default function NewArrivalsPage() {
             </button>
 
             {categories.map((cat) => {
-              const count = products.filter(p => (p.category?.slug || (p as any).category_slug) === cat.slug).length;
+              const count = products.filter(p => isProductInCategory(p, cat.slug)).length;
               return (
                 <button
                   key={cat.id}
