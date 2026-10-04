@@ -35,7 +35,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "EXPLORE DEALS",
     secondaryButtonHref: "/deals",
     imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
-    bgImageUrl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=90&w=2000&auto=format&fit=crop",
+    bgImageUrl: "/image.png",
     badgeText: "UP TO 50% OFF",
     bgGradient: "from-slate-950/95 via-slate-900/85 to-amber-950/70",
     tagColor: "bg-amber-500/20 text-amber-300 border-amber-400/40",
@@ -53,7 +53,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "VIEW OFFERS",
     secondaryButtonHref: "/deals",
     imageUrl: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-    bgImageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=90&w=2000&auto=format&fit=crop",
+    bgImageUrl: "/image%20copy.png",
     badgeText: "CERTIFIED VVS",
     bgGradient: "from-slate-950/95 via-slate-900/85 to-indigo-950/70",
     tagColor: "bg-blue-500/20 text-blue-300 border-blue-400/40",
@@ -71,7 +71,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "SEE CATALOG",
     secondaryButtonHref: "/search",
     imageUrl: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800",
-    bgImageUrl: "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?q=90&w=2000&auto=format&fit=crop",
+    bgImageUrl: "/image%20copy%202.png",
     badgeText: "24K GOLD POLISH",
     bgGradient: "from-slate-950/95 via-slate-900/85 to-rose-950/70",
     tagColor: "bg-rose-500/20 text-rose-300 border-rose-400/40",
@@ -225,14 +225,15 @@ export function HeroSlider() {
                   src={
                     slide.bgImageUrl ||
                     (idx === 2
-                      ? "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?q=90&w=2000&auto=format&fit=crop"
+                      ? "/image%20copy%202.png"
                       : idx === 1
-                      ? "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=90&w=2000&auto=format&fit=crop"
-                      : "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=90&w=2000&auto=format&fit=crop")
+                      ? "/image%20copy.png"
+                      : "/image.png")
                   }
                   alt="Hero Slide Background"
                   className="w-full h-full object-cover object-center transform scale-100 transition-transform duration-1000"
                 />
+
                 {/* 100% Crystal Clear HD Overlay — Only subtle shadow at very bottom for cards */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
               </div>
