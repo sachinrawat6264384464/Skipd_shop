@@ -132,7 +132,7 @@ export function NavLinks() {
                 onClick={() => setIsCatOpen(false)}
                 className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
               >
-                <span className="text-base">{getCategoryIcon(cat.slug)}</span> {cat.name}
+                {cat.name}
               </Link>
             ))}
 

@@ -260,10 +260,7 @@ export default function MobileMenu() {
                       onClick={() => setIsOpen(false)}
                       className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
                     >
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-base">{getCategoryIcon(cat.slug)}</span>
-                        <span className="font-extrabold">{cat.name}</span>
-                      </div>
+                      <span className="font-extrabold">{cat.name}</span>
                       <span className="text-xs text-gray-400">&rsaquo;</span>
                     </Link>
                   ))
@@ -273,10 +270,7 @@ export default function MobileMenu() {
                     onClick={() => setIsOpen(false)}
                     className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
                   >
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-base">🛍️</span>
-                      <span>All Products &amp; Catalog</span>
-                    </div>
+                    <span className="font-extrabold">All Products &amp; Catalog</span>
                     <span className="text-xs text-gray-400">&rsaquo;</span>
                   </Link>
                 )}
