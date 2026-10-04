@@ -65,7 +65,7 @@ export default function Footer() {
         </div>
 
         {/* ☁️ Cloud Hero Title Overlay Inside Deep Blue Header */}
-        <div className="bg-[#0A192F] text-center pt-0 pb-10 px-4 relative z-10">
+        <div className="bg-gradient-to-b from-[#0A192F] via-[#07162C] to-[#040E1E] text-center pt-0 pb-10 px-4 relative z-10">
           <div className="max-w-2xl mx-auto space-y-4">
             <div className="inline-flex items-center gap-2 bg-blue-500/20 border border-cyan-400/40 px-4 py-1.5 rounded-full text-cyan-300 font-black text-xs uppercase tracking-wider shadow-xs">
               <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping" />
@@ -94,11 +94,23 @@ export default function Footer() {
 
       </div>
 
-      {/* 🏢 Main Footer Body Container (Deep Blue Theme) */}
-      <div className="bg-[#0A192F] border-t border-[#132B4F]/80">
+      {/* 🏢 Main Footer Body Container (Deep Ocean Gradient Slope: Light Blue -> Midnight Black) */}
+      <div className="bg-gradient-to-b from-[#040E1E] via-[#020814] to-[#01040A] border-t border-[#132B4F]/60 relative overflow-hidden">
         
+        {/* 🫧 FLOATING RISING SEA BUBBLE ANIMATIONS */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute left-[6%] bottom-[-20px] w-5 h-5 rounded-full bg-cyan-300/30 border border-cyan-200/50 backdrop-blur-xs animate-bubble-1" />
+          <div className="absolute left-[18%] bottom-[-20px] w-8 h-8 rounded-full bg-sky-300/20 border border-sky-200/40 backdrop-blur-xs animate-bubble-2" />
+          <div className="absolute left-[30%] bottom-[-20px] w-4 h-4 rounded-full bg-blue-300/40 border border-blue-200/60 backdrop-blur-xs animate-bubble-3" />
+          <div className="absolute left-[42%] bottom-[-20px] w-6 h-6 rounded-full bg-cyan-200/30 border border-cyan-100/50 backdrop-blur-xs animate-bubble-4" />
+          <div className="absolute left-[55%] bottom-[-20px] w-9 h-9 rounded-full bg-sky-300/25 border border-sky-200/45 backdrop-blur-xs animate-bubble-5" />
+          <div className="absolute left-[68%] bottom-[-20px] w-5 h-5 rounded-full bg-cyan-300/35 border border-cyan-200/55 backdrop-blur-xs animate-bubble-6" />
+          <div className="absolute left-[80%] bottom-[-20px] w-7 h-7 rounded-full bg-blue-200/30 border border-blue-100/50 backdrop-blur-xs animate-bubble-2" />
+          <div className="absolute left-[92%] bottom-[-20px] w-4 h-4 rounded-full bg-sky-300/40 border border-sky-200/60 backdrop-blur-xs animate-bubble-4" />
+        </div>
+
         {/* Main Footer Columns */}
-        <div className="mx-auto max-w-[1440px] px-4 sm:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+        <div className="mx-auto max-w-[1440px] px-4 sm:px-8 py-14 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10 relative z-10">
           
           {/* Column 1 (Far Left): Brand Logo & Mail Info */}
           <div className="space-y-5 lg:col-span-2 pr-0 lg:pr-8">
@@ -238,7 +250,7 @@ export default function Footer() {
         </div>
 
         {/* 💼 Bottom Services & Payment Method Bar */}
-        <div className="py-6 bg-[#071324] border-t border-[#132B4F]">
+        <div className="py-6 bg-[#01040A] border-t border-[#132B4F]/50 relative z-10">
           <div className="max-w-[1440px] mx-auto px-4 sm:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
             
             {/* Services Links */}

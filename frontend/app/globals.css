@@ -103,3 +103,45 @@ font {
   animation: waveMove 10s linear infinite;
   will-change: transform;
 }
+
+/* 🫧 Ocean Rising Sea Bubbles Animations */
+@keyframes floatBubble {
+  0% {
+    transform: translateY(20px) scale(0.5);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.7;
+  }
+  75% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-500px) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.animate-bubble-1 {
+  animation: floatBubble 9s ease-in-out infinite;
+}
+
+.animate-bubble-2 {
+  animation: floatBubble 14s ease-in-out infinite 2s;
+}
+
+.animate-bubble-3 {
+  animation: floatBubble 11s ease-in-out infinite 4.5s;
+}
+
+.animate-bubble-4 {
+  animation: floatBubble 16s ease-in-out infinite 1s;
+}
+
+.animate-bubble-5 {
+  animation: floatBubble 10s ease-in-out infinite 3s;
+}
+
+.animate-bubble-6 {
+  animation: floatBubble 13s ease-in-out infinite 6s;
+}
