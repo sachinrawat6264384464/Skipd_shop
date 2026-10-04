@@ -36,7 +36,7 @@ export default function WalletPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-gray-900 px-4 py-12">
+    <div className="min-h-screen bg-white text-gray-900 px-4 py-12">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/account" className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm hover:bg-gray-50 transition">

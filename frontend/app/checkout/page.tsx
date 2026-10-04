@@ -602,7 +602,7 @@ export default function CheckoutPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-[#FAFAFA] text-gray-900 px-4 py-16 flex items-center justify-center font-sans">
+      <div className="min-h-screen bg-white text-gray-900 px-4 py-16 flex items-center justify-center font-sans">
         <div className="max-w-md w-full bg-white border border-gray-200 p-8 rounded-3xl text-center space-y-4 shadow-2xs">
           <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100">
             🛒
@@ -625,7 +625,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-gray-900 px-4 py-8 md:py-12">
+    <div className="min-h-screen bg-white text-gray-900 px-4 py-8 md:py-12">
       <div className="max-w-6xl mx-auto space-y-6">
         
         {/* Top 3-Step Checkout Stepper */}

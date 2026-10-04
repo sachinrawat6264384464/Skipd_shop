@@ -8,7 +8,7 @@ export default function SearchLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between" suppressHydrationWarning>
+    <div className="bg-white text-gray-900 min-h-screen flex flex-col justify-between" suppressHydrationWarning>
       <div className="mx-auto max-w-7xl px-4 py-8 w-full">
         
         {/* Main 2-Column Grid: Left Sidebar (3 Cols) + Right Catalog (9 Cols) */}

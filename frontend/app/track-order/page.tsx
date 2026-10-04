@@ -102,7 +102,7 @@ function TrackOrderContent() {
   };
 
   return (
-    <div className="bg-[#FAFAFA] min-h-screen text-gray-900 font-sans flex flex-col justify-between">
+    <div className="bg-white min-h-screen text-gray-900 font-sans flex flex-col justify-between">
       <div className="max-w-6xl mx-auto px-4 py-8 md:py-12 space-y-8 w-full">
         
         {/* Breadcrumb Navigation */}

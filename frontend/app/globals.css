@@ -6,11 +6,11 @@
 @layer base {
   html {
     color-scheme: light !important;
-    background-color: #FAFAFA !important;
+    background-color: #FFFFFF !important;
     color: #111827 !important;
   }
   body {
-    background-color: #FAFAFA !important;
+    background-color: #FFFFFF !important;
     color: #111827 !important;
   }
   *,

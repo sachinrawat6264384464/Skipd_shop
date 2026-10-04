@@ -138,7 +138,7 @@ export default function CartItemsPage() {
   const finalTotal = selectedItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
   return (
-    <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
+    <div className="bg-white text-gray-900 min-h-screen flex flex-col justify-between">
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8 w-full">
         
         {/* 🚀 CART UPPER HERO BANNER & SHOWCASE SECTION */}

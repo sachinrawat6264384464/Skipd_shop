@@ -138,7 +138,7 @@ export default function GiftCardsPage() {
   };
 
   return (
-    <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between" suppressHydrationWarning>
+    <div className="bg-white text-gray-900 min-h-screen flex flex-col justify-between" suppressHydrationWarning>
       
       {/* In-Page Toast Notification */}
       {toastMessage && (

@@ -65,7 +65,7 @@ export default function DealsPage() {
   }, []);
 
   return (
-    <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
+    <div className="bg-white text-gray-900 min-h-screen flex flex-col justify-between">
       <div className="w-full space-y-8 pb-12">
 
         {/* 🟠 Hero Sale Banner */}

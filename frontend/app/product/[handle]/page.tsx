@@ -41,7 +41,7 @@ export default async function ProductPage(props: {
 
   if (!product) {
     return (
-      <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
+      <div className="bg-white text-gray-900 min-h-screen flex flex-col justify-between">
         <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-6">
           <div className="w-20 h-20 rounded-full bg-amber-50 text-amber-600 font-bold flex items-center justify-center text-4xl mx-auto border border-amber-200">
             🔍
@@ -70,7 +70,7 @@ export default async function ProductPage(props: {
   );
 
   return (
-    <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
+    <div className="bg-white text-gray-900 min-h-screen flex flex-col justify-between">
       <div className="space-y-8 pb-12">
         <ProductDetailView product={product} relatedProducts={relatedProducts} />
         <div className="max-w-7xl mx-auto px-4">

@@ -125,7 +125,7 @@ export default function OrdersDashboardPage() {
 
   if (isLoggedIn === false) {
     return (
-      <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
+      <div className="bg-white text-gray-900 min-h-screen flex flex-col justify-between">
         <div className="min-h-[75vh] flex flex-col items-center justify-center p-6 text-center">
           <div className="bg-white border border-gray-200 rounded-3xl p-8 max-w-md w-full shadow-lg space-y-5">
             <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto text-3xl font-black border border-blue-100 shadow-xs">
@@ -154,7 +154,7 @@ export default function OrdersDashboardPage() {
   }
 
   return (
-    <div className="bg-[#FAFAFA] text-gray-900 min-h-screen flex flex-col justify-between">
+    <div className="bg-white text-gray-900 min-h-screen flex flex-col justify-between">
       <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 w-full">
         
         {/* Header Breadcrumbs & Search Bar */}
