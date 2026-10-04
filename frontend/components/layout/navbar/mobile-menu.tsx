@@ -135,7 +135,7 @@ export default function MobileMenu() {
           />
 
           {/* Drawer Panel */}
-          <div className="relative w-[88%] max-w-xs bg-white h-full shadow-2xl overflow-y-auto flex flex-col z-50 text-gray-800 font-sans animate-in slide-in-from-left duration-200">
+          <div className="relative w-[88%] max-w-xs bg-white h-screen max-h-[100dvh] shadow-2xl overflow-y-auto overscroll-contain flex flex-col z-50 text-gray-800 font-sans animate-in slide-in-from-left duration-200">
             
             {/* Header: Brand & Close Button */}
             <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-20 shadow-2xs">

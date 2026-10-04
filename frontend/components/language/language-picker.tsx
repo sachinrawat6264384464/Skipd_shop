@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation, SupportedLanguage } from "./language-context";
 
 export interface LanguageOption {
@@ -63,6 +63,21 @@ export function LanguagePicker({ align = "right" }: { align?: "left" | "right" }
   const { setLanguage: setContextLang } = useTranslation();
   const [selectedLang, setSelectedLang] = useState<SupportedLanguage>("en");
   const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const saved = (localStorage.getItem("ecom_lang_code") || localStorage.getItem("ecom_lang") || "en") as SupportedLanguage;
@@ -129,7 +144,7 @@ export function LanguagePicker({ align = "right" }: { align?: "left" | "right" }
   const currentLangObj = LANGUAGES.find((l) => l.code === selectedLang) ?? LANGUAGES[0]!;
 
   return (
-    <div className="relative inline-block text-left z-40 w-full sm:w-auto">
+    <div ref={containerRef} className="relative inline-block text-left z-40 w-full sm:w-auto">
       {/* Hidden Google Translate Element Container */}
       <div id="google_translate_element" className="hidden" />
 
@@ -157,45 +172,42 @@ export function LanguagePicker({ align = "right" }: { align?: "left" | "right" }
 
       {/* 🪟 Sleek Floating Dropdown Menu */}
       {isOpen && (
-        <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className={`absolute ${align === "left" ? "left-0" : "right-0"} mt-2 w-56 max-w-[calc(100vw-48px)] bg-white/95 backdrop-blur-2xl border border-gray-200/90 rounded-2xl shadow-2xl p-2 z-50 text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150`}>
-            <div className="px-3 py-1.5 flex items-center justify-between border-b border-gray-100">
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
-                🌐 STORE LANGUAGE
-              </span>
-              <span className="text-[10px] font-bold text-blue-600">Auto-Sync</span>
-            </div>
-
-            {LANGUAGES.map((lang) => (
-              <button
-                key={lang.code}
-                onClick={() => {
-                  changeLanguage(lang.code);
-                  setIsOpen(false);
-                }}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-left cursor-pointer ${
-                  selectedLang === lang.code
-                    ? "bg-blue-50 text-blue-900 font-black border border-blue-200/80 shadow-2xs"
-                    : "text-gray-700 hover:bg-gray-100 font-semibold"
-                }`}
-              >
-                <div className="flex items-center gap-2.5">
-                  <span className="text-base">{lang.flag}</span>
-                  <div>
-                    <p className="leading-none">{lang.name}</p>
-                    <span className="text-[9px] text-gray-400 font-bold uppercase">{lang.region} • {lang.code}</span>
-                  </div>
-                </div>
-                {selectedLang === lang.code && (
-                  <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">
-                    ✓
-                  </span>
-                )}
-              </button>
-            ))}
+        <div className={`absolute ${align === "left" ? "left-0" : "right-0"} mt-2 w-56 max-w-[calc(100vw-48px)] bg-white/95 backdrop-blur-2xl border border-gray-200/90 rounded-2xl shadow-2xl p-2 z-50 text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150`}>
+          <div className="px-3 py-1.5 flex items-center justify-between border-b border-gray-100">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
+              🌐 STORE LANGUAGE
+            </span>
+            <span className="text-[10px] font-bold text-blue-600">Auto-Sync</span>
           </div>
-        </>
+
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => {
+                changeLanguage(lang.code);
+                setIsOpen(false);
+              }}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-left cursor-pointer ${
+                selectedLang === lang.code
+                  ? "bg-blue-50 text-blue-900 font-black border border-blue-200/80 shadow-2xs"
+                  : "text-gray-700 hover:bg-gray-100 font-semibold"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className="text-base">{lang.flag}</span>
+                <div>
+                  <p className="leading-none">{lang.name}</p>
+                  <span className="text-[9px] text-gray-400 font-bold uppercase">{lang.region} • {lang.code}</span>
+                </div>
+              </div>
+              {selectedLang === lang.code && (
+                <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">
+                  ✓
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       )}
     </div>
   );
