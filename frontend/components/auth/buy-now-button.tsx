@@ -21,7 +21,7 @@ export function BuyNowButton({
   productTitle,
   productObj,
   className = "bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-2.5 px-3 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs cursor-pointer",
-  children = "⚡ Buy Now",
+  children = "Buy Now",
   mode = "buy",
   disabled = false
 }: BuyNowButtonProps) {

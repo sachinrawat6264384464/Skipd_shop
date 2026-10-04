@@ -426,7 +426,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                             : "bg-[#FFFDF9] border border-[#E8E1D1] hover:bg-[#F4EFE6] text-[#3B2F2F] cursor-pointer"
                         }`}
                       >
-                        {isOutOfStock ? "Out of Stock" : "🛒 Cart"}
+                        {isOutOfStock ? "Out of Stock" : "Cart"}
                       </BuyNowButton>
                       <BuyNowButton
                         mode="buy"
@@ -436,10 +436,10 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                         className={`font-black text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs ${
                           isOutOfStock
                             ? "bg-[#D8D0C0] text-stone-500 cursor-not-allowed opacity-60"
-                            : "bg-[#8B5E3C] hover:bg-[#70482D] text-white cursor-pointer"
+                            : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-md shadow-blue-500/20"
                         }`}
                       >
-                        {isOutOfStock ? "Unavailable" : "⚡ Buy Now"}
+                        {isOutOfStock ? "Unavailable" : "Buy Now"}
                       </BuyNowButton>
                     </div>
 

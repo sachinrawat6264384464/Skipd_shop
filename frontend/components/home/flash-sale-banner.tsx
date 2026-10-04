@@ -244,24 +244,13 @@ export function FlashSaleBanner() {
               </div>
             </div>
 
-            {/* Stock Progress Bar */}
-            <div className="space-y-2 pt-2 border-t border-[#F0ECE1]">
-              <div className="flex justify-between text-[10px] font-bold text-stone-600">
-                <span>Stock Claimed</span>
-                <span className="text-[#B8860B] font-extrabold">{item.sold_percent}% Sold</span>
-              </div>
-              <div className="w-full h-2 bg-[#F4EFE6] rounded-full overflow-hidden border border-[#E8E1D1]">
-                <div
-                  className="h-full bg-gradient-to-r from-[#B8860B] to-[#8B5E3C] rounded-full transition-all duration-500"
-                  style={{ width: `${item.sold_percent}%` }}
-                />
-              </div>
-
+            {/* Claim Deal Action Button */}
+            <div className="pt-2 border-t border-[#F0ECE1]">
               <button
                 onClick={(e) => handleClaimDeal(e, item)}
-                className="w-full py-2.5 bg-gradient-to-r from-[#B8860B] via-[#966D08] to-[#8B5E3C] hover:from-[#966D08] hover:to-[#70482D] text-white font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md shadow-blue-500/20 cursor-pointer flex items-center justify-center gap-1 active:scale-95"
               >
-                ⚡ Claim Deal &rsaquo;
+                Claim Deal &rsaquo;
               </button>
             </div>
 

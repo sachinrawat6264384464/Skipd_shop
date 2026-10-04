@@ -53,7 +53,7 @@ export function UserAccountDropdown() {
       <>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="text-xs font-bold text-white bg-[#8B5E3C] hover:bg-[#70482D] px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl transition shadow-xs cursor-pointer whitespace-nowrap"
+          className="text-xs font-black text-white bg-blue-600 hover:bg-blue-700 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl transition shadow-md shadow-blue-500/20 cursor-pointer whitespace-nowrap"
         >
           <span className="inline sm:hidden">Sign In</span>
           <span className="hidden sm:inline">Sign In / Register</span>

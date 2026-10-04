@@ -121,7 +121,7 @@ export function NavLinks() {
               onClick={() => setIsCatOpen(false)}
               className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-[#F4EFE6] text-[#2C221E] font-black hover:bg-[#EBE4D5] transition text-sm"
             >
-              <span className="text-base">🛍️</span> All Categories &amp; Catalog
+              All Categories &amp; Catalog
             </Link>
 
             {dbCategories.map((cat) => (
@@ -136,15 +136,15 @@ export function NavLinks() {
               </Link>
             ))}
 
-            {/* 🎁 Gift Cards Dropdown Link - ONLY SHOW WHEN LOGGED IN */}
+            {/* Gift Cards Dropdown Link - ONLY SHOW WHEN LOGGED IN */}
             {isLoggedIn && (
               <Link
                 href="/gift-cards"
                 prefetch={false}
                 onClick={() => setIsCatOpen(false)}
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-[#F4EFE6] text-[#8B5E3C] font-black transition border-t border-[#F0ECE1] mt-1.5 pt-2.5 text-sm"
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-[#F4EFE6] text-blue-600 font-black transition border-t border-[#F0ECE1] mt-1.5 pt-2.5 text-sm"
               >
-                <span className="text-base">🎁</span> Gift Cards &amp; Rewards
+                Gift Cards &amp; Rewards
               </Link>
             )}
           </div>
@@ -156,24 +156,23 @@ export function NavLinks() {
         <Link
           href="/deals"
           prefetch={false}
-          className="px-4 py-2.5 rounded-xl text-[#B8860B] font-black hover:bg-[#F4EFE6] transition flex items-center gap-2 text-base"
+          className="px-4 py-2.5 rounded-xl text-blue-600 font-black hover:bg-[#F4EFE6] transition flex items-center gap-2 text-base"
         >
           <span>Deals</span>
-          <span className="bg-[#B8860B] text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs animate-pulse">
+          <span className="bg-blue-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs animate-pulse">
             HOT
           </span>
         </Link>
       </li>
 
-      {/* 🎁 GIFT CARDS LINK - ONLY SHOWN WHEN CUSTOMER IS LOGGED IN */}
+      {/* GIFT CARDS LINK - ONLY SHOWN WHEN CUSTOMER IS LOGGED IN */}
       {isLoggedIn && (
         <li>
           <Link
             href="/gift-cards"
             prefetch={false}
-            className="px-4 py-2.5 rounded-xl text-[#8B5E3C] font-black hover:bg-[#F4EFE6] transition flex items-center gap-2 text-base"
+            className="px-4 py-2.5 rounded-xl text-blue-600 font-black hover:bg-[#F4EFE6] transition flex items-center gap-2 text-base"
           >
-            <span className="text-lg">🎁</span>
             <span>Gift Cards</span>
           </Link>
         </li>
@@ -184,10 +183,10 @@ export function NavLinks() {
         <Link
           href="/new-arrivals"
           prefetch={false}
-          className="px-4 py-2.5 rounded-xl text-[#2C221E] font-black hover:bg-[#F4EFE6] hover:text-[#B8860B] transition flex items-center gap-2 text-base"
+          className="px-4 py-2.5 rounded-xl text-[#2C221E] font-black hover:bg-[#F4EFE6] hover:text-blue-600 transition flex items-center gap-2 text-base"
         >
           <span>New Arrivals</span>
-          <span className="bg-[#8B5E3C] text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+          <span className="bg-blue-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
             NEW
           </span>
         </Link>

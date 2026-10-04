@@ -459,14 +459,14 @@ export function SearchCatalogView({
                         productHandle={itemHandle}
                         className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
-                        🛒 Add to Cart
+                        Add to Cart
                       </BuyNowButton>
                       <BuyNowButton
                         productHandle={itemHandle}
                         productObj={product}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[10px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs cursor-pointer"
                       >
-                        ⚡ Buy Now
+                        Buy Now
                       </BuyNowButton>
                     </div>
                   )}
@@ -542,14 +542,14 @@ export function SearchCatalogView({
                         productHandle={itemHandle}
                         className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-xs py-2.5 px-4 rounded-xl transition text-center flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer"
                       >
-                        🛒 Add to Cart
+                        Add to Cart
                       </BuyNowButton>
                       <BuyNowButton
                         productHandle={itemHandle}
                         productObj={product}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-2.5 px-5 rounded-xl transition text-center flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                       >
-                        ⚡ Buy Now
+                        Buy Now
                       </BuyNowButton>
                     </div>
                   </div>
