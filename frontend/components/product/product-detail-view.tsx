@@ -59,7 +59,6 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     product.images[0] || "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"
   );
   const [exchangeOption, setExchangeOption] = useState<"without" | "with">("without");
-  const [openSubNav, setOpenSubNav] = useState<string | null>(null);
 
   // Determine Size Category: 'shoes' | 'clothing' | 'none'
   const catName = typeof product.category === "object" ? (product.category?.name || "") : (product.category || (product as any).category_name || "");
@@ -543,97 +542,7 @@ const SUB_NAV_ITEMS = [
   return (
     <div className="space-y-8 font-sans">
       
-      {/* 🏷️ Top Sub-Navigation Header Bar with Interactive Click & Hover Dropdowns */}
-      <div className="bg-white border-b border-gray-200 py-2.5 px-4 shadow-2xs z-30 relative">
-        <div className="max-w-7xl mx-auto flex items-center gap-4 sm:gap-6 text-xs font-semibold text-gray-700 whitespace-nowrap overflow-x-auto md:overflow-visible scrollbar-hide py-1">
-          <Link href="/search" className="font-black text-gray-900 hover:text-orange-600">
-            {product.category?.name || "Electronics"}
-          </Link>
-          <span className="text-gray-300">|</span>
 
-          {SUB_NAV_ITEMS.map((cat) => (
-            <div
-              key={cat.key}
-              className="relative group py-1 cursor-pointer"
-              onMouseEnter={() => setOpenSubNav(cat.key)}
-              onMouseLeave={() => setOpenSubNav(null)}
-            >
-              <button
-                type="button"
-                onClick={() => setOpenSubNav(openSubNav === cat.key ? null : cat.key)}
-                className="hover:text-orange-600 flex items-center gap-1 font-semibold text-gray-700 bg-transparent border-none p-0 cursor-pointer whitespace-nowrap"
-              >
-                {cat.title} <span className="text-[10px] text-gray-400">▾</span>
-              </button>
-
-              {/* 💻 DESKTOP DROPDOWN POPUP */}
-              <div className={`hidden md:block absolute top-full left-0 mt-1 w-56 bg-white border border-gray-200 rounded-2xl shadow-xl p-3 z-50 text-xs space-y-1 transition duration-150 ${
-                openSubNav === cat.key ? "opacity-100 pointer-events-auto block" : "opacity-0 pointer-events-none hidden group-hover:block group-hover:opacity-100 group-hover:pointer-events-auto"
-              }`}>
-                <p className="font-black text-gray-900 text-[11px] px-3 py-1 uppercase tracking-wider text-amber-700">{cat.subtitle}</p>
-                {cat.links.map((link) => (
-                  <Link
-                    key={link.slug}
-                    href={`/category/${link.slug}`}
-                    onClick={() => setOpenSubNav(null)}
-                    className="block px-3 py-1.5 rounded-xl hover:bg-gray-100 text-gray-700 transition"
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          ))}
-
-        </div>
-      </div>
-
-      {/* 📱 MOBILE CATEGORY SHEET MODAL (Renders via Portal on Mobile Click) */}
-      {openSubNav && typeof document !== "undefined" && createPortal(
-        <div className="block md:hidden fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-end justify-center font-sans animate-in fade-in duration-150">
-          {/* Backdrop dismiss */}
-          <div className="absolute inset-0" onClick={() => setOpenSubNav(null)} />
-
-          {/* Sheet Container */}
-          <div className="relative bg-white w-full rounded-t-3xl p-5 shadow-2xl space-y-4 z-10 animate-in slide-in-from-bottom duration-200 border-t border-gray-200">
-            
-            <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-              <div>
-                <h3 className="font-black text-gray-900 text-sm">
-                  {SUB_NAV_ITEMS.find((c) => c.key === openSubNav)?.title}
-                </h3>
-                <p className="text-[10px] text-amber-700 font-extrabold uppercase tracking-wider">
-                  {SUB_NAV_ITEMS.find((c) => c.key === openSubNav)?.subtitle}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setOpenSubNav(null)}
-                className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-black text-xs flex items-center justify-center cursor-pointer transition"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-1.5 text-xs">
-              {SUB_NAV_ITEMS.find((c) => c.key === openSubNav)?.links.map((link) => (
-                <Link
-                  key={link.slug}
-                  href={`/category/${link.slug}`}
-                  onClick={() => setOpenSubNav(null)}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-gray-50 hover:bg-blue-50 text-gray-800 font-bold transition border border-gray-100"
-                >
-                  <span>{link.name}</span>
-                  <span className="text-blue-600 font-black text-sm">&rsaquo;</span>
-                </Link>
-              ))}
-            </div>
-
-          </div>
-        </div>,
-        document.body
-      )}
 
       {/* 🏷️ Schema.org JSON-LD Rich Snippet for Google Search Ranking */}
       <script
