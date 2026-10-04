@@ -74,9 +74,18 @@ export function CategoryNav() {
         const dbCats = await fetchCategories().catch(() => []);
         const activeMap = new Map<string, { name: string; slug: string; image_url: string }>();
 
+        const activeSlugsFromProducts = new Set(
+          (prods || []).map((p: any) =>
+            (typeof p.category === "object" ? p.category?.slug : p.category_slug || p.category || "").toLowerCase()
+          )
+        );
+
         if (Array.isArray(dbCats) && dbCats.length > 0) {
           dbCats.forEach((c: any) => {
             if (c.status !== "Inactive" && c.status !== "Disabled" && c.slug) {
+              if (activeSlugsFromProducts.size > 0 && !activeSlugsFromProducts.has(c.slug.toLowerCase())) {
+                return;
+              }
               activeMap.set(c.slug, {
                 name: c.name,
                 slug: c.slug,

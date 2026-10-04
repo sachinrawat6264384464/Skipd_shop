@@ -22,13 +22,6 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   toys: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800"
 };
 
-const DEFAULT_FEATURED_CATEGORIES = [
-  { id: "cat-jewelry", name: "Royal Jewelry", slug: "jewelry", image_url: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800" },
-  { id: "cat-mobiles", name: "Mobiles & 5G", slug: "mobiles", image_url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800" },
-  { id: "cat-electronics", name: "Electronics & Audio", slug: "electronics", image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800" },
-  { id: "cat-fashion", name: "Fashion & Apparel", slug: "fashion", image_url: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800" }
-];
-
 export function BrowseCategoriesGrid() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,28 +29,61 @@ export function BrowseCategoriesGrid() {
   useEffect(() => {
     async function loadActiveCategoriesWithProducts() {
       try {
-        const data = await fetchCategories().catch(() => []);
-        let activeCats: any[] = [];
-        if (Array.isArray(data) && data.length > 0) {
-          activeCats = data.filter((c: any) => c.status !== "Inactive" && c.status !== "Disabled");
-        }
-        
-        // Merge with default categories if count is low to ensure full responsive showcase
-        const existingSlugs = new Set(activeCats.map((c: any) => (c.slug || c.name || "").toLowerCase()));
-        DEFAULT_FEATURED_CATEGORIES.forEach((defCat) => {
-          if (!existingSlugs.has(defCat.slug) && activeCats.length < 4) {
-            activeCats.push(defCat);
-          }
-        });
+        const [cats, prods] = await Promise.all([
+          fetchCategories().catch(() => []),
+          fetchProducts().catch(() => [])
+        ]);
 
-        setCategories(activeCats.length > 0 ? activeCats : DEFAULT_FEATURED_CATEGORIES);
+        let activeCats: any[] = [];
+
+        // Get active category slugs from products in DB
+        const activeSlugsFromProducts = new Set(
+          (prods || []).map((p: any) =>
+            (typeof p.category === "object" ? p.category?.slug : p.category_slug || p.category || "").toLowerCase()
+          )
+        );
+
+        if (Array.isArray(cats) && cats.length > 0) {
+          activeCats = cats.filter((c: any) => {
+            if (c.status === "Inactive" || c.status === "Disabled") return false;
+            // Only include categories that actually have active products in store (if products exist)
+            if (activeSlugsFromProducts.size > 0) {
+              const cSlug = (c.slug || c.name || "").toLowerCase();
+              return activeSlugsFromProducts.has(cSlug);
+            }
+            return true;
+          });
+        } else if (Array.isArray(prods) && prods.length > 0) {
+          // Extract unique categories directly from products DB
+          const activeMap = new Map<string, any>();
+          prods.forEach((p: any) => {
+            const catObj = typeof p.category === "object" ? p.category : null;
+            const catName = catObj?.name || p.category_name || p.category || "General";
+            const catSlug = catObj?.slug || p.category_slug || String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+            if (!activeMap.has(catSlug)) {
+              activeMap.set(catSlug, {
+                id: p.category_id || p.id,
+                name: catName,
+                slug: catSlug,
+                image_url: p.images?.[0] || ""
+              });
+            }
+          });
+          activeCats = Array.from(activeMap.values());
+        }
+
+        setCategories(activeCats);
       } catch (e) {
-        setCategories(DEFAULT_FEATURED_CATEGORIES);
+        setCategories([]);
       } finally {
         setLoading(false);
       }
     }
+
     loadActiveCategoriesWithProducts();
+
+    window.addEventListener("ecom_auth_changed", loadActiveCategoriesWithProducts);
+    return () => window.removeEventListener("ecom_auth_changed", loadActiveCategoriesWithProducts);
   }, []);
 
   if (loading) {
@@ -68,7 +94,7 @@ export function BrowseCategoriesGrid() {
             Browse Categories
           </h2>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-            {[1, 2, 3, 4].map((i) => (
+            {[1, 2].map((i) => (
               <div key={i} className="h-64 sm:h-72 lg:h-80 w-full sm:w-60 md:w-64 bg-[#EBE4D5]/60 animate-pulse rounded-3xl border border-[#E8E1D1]" />
             ))}
           </div>
@@ -77,8 +103,9 @@ export function BrowseCategoriesGrid() {
     );
   }
 
+  // Purely dynamic: if NO active categories exist in DB, render NOTHING
+  if (!categories || categories.length === 0) return null;
 
-  if (categories.length === 0) return null;
 
   return (
     <section className="w-full bg-transparent py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-t border-[#E8E1D1]/60 font-sans">
