@@ -154,13 +154,13 @@ export default function MobileMenu() {
 
             {/* 👤 DYNAMIC USER BANNER: Logged In vs Guest */}
             {user ? (
-              <div className="p-4 bg-[#EAF8F2] border-b border-emerald-100 flex items-center justify-between gap-3">
+              <div className="p-4 bg-blue-50 border-b border-blue-100 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-[#059669] text-white font-black text-sm flex items-center justify-center shadow-xs shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs shrink-0">
                     {user.user_name ? user.user_name[0] : "U"}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-[10px] text-emerald-800 font-extrabold uppercase tracking-wider">Hello &amp; Welcome</p>
+                    <p className="text-[10px] text-blue-800 font-extrabold uppercase tracking-wider">Hello &amp; Welcome</p>
                     <p className="font-black text-sm text-gray-900 truncate">{user.user_name}</p>
                     <p className="text-xs text-gray-500 font-medium truncate">{user.email}</p>
                   </div>
@@ -185,7 +185,7 @@ export default function MobileMenu() {
                     setIsOpen(false);
                     setIsLoginModalOpen(true);
                   }}
-                  className="text-xs font-black bg-[#059669] hover:bg-[#047857] text-white px-3 py-1.5 rounded-xl shadow-xs cursor-pointer"
+                  className="text-xs font-black bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-xl shadow-xs cursor-pointer"
                 >
                   Sign In / Register
                 </button>
@@ -207,7 +207,7 @@ export default function MobileMenu() {
                   className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-gray-50 text-gray-900 transition"
                 >
                   <div className="flex items-center gap-2.5">
-                    <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                     </svg>
                     <span>Explore Full Store</span>
@@ -290,7 +290,7 @@ export default function MobileMenu() {
                       className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
                     >
                       <div className="flex items-center gap-2.5">
-                        <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         <span>My Profile Information</span>
@@ -301,29 +301,29 @@ export default function MobileMenu() {
                     <Link
                       href="/account?tab=track-order"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200/60 transition"
+                      className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-blue-50 text-blue-900 border border-blue-200/60 transition"
                     >
                       <div className="flex items-center gap-2.5">
-                        <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                         </svg>
                         <span>Track Shipment Live</span>
                       </div>
-                      <span className="text-[9px] bg-[#059669] text-white px-2 py-0.5 rounded-full font-black">Live</span>
+                      <span className="text-[9px] bg-blue-600 text-white px-2 py-0.5 rounded-full font-black">Live</span>
                     </Link>
 
                     <Link
                       href="/account?tab=returns"
                       onClick={() => setIsOpen(false)}
-                      className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200/60 transition"
+                      className="flex items-center justify-between py-2.5 px-3 rounded-xl bg-blue-50 text-blue-900 border border-blue-200/60 transition"
                     >
                       <div className="flex items-center gap-2.5">
-                        <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
                         <span>24h Return Products Policy</span>
                       </div>
-                      <span className="text-[9px] bg-[#059669] text-white px-2 py-0.5 rounded-full font-black">24h Policy</span>
+                      <span className="text-[9px] bg-blue-600 text-white px-2 py-0.5 rounded-full font-black">24h Policy</span>
                     </Link>
 
                     <Link
@@ -351,7 +351,7 @@ export default function MobileMenu() {
                         setIsOpen(false);
                         setIsLoginModalOpen(true);
                       }}
-                      className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black text-[11px] py-2 rounded-lg transition"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-[11px] py-2 rounded-lg transition"
                     >
                       Sign In Now
                     </button>
