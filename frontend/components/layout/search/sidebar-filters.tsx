@@ -47,15 +47,7 @@ export function CatalogSidebarFilters() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  const currentMaxPrice = searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : 100000;
-  const currentExpress = searchParams.get("express") === "true";
   const currentDiscount = searchParams.get("discount") ? Number(searchParams.get("discount")) : 0;
-
-  const [maxPrice, setMaxPrice] = useState<number>(currentMaxPrice);
-
-  useEffect(() => {
-    setMaxPrice(currentMaxPrice);
-  }, [currentMaxPrice]);
 
   const updateParam = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -168,35 +160,6 @@ export function CatalogSidebarFilters() {
             );
           })}
         </ul>
-      </div>
-
-      {/* 💰 PRICE RANGE */}
-      <div className="pt-4 border-t border-gray-100 space-y-3">
-        <h4 className="font-black text-gray-900 uppercase text-[10px] tracking-wider">Price Range</h4>
-        <p className="text-[11px] text-gray-500 font-medium">The highest price is ₹1,00,000</p>
-        
-        <input
-          type="range"
-          min="1000"
-          max="130000"
-          step="1000"
-          value={maxPrice}
-          onChange={(e) => setMaxPrice(Number(e.target.value))}
-          onMouseUp={(e) => updateParam("maxPrice", (e.target as HTMLInputElement).value)}
-          onTouchEnd={(e) => updateParam("maxPrice", (e.target as HTMLInputElement).value)}
-          className="w-full accent-emerald-600 cursor-pointer"
-        />
-
-        <div className="grid grid-cols-2 gap-2">
-          <div className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-center">
-            <span className="text-[10px] text-gray-400 block font-semibold">Min</span>
-            <span className="font-extrabold text-gray-900">₹ 0</span>
-          </div>
-          <div className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-center">
-            <span className="text-[10px] text-gray-400 block font-semibold">Max</span>
-            <span className="font-extrabold text-gray-900">₹{maxPrice > 99000 ? "20000+" : maxPrice.toLocaleString("en-IN")}</span>
-          </div>
-        </div>
       </div>
 
       {/* 🏷️ DISCOUNT */}
