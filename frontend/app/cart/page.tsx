@@ -153,17 +153,17 @@ export default function CartItemsPage() {
           </div>
 
           {/* Premium Hero Banner */}
-          <div className="relative w-full rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#047857] text-white p-6 sm:p-8 border border-gray-800">
+          <div className="relative w-full rounded-3xl overflow-hidden shadow-xl bg-gradient-to-r from-[#0F172A] via-[#1E293B] to-[#0284C7] text-white p-6 sm:p-8 border border-gray-800">
             {/* Background Decorative Blur Orbs */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
-            <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-teal-400/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none" />
+            <div className="absolute bottom-0 left-1/3 w-64 h-64 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
 
             <div className="relative z-10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
               
               {/* Left Column: Title & Cart Status Badges */}
               <div className="space-y-3 max-w-xl">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="bg-emerald-500/90 backdrop-blur-md text-white font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-emerald-300/40 shadow-sm">
+                  <span className="bg-blue-600/90 backdrop-blur-md text-white font-black text-[10px] uppercase tracking-widest px-3 py-1 rounded-full border border-blue-300/40 shadow-sm">
                     🛒 SHOPPING CART SHOWCASE
                   </span>
                   {selectedItems.length > 0 && (
@@ -185,13 +185,13 @@ export default function CartItemsPage() {
                 {selectedItems.length > 0 && (
                   <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3 max-w-md space-y-1.5 shadow-sm">
                     <div className="flex justify-between items-center text-xs font-extrabold">
-                      <span className="text-emerald-300 flex items-center gap-1">
+                      <span className="text-cyan-300 flex items-center gap-1">
                         <span>🚚</span> Free Express Delivery Status
                       </span>
                       <span className="text-white">UNLOCKED 🎉</span>
                     </div>
                     <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
-                      <div className="bg-gradient-to-r from-emerald-400 to-teal-300 h-full w-full rounded-full transition-all duration-500" />
+                      <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-full rounded-full transition-all duration-500" />
                     </div>
                   </div>
                 )}
@@ -227,7 +227,7 @@ export default function CartItemsPage() {
                           alt={cartImgItem.title}
                           className="w-full h-full object-contain rounded-xl"
                         />
-                        <span className="absolute -top-1.5 -right-1.5 bg-emerald-600 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900 shadow-sm">
+                        <span className="absolute -top-1.5 -right-1.5 bg-blue-600 text-white text-[9px] font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-slate-900 shadow-sm">
                           {cartImgItem.quantity}
                         </span>
                       </div>
@@ -237,7 +237,7 @@ export default function CartItemsPage() {
                   {/* Quick Totals Ribbon */}
                   <div className="flex justify-between items-center text-xs pt-1 border-t border-white/15">
                     <span className="text-gray-300 font-medium">Subtotal Payable:</span>
-                    <span className="text-base font-black text-emerald-300">₹{finalTotal.toLocaleString("en-IN")}</span>
+                    <span className="text-base font-black text-cyan-300">₹{finalTotal.toLocaleString("en-IN")}</span>
                   </div>
                 </div>
               )}
@@ -276,7 +276,7 @@ export default function CartItemsPage() {
             </p>
             <Link
               href="/search"
-              className="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow-xs"
+              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-6 py-3 rounded-xl transition shadow-xs"
             >
               Explore Store &rarr;
             </Link>
@@ -296,18 +296,18 @@ export default function CartItemsPage() {
                       type="checkbox"
                       checked={item.selected}
                       onChange={(e) => setItems(items.map(i => i.id === item.id ? { ...i, selected: e.target.checked } : i))}
-                      className="mt-2 w-4 h-4 accent-emerald-600 rounded cursor-pointer shrink-0"
+                      className="mt-2 w-4 h-4 accent-blue-600 rounded cursor-pointer shrink-0"
                     />
 
                     {/* Product Image - Clickable Link */}
-                    <Link href={`/product/${item.handle || item.id}`} className="relative w-24 h-24 bg-gray-50 rounded-2xl overflow-hidden border border-gray-200 shrink-0 hover:border-emerald-400 transition group cursor-pointer">
+                    <Link href={`/product/${item.handle || item.id}`} className="relative w-24 h-24 bg-gray-50 rounded-2xl overflow-hidden border border-gray-200 shrink-0 hover:border-blue-400 transition group cursor-pointer">
                       <Image src={item.image} alt={item.title} fill className="object-contain p-2 group-hover:scale-105 transition duration-200" />
                     </Link>
 
                     {/* Product Info - Clickable Title */}
                     <div className="flex-1 space-y-2 text-xs">
                       <div>
-                        <h3 className="font-bold text-sm text-gray-900 leading-snug hover:text-emerald-700 transition">
+                        <h3 className="font-bold text-sm text-gray-900 leading-snug hover:text-blue-600 transition">
                           <Link href={`/product/${item.handle || item.id}`}>{item.title}</Link>
                         </h3>
                         <p className="text-[11px] text-gray-500 mt-0.5">
@@ -327,7 +327,7 @@ export default function CartItemsPage() {
                       )}
 
                       {/* Delivery */}
-                      <p className="text-[11px] text-emerald-700 font-medium pt-1">
+                      <p className="text-[11px] text-blue-600 font-medium pt-1">
                         🚚 {item.delivery}
                       </p>
                     </div>
@@ -338,12 +338,12 @@ export default function CartItemsPage() {
                       <div className="flex items-center justify-end gap-1.5">
                         <span className="text-lg font-black text-gray-900">₹{item.price.toLocaleString("en-IN")}</span>
                         {item.originalPrice > item.price && (
-                          <span className="text-[10px] font-black text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-200">
+                          <span className="text-[10px] font-black text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">
                             {Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100)}% OFF
                           </span>
                         )}
                       </div>
-                      <span className="text-[11px] text-emerald-600 font-bold block">You save ₹{item.savings.toLocaleString("en-IN")}</span>
+                      <span className="text-[11px] text-blue-600 font-bold block">You save ₹{item.savings.toLocaleString("en-IN")}</span>
                     </div>
 
                   </div>
@@ -400,12 +400,12 @@ export default function CartItemsPage() {
 
                   <div className="flex justify-between font-medium">
                     <span>Discount</span>
-                    <span className="text-emerald-600 font-bold">-₹{totalDiscount.toLocaleString("en-IN")}.00</span>
+                    <span className="text-blue-600 font-bold">-₹{totalDiscount.toLocaleString("en-IN")}.00</span>
                   </div>
 
                   <div className="flex justify-between font-medium">
                     <span>Delivery Charges</span>
-                    <span className="text-emerald-600 font-bold">FREE</span>
+                    <span className="text-blue-600 font-bold">FREE</span>
                   </div>
 
                   <div className="pt-3 border-t border-gray-100 flex justify-between items-baseline">
@@ -414,7 +414,7 @@ export default function CartItemsPage() {
                   </div>
 
                   {totalDiscount > 0 && (
-                    <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 p-3 rounded-2xl text-[11px] font-bold flex items-center gap-2">
+                    <div className="bg-blue-50 border border-blue-200 text-blue-900 p-3 rounded-2xl text-[11px] font-bold flex items-center gap-2">
                       <span>🏷️</span>
                       <span>You will save ₹{totalDiscount.toLocaleString("en-IN")}.00 on this order</span>
                     </div>
@@ -422,7 +422,7 @@ export default function CartItemsPage() {
                 </div>
 
                 <BuyNowButton
-                  className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm py-4 rounded-2xl transition shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 text-center cursor-pointer"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-sm py-4 rounded-2xl transition shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 text-center cursor-pointer"
                 >
                   Proceed to Checkout &rarr;
                 </BuyNowButton>
@@ -442,11 +442,11 @@ export default function CartItemsPage() {
             <div>
               <h2 className="text-xl md:text-2xl font-black text-gray-900 flex items-center gap-2">
                 <span>You Might Also Like</span>
-                <span className="text-emerald-600">🛍️</span>
+                <span className="text-blue-600">🛍️</span>
               </h2>
               <p className="text-xs text-gray-500 font-medium mt-1">Handpicked recommendations based on your cart items</p>
             </div>
-            <Link href="/search" className="text-xs text-emerald-700 font-extrabold hover:underline">
+            <Link href="/search" className="text-xs text-blue-600 font-extrabold hover:underline">
               View All Products &rarr;
             </Link>
           </div>
@@ -514,13 +514,13 @@ export default function CartItemsPage() {
                         alt={rec.title}
                         className="h-full max-w-full object-contain group-hover:scale-105 transition duration-300"
                       />
-                      <span className="absolute top-2.5 left-2.5 bg-emerald-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-md shadow-xs">
+                      <span className="absolute top-2.5 left-2.5 bg-blue-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-md shadow-xs">
                         {rec.tag || "Top Rated"}
                       </span>
                     </div>
 
                     <div>
-                      <h3 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-emerald-700 transition">
+                      <h3 className="font-bold text-xs text-gray-900 line-clamp-1 group-hover:text-blue-600 transition">
                         {rec.title}
                       </h3>
                     </div>
@@ -566,7 +566,7 @@ export default function CartItemsPage() {
                       <BuyNowButton
                         productHandle={recHandle}
                         productObj={rec}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] px-3 py-1.5 rounded-xl transition shadow-xs cursor-pointer"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[11px] px-3 py-1.5 rounded-xl transition shadow-xs cursor-pointer"
                       >
                         Buy Now
                       </BuyNowButton>
