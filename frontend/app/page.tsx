@@ -18,7 +18,7 @@ export default async function HomePage() {
   const allProducts = await fetchProducts();
 
   return (
-    <div className="bg-white text-gray-900 min-h-screen" suppressHydrationWarning>
+    <div className="bg-[#FAF7F2] text-gray-900 min-h-screen" suppressHydrationWarning>
       
       {/* 🟢 Hero Carousel Banner */}
       <section className="w-full">

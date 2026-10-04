@@ -41,9 +41,19 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
     if (typeof window !== "undefined") {
       try {
         let userInteracted: any[] = [];
-        const validTitles = (initialProducts || []).map(p => p.title.toLowerCase());
+        const validProducts = (initialProducts || []);
         
-        // 1. Read logged-in user's cart items (filtered to valid products)
+        // Helper to check if a item title is a valid live product
+        const isValid = (title: string) => {
+          if (!title) return false;
+          const t = title.toLowerCase();
+          if (t.includes("yoga") || t.includes("mat") || t.includes("headphones") || t.includes("boat") || t.includes("nike") || t.includes("oneplus") || t.includes("apple watch")) {
+            return false;
+          }
+          return validProducts.some(p => p.title.toLowerCase() === t || p.handle === t);
+        };
+
+        // 1. Read logged-in user's cart items (filtered strictly to valid live products)
         const cartKey = getUserCartKey();
         const storedCart = localStorage.getItem(cartKey);
         if (storedCart) {
@@ -52,7 +62,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
             const items = Array.isArray(parsed) ? parsed : (parsed.lines || parsed.items || []);
             items.forEach((it: any) => {
               const prod = it.merchandise?.product || it.product || it;
-              if (prod && prod.title && validTitles.includes(prod.title.toLowerCase()) && !userInteracted.some(u => u.label === prod.title)) {
+              if (prod && prod.title && isValid(prod.title) && !userInteracted.some(u => u.label === prod.title)) {
                 userInteracted.push({
                   img: prod.images?.[0] || prod.featuredImage?.url || prod.image || "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300",
                   label: prod.title,
@@ -65,7 +75,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
           } catch (e) {}
         }
 
-        // 2. Read logged-in user's placed orders (filtered to valid products)
+        // 2. Read logged-in user's placed orders (filtered strictly to valid live products)
         const ordersKey = getUserOrdersKey();
         const storedOrders = localStorage.getItem(ordersKey);
         if (storedOrders) {
@@ -74,7 +84,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
             if (Array.isArray(parsed)) {
               parsed.forEach((ord: any) => {
                 const title = typeof ord.title === "string" ? ord.title : (typeof ord.items === "string" ? ord.items : "Store Product");
-                if (validTitles.includes(title.toLowerCase()) && !userInteracted.some(u => u.label === title)) {
+                if (isValid(title) && !userInteracted.some(u => u.label === title)) {
                   userInteracted.push({
                     img: typeof ord.image === "string" ? ord.image : "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300",
                     label: title,
@@ -136,16 +146,16 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
   return (
     <div className="space-y-10">
       
-      {/* 📦 Top Dynamic Category Grid with Premium Card Design */}
+      {/* 📦 Top Dynamic Category Grid with Cozy Warm Coffee/Cream Card Design */}
       <section className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           
           {/* Card 1: Pick up where you left off */}
-          <div className="bg-gradient-to-b from-white via-slate-50/50 to-amber-50/20 border border-slate-200/80 hover:border-amber-400/50 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
+          <div className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#D4AF37]/60 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
             <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
-                <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-2.5">
+                <h3 className="text-sm sm:text-base font-black text-[#2C221E] tracking-tight flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#B8860B] animate-pulse" />
                   <span>Pick up where you left off</span>
                 </h3>
               </div>
@@ -156,37 +166,37 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                   const offPercent = numMrp > numPrice && numPrice > 0 ? Math.round(((numMrp - numPrice) / numMrp) * 100) : 0;
 
                   return (
-                    <Link key={i} href={item.href || "/orders"} className="bg-white border border-slate-200/60 hover:border-amber-400 rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-slate-100 rounded-xl overflow-hidden border border-slate-100 mb-2">
+                    <Link key={i} href={item.href || "/orders"} className="bg-[#FAF7F0] border border-[#EBE4D5] hover:border-[#D4AF37] hover:bg-white rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-[#F4EFE6] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
                         <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
                         {offPercent > 0 && (
-                          <div className="absolute top-1 left-1 bg-gradient-to-r from-rose-600 to-amber-600 text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
+                          <div className="absolute top-1 left-1 bg-gradient-to-r from-[#B8860B] to-[#8B5E3C] text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
                             {offPercent}% OFF
                           </div>
                         )}
                       </div>
-                      <p className="text-[11px] font-bold text-slate-800 group-hover/item:text-amber-600 transition line-clamp-2 leading-snug min-h-[28px]">{item.label}</p>
+                      <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#B8860B] transition line-clamp-2 leading-snug min-h-[28px]">{item.label}</p>
                       <div className="flex flex-wrap items-baseline gap-1 pt-1">
-                        <span className="text-xs font-black text-slate-900">{item.price}</span>
-                        {item.mrp && <span className="text-[9px] text-slate-400 line-through font-medium">{item.mrp}</span>}
+                        <span className="text-xs font-black text-[#2C221E]">{item.price}</span>
+                        {item.mrp && <span className="text-[9px] text-stone-400 line-through font-medium">{item.mrp}</span>}
                       </div>
                     </Link>
                   );
                 })}
               </div>
             </div>
-            <Link href="/orders" className="text-xs font-extrabold text-amber-600 hover:text-amber-700 flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
+            <Link href="/orders" className="text-xs font-extrabold text-[#B8860B] hover:text-[#8B5E3C] flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
               <span>See your orders &amp; cart</span>
               <span>&rarr;</span>
             </Link>
           </div>
 
           {/* Card 2: Keep shopping for it */}
-          <div className="bg-gradient-to-b from-white via-slate-50/50 to-indigo-50/20 border border-slate-200/80 hover:border-indigo-400/50 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
+          <div className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#D4AF37]/60 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
             <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
-                <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-2.5">
+                <h3 className="text-sm sm:text-base font-black text-[#2C221E] tracking-tight flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#8B5E3C] animate-pulse" />
                   <span>Keep shopping for it</span>
                 </h3>
               </div>
@@ -194,19 +204,19 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 {products.slice(0, 4).map((p, i) => {
                   const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                   return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-slate-200/60 hover:border-indigo-400 rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-slate-100 rounded-xl overflow-hidden border border-slate-100 mb-2">
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-[#FAF7F0] border border-[#EBE4D5] hover:border-[#8B5E3C] hover:bg-white rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-[#F4EFE6] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
                         <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
                       </div>
-                      <p className="text-[11px] font-bold text-slate-800 group-hover/item:text-indigo-600 transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
+                      <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#8B5E3C] transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
                       <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
-                        <span className="text-xs font-black text-slate-900">₹{p.price.toLocaleString("en-IN")}</span>
+                        <span className="text-xs font-black text-[#2C221E]">₹{p.price.toLocaleString("en-IN")}</span>
                         {stock > 5 ? (
-                          <span className="text-[8px] font-extrabold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-200/60">In Stock</span>
+                          <span className="text-[8px] font-extrabold text-[#5C4033] bg-[#F4EFE6] px-1.5 py-0.5 rounded-md border border-[#E8E1D1]">In Stock</span>
                         ) : stock > 0 ? (
                           <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
                         ) : (
-                          <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
+                          <span className="text-[8px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
                         )}
                       </div>
                     </Link>
@@ -214,18 +224,18 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 })}
               </div>
             </div>
-            <Link href="/search" className="text-xs font-extrabold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
+            <Link href="/search" className="text-xs font-extrabold text-[#8B5E3C] hover:text-[#5C4033] flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
               <span>Explore catalog</span>
               <span>&rarr;</span>
             </Link>
           </div>
 
           {/* Card 3: Up to 50% off | Select collection */}
-          <div className="bg-gradient-to-b from-white via-slate-50/50 to-rose-50/20 border border-slate-200/80 hover:border-rose-400/50 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
+          <div className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#D4AF37]/60 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
             <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
-                <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-2.5">
+                <h3 className="text-sm sm:text-base font-black text-[#2C221E] tracking-tight flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#A52A2A] animate-pulse" />
                   <span>Up to 50% off | Select collection</span>
                 </h3>
               </div>
@@ -234,22 +244,22 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                   const offPercent = p.compare_at_price ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 35;
                   const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                   return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-slate-200/60 hover:border-rose-400 rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-slate-100 rounded-xl overflow-hidden border border-slate-100 mb-2">
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-[#FAF7F0] border border-[#EBE4D5] hover:border-[#A52A2A] hover:bg-white rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-[#F4EFE6] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
                         <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
-                        <div className="absolute top-1 left-1 bg-gradient-to-r from-rose-600 to-amber-600 text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
+                        <div className="absolute top-1 left-1 bg-gradient-to-r from-[#A52A2A] to-[#B8860B] text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
                           {offPercent}% OFF
                         </div>
                       </div>
-                      <p className="text-[11px] font-bold text-slate-800 group-hover/item:text-rose-600 transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
+                      <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#A52A2A] transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
                       <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
-                        <span className="text-xs font-black text-slate-900">₹{p.price.toLocaleString("en-IN")}</span>
+                        <span className="text-xs font-black text-[#2C221E]">₹{p.price.toLocaleString("en-IN")}</span>
                         {stock > 5 ? (
-                          <span className="text-[8px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200/60">In Stock</span>
+                          <span className="text-[8px] font-extrabold text-[#5C4033] bg-[#F4EFE6] px-1.5 py-0.5 rounded-md border border-[#E8E1D1]">In Stock</span>
                         ) : stock > 0 ? (
                           <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
                         ) : (
-                          <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
+                          <span className="text-[8px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
                         )}
                       </div>
                     </Link>
@@ -257,18 +267,18 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 })}
               </div>
             </div>
-            <Link href="/search?discount=30" className="text-xs font-extrabold text-rose-600 hover:text-rose-700 flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
+            <Link href="/search?discount=30" className="text-xs font-extrabold text-[#A52A2A] hover:text-[#8B0000] flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
               <span>View discounts</span>
               <span>&rarr;</span>
             </Link>
           </div>
 
           {/* Card 4: Trending & New Arrivals */}
-          <div className="bg-gradient-to-b from-white via-slate-50/50 to-emerald-50/20 border border-slate-200/80 hover:border-emerald-400/50 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
+          <div className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#D4AF37]/60 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
             <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
-                <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-2.5">
+                <h3 className="text-sm sm:text-base font-black text-[#2C221E] tracking-tight flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] animate-pulse" />
                   <span>Trending &amp; New Arrivals</span>
                 </h3>
               </div>
@@ -276,19 +286,19 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 {products.slice(8, 12).map((p, i) => {
                   const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                   return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-slate-200/60 hover:border-emerald-400 rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-slate-100 rounded-xl overflow-hidden border border-slate-100 mb-2">
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-[#FAF7F0] border border-[#EBE4D5] hover:border-[#D4AF37] hover:bg-white rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-[#F4EFE6] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
                         <img src={p.images[0]} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
                       </div>
-                      <p className="text-[11px] font-bold text-slate-800 group-hover/item:text-emerald-600 transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
+                      <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#B8860B] transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
                       <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
-                        <span className="text-xs font-black text-slate-900">₹{p.price.toLocaleString("en-IN")}</span>
+                        <span className="text-xs font-black text-[#2C221E]">₹{p.price.toLocaleString("en-IN")}</span>
                         {stock > 5 ? (
-                          <span className="text-[8px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200/60">In Stock</span>
+                          <span className="text-[8px] font-extrabold text-[#5C4033] bg-[#F4EFE6] px-1.5 py-0.5 rounded-md border border-[#E8E1D1]">In Stock</span>
                         ) : stock > 0 ? (
                           <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
                         ) : (
-                          <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
+                          <span className="text-[8px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
                         )}
                       </div>
                     </Link>
@@ -296,7 +306,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 })}
               </div>
             </div>
-            <Link href="/search" className="text-xs font-extrabold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
+            <Link href="/search" className="text-xs font-extrabold text-[#B8860B] hover:text-[#8B5E3C] flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
               <span>See all new arrivals</span>
               <span>&rarr;</span>
             </Link>
@@ -308,18 +318,18 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
       {/* 🏷️ DYNAMIC CATEGORY SHOWCASE SECTIONS (Initially 2 categories with Show More toggle) */}
       <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6 space-y-8">
         {(showAllCollections ? categorizedProducts : categorizedProducts.slice(0, 2)).map((catGroup) => (
-          <div key={catGroup.slug} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-xs space-y-6">
+          <div key={catGroup.slug} className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-6 shadow-sm space-y-6">
             
             {/* Category Header with Title & Explore More Button */}
-            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+            <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-black text-gray-900">{catGroup.name} Collection</h2>
-                <p className="text-xs text-gray-500 mt-0.5">Explore {catGroup.items.length} items in {catGroup.name}</p>
+                <h2 className="text-xl sm:text-2xl font-black text-[#2C221E]">{catGroup.name} Collection</h2>
+                <p className="text-xs text-stone-500 mt-0.5">Explore {catGroup.items.length} items in {catGroup.name}</p>
               </div>
               
               <Link
                 href={`/category/${catGroup.slug}`}
-                className="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-extrabold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-2xs"
+                className="bg-[#F4EFE6] hover:bg-[#EBE4D5] text-[#5C4033] border border-[#E8E1D1] font-extrabold text-xs px-4 py-2 rounded-xl transition flex items-center gap-1.5 shadow-2xs"
               >
                 <span>Explore More</span>
                 <span>&rarr;</span>
