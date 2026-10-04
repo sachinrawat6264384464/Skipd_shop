@@ -10,36 +10,58 @@ export default function Footer() {
       {/* 🖼️ Browse Categories Grid Section (Placed right above footer content) */}
       <BrowseCategoriesGrid />
 
-      {/* ☁️ WAVY CLOUD TOP HEADER WITH CONTINUOUS CLOCKWISE ANIMATED BADGES */}
-      <div className="relative w-full overflow-hidden pt-12">
-        
-        {/* Continuous Clockwise Rotating Star Badge (Top Right) */}
-        <div className="absolute top-16 right-6 sm:right-16 z-20 pointer-events-none">
-          <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-blue-500/20 border-2 border-cyan-400/60 backdrop-blur-md flex items-center justify-center text-cyan-300 text-2xl shadow-lg shadow-cyan-500/20 animate-[spin_8s_linear_infinite]">
-            ⚙️
+      {/* 🌊 DYNAMIC 3-LAYER CONTINUOUS FLOWING WAVES TOP HEADER */}
+      <div className="relative w-full overflow-hidden pt-6">
+        <div className="relative w-full h-24 sm:h-36 md:h-44 lg:h-52 overflow-hidden leading-none">
+          
+          {/* Layer 1: Ambient Cyan Glow Wave (Back, Slowest) */}
+          <div className="absolute inset-0 w-[200%] h-full flex animate-wave-slow opacity-30 z-0 pointer-events-none">
+            <svg className="w-1/2 h-full shrink-0" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path
+                fill="#38BDF8"
+                d="M0,140 C180,220 360,60 540,140 C720,220 900,60 1080,140 C1260,220 1350,100 1440,140 L1440,320 L0,320 Z"
+              />
+            </svg>
+            <svg className="w-1/2 h-full shrink-0" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path
+                fill="#38BDF8"
+                d="M0,140 C180,220 360,60 540,140 C720,220 900,60 1080,140 C1260,220 1350,100 1440,140 L1440,320 L0,320 Z"
+              />
+            </svg>
           </div>
-        </div>
 
-        {/* Floating Delivery Van Badge (Top Left) */}
-        <div className="absolute top-20 left-6 sm:left-16 z-20 pointer-events-none animate-bounce duration-1000">
-          <div className="bg-[#132B4F] border-2 border-cyan-400/50 text-white font-extrabold text-xs px-3 py-1.5 rounded-2xl shadow-xl flex items-center gap-1.5">
-            <span className="text-base">🚀</span>
-            <span>Express Delivery</span>
+          {/* Layer 2: Deep Blue Sub-Wave (Middle, Reverse) */}
+          <div className="absolute inset-0 w-[200%] h-full flex animate-wave-medium opacity-60 z-5 pointer-events-none">
+            <svg className="w-1/2 h-full shrink-0" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path
+                fill="#1E3A6E"
+                d="M0,165 C180,95 360,235 540,165 C720,95 900,235 1080,165 C1260,95 1350,205 1440,165 L1440,320 L0,320 Z"
+              />
+            </svg>
+            <svg className="w-1/2 h-full shrink-0" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path
+                fill="#1E3A6E"
+                d="M0,165 C180,95 360,235 540,165 C720,95 900,235 1080,165 C1260,95 1350,205 1440,165 L1440,320 L0,320 Z"
+              />
+            </svg>
           </div>
-        </div>
 
-        {/* ☁️ Multi-Hump Cloud Wave SVG in Deep Blue (#0A192F) */}
-        <div className="w-full overflow-hidden leading-none z-10 relative">
-          <svg
-            className="relative block w-full h-24 sm:h-36 md:h-44 lg:h-52"
-            viewBox="0 0 1440 320"
-            preserveAspectRatio="none"
-          >
-            <path
-              fill="#0A192F"
-              d="M0,192L48,186.7C96,181,192,171,288,181.3C384,192,480,224,576,218.7C672,213,768,171,864,165.3C960,160,1056,192,1152,197.3C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-            ></path>
-          </svg>
+          {/* Layer 3: Solid Royal Deep Blue Main Wave (Front, Fast Smooth) */}
+          <div className="absolute inset-0 w-[200%] h-full flex animate-wave-fast z-10">
+            <svg className="w-1/2 h-full shrink-0" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path
+                fill="#0A192F"
+                d="M0,190 C180,260 360,120 540,190 C720,260 900,120 1080,190 C1260,260 1350,150 1440,190 L1440,320 L0,320 Z"
+              />
+            </svg>
+            <svg className="w-1/2 h-full shrink-0" viewBox="0 0 1440 320" preserveAspectRatio="none">
+              <path
+                fill="#0A192F"
+                d="M0,190 C180,260 360,120 540,190 C720,260 900,120 1080,190 C1260,260 1350,150 1440,190 L1440,320 L0,320 Z"
+              />
+            </svg>
+          </div>
+
         </div>
 
         {/* ☁️ Cloud Hero Title Overlay Inside Deep Blue Header */}

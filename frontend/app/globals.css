@@ -69,3 +69,37 @@ font {
   background-color: transparent !important;
   box-shadow: none !important;
 }
+
+/* 🌊 Continuous Flowing Wave Animations */
+@keyframes waveMove {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes waveMoveReverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-wave-slow {
+  animation: waveMove 22s linear infinite;
+  will-change: transform;
+}
+
+.animate-wave-medium {
+  animation: waveMoveReverse 16s linear infinite;
+  will-change: transform;
+}
+
+.animate-wave-fast {
+  animation: waveMove 10s linear infinite;
+  will-change: transform;
+}
