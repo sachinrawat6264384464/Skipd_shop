@@ -315,6 +315,42 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
         </div>
       </section>
 
+      {/* 🖼️ MIDDLE FULL-WIDTH SHOWCASE BANNER */}
+      <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6 my-8">
+        <div className="relative w-full h-56 sm:h-72 md:h-80 lg:h-[380px] rounded-3xl overflow-hidden shadow-xl border border-[#E8E1D1] group">
+          <Image
+            src="/image copy 2.png"
+            alt="Exclusive Showcase Banner"
+            fill
+            priority
+            sizes="(max-width: 1440px) 100vw, 1440px"
+            className="object-cover w-full h-full transform group-hover:scale-105 transition duration-700 ease-out"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-transparent flex items-center p-6 sm:p-10 lg:p-14">
+            <div className="max-w-lg space-y-3 sm:space-y-4 text-white">
+              <span className="inline-block bg-[#B8860B] text-white text-[11px] sm:text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                Featured Exclusive Collection
+              </span>
+              <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-amber-50 drop-shadow-md leading-tight">
+                Crafted Luxury &amp; Elegance
+              </h2>
+              <p className="text-xs sm:text-sm text-amber-100/90 line-clamp-2 sm:line-clamp-none font-medium drop-shadow-sm">
+                Discover handpicked premium designs curated for timeless fashion and luxury aesthetics.
+              </p>
+              <div className="pt-2">
+                <Link
+                  href="/search"
+                  className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm px-6 py-3 rounded-2xl shadow-lg hover:shadow-blue-500/30 transition transform hover:-translate-y-0.5"
+                >
+                  <span>Explore Full Collection</span>
+                  <span>&rarr;</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* 🏷️ DYNAMIC CATEGORY SHOWCASE SECTIONS (Initially 2 categories with Show More toggle) */}
       <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6 space-y-8">
         {(showAllCollections ? categorizedProducts : categorizedProducts.slice(0, 2)).map((catGroup) => (
@@ -336,8 +372,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
               </Link>
             </div>
 
-            {/* Category Product Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Category Product Grid (Centered) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-center justify-items-center">
               {catGroup.items.slice(0, 4).map((product, idx) => {
                 const offPercent = product.compare_at_price 
                   ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100) 
@@ -350,7 +386,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 return (
                   <div
                     key={`${product.handle || product.id}-${idx}`}
-                    className={`group bg-[#FFFDF9] border border-[#E8E1D1] rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 ${
+                    className={`group bg-[#FFFDF9] border border-[#E8E1D1] rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 w-full max-w-sm mx-auto ${
                       isOutOfStock ? "border-[#E8E1D1] bg-[#F7F4EC] opacity-85" : "border-[#E8E1D1] hover:border-[#B8860B] hover:shadow-xl"
                     }`}
                   >
