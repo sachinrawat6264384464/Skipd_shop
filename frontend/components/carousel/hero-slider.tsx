@@ -87,10 +87,19 @@ export function HeroSlider() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const progressRef = useRef<HTMLDivElement | null>(null);
   const [progressWidth, setProgressWidth] = useState(0);
   const progressAnimRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 40);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Load dynamic slides from localStorage (admin panel updates)
   const loadSlides = () => {
@@ -231,14 +240,18 @@ export function HeroSlider() {
               {/* Slide Foreground Content — Clean Full Image View + Bottom Cards Deck */}
               <div className="relative z-10 w-full max-w-full flex flex-col justify-end items-center min-h-[75vh] sm:min-h-[80vh] lg:min-h-[760px] p-4 sm:p-8 lg:p-12 pb-12">
                 
-                {/* 🎴 Bottom Tilted & Overlapping Cards Deck */}
+                {/* 🎴 Bottom Hero Cards Deck — Untilts on scroll to match clean horizontal card row */}
                 <div className="w-full max-w-6xl mx-auto pt-6 pb-2 overflow-x-auto no-scrollbar">
-                  <div className="flex items-center justify-center -space-x-3 sm:-space-x-5 py-4 min-w-[720px] px-4">
+                  <div className={`flex items-center justify-center transition-all duration-500 min-w-[720px] px-4 ${
+                    isScrolled ? "gap-3 sm:gap-4 space-x-0 py-2" : "-space-x-3 sm:-space-x-5 py-4"
+                  }`}>
                     
                     {/* Card 1 */}
                     <Link
                       href="/product/royal-solitaire-diamond-ring-18k-gold"
-                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#FFFDF9] shadow-2xl transform -rotate-6 hover:rotate-0 hover:scale-110 z-10 hover:z-40 transition-all duration-300 block cursor-pointer"
+                      className={`group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/90 bg-[#FFFDF9] shadow-xl transform transition-all duration-500 block cursor-pointer ${
+                        isScrolled ? "rotate-0 scale-100 hover:scale-105" : "-rotate-6 hover:rotate-0 hover:scale-110 z-10 hover:z-40"
+                      }`}
                     >
                       <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
                         <img
@@ -256,7 +269,9 @@ export function HeroSlider() {
                     {/* Card 2 */}
                     <Link
                       href="/product/elegance-kundan-polki-choker-necklace-set"
-                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#4A1521] text-white shadow-2xl transform rotate-4 hover:rotate-0 hover:scale-110 z-20 hover:z-40 transition-all duration-300 block cursor-pointer"
+                      className={`group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/90 bg-[#FFFDF9] shadow-xl transform transition-all duration-500 block cursor-pointer ${
+                        isScrolled ? "rotate-0 scale-100 hover:scale-105" : "rotate-4 hover:rotate-0 hover:scale-110 z-20 hover:z-40"
+                      }`}
                     >
                       <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
                         <img
@@ -265,8 +280,8 @@ export function HeroSlider() {
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                         />
                       </div>
-                      <div className="bg-[#4A1521] text-rose-100 p-2.5 sm:p-3 text-center relative">
-                        <div className="w-full h-2 bg-[#4A1521] -top-2 left-0 absolute rounded-t-full" />
+                      <div className="bg-[#FFFDF9] text-[#2C221E] p-2.5 sm:p-3 text-center border-t border-[#E8E1D1] relative">
+                        <div className="w-full h-2 bg-[#FFFDF9] -top-2 left-0 absolute rounded-t-full" />
                         <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">Kundan Polki Choker Set</p>
                       </div>
                     </Link>
@@ -274,7 +289,9 @@ export function HeroSlider() {
                     {/* Card 3 */}
                     <Link
                       href="/product/classic-sterling-silver-solitaire-stud-earrings"
-                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#FFFDF9] shadow-2xl transform -rotate-3 hover:rotate-0 hover:scale-110 z-30 hover:z-40 transition-all duration-300 block cursor-pointer"
+                      className={`group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/90 bg-[#FFFDF9] shadow-xl transform transition-all duration-500 block cursor-pointer ${
+                        isScrolled ? "rotate-0 scale-100 hover:scale-105" : "-rotate-3 hover:rotate-0 hover:scale-110 z-30 hover:z-40"
+                      }`}
                     >
                       <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
                         <img
@@ -292,7 +309,9 @@ export function HeroSlider() {
                     {/* Card 4 */}
                     <Link
                       href="/product/diamond-teardrop-pendant-with-platinum-chain"
-                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#4A1521] text-white shadow-2xl transform rotate-5 hover:rotate-0 hover:scale-110 z-20 hover:z-40 transition-all duration-300 block cursor-pointer"
+                      className={`group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/90 bg-[#FFFDF9] shadow-xl transform transition-all duration-500 block cursor-pointer ${
+                        isScrolled ? "rotate-0 scale-100 hover:scale-105" : "rotate-5 hover:rotate-0 hover:scale-110 z-20 hover:z-40"
+                      }`}
                     >
                       <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
                         <img
@@ -301,8 +320,8 @@ export function HeroSlider() {
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                         />
                       </div>
-                      <div className="bg-[#4A1521] text-rose-100 p-2.5 sm:p-3 text-center relative">
-                        <div className="w-full h-2 bg-[#4A1521] -top-2 left-0 absolute rounded-t-full" />
+                      <div className="bg-[#FFFDF9] text-[#2C221E] p-2.5 sm:p-3 text-center border-t border-[#E8E1D1] relative">
+                        <div className="w-full h-2 bg-[#FFFDF9] -top-2 left-0 absolute rounded-t-full" />
                         <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">Platinum Diamond Pendant</p>
                       </div>
                     </Link>
@@ -310,7 +329,9 @@ export function HeroSlider() {
                     {/* Card 5 */}
                     <Link
                       href="/product/pure-24k-gold-plated-traditional-bangle-set"
-                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#FFFDF9] shadow-2xl transform -rotate-2 hover:rotate-0 hover:scale-110 z-15 hover:z-40 transition-all duration-300 block cursor-pointer"
+                      className={`group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/90 bg-[#FFFDF9] shadow-xl transform transition-all duration-500 block cursor-pointer ${
+                        isScrolled ? "rotate-0 scale-100 hover:scale-105" : "-rotate-2 hover:rotate-0 hover:scale-110 z-15 hover:z-40"
+                      }`}
                     >
                       <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
                         <img
@@ -328,7 +349,9 @@ export function HeroSlider() {
                     {/* Card 6 */}
                     <Link
                       href="/product/royal-velvet-gift-box-diamond-brooch"
-                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#4A1521] text-white shadow-2xl transform rotate-6 hover:rotate-0 hover:scale-110 z-10 hover:z-40 transition-all duration-300 block cursor-pointer"
+                      className={`group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/90 bg-[#FFFDF9] shadow-xl transform transition-all duration-500 block cursor-pointer ${
+                        isScrolled ? "rotate-0 scale-100 hover:scale-105" : "rotate-6 hover:rotate-0 hover:scale-110 z-10 hover:z-40"
+                      }`}
                     >
                       <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
                         <img
@@ -337,8 +360,8 @@ export function HeroSlider() {
                           className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                         />
                       </div>
-                      <div className="bg-[#4A1521] text-rose-100 p-2.5 sm:p-3 text-center relative">
-                        <div className="w-full h-2 bg-[#4A1521] -top-2 left-0 absolute rounded-t-full" />
+                      <div className="bg-[#FFFDF9] text-[#2C221E] p-2.5 sm:p-3 text-center border-t border-[#E8E1D1] relative">
+                        <div className="w-full h-2 bg-[#FFFDF9] -top-2 left-0 absolute rounded-t-full" />
                         <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">Victorian Velvet Brooch</p>
                       </div>
                     </Link>
@@ -370,35 +393,6 @@ export function HeroSlider() {
             ›
           </button>
         </>
-      )}
-
-      {/* Bottom Dots + Progress Bar */}
-      {slides.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
-          {/* Progress Thin Bar */}
-          {!isHovered && (
-            <div className="w-32 h-0.5 bg-white/40 rounded-full overflow-hidden backdrop-blur-xs">
-              <div
-                className="h-full bg-white rounded-full transition-none"
-                style={{ width: `${progressWidth}%` }}
-              />
-            </div>
-          )}
-
-          {/* Dot Indicators */}
-          <div className="flex items-center gap-2 bg-white/60 backdrop-blur-xs px-3 py-1.5 rounded-full shadow-xs">
-            {slides.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => goToSlide(i)}
-                className={`h-2 rounded-full transition-all duration-400 cursor-pointer ${
-                  currentIndex === i ? "w-6 bg-blue-600 shadow-xs" : "w-2 bg-gray-400 hover:bg-gray-600"
-                }`}
-                title={`Go to slide ${i + 1}`}
-              />
-            ))}
-          </div>
-        </div>
       )}
 
       {/* Slide Counter Badge (top right) */}
