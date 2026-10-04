@@ -350,12 +350,12 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 return (
                   <div
                     key={`${product.handle || product.id}-${idx}`}
-                    className={`group bg-gray-50/80 border rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 ${
-                      isOutOfStock ? "border-gray-300 bg-gray-100/60 opacity-85" : "border-gray-200/80 hover:shadow-lg"
+                    className={`group bg-[#FFFDF9] border border-[#E8E1D1] rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 ${
+                      isOutOfStock ? "border-[#E8E1D1] bg-[#F7F4EC] opacity-85" : "border-[#E8E1D1] hover:border-[#B8860B] hover:shadow-xl"
                     }`}
                   >
                     {offPercent > 0 && !isOutOfStock && (
-                      <span className="absolute top-2 left-2 z-10 bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase">
+                      <span className="absolute top-2 left-2 z-10 bg-[#B8860B] text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase shadow-xs">
                         -{offPercent}%
                       </span>
                     )}
@@ -363,15 +363,15 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     {/* Stock Quantity Badge */}
                     <div className="absolute top-2 left-2 z-10">
                       {stock > 5 ? (
-                        <span className="bg-slate-900/85 backdrop-blur-sm text-sky-400 font-extrabold text-[9px] px-1.5 py-0.5 rounded-md border border-slate-700">
+                        <span className="bg-[#3B2F2F]/90 backdrop-blur-sm text-[#F4EFE6] font-extrabold text-[9px] px-1.5 py-0.5 rounded-md border border-[#5C4033]">
                           📦 In Stock ({stock} left)
                         </span>
                       ) : stock > 0 ? (
-                        <span className="bg-amber-500 text-slate-950 font-black text-[9px] px-1.5 py-0.5 rounded-md border border-amber-400 shadow-xs animate-pulse">
+                        <span className="bg-[#B8860B] text-white font-black text-[9px] px-1.5 py-0.5 rounded-md border border-amber-300 shadow-xs animate-pulse">
                           ⚡ Only {stock} left!
                         </span>
                       ) : (
-                        <span className="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-xs">
+                        <span className="bg-[#8B0000] text-white font-black text-[9px] px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-xs">
                           ❌ Out of Stock
                         </span>
                       )}
@@ -380,17 +380,17 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     {/* Wishlist Heart Button */}
                     <button
                       onClick={() => handleToggleWishlist(product)}
-                      className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full border flex items-center justify-center text-xs shadow transition cursor-pointer ${
+                      className={`absolute top-2 right-2 z-10 w-7 h-7 rounded-full border flex items-center justify-center text-xs shadow-xs transition cursor-pointer ${
                         isInWishlist(product.id, product.handle)
-                          ? "bg-red-50 border-red-200 text-red-500"
-                          : "bg-white/80 border-gray-200 text-gray-400 hover:text-red-500 hover:border-red-200"
+                          ? "bg-rose-50 border-rose-200 text-rose-500"
+                          : "bg-[#FFFDF9]/90 border-[#E8E1D1] text-stone-400 hover:text-rose-500 hover:border-rose-200"
                       }`}
                       title={isInWishlist(product.id, product.handle) ? "Remove from Wishlist" : "Add to Wishlist"}
                     >
                       {isInWishlist(product.id, product.handle) ? "❤️" : "🖤"}
                     </button>
 
-                    <Link href={isOutOfStock ? "#" : `/product/${product.handle}`} className="block relative aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-200/60 mt-5">
+                    <Link href={isOutOfStock ? "#" : `/product/${product.handle}`} className="block relative aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#E8E1D1] mt-5">
                       <Image
                         src={product.images[0] || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
                         alt={product.title}
@@ -402,19 +402,19 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     </Link>
 
                     <div className="space-y-1">
-                      <h3 className="font-bold text-xs text-gray-900 group-hover:text-blue-600 transition line-clamp-2 leading-snug">
+                      <h3 className="font-bold text-xs text-[#2C221E] group-hover:text-[#B8860B] transition line-clamp-2 leading-snug">
                         <Link href={isOutOfStock ? "#" : `/product/${product.handle}`}>{product.title}</Link>
                       </h3>
                       <div className="flex items-baseline gap-2">
-                        <span className={`text-sm font-black ${isOutOfStock ? "text-gray-500" : "text-gray-900"}`}>₹{product.price.toLocaleString("en-IN")}</span>
+                        <span className={`text-sm font-black ${isOutOfStock ? "text-stone-400" : "text-[#2C221E]"}`}>₹{product.price.toLocaleString("en-IN")}</span>
                         {product.compare_at_price && (
-                          <span className="text-xs text-gray-400 line-through">₹{product.compare_at_price.toLocaleString("en-IN")}</span>
+                          <span className="text-xs text-stone-400 line-through">₹{product.compare_at_price.toLocaleString("en-IN")}</span>
                         )}
                       </div>
                     </div>
 
                     {/* Dual Action Buttons */}
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-gray-200/60">
+                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#F0ECE1]">
                       <BuyNowButton
                         mode="cart"
                         productObj={product}
@@ -422,8 +422,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                         disabled={isOutOfStock}
                         className={`font-bold text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs ${
                           isOutOfStock
-                            ? "bg-gray-200 text-gray-400 cursor-not-allowed border border-gray-300 opacity-60"
-                            : "bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 cursor-pointer"
+                            ? "bg-[#EBE4D5] text-stone-400 cursor-not-allowed border border-[#D8D0C0] opacity-60"
+                            : "bg-[#FFFDF9] border border-[#E8E1D1] hover:bg-[#F4EFE6] text-[#3B2F2F] cursor-pointer"
                         }`}
                       >
                         {isOutOfStock ? "Out of Stock" : "🛒 Cart"}
@@ -435,8 +435,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                         disabled={isOutOfStock}
                         className={`font-black text-[11px] py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs ${
                           isOutOfStock
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed opacity-60"
-                            : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                            ? "bg-[#D8D0C0] text-stone-500 cursor-not-allowed opacity-60"
+                            : "bg-[#8B5E3C] hover:bg-[#70482D] text-white cursor-pointer"
                         }`}
                       >
                         {isOutOfStock ? "Unavailable" : "⚡ Buy Now"}
