@@ -41,8 +41,9 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
     if (typeof window !== "undefined") {
       try {
         let userInteracted: any[] = [];
+        const validTitles = (initialProducts || []).map(p => p.title.toLowerCase());
         
-        // 1. Read logged-in user's cart items
+        // 1. Read logged-in user's cart items (filtered to valid products)
         const cartKey = getUserCartKey();
         const storedCart = localStorage.getItem(cartKey);
         if (storedCart) {
@@ -51,9 +52,9 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
             const items = Array.isArray(parsed) ? parsed : (parsed.lines || parsed.items || []);
             items.forEach((it: any) => {
               const prod = it.merchandise?.product || it.product || it;
-              if (prod && prod.title && !userInteracted.some(u => u.label === prod.title)) {
+              if (prod && prod.title && validTitles.includes(prod.title.toLowerCase()) && !userInteracted.some(u => u.label === prod.title)) {
                 userInteracted.push({
-                  img: prod.images?.[0] || prod.featuredImage?.url || prod.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
+                  img: prod.images?.[0] || prod.featuredImage?.url || prod.image || "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300",
                   label: prod.title,
                   price: `₹${(prod.price || prod.priceRange?.minVariantPrice?.amount || 1799).toLocaleString("en-IN")}`,
                   mrp: prod.compare_at_price ? `₹${prod.compare_at_price.toLocaleString("en-IN")}` : undefined,
@@ -64,7 +65,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
           } catch (e) {}
         }
 
-        // 2. Read logged-in user's placed orders
+        // 2. Read logged-in user's placed orders (filtered to valid products)
         const ordersKey = getUserOrdersKey();
         const storedOrders = localStorage.getItem(ordersKey);
         if (storedOrders) {
@@ -73,9 +74,9 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
             if (Array.isArray(parsed)) {
               parsed.forEach((ord: any) => {
                 const title = typeof ord.title === "string" ? ord.title : (typeof ord.items === "string" ? ord.items : "Store Product");
-                if (!userInteracted.some(u => u.label === title)) {
+                if (validTitles.includes(title.toLowerCase()) && !userInteracted.some(u => u.label === title)) {
                   userInteracted.push({
-                    img: typeof ord.image === "string" ? ord.image : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
+                    img: typeof ord.image === "string" ? ord.image : "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300",
                     label: title,
                     price: `₹${(ord.total || 2999).toLocaleString("en-IN")}`,
                     href: "/orders"
@@ -91,7 +92,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
           (initialProducts || []).slice(0, 4).forEach(p => {
             if (!userInteracted.some(u => u.label === p.title)) {
               userInteracted.push({
-                img: p.images[0] || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300",
+                img: p.images[0] || "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300",
                 label: p.title,
                 price: `₹${p.price.toLocaleString("en-IN")}`,
                 mrp: p.compare_at_price ? `₹${p.compare_at_price.toLocaleString("en-IN")}` : undefined,
@@ -133,144 +134,171 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
   }, [products]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
       
-      {/* 📦 Top Dynamic Category Grid with "Pick up where you left off" */}
-      <section className="max-w-[1440px] mx-auto px-2 sm:px-4 lg:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* 📦 Top Dynamic Category Grid with Premium Card Design */}
+      <section className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           
-          {/* Card 1: Pick up where you left off (Dynamic User Cart & Orders) */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
-            <div className="flex justify-between items-start">
-              <h3 className="text-sm font-black text-gray-900 leading-snug">Pick up where you left off</h3>
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {pickUpItems.map((item, i) => {
-                const numPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, ""));
-                const numMrp = item.mrp ? parseFloat(String(item.mrp).replace(/[^0-9.]/g, "")) : 0;
-                const offPercent = numMrp > numPrice && numPrice > 0 ? Math.round(((numMrp - numPrice) / numMrp) * 100) : 0;
+          {/* Card 1: Pick up where you left off */}
+          <div className="bg-gradient-to-b from-white via-slate-50/50 to-amber-50/20 border border-slate-200/80 hover:border-amber-400/50 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span>Pick up where you left off</span>
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {pickUpItems.map((item, i) => {
+                  const numPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, ""));
+                  const numMrp = item.mrp ? parseFloat(String(item.mrp).replace(/[^0-9.]/g, "")) : 0;
+                  const offPercent = numMrp > numPrice && numPrice > 0 ? Math.round(((numMrp - numPrice) / numMrp) * 100) : 0;
 
-                return (
-                  <Link key={i} href={item.href || "/orders"} className="group space-y-1 block cursor-pointer">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-blue-400 transition">
-                      <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-                      {offPercent > 0 && (
-                        <div className="absolute top-1 left-1 bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded shadow-2xs">
-                          {offPercent}% OFF
-                        </div>
-                      )}
-                    </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-blue-600 transition line-clamp-2 leading-tight">{item.label}</p>
-                    <div className="flex flex-wrap items-baseline gap-1">
-                      <span className="text-xs font-black text-gray-900">{item.price}</span>
-                      {item.mrp && <span className="text-[9px] text-gray-400 line-through">{item.mrp}</span>}
-                    </div>
-                  </Link>
-                );
-              })}
+                  return (
+                    <Link key={i} href={item.href || "/orders"} className="bg-white border border-slate-200/60 hover:border-amber-400 rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-slate-100 rounded-xl overflow-hidden border border-slate-100 mb-2">
+                        <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
+                        {offPercent > 0 && (
+                          <div className="absolute top-1 left-1 bg-gradient-to-r from-rose-600 to-amber-600 text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
+                            {offPercent}% OFF
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-800 group-hover/item:text-amber-600 transition line-clamp-2 leading-snug min-h-[28px]">{item.label}</p>
+                      <div className="flex flex-wrap items-baseline gap-1 pt-1">
+                        <span className="text-xs font-black text-slate-900">{item.price}</span>
+                        {item.mrp && <span className="text-[9px] text-slate-400 line-through font-medium">{item.mrp}</span>}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-            <Link href="/orders" className="text-xs font-bold text-amber-700 hover:underline block pt-1">
-              See your orders &amp; cart &rarr;
+            <Link href="/orders" className="text-xs font-extrabold text-amber-600 hover:text-amber-700 flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
+              <span>See your orders &amp; cart</span>
+              <span>&rarr;</span>
             </Link>
           </div>
 
           {/* Card 2: Keep shopping for it */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
-            <h3 className="text-sm font-black text-gray-900 leading-snug">Keep shopping for it</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {products.slice(0, 4).map((p, i) => {
-                const numId = typeof p.id === "number" ? p.id : (parseInt(String(p.id || "").replace(/[^0-9]/g, "")) || i);
-                const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
-                return (
-                  <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-blue-400 transition">
-                      <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-                    </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-blue-600 transition line-clamp-2 leading-tight">{p.title}</p>
-                    <div className="flex items-center justify-between flex-wrap gap-1">
-                      <span className="text-xs font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
-                      {stock > 5 ? (
-                        <span className="text-[8px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded">In Stock</span>
-                      ) : stock > 0 ? (
-                        <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1 py-0.2 rounded animate-pulse">Only {stock} left!</span>
-                      ) : (
-                        <span className="text-[8px] font-black text-red-600 bg-red-50 px-1 py-0.2 rounded">Out of Stock</span>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
+          <div className="bg-gradient-to-b from-white via-slate-50/50 to-indigo-50/20 border border-slate-200/80 hover:border-indigo-400/50 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
+                  <span>Keep shopping for it</span>
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {products.slice(0, 4).map((p, i) => {
+                  const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
+                  return (
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-slate-200/60 hover:border-indigo-400 rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-slate-100 rounded-xl overflow-hidden border border-slate-100 mb-2">
+                        <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-800 group-hover/item:text-indigo-600 transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
+                      <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
+                        <span className="text-xs font-black text-slate-900">₹{p.price.toLocaleString("en-IN")}</span>
+                        {stock > 5 ? (
+                          <span className="text-[8px] font-extrabold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-200/60">In Stock</span>
+                        ) : stock > 0 ? (
+                          <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
+                        ) : (
+                          <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-            <Link href="/search" className="text-xs font-bold text-amber-700 hover:underline block pt-1">
-              Explore catalog &rarr;
+            <Link href="/search" className="text-xs font-extrabold text-indigo-600 hover:text-indigo-700 flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
+              <span>Explore catalog</span>
+              <span>&rarr;</span>
             </Link>
           </div>
 
           {/* Card 3: Up to 50% off | Select collection */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
-            <h3 className="text-sm font-black text-gray-900 leading-snug">Up to 50% off | Select collection</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {products.slice(4, 8).map((p, i) => {
-                const offPercent = p.compare_at_price ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 35;
-                const numId = typeof p.id === "number" ? p.id : (parseInt(String(p.id || "").replace(/[^0-9]/g, "")) || i);
-                const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
-                return (
-                  <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-blue-400 transition">
-                      <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-                      <div className="absolute top-1 left-1 bg-red-600 text-white font-black text-[9px] px-1.5 py-0.5 rounded">
-                        {offPercent}% OFF
+          <div className="bg-gradient-to-b from-white via-slate-50/50 to-rose-50/20 border border-slate-200/80 hover:border-rose-400/50 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                  <span>Up to 50% off | Select collection</span>
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {products.slice(4, 8).map((p, i) => {
+                  const offPercent = p.compare_at_price ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 35;
+                  const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
+                  return (
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-slate-200/60 hover:border-rose-400 rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-slate-100 rounded-xl overflow-hidden border border-slate-100 mb-2">
+                        <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
+                        <div className="absolute top-1 left-1 bg-gradient-to-r from-rose-600 to-amber-600 text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
+                          {offPercent}% OFF
+                        </div>
                       </div>
-                    </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-blue-600 transition line-clamp-2 leading-tight">{p.title}</p>
-                    <div className="flex items-center justify-between flex-wrap gap-1">
-                      <span className="text-xs font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
-                      {stock > 5 ? (
-                        <span className="text-[8px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded">In Stock</span>
-                      ) : stock > 0 ? (
-                        <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1 py-0.2 rounded animate-pulse">Only {stock} left!</span>
-                      ) : (
-                        <span className="text-[8px] font-black text-red-600 bg-red-50 px-1 py-0.2 rounded">Out of Stock</span>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
+                      <p className="text-[11px] font-bold text-slate-800 group-hover/item:text-rose-600 transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
+                      <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
+                        <span className="text-xs font-black text-slate-900">₹{p.price.toLocaleString("en-IN")}</span>
+                        {stock > 5 ? (
+                          <span className="text-[8px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200/60">In Stock</span>
+                        ) : stock > 0 ? (
+                          <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
+                        ) : (
+                          <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-            <Link href="/search?discount=30" className="text-xs font-bold text-amber-700 hover:underline block pt-1">
-              View discounts &rarr;
+            <Link href="/search?discount=30" className="text-xs font-extrabold text-rose-600 hover:text-rose-700 flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
+              <span>View discounts</span>
+              <span>&rarr;</span>
             </Link>
           </div>
 
-          {/* Card 4: New Admin Collections & Trending */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-4 shadow-xs space-y-3">
-            <h3 className="text-sm font-black text-gray-900 leading-snug">Trending &amp; New Arrivals</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {products.slice(8, 12).map((p, i) => {
-                const numId = typeof p.id === "number" ? p.id : (parseInt(String(p.id || "").replace(/[^0-9]/g, "")) || i);
-                const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
-                return (
-                  <Link key={i} href={`/product/${p.handle}`} className="group space-y-1 block cursor-pointer">
-                    <div className="relative w-full aspect-square bg-gray-50 rounded-xl overflow-hidden border border-gray-100 group-hover:border-blue-400 transition">
-                      <img src={p.images[0]} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover:scale-105 transition duration-300" />
-                    </div>
-                    <p className="text-[10px] text-gray-700 font-bold group-hover:text-blue-600 transition line-clamp-2 leading-tight">{p.title}</p>
-                    <div className="flex items-center justify-between flex-wrap gap-1">
-                      <span className="text-xs font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
-                      {stock > 5 ? (
-                        <span className="text-[8px] font-bold text-blue-700 bg-blue-50 px-1 py-0.2 rounded">In Stock</span>
-                      ) : stock > 0 ? (
-                        <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1 py-0.2 rounded animate-pulse">Only {stock} left!</span>
-                      ) : (
-                        <span className="text-[8px] font-black text-red-600 bg-red-50 px-1 py-0.2 rounded">Out of Stock</span>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
+          {/* Card 4: Trending & New Arrivals */}
+          <div className="bg-gradient-to-b from-white via-slate-50/50 to-emerald-50/20 border border-slate-200/80 hover:border-emerald-400/50 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center border-b border-slate-100 pb-2.5">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Trending &amp; New Arrivals</span>
+                </h3>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                {products.slice(8, 12).map((p, i) => {
+                  const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
+                  return (
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-slate-200/60 hover:border-emerald-400 rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-slate-100 rounded-xl overflow-hidden border border-slate-100 mb-2">
+                        <img src={p.images[0]} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-800 group-hover/item:text-emerald-600 transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
+                      <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
+                        <span className="text-xs font-black text-slate-900">₹{p.price.toLocaleString("en-IN")}</span>
+                        {stock > 5 ? (
+                          <span className="text-[8px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200/60">In Stock</span>
+                        ) : stock > 0 ? (
+                          <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
+                        ) : (
+                          <span className="text-[8px] font-black text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
             </div>
-            <Link href="/search" className="text-xs font-bold text-amber-700 hover:underline block pt-1">
-              See all new arrivals &rarr;
+            <Link href="/search" className="text-xs font-extrabold text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
+              <span>See all new arrivals</span>
+              <span>&rarr;</span>
             </Link>
           </div>
 
