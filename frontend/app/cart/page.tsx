@@ -244,6 +244,7 @@ export default function CartItemsPage() {
 
           </div>
         </div>
+      </div>
 
         {items.length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center space-y-4">
