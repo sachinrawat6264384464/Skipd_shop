@@ -53,7 +53,7 @@ export function UserAccountDropdown() {
       <>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl transition shadow-xs cursor-pointer whitespace-nowrap"
+          className="text-xs font-bold text-white bg-[#8B5E3C] hover:bg-[#70482D] px-2.5 py-1.5 sm:px-4 sm:py-2.5 rounded-xl transition shadow-xs cursor-pointer whitespace-nowrap"
         >
           <span className="inline sm:hidden">Sign In</span>
           <span className="hidden sm:inline">Sign In / Register</span>
@@ -73,16 +73,16 @@ export function UserAccountDropdown() {
       
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-1.5 text-xs font-bold text-gray-900 bg-gray-100/90 border border-gray-200/80 hover:bg-gray-200/90 p-1 sm:px-2.5 sm:py-1.5 rounded-2xl transition cursor-pointer shadow-2xs max-w-[160px]"
+        className="flex items-center gap-1.5 text-xs font-bold text-[#2C221E] bg-[#F4EFE6] border border-[#E8E1D1] hover:bg-[#EBE4D5] p-1 sm:px-2.5 sm:py-1.5 rounded-2xl transition cursor-pointer shadow-2xs max-w-[160px]"
         title={user.user_name}
       >
-        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0">
+        <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#B8860B] text-white font-black text-xs flex items-center justify-center shadow-xs shrink-0">
           {initials}
         </div>
-        <span className="font-bold text-xs text-gray-900 leading-none hidden lg:inline-block max-w-[90px] xl:max-w-[130px] truncate">
+        <span className="font-bold text-xs text-[#2C221E] leading-none hidden lg:inline-block max-w-[90px] xl:max-w-[130px] truncate">
           {user.user_name}
         </span>
-        <span className="text-[10px] text-gray-500 font-black hidden lg:inline">▾</span>
+        <span className="text-[10px] text-stone-500 font-black hidden lg:inline">▾</span>
       </button>
 
       {/*  dropdown Menu Card */}
@@ -90,12 +90,12 @@ export function UserAccountDropdown() {
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
           <div
-            className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-3xl shadow-2xl overflow-hidden z-50 text-xs text-gray-800 animate-in fade-in zoom-in-95 duration-150"
+            className="absolute right-0 mt-2 w-64 bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl shadow-2xl overflow-hidden z-50 text-xs text-[#2C221E] animate-in fade-in zoom-in-95 duration-150"
           >
             {/* Header info */}
-            <div className="p-4 bg-blue-50/70 border-b border-blue-100 space-y-1">
-              <p className="font-extrabold text-sm text-gray-900">{user.user_name}</p>
-              <p className="text-[11px] text-gray-500 truncate">{user.email || "customer@botcom.in"}</p>
+            <div className="p-4 bg-[#F4EFE6] border-b border-[#E8E1D1] space-y-1">
+              <p className="font-extrabold text-sm text-[#2C221E]">{user.user_name}</p>
+              <p className="text-[11px] text-stone-500 truncate">{user.email || "customer@botcom.in"}</p>
             </div>
 
             {/* Menu Links */}

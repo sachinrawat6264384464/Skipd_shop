@@ -111,15 +111,15 @@ export function CategoryNav() {
   if (categories.length === 0) return null;
 
   return (
-    <nav className="w-full bg-[#FFFDF9]/80 backdrop-blur-md border-b border-[#E8E1D1] py-3.5 px-4 sm:px-8 font-sans shadow-2xs">
-      <div className="w-full max-w-full mx-auto flex items-center justify-center flex-wrap gap-5 sm:gap-8 md:gap-10 lg:gap-14">
+    <div className="max-w-[1440px] mx-auto px-4 sm:px-8 py-3 font-sans">
+      <div className="flex items-center justify-center flex-wrap gap-3 sm:gap-4">
         {categories.map((cat) => (
           <Link
             key={cat.slug}
             href={`/search/${cat.slug}`}
-            className="group flex flex-col items-center gap-1.5 cursor-pointer transition transform hover:-translate-y-1"
+            className="group inline-flex items-center gap-2.5 bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#B8860B] rounded-full px-4.5 py-2 shadow-2xs hover:shadow-md transition duration-200 cursor-pointer"
           >
-            <div className="w-14 h-14 sm:w-16 sm:h-16 lg:w-18 lg:h-18 rounded-full border-2 border-blue-500/20 group-hover:border-blue-600 shadow-2xs group-hover:shadow-md transition duration-300 overflow-hidden bg-gray-50 p-0.5 relative">
+            <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full overflow-hidden border border-[#E8E1D1] bg-[#F4EFE6] shrink-0">
               <img
                 src={cat.image_url}
                 alt={cat.name}
@@ -129,16 +129,16 @@ export function CategoryNav() {
                   e.currentTarget.onerror = null;
                   e.currentTarget.src = getFallbackForSlug(cat.slug);
                 }}
-                className="w-full h-full object-cover rounded-full group-hover:scale-110 transition duration-300"
+                className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
               />
             </div>
-            <span className="text-xs sm:text-sm font-extrabold text-gray-800 group-hover:text-blue-600 transition tracking-tight text-center">
+            <span className="text-xs sm:text-sm font-extrabold text-[#2C221E] group-hover:text-[#B8860B] transition tracking-tight">
               {cat.name}
             </span>
           </Link>
         ))}
       </div>
-    </nav>
+    </div>
   );
 }
 

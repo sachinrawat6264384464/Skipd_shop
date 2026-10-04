@@ -85,7 +85,7 @@ export function NavLinks() {
   };
 
   return (
-    <ul className="hidden lg:flex items-center gap-3 xl:gap-5 text-base font-black text-gray-900 whitespace-nowrap">
+    <ul className="hidden lg:flex items-center gap-3 xl:gap-5 text-base font-black text-[#2C221E] whitespace-nowrap">
       
       {/* 📁 Categories Dropdown */}
       <li
@@ -97,10 +97,10 @@ export function NavLinks() {
         <button
           type="button"
           onClick={() => setIsCatOpen((prev) => !prev)}
-          className="px-4 py-2.5 rounded-xl hover:bg-blue-50/80 transition flex items-center gap-2 font-black text-base text-gray-900 hover:text-blue-600 cursor-pointer border-none bg-transparent"
+          className="px-4 py-2.5 rounded-xl hover:bg-[#F4EFE6] transition flex items-center gap-2 font-black text-base text-[#2C221E] hover:text-[#B8860B] cursor-pointer border-none bg-transparent"
         >
           <span>Categories</span>
-          <span className={`text-xs text-blue-600 transition-transform duration-200 ${isCatOpen ? "rotate-180" : ""}`}>
+          <span className={`text-xs text-[#B8860B] transition-transform duration-200 ${isCatOpen ? "rotate-180" : ""}`}>
             ▼
           </span>
         </button>
@@ -111,15 +111,15 @@ export function NavLinks() {
             isCatOpen ? "opacity-100 scale-100 pointer-events-auto" : "opacity-0 scale-95 pointer-events-none"
           }`}
         >
-          <div className="bg-white/95 backdrop-blur-2xl border border-gray-200/90 rounded-2xl shadow-2xl p-3.5 text-sm space-y-1.5">
-            <div className="text-xs font-black uppercase text-gray-400 px-3 py-1 tracking-wider border-b border-gray-100">
+          <div className="bg-[#FFFDF9] backdrop-blur-md border border-[#E8E1D1] rounded-2xl shadow-2xl p-3.5 text-sm space-y-1.5">
+            <div className="text-xs font-black uppercase text-stone-400 px-3 py-1 tracking-wider border-b border-[#F0ECE1]">
               Shop By Category
             </div>
             <Link
               href="/search"
               prefetch={false}
               onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-50/80 text-blue-900 font-black hover:bg-blue-100/80 transition text-sm"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-[#F4EFE6] text-[#2C221E] font-black hover:bg-[#EBE4D5] transition text-sm"
             >
               <span className="text-base">🛍️</span> All Categories &amp; Catalog
             </Link>
@@ -130,7 +130,7 @@ export function NavLinks() {
                 href={`/search/${cat.slug}`}
                 prefetch={false}
                 onClick={() => setIsCatOpen(false)}
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-[#F4EFE6] text-[#2C221E] font-extrabold transition text-sm"
               >
                 {cat.name}
               </Link>
@@ -142,7 +142,7 @@ export function NavLinks() {
                 href="/gift-cards"
                 prefetch={false}
                 onClick={() => setIsCatOpen(false)}
-                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-amber-50 text-amber-900 font-black transition border-t border-gray-100 mt-1.5 pt-2.5 text-sm"
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-[#F4EFE6] text-[#8B5E3C] font-black transition border-t border-[#F0ECE1] mt-1.5 pt-2.5 text-sm"
               >
                 <span className="text-base">🎁</span> Gift Cards &amp; Rewards
               </Link>
@@ -156,10 +156,10 @@ export function NavLinks() {
         <Link
           href="/deals"
           prefetch={false}
-          className="px-4 py-2.5 rounded-xl text-blue-600 font-black hover:bg-blue-50 transition flex items-center gap-2 text-base"
+          className="px-4 py-2.5 rounded-xl text-[#B8860B] font-black hover:bg-[#F4EFE6] transition flex items-center gap-2 text-base"
         >
           <span>Deals</span>
-          <span className="bg-red-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs animate-pulse">
+          <span className="bg-[#B8860B] text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs animate-pulse">
             HOT
           </span>
         </Link>
@@ -171,7 +171,7 @@ export function NavLinks() {
           <Link
             href="/gift-cards"
             prefetch={false}
-            className="px-4 py-2.5 rounded-xl text-amber-800 font-black hover:bg-amber-50 transition flex items-center gap-2 text-base"
+            className="px-4 py-2.5 rounded-xl text-[#8B5E3C] font-black hover:bg-[#F4EFE6] transition flex items-center gap-2 text-base"
           >
             <span className="text-lg">🎁</span>
             <span>Gift Cards</span>
@@ -184,10 +184,10 @@ export function NavLinks() {
         <Link
           href="/new-arrivals"
           prefetch={false}
-          className="px-4 py-2.5 rounded-xl text-gray-900 font-black hover:bg-blue-50 hover:text-blue-600 transition flex items-center gap-2 text-base"
+          className="px-4 py-2.5 rounded-xl text-[#2C221E] font-black hover:bg-[#F4EFE6] hover:text-[#B8860B] transition flex items-center gap-2 text-base"
         >
           <span>New Arrivals</span>
-          <span className="bg-blue-600 text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
+          <span className="bg-[#8B5E3C] text-white font-black text-[11px] px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-xs">
             NEW
           </span>
         </Link>

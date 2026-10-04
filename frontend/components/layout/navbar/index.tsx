@@ -12,7 +12,7 @@ const InstantSearchModal = dynamic(() => import("components/search/search-modal"
 
 export async function Navbar() {
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-2xl border-b border-gray-200/80 px-4 sm:px-8 lg:px-12 py-2.5 sm:py-3 shadow-2xs transition-all w-full">
+    <header className="sticky top-0 z-50 bg-[#FFFDF9]/90 backdrop-blur-md border-b border-[#E8E1D1] px-4 sm:px-8 lg:px-12 py-2.5 sm:py-3 shadow-xs transition-all w-full">
       <div className="flex items-center justify-between w-full max-w-full gap-3 sm:gap-6">
         
         {/* Left Section: Mobile Hamburger Menu, Brand Logo & Top Category Links */}
