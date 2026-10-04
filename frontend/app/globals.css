@@ -6,11 +6,15 @@
 @layer base {
   html {
     color-scheme: light !important;
-    background-color: #FFFFFF !important;
+    background-color: #FAF7F2 !important;
+    background-image: radial-gradient(#E2D9C8 1.5px, transparent 1.5px) !important;
+    background-size: 24px 24px !important;
     color: #111827 !important;
   }
   body {
-    background-color: #FFFFFF !important;
+    background-color: #FAF7F2 !important;
+    background-image: radial-gradient(#E2D9C8 1.5px, transparent 1.5px) !important;
+    background-size: 24px 24px !important;
     color: #111827 !important;
   }
   *,
@@ -20,6 +24,12 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+}
+
+.bg-dot-pattern {
+  background-color: #FAF7F2 !important;
+  background-image: radial-gradient(#E2D9C8 1.5px, transparent 1.5px) !important;
+  background-size: 24px 24px !important;
 }
 
 /* Custom Hide Scrollbar Utility */

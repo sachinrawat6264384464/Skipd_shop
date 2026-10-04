@@ -111,7 +111,7 @@ export function CategoryNav() {
   if (categories.length === 0) return null;
 
   return (
-    <nav className="w-full bg-white border-b border-gray-200/80 py-3.5 px-4 sm:px-8 font-sans shadow-2xs">
+    <nav className="w-full bg-[#FFFDF9]/80 backdrop-blur-md border-b border-[#E8E1D1] py-3.5 px-4 sm:px-8 font-sans shadow-2xs">
       <div className="w-full max-w-full mx-auto flex items-center justify-center flex-wrap gap-5 sm:gap-8 md:gap-10 lg:gap-14">
         {categories.map((cat) => (
           <Link
