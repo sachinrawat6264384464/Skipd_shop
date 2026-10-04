@@ -181,20 +181,6 @@ export default function CartItemsPage() {
                   Review your items, apply promotional discount coupons, and enjoy express doorstep delivery with 100% buyer protection.
                 </p>
 
-                {/* Free Shipping Progress Indicator */}
-                {selectedItems.length > 0 && (
-                  <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-3 max-w-md space-y-1.5 shadow-sm">
-                    <div className="flex justify-between items-center text-xs font-extrabold">
-                      <span className="text-cyan-300 flex items-center gap-1">
-                        <span>🚚</span> Free Express Delivery Status
-                      </span>
-                      <span className="text-white">UNLOCKED 🎉</span>
-                    </div>
-                    <div className="w-full bg-white/20 h-2 rounded-full overflow-hidden">
-                      <div className="bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-full rounded-full transition-all duration-500" />
-                    </div>
-                  </div>
-                )}
               </div>
 
               {/* Right Column: Visual Mini Carousel of Cart Item Thumbnails */}
