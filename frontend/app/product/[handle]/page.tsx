@@ -2,7 +2,6 @@ import { Metadata } from "next";
 import Link from "next/link";
 import Footer from "components/layout/footer";
 import { ProductDetailView } from "components/product/product-detail-view";
-import { CustomerReviewsSection } from "components/product/reviews-section";
 import { ShoppableInstagramGrid } from "components/social/shoppable-grid";
 import { fetchProductByHandle, fetchProducts } from "lib/api";
 
@@ -73,9 +72,6 @@ export default async function ProductPage(props: {
     <div className="bg-[#FAF7F2] text-[#2C221E] min-h-screen flex flex-col justify-between">
       <div className="space-y-8 pb-12">
         <ProductDetailView product={product} relatedProducts={relatedProducts} />
-        <div className="max-w-7xl mx-auto px-4">
-          <CustomerReviewsSection />
-        </div>
         <div className="max-w-7xl mx-auto px-4">
           <ShoppableInstagramGrid />
         </div>
