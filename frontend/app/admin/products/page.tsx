@@ -1133,6 +1133,8 @@ export default function AdminProductsPage() {
       } else {
         showNotification("Failed to fetch preset CSV", "error");
       }
+    } catch (e) {
+      showNotification("Failed to load preset Jewelry CSV file", "error");
     }
   };
 
