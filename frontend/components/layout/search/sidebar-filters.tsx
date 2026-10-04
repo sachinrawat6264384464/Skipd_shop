@@ -49,8 +49,6 @@ export function CatalogSidebarFilters() {
 
   const currentMaxPrice = searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : 100000;
   const currentExpress = searchParams.get("express") === "true";
-  const currentRating = searchParams.get("rating") ? Number(searchParams.get("rating")) : 0;
-  const currentColor = searchParams.get("color");
   const currentDiscount = searchParams.get("discount") ? Number(searchParams.get("discount")) : 0;
 
   const [maxPrice, setMaxPrice] = useState<number>(currentMaxPrice);
@@ -123,18 +121,6 @@ export function CatalogSidebarFilters() {
 
     loadActiveCategories();
   }, []);
-
-  const colorPalette = [
-    { name: "Black", hex: "#000000" },
-    { name: "White", hex: "#FFFFFF" },
-    { name: "Brown", hex: "#78350F" },
-    { name: "Yellow", hex: "#FACC15" },
-    { name: "Red", hex: "#EF4444" },
-    { name: "Blue", hex: "#3B82F6" },
-    { name: "Green", hex: "#10B981" },
-    { name: "Purple", hex: "#8B5CF6" },
-    { name: "Pink", hex: "#EC4899" },
-  ];
 
   const discounts = [10, 20, 30, 40, 50];
 
@@ -210,26 +196,6 @@ export function CatalogSidebarFilters() {
             <span className="text-[10px] text-gray-400 block font-semibold">Max</span>
             <span className="font-extrabold text-gray-900">₹{maxPrice > 99000 ? "20000+" : maxPrice.toLocaleString("en-IN")}</span>
           </div>
-        </div>
-      </div>
-
-      {/* 🎨 COLOUR PALETTE */}
-      <div className="pt-4 border-t border-gray-100 space-y-2.5">
-        <h4 className="font-black text-gray-900 uppercase text-[10px] tracking-wider">Colour Palette</h4>
-        <div className="flex flex-wrap items-center gap-2">
-          {colorPalette.map((c) => (
-            <button
-              key={c.name}
-              title={c.name}
-              onClick={() => updateParam("color", currentColor === c.name ? null : c.name)}
-              className={`w-6 h-6 rounded-full border border-gray-300 shadow-2xs cursor-pointer transition transform hover:scale-110 flex items-center justify-center ${
-                currentColor === c.name ? "ring-2 ring-emerald-600 ring-offset-1" : ""
-              }`}
-              style={{ backgroundColor: c.hex }}
-            >
-              {c.name === "White" && <span className="text-[9px] text-gray-400 font-bold">✓</span>}
-            </button>
-          ))}
         </div>
       </div>
 
