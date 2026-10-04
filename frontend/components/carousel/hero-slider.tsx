@@ -35,7 +35,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "EXPLORE DEALS",
     secondaryButtonHref: "/deals",
     imageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
-    bgImageUrl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600&auto=format&fit=crop",
+    bgImageUrl: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=90&w=2000&auto=format&fit=crop",
     badgeText: "UP TO 50% OFF",
     bgGradient: "from-slate-950/95 via-slate-900/85 to-amber-950/70",
     tagColor: "bg-amber-500/20 text-amber-300 border-amber-400/40",
@@ -53,7 +53,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "VIEW OFFERS",
     secondaryButtonHref: "/deals",
     imageUrl: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=800",
-    bgImageUrl: "https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=1600&auto=format&fit=crop",
+    bgImageUrl: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=90&w=2000&auto=format&fit=crop",
     badgeText: "CERTIFIED VVS",
     bgGradient: "from-slate-950/95 via-slate-900/85 to-indigo-950/70",
     tagColor: "bg-blue-500/20 text-blue-300 border-blue-400/40",
@@ -71,7 +71,7 @@ const DEFAULT_SLIDES: HeroSlide[] = [
     secondaryButtonText: "SEE CATALOG",
     secondaryButtonHref: "/search",
     imageUrl: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=800",
-    bgImageUrl: "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=1600&auto=format&fit=crop",
+    bgImageUrl: "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?q=90&w=2000&auto=format&fit=crop",
     badgeText: "24K GOLD POLISH",
     bgGradient: "from-slate-950/95 via-slate-900/85 to-rose-950/70",
     tagColor: "bg-rose-500/20 text-rose-300 border-rose-400/40",
@@ -208,61 +208,144 @@ export function HeroSlider() {
         {slides.map((slide, idx) => (
           <div key={slide.id || idx} className="w-full shrink-0">
             <div
-              className="relative overflow-hidden min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[500px] flex items-center"
+              className="relative overflow-hidden min-h-[75vh] sm:min-h-[80vh] lg:min-h-[760px] flex items-end justify-center"
             >
-              {/* 🖼️ Full-width & Full-height Background Image Layer */}
+              {/* 🖼️ Full-width Ultra HD Background Image Layer */}
               <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
                 <img
-                  src={slide.imageUrl || slide.bgImageUrl || "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1600"}
-                  alt={slide.title}
-                  className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000"
+                  src={
+                    slide.bgImageUrl ||
+                    (idx === 2
+                      ? "https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?q=90&w=2000&auto=format&fit=crop"
+                      : idx === 1
+                      ? "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=90&w=2000&auto=format&fit=crop"
+                      : "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=90&w=2000&auto=format&fit=crop")
+                  }
+                  alt="Hero Slide Background"
+                  className="w-full h-full object-cover object-center transform scale-100 transition-transform duration-1000"
                 />
-                {/* Sleek Gradient Overlay for Full-Bleed Readability & Premium Aesthetics */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgGradient || "from-slate-950/95 via-slate-950/80 to-slate-950/40"} backdrop-blur-[0.5px]`} />
+                {/* 100% Crystal Clear HD Overlay — Only subtle shadow at very bottom for cards */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/10 pointer-events-none" />
               </div>
 
-              {/* Top Right Badge if present */}
-              {slide.badgeText && (
-                <div className="absolute top-6 right-6 z-20 bg-gradient-to-r from-red-600 to-amber-600 text-white font-black text-xs sm:text-sm px-4 py-1.5 rounded-full shadow-2xl animate-pulse tracking-wide uppercase border border-amber-400/40">
-                  {slide.badgeText}
-                </div>
-              )}
-
-              {/* Slide Foreground Content */}
-              <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col justify-center items-start p-6 sm:p-12 md:p-16 lg:p-20">
-                {/* Text Content */}
-                <div className="space-y-4 sm:space-y-6 max-w-2xl w-full">
-                  <span className={`inline-block border font-black text-xs uppercase px-4 py-1.5 rounded-full tracking-wider shadow-md backdrop-blur-md ${slide.tagColor || "bg-amber-500/20 text-amber-300 border-amber-400/40"}`}>
-                    {slide.tag}
-                  </span>
-
-                  <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight tracking-tight drop-shadow-xl">
-                    {slide.title}
-                    <span className={slide.highlightColor || "text-amber-400"}>{slide.highlightText}</span>
-                  </h1>
-
-                  <p className="text-slate-200 text-xs sm:text-sm md:text-base font-medium leading-relaxed max-w-xl drop-shadow-md">
-                    {slide.description}
-                  </p>
-
-                  <div className="flex flex-wrap items-center gap-4 pt-4">
+              {/* Slide Foreground Content — Clean Full Image View + Bottom Cards Deck */}
+              <div className="relative z-10 w-full max-w-full flex flex-col justify-end items-center min-h-[75vh] sm:min-h-[80vh] lg:min-h-[760px] p-4 sm:p-8 lg:p-12 pb-12">
+                
+                {/* 🎴 Bottom Tilted & Overlapping Cards Deck */}
+                <div className="w-full max-w-6xl mx-auto pt-6 pb-2 overflow-x-auto no-scrollbar">
+                  <div className="flex items-center justify-center -space-x-3 sm:-space-x-5 py-4 min-w-[720px] px-4">
+                    
+                    {/* Card 1 */}
                     <Link
-                      href={slide.primaryButtonHref || "/search"}
-                      className={`font-black text-xs sm:text-sm px-7 py-4 rounded-2xl transition shadow-2xl cursor-pointer flex items-center gap-2 hover:scale-105 ${slide.btnColor || "bg-amber-500 hover:bg-amber-400 text-slate-950"}`}
+                      href="/product/royal-solitaire-diamond-ring-18k-gold"
+                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#FFFDF9] shadow-2xl transform -rotate-6 hover:rotate-0 hover:scale-110 z-10 hover:z-40 transition-all duration-300 block cursor-pointer"
                     >
-                      <span>{slide.primaryButtonText || "SHOP NOW"}</span>
-                      <span>&rarr;</span>
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
+                        <img
+                          src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=600"
+                          alt="Solitaire Diamond Ring"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        />
+                      </div>
+                      <div className="bg-[#FFFDF9] text-[#2C221E] p-2.5 sm:p-3 text-center border-t border-[#E8E1D1] relative">
+                        <div className="w-full h-2 bg-[#FFFDF9] -top-2 left-0 absolute rounded-t-full" />
+                        <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">Solitaire Engagement Ring</p>
+                      </div>
                     </Link>
-                    {slide.secondaryButtonText && (
-                      <Link
-                        href={slide.secondaryButtonHref || "/deals"}
-                        className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md font-black text-xs sm:text-sm px-6 py-4 rounded-2xl transition shadow-lg cursor-pointer hover:scale-105"
-                      >
-                        {slide.secondaryButtonText}
-                      </Link>
-                    )}
+
+                    {/* Card 2 */}
+                    <Link
+                      href="/product/elegance-kundan-polki-choker-necklace-set"
+                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#4A1521] text-white shadow-2xl transform rotate-4 hover:rotate-0 hover:scale-110 z-20 hover:z-40 transition-all duration-300 block cursor-pointer"
+                    >
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
+                        <img
+                          src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600"
+                          alt="Kundan Necklace"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        />
+                      </div>
+                      <div className="bg-[#4A1521] text-rose-100 p-2.5 sm:p-3 text-center relative">
+                        <div className="w-full h-2 bg-[#4A1521] -top-2 left-0 absolute rounded-t-full" />
+                        <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">Kundan Polki Choker Set</p>
+                      </div>
+                    </Link>
+
+                    {/* Card 3 */}
+                    <Link
+                      href="/product/classic-sterling-silver-solitaire-stud-earrings"
+                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#FFFDF9] shadow-2xl transform -rotate-3 hover:rotate-0 hover:scale-110 z-30 hover:z-40 transition-all duration-300 block cursor-pointer"
+                    >
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
+                        <img
+                          src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?w=600"
+                          alt="Sterling Silver Earrings"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        />
+                      </div>
+                      <div className="bg-[#FFFDF9] text-[#2C221E] p-2.5 sm:p-3 text-center border-t border-[#E8E1D1] relative">
+                        <div className="w-full h-2 bg-[#FFFDF9] -top-2 left-0 absolute rounded-t-full" />
+                        <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">Sterling Silver Solitaire Studs</p>
+                      </div>
+                    </Link>
+
+                    {/* Card 4 */}
+                    <Link
+                      href="/product/diamond-teardrop-pendant-with-platinum-chain"
+                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#4A1521] text-white shadow-2xl transform rotate-5 hover:rotate-0 hover:scale-110 z-20 hover:z-40 transition-all duration-300 block cursor-pointer"
+                    >
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
+                        <img
+                          src="https://images.unsplash.com/photo-1599643477877-530eb83abc8e?w=600"
+                          alt="Diamond Teardrop Pendant"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        />
+                      </div>
+                      <div className="bg-[#4A1521] text-rose-100 p-2.5 sm:p-3 text-center relative">
+                        <div className="w-full h-2 bg-[#4A1521] -top-2 left-0 absolute rounded-t-full" />
+                        <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">Platinum Diamond Pendant</p>
+                      </div>
+                    </Link>
+
+                    {/* Card 5 */}
+                    <Link
+                      href="/product/pure-24k-gold-plated-traditional-bangle-set"
+                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#FFFDF9] shadow-2xl transform -rotate-2 hover:rotate-0 hover:scale-110 z-15 hover:z-40 transition-all duration-300 block cursor-pointer"
+                    >
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
+                        <img
+                          src="https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?w=600"
+                          alt="Traditional Bangle Set"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        />
+                      </div>
+                      <div className="bg-[#FFFDF9] text-[#2C221E] p-2.5 sm:p-3 text-center border-t border-[#E8E1D1] relative">
+                        <div className="w-full h-2 bg-[#FFFDF9] -top-2 left-0 absolute rounded-t-full" />
+                        <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">24K Gold Plated Bangles</p>
+                      </div>
+                    </Link>
+
+                    {/* Card 6 */}
+                    <Link
+                      href="/product/royal-velvet-gift-box-diamond-brooch"
+                      className="group relative w-32 sm:w-40 md:w-44 shrink-0 rounded-3xl overflow-hidden border-2 border-white/80 bg-[#4A1521] text-white shadow-2xl transform rotate-6 hover:rotate-0 hover:scale-110 z-10 hover:z-40 transition-all duration-300 block cursor-pointer"
+                    >
+                      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-900">
+                        <img
+                          src="https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?w=600"
+                          alt="Royal Velvet Brooch"
+                          className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                        />
+                      </div>
+                      <div className="bg-[#4A1521] text-rose-100 p-2.5 sm:p-3 text-center relative">
+                        <div className="w-full h-2 bg-[#4A1521] -top-2 left-0 absolute rounded-t-full" />
+                        <p className="font-extrabold text-[10px] sm:text-xs leading-tight line-clamp-2">Victorian Velvet Brooch</p>
+                      </div>
+                    </Link>
+
                   </div>
                 </div>
+
               </div>
             </div>
           </div>

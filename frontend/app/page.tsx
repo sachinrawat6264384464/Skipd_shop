@@ -3,7 +3,6 @@ import Image from "next/image";
 import { CategoryNav } from "components/layout/category-nav";
 import { HeroSlider } from "components/carousel/hero-slider";
 import { DynamicHomeShowcase } from "components/home/dynamic-home-showcase";
-import { TiltedCardGallery } from "components/home/tilted-card-gallery";
 import { FlashSaleBanner } from "components/home/flash-sale-banner";
 import { fetchProducts } from "lib/api";
 import Footer from "components/layout/footer";
@@ -33,9 +32,6 @@ export default async function HomePage() {
       <div className="py-4">
         <DynamicHomeShowcase initialProducts={allProducts} />
       </div>
-
-      {/* 🃏 Tilted Card Story Gallery Deck */}
-      <TiltedCardGallery />
 
       {/* ⚡ Live Flash Sale Deal Banner (Right above Footer) */}
       <section className="w-full max-w-full px-4 sm:px-6 lg:px-10">
