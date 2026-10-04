@@ -69,7 +69,7 @@ export default async function ProductPage(props: {
   );
 
   return (
-    <div className="bg-[#FAF7F2] text-[#2C221E] min-h-screen flex flex-col justify-between">
+    <div className="bg-dot-pattern text-[#2C221E] min-h-screen flex flex-col justify-between">
       <div className="space-y-8 pb-12">
         <ProductDetailView product={product} relatedProducts={relatedProducts} />
         <div className="max-w-7xl mx-auto px-4">

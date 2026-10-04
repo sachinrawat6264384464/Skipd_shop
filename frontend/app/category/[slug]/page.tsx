@@ -107,7 +107,7 @@ export default async function DedicatedCategoryPage(props: {
   const fullDisplayTitle = `${config.icon} ${config.title}`;
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-dot-pattern min-h-screen">
       <SearchCatalogView products={products} collectionTitle={fullDisplayTitle} categorySlug={slug} />
     </div>
   );

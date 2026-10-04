@@ -65,7 +65,7 @@ export default function NewArrivalsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50/60 pb-16 font-sans">
+    <div className="min-h-screen bg-dot-pattern pb-16 font-sans">
       
       {/* 🌟 PREMIUM NEW ARRIVALS HERO HEADER (EXACT REDESIGN FROM DESIGN SPEC) */}
       <div className="relative overflow-hidden bg-[#030e1a] text-white py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-b border-blue-500/20 shadow-2xl">
