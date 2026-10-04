@@ -422,7 +422,7 @@ export default function FloatingChatbot() {
 
   return (
     <>
-      {/* Floating Action Launcher Button (Draggable + Soft Glowing Aura) */}
+      {/* Floating Action Launcher Button (Draggable) */}
       <div
         ref={buttonRef}
         onClick={handleButtonClick}
@@ -434,15 +434,11 @@ export default function FloatingChatbot() {
             : {}
         }
         className={`fixed ${!position ? 'bottom-10 right-10 sm:bottom-14 sm:right-14' : ''} z-50 w-20 h-20 sm:w-24 sm:h-24 bg-transparent select-none touch-none ${
-          isDragging ? 'cursor-grabbing scale-115' : 'cursor-grab hover:scale-110'
-        } active:scale-95 transition-transform duration-200 flex items-center justify-center group`}
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        } active:scale-95 transition-transform duration-200 flex items-center justify-center`}
         aria-label="Open AI Recommender Chatbot"
         title="Click to chat • Drag to move anywhere"
       >
-        {/* Soft Glowing Aura Effect behind the 3D bot */}
-        <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-emerald-500/40 via-teal-400/50 to-cyan-400/40 blur-xl opacity-80 group-hover:opacity-100 group-hover:scale-135 transition-all duration-300 animate-pulse pointer-events-none -z-10" />
-        <div className="absolute inset-2 rounded-full bg-emerald-400/25 blur-md pointer-events-none -z-10" />
-
         <span className="relative w-full h-full flex items-center justify-center">
           <video
             src="/bot-video.mp4"
@@ -450,7 +446,7 @@ export default function FloatingChatbot() {
             loop
             muted
             playsInline
-            className="w-full h-full object-contain filter drop-shadow-[0_10px_25px_rgba(56,189,248,0.6)] group-hover:drop-shadow-[0_15px_35px_rgba(56,189,248,0.85)] transition-all duration-300 pointer-events-none rounded-full"
+            className="w-full h-full object-contain pointer-events-none rounded-full"
           />
         </span>
       </div>
