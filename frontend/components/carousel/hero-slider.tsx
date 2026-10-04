@@ -374,33 +374,6 @@ export function HeroSlider() {
           </div>
         ))}
       </div>
-
-      {/* ← → Manual Navigation Arrows */}
-      {slides.length > 1 && (
-        <>
-          <button
-            onClick={goToPrev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-900 font-black text-lg shadow-lg backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center cursor-pointer z-20 border border-gray-200/80 hover:scale-110"
-            title="Previous Slide"
-          >
-            ‹
-          </button>
-          <button
-            onClick={goToNext}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 hover:bg-white text-gray-900 font-black text-lg shadow-lg backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200 flex items-center justify-center cursor-pointer z-20 border border-gray-200/80 hover:scale-110"
-            title="Next Slide"
-          >
-            ›
-          </button>
-        </>
-      )}
-
-      {/* Slide Counter Badge (top right) */}
-      {slides.length > 1 && (
-        <div className="absolute top-3 right-3 z-20 bg-black/30 text-white font-bold text-[10px] px-2.5 py-1 rounded-full backdrop-blur-xs opacity-0 group-hover:opacity-100 transition-all duration-200">
-          {currentIndex + 1} / {slides.length}
-        </div>
-      )}
     </div>
   );
 }
