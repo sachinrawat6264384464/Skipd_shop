@@ -242,28 +242,6 @@ export default function CartItemsPage() {
                 </div>
               )}
 
-            </div>
-
-            {/* Bottom Perks Banner Row */}
-            <div className="mt-6 pt-4 border-t border-white/15 grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-gray-300 font-semibold">
-              <div className="flex items-center gap-2">
-                <span className="text-base">⚡</span>
-                <span>Express 2-Day Delivery</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-base">🛡️</span>
-                <span>100% Authentic &amp; Warranty</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-base">🏷️</span>
-                <span>Best Price Guaranteed</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-base">🔄</span>
-                <span>7-Day Easy Returns</span>
-              </div>
-            </div>
-
           </div>
         </div>
 
