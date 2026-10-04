@@ -28,17 +28,15 @@ export default async function HomePage() {
       {/* 🏷️ Horizontal Category Navigation Bar */}
       <CategoryNav />
 
-      {/* ⚡ Live Flash Sale Deal Banner */}
-      <section className="w-full max-w-full px-4 sm:px-6 lg:px-10">
-        <FlashSaleBanner />
-      </section>
-
-
-
       {/* 📦 Dynamic Home Showcase: Pick up where you left off & Category Showcase Blocks */}
       <div className="py-4">
         <DynamicHomeShowcase initialProducts={allProducts} />
       </div>
+
+      {/* ⚡ Live Flash Sale Deal Banner (Right above Footer) */}
+      <section className="w-full max-w-full px-4 sm:px-6 lg:px-10">
+        <FlashSaleBanner />
+      </section>
 
       {/* 🦶 Footer */}
       <Footer />
