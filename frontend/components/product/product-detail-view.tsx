@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import { useWishlist } from "components/wishlist/wishlist-context";
 import { FrequentlyBoughtTogether } from "./frequently-bought-together";
 import { RecommendedProductsGrid } from "./recommended-products-grid";
-import { ProductReviewsSection } from "components/reviews/product-reviews-section";
+
 import { PWAInstallPrompt } from "components/pwa/pwa-install-prompt";
 
 interface ProductDetailViewProps {
@@ -1575,10 +1575,7 @@ const SUB_NAV_ITEMS = [
         </div>
       </div>
 
-      {/* 🌟 Verified Customer Reviews Section (PostgreSQL DB Backed) */}
-      <div className="max-w-[1536px] mx-auto px-4 lg:px-8 pt-4">
-        <ProductReviewsSection productId={product.id} productTitle={product.title} />
-      </div>
+
 
       {/* 📲 PWA Floating Install App Prompt */}
       <PWAInstallPrompt />
