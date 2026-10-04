@@ -9,7 +9,6 @@ import { NavLinks } from "./nav-links";
 // Dynamic imports for interactive modals in Server Component for strictly on-demand loading
 const CartModal = dynamic(() => import("components/cart/modal"));
 const InstantSearchModal = dynamic(() => import("components/search/search-modal").then(m => ({ default: m.InstantSearchModal })));
-const NotificationBell = dynamic(() => import("components/notifications/NotificationBell").then(m => ({ default: m.NotificationBell })));
 
 export async function Navbar() {
   return (
@@ -37,12 +36,11 @@ export async function Navbar() {
           <div className="hidden md:block">
             <LanguagePicker />
           </div>
-          <NotificationBell />
-          <UserAccountDropdown />
           <div className="hidden sm:block">
             <WishlistNavButton />
           </div>
           <CartModal />
+          <UserAccountDropdown />
         </div>
 
       </div>
