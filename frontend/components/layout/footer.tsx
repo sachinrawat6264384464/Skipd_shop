@@ -62,37 +62,7 @@ export default function Footer() {
             </svg>
           </div>
 
-          {/* ⛵ FLOATING SAILING YACHT / BOAT RIDING THE WAVES */}
-          <div className="absolute top-1 sm:top-2 md:top-4 z-20 pointer-events-none animate-boat-sail">
-            <div className="relative flex flex-col items-center">
-              <svg className="w-10 h-10 sm:w-14 sm:h-14 lg:w-16 lg:h-16 drop-shadow-[0_8px_14px_rgba(0,0,0,0.5)]" viewBox="0 0 64 64" fill="none">
-                {/* Hull */}
-                <path d="M8 44 C 18 52, 46 52, 56 44 L 48 54 C 36 58, 24 58, 16 54 Z" fill="#0A192F" stroke="#38BDF8" strokeWidth="2" />
-                <path d="M12 46 C 20 52, 44 52, 52 46 L 46 52 C 34 56, 22 56, 16 52 Z" fill="#132B4F" />
-                {/* Main Sail */}
-                <path d="M30 10 L 30 42 L 8 40 Z" fill="url(#boatSail1)" stroke="#38BDF8" strokeWidth="1.5" />
-                {/* Front Sail */}
-                <path d="M34 14 L 34 42 L 52 38 Z" fill="url(#boatSail2)" stroke="#67E8F9" strokeWidth="1.5" />
-                {/* Flag */}
-                <path d="M30 6 L 38 9 L 30 12 Z" fill="#F59E0B" />
-                <defs>
-                  <linearGradient id="boatSail1" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.95" />
-                    <stop offset="100%" stopColor="#0284C7" stopOpacity="0.75" />
-                  </linearGradient>
-                  <linearGradient id="boatSail2" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#67E8F9" stopOpacity="0.95" />
-                    <stop offset="100%" stopColor="#0284C7" stopOpacity="0.8" />
-                  </linearGradient>
-                </defs>
-              </svg>
-              {/* Water Splash Ripple */}
-              <div className="w-12 sm:w-16 h-1.5 bg-cyan-400/50 rounded-full blur-xs animate-pulse -mt-1" />
-            </div>
-          </div>
-
         </div>
-
 
         {/* ☁️ Cloud Hero Title Overlay Inside Deep Blue Header */}
         <div className="bg-gradient-to-b from-[#0A192F] via-[#07162C] to-[#040E1E] text-center pt-0 pb-10 px-4 relative z-10">
