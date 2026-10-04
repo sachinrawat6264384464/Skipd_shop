@@ -169,38 +169,38 @@ export function FlashSaleBanner() {
   const formatDigit = (num: number) => String(num).padStart(2, "0");
 
   return (
-    <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 border border-indigo-500/30 rounded-3xl p-6 shadow-2xl text-white my-8 overflow-hidden relative font-sans">
+    <div className="bg-gradient-to-r from-[#991B1B] via-[#B91C1C] to-[#800000] border border-red-400/30 rounded-3xl p-6 shadow-2xl text-white my-8 overflow-hidden relative font-sans">
       
       {/* Glow Effects */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-72 h-72 bg-amber-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-orange-500/15 rounded-full blur-3xl pointer-events-none" />
 
       {/* Banner Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-red-800/60 pb-5">
         <div>
-          <div className="inline-flex items-center gap-2 bg-blue-600/20 border border-blue-400/40 px-3 py-1 rounded-full text-cyan-300 font-black text-xs uppercase tracking-wider mb-2">
-            <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+          <div className="inline-flex items-center gap-2 bg-amber-400/20 border border-amber-300/40 px-3 py-1 rounded-full text-amber-200 font-black text-xs uppercase tracking-wider mb-2">
+            <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
             <span>⚡ Live Flash Deal</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
             Lightning Deals — Up to 70% OFF
           </h2>
-          <p className="text-xs text-slate-400 font-medium">Limited stock available at promotional price points.</p>
+          <p className="text-xs text-rose-100/80 font-medium">Limited stock available at promotional price points.</p>
         </div>
 
         {/* Countdown Ticking Timer */}
-        <div className="flex items-center gap-2 bg-slate-900/90 border border-slate-700/80 p-2.5 rounded-2xl">
-          <span className="text-xs text-slate-400 font-extrabold uppercase mr-1">Ends In:</span>
-          <div className="flex items-center gap-1.5 font-mono text-sm font-black text-amber-400">
-            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-blue-500/30">
+        <div className="flex items-center gap-2 bg-[#540808]/90 border border-red-700/80 p-2.5 rounded-2xl">
+          <span className="text-xs text-rose-200 font-extrabold uppercase mr-1">Ends In:</span>
+          <div className="flex items-center gap-1.5 font-mono text-sm font-black text-amber-300">
+            <span className="bg-[#3B0505] px-2.5 py-1 rounded-xl border border-amber-500/40">
               {formatDigit(timeLeft.hours)}
             </span>
             <span>:</span>
-            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-blue-500/30">
+            <span className="bg-[#3B0505] px-2.5 py-1 rounded-xl border border-amber-500/40">
               {formatDigit(timeLeft.minutes)}
             </span>
             <span>:</span>
-            <span className="bg-slate-950 px-2.5 py-1 rounded-xl border border-cyan-500/40 text-cyan-300">
+            <span className="bg-[#3B0505] px-2.5 py-1 rounded-xl border border-amber-400/50 text-amber-300">
               {formatDigit(timeLeft.seconds)}
             </span>
           </div>
@@ -212,11 +212,11 @@ export function FlashSaleBanner() {
         {mounted && flashItems.map((item) => (
           <div
             key={item.id}
-            className="bg-slate-900/80 border border-slate-800 hover:border-blue-500/60 rounded-2xl p-4 transition duration-200 flex flex-col justify-between space-y-3 group"
+            className="bg-[#5B0B0B]/85 border border-red-800/80 hover:border-amber-400/70 rounded-2xl p-4 transition duration-200 flex flex-col justify-between space-y-3 group shadow-lg"
           >
             <div>
               {/* Product Image + Discount Pill */}
-              <Link href={`/product/${item.handle}`} className="block relative aspect-square rounded-xl overflow-hidden bg-slate-950 mb-3 border border-slate-800 cursor-pointer">
+              <Link href={`/product/${item.handle}`} className="block relative aspect-square rounded-xl overflow-hidden bg-[#3B0505] mb-3 border border-red-900 cursor-pointer">
                 <img
                   src={item.image}
                   alt={item.title}
@@ -224,42 +224,42 @@ export function FlashSaleBanner() {
                   decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                 />
-                <span className="absolute top-2 left-2 bg-blue-600 text-white font-black text-[10px] px-2 py-0.5 rounded-md shadow-md uppercase">
+                <span className="absolute top-2 left-2 bg-amber-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-md shadow-md uppercase">
                   -{item.discount_percent}% OFF
                 </span>
               </Link>
 
-              <h3 className="font-extrabold text-white text-xs truncate group-hover:text-cyan-300 transition">
+              <h3 className="font-extrabold text-white text-xs truncate group-hover:text-amber-200 transition">
                 <Link href={`/product/${item.handle}`}>{item.title}</Link>
               </h3>
 
               {/* Price Row */}
               <div className="flex items-baseline gap-2 pt-1">
-                <span className="text-base font-black text-cyan-300">
+                <span className="text-base font-black text-amber-300">
                   ₹{item.price.toLocaleString("en-IN")}
                 </span>
-                <span className="text-xs text-slate-500 line-through font-bold">
+                <span className="text-xs text-rose-200/60 line-through font-bold">
                   ₹{item.compare_at_price.toLocaleString("en-IN")}
                 </span>
               </div>
             </div>
 
             {/* Stock Progress Bar */}
-            <div className="space-y-2 pt-2 border-t border-slate-800">
-              <div className="flex justify-between text-[10px] font-bold text-slate-400">
+            <div className="space-y-2 pt-2 border-t border-red-900/80">
+              <div className="flex justify-between text-[10px] font-bold text-rose-200/80">
                 <span>Stock Claimed</span>
-                <span className="text-cyan-300">{item.sold_percent}% Sold</span>
+                <span className="text-amber-300">{item.sold_percent}% Sold</span>
               </div>
-              <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div className="w-full h-2 bg-[#3B0505] rounded-full overflow-hidden border border-red-900">
                 <div
-                  className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full transition-all duration-500"
                   style={{ width: `${item.sold_percent}%` }}
                 />
               </div>
 
               <button
                 onClick={(e) => handleClaimDeal(e, item)}
-                className="w-full py-2.5 bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1 active:scale-95"
               >
                 ⚡ Claim Deal &rsaquo;
               </button>
