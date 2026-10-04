@@ -107,7 +107,7 @@ export function RecommendedProductsGrid({ productId, title = "You Might Also Lik
           return (
             <div
               key={prod.id}
-              className="bg-white border border-slate-200/80 rounded-2xl p-3 flex flex-col justify-between hover:shadow-xl transition group relative overflow-hidden"
+              className="bg-[#a4d8f2] border border-[#84c8ed] rounded-2xl p-3 flex flex-col justify-between hover:shadow-xl transition group relative overflow-hidden"
             >
               {/* Match Percentage Badge */}
               <div className="absolute top-2 left-2 z-10">

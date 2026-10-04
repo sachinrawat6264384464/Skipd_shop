@@ -373,7 +373,7 @@ export function SearchCatalogView({
             return (
               <div
                 key={`${itemHandle}-${idx}`}
-                className="group bg-white border border-gray-200/80 rounded-2xl overflow-hidden p-3 shadow-2xs hover:shadow-xl transition-all duration-300 relative space-y-3 flex flex-col justify-between"
+                className="group bg-[#a4d8f2] border border-[#84c8ed] rounded-2xl overflow-hidden p-3 shadow-2xs hover:shadow-xl transition-all duration-300 relative space-y-3 flex flex-col justify-between"
               >
                 {/* Badges & Wishlist Heart */}
                 <div className="flex justify-between items-center z-10 w-full">

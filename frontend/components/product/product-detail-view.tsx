@@ -1347,10 +1347,10 @@ const SUB_NAV_ITEMS = [
               return (
                 <div
                   key={sIdx}
-                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-blue-400 transition group"
+                  className="bg-[#a4d8f2] border border-[#84c8ed] rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-blue-500 transition group"
                 >
                   <Link href={`/product/${sp.handle}`} className="space-y-2 block flex-1 cursor-pointer">
-                    <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <div className="relative aspect-square bg-white rounded-xl overflow-hidden border border-[#84c8ed]">
                       <img src={spImg} alt={sp.title} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-300" />
                       {discountPercent > 0 && (
                         <span className="absolute top-1 left-1 bg-red-600 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded uppercase">
@@ -1358,17 +1358,17 @@ const SUB_NAV_ITEMS = [
                         </span>
                       )}
                     </div>
-                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition">{sp.title}</h4>
+                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-700 transition">{sp.title}</h4>
                     <div>
                       <p className="font-black text-sm text-gray-900">₹{spPrice.toLocaleString("en-IN")}.00</p>
                       {spCompare > spPrice && (
-                        <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{spCompare.toLocaleString("en-IN")}.00</p>
+                        <p className="text-[10px] text-gray-600 line-through">M.R.P.: ₹{spCompare.toLocaleString("en-IN")}.00</p>
                       )}
                     </div>
                   </Link>
 
                   {/* Dual Action Buttons */}
-                  <div className="grid grid-cols-2 gap-1 pt-2 border-t border-gray-200/80">
+                  <div className="grid grid-cols-2 gap-1 pt-2 border-t border-[#84c8ed]/70">
                     <BuyNowButton
                       mode="cart"
                       productObj={sp}
@@ -1411,10 +1411,10 @@ const SUB_NAV_ITEMS = [
               return (
                 <div
                   key={vIdx}
-                  className="bg-gray-50 border border-gray-200/80 rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-blue-400 transition group"
+                  className="bg-[#a4d8f2] border border-[#84c8ed] rounded-2xl p-2.5 space-y-2 flex flex-col justify-between text-xs hover:shadow-md hover:border-blue-500 transition group"
                 >
                   <Link href={`/product/${viewed.handle}`} className="space-y-2 block flex-1 cursor-pointer">
-                    <div className="relative aspect-square bg-gray-100 rounded-xl overflow-hidden border border-gray-100">
+                    <div className="relative aspect-square bg-white rounded-xl overflow-hidden border border-[#84c8ed]">
                       <img src={vImg} alt={viewed.title} className="w-full h-full object-cover object-center group-hover:scale-105 transition duration-300" />
                       {vDiscount > 0 && (
                         <span className="absolute top-1 left-1 bg-orange-500 text-white font-extrabold text-[9px] px-1.5 py-0.5 rounded uppercase">
@@ -1422,17 +1422,17 @@ const SUB_NAV_ITEMS = [
                         </span>
                       )}
                     </div>
-                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition">{viewed.title}</h4>
+                    <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-700 transition">{viewed.title}</h4>
                     <div>
                       <p className="font-black text-sm text-gray-900">₹{vPrice.toLocaleString("en-IN")}.00</p>
                       {vCompare > vPrice && (
-                        <p className="text-[10px] text-gray-400 line-through">M.R.P.: ₹{vCompare.toLocaleString("en-IN")}.00</p>
+                        <p className="text-[10px] text-gray-600 line-through">M.R.P.: ₹{vCompare.toLocaleString("en-IN")}.00</p>
                       )}
                     </div>
                   </Link>
 
                   {/* Dual Action Buttons */}
-                  <div className="grid grid-cols-2 gap-1 pt-2 border-t border-gray-200/80">
+                  <div className="grid grid-cols-2 gap-1 pt-2 border-t border-[#84c8ed]/70">
                     <BuyNowButton
                       mode="cart"
                       productObj={viewed}

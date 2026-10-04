@@ -386,8 +386,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 return (
                   <div
                     key={`${product.handle || product.id}-${idx}`}
-                    className={`group bg-[#FFFDF9] border border-[#E8E1D1] rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 w-full max-w-sm mx-auto ${
-                      isOutOfStock ? "border-[#E8E1D1] bg-[#F7F4EC] opacity-85" : "border-[#E8E1D1] hover:border-[#B8860B] hover:shadow-xl"
+                    className={`group bg-[#a4d8f2] border border-[#84c8ed] rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 w-full max-w-sm mx-auto ${
+                      isOutOfStock ? "border-[#84c8ed] bg-[#a4d8f2]/70 opacity-85" : "border-[#84c8ed] hover:border-blue-500 hover:shadow-xl"
                     }`}
                   >
                     {offPercent > 0 && !isOutOfStock && (
