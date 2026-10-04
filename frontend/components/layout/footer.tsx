@@ -10,50 +10,6 @@ export default function Footer() {
       {/* 🖼️ Browse Categories Grid Section (Placed right above footer content) */}
       <BrowseCategoriesGrid />
       
-      {/* 🛡️ Trust & Brand Value Bar */}
-      <div className="bg-slate-950/80 border-y border-slate-800/80 py-8 px-4 sm:px-8">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 text-lg shrink-0 shadow-xs">
-              ⚡
-            </div>
-            <div>
-              <h5 className="text-white font-extrabold text-xs sm:text-sm tracking-tight">Express Delivery</h5>
-              <p className="text-slate-400 text-[11px] font-medium">Fast dispatch across 25,000+ pin codes</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center md:justify-start gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 text-lg shrink-0 shadow-xs">
-              🛡️
-            </div>
-            <div>
-              <h5 className="text-white font-extrabold text-xs sm:text-sm tracking-tight">100% Genuine</h5>
-              <p className="text-slate-400 text-[11px] font-medium">Directly sourced verified products</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center md:justify-start gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 text-lg shrink-0 shadow-xs">
-              🔒
-            </div>
-            <div>
-              <h5 className="text-white font-extrabold text-xs sm:text-sm tracking-tight">Secure Checkout</h5>
-              <p className="text-slate-400 text-[11px] font-medium">Encrypted UPI & card payments</p>
-            </div>
-          </div>
-
-          <div className="flex items-center justify-center md:justify-start gap-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-lg shrink-0 shadow-xs">
-              💬
-            </div>
-            <div>
-              <h5 className="text-white font-extrabold text-xs sm:text-sm tracking-tight">24/7 AI Assistance</h5>
-              <p className="text-slate-400 text-[11px] font-medium">Instant order & query resolution</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* 📧 Newsletter VIP Subscription Section */}
       <div className="relative bg-gradient-to-r from-slate-900 via-[#0D1527] to-slate-900 border-b border-slate-800/90 py-12 px-4 sm:px-8 overflow-hidden">
