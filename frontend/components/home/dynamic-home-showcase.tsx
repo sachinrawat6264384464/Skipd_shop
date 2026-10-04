@@ -166,8 +166,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                   const offPercent = numMrp > numPrice && numPrice > 0 ? Math.round(((numMrp - numPrice) / numMrp) * 100) : 0;
 
                   return (
-                    <Link key={i} href={item.href || "/orders"} className="bg-[#FAF7F0] border border-[#EBE4D5] hover:border-[#D4AF37] hover:bg-white rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-[#F4EFE6] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
+                    <Link key={i} href={item.href || "/orders"} className="bg-white border border-[#EBE4D5] hover:border-[#D4AF37] rounded-2xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
                         <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
                         {offPercent > 0 && (
                           <div className="absolute top-1 left-1 bg-gradient-to-r from-[#B8860B] to-[#8B5E3C] text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
@@ -204,8 +204,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 {products.slice(0, 4).map((p, i) => {
                   const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                   return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-[#FAF7F0] border border-[#EBE4D5] hover:border-[#8B5E3C] hover:bg-white rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-[#F4EFE6] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-[#EBE4D5] hover:border-[#8B5E3C] rounded-2xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
                         <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
                       </div>
                       <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#8B5E3C] transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
@@ -244,8 +244,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                   const offPercent = p.compare_at_price ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 35;
                   const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                   return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-[#FAF7F0] border border-[#EBE4D5] hover:border-[#A52A2A] hover:bg-white rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-[#F4EFE6] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-[#EBE4D5] hover:border-[#A52A2A] rounded-2xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
                         <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
                         <div className="absolute top-1 left-1 bg-gradient-to-r from-[#A52A2A] to-[#B8860B] text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
                           {offPercent}% OFF
@@ -286,8 +286,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 {products.slice(8, 12).map((p, i) => {
                   const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
                   return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-[#FAF7F0] border border-[#EBE4D5] hover:border-[#D4AF37] hover:bg-white rounded-2xl p-2 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-[#F4EFE6] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
+                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-[#EBE4D5] hover:border-[#D4AF37] rounded-2xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
+                      <div className="relative w-full aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
                         <img src={p.images[0]} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
                       </div>
                       <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#B8860B] transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
