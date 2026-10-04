@@ -210,45 +210,45 @@ export function HeroSlider() {
             <div
               className="relative overflow-hidden min-h-[380px] sm:min-h-[440px] md:min-h-[480px] lg:min-h-[500px] flex items-center"
             >
-              {/* 🖼️ Full-width Background Image Layer */}
+              {/* 🖼️ Full-width & Full-height Background Image Layer */}
               <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
                 <img
-                  src={
-                    slide.bgImageUrl ||
-                    (idx === 2
-                      ? "https://images.unsplash.com/photo-1518770660439-4636190af475?w=1600&auto=format&fit=crop"
-                      : idx === 1
-                      ? "https://images.unsplash.com/photo-1607082349566-187342175e2f?w=1600&auto=format&fit=crop"
-                      : "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&auto=format&fit=crop")
-                  }
-                  alt="Hero Slide Background"
+                  src={slide.imageUrl || slide.bgImageUrl || "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=1600"}
+                  alt={slide.title}
                   className="w-full h-full object-cover object-center transform scale-105 transition-transform duration-1000"
                 />
-                {/* Sleek Frosted Glass Overlay for Crystal-Clear Text Legibility */}
-                <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgGradient || "from-slate-950/95 via-slate-900/85 to-blue-950/70"} backdrop-blur-[1px]`} />
+                {/* Sleek Gradient Overlay for Full-Bleed Readability & Premium Aesthetics */}
+                <div className={`absolute inset-0 bg-gradient-to-r ${slide.bgGradient || "from-slate-950/95 via-slate-950/80 to-slate-950/40"} backdrop-blur-[0.5px]`} />
               </div>
 
+              {/* Top Right Badge if present */}
+              {slide.badgeText && (
+                <div className="absolute top-6 right-6 z-20 bg-gradient-to-r from-red-600 to-amber-600 text-white font-black text-xs sm:text-sm px-4 py-1.5 rounded-full shadow-2xl animate-pulse tracking-wide uppercase border border-amber-400/40">
+                  {slide.badgeText}
+                </div>
+              )}
+
               {/* Slide Foreground Content */}
-              <div className="relative z-10 w-full max-w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-10 p-6 sm:p-10 md:p-12 lg:p-16 px-6 sm:px-12 lg:px-20">
+              <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col justify-center items-start p-6 sm:p-12 md:p-16 lg:p-20">
                 {/* Text Content */}
-                <div className="space-y-4 sm:space-y-5 max-w-xl w-full">
-                  <span className={`inline-block border font-black text-xs uppercase px-4 py-1.5 rounded-full tracking-wider shadow-sm backdrop-blur-md ${slide.tagColor || "bg-blue-500/20 text-blue-300 border-blue-400/40"}`}>
+                <div className="space-y-4 sm:space-y-6 max-w-2xl w-full">
+                  <span className={`inline-block border font-black text-xs uppercase px-4 py-1.5 rounded-full tracking-wider shadow-md backdrop-blur-md ${slide.tagColor || "bg-amber-500/20 text-amber-300 border-amber-400/40"}`}>
                     {slide.tag}
                   </span>
 
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight tracking-tight drop-shadow-md">
+                  <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight tracking-tight drop-shadow-xl">
                     {slide.title}
-                    <span className={slide.highlightColor || "text-sky-400"}>{slide.highlightText}</span>
+                    <span className={slide.highlightColor || "text-amber-400"}>{slide.highlightText}</span>
                   </h1>
 
-                  <p className="text-gray-200 text-xs sm:text-sm md:text-base font-medium leading-relaxed max-w-lg drop-shadow-sm">
+                  <p className="text-slate-200 text-xs sm:text-sm md:text-base font-medium leading-relaxed max-w-xl drop-shadow-md">
                     {slide.description}
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-3.5 pt-3">
+                  <div className="flex flex-wrap items-center gap-4 pt-4">
                     <Link
                       href={slide.primaryButtonHref || "/search"}
-                      className={`font-black text-xs sm:text-sm px-6 py-3.5 rounded-2xl transition shadow-xl cursor-pointer flex items-center gap-2 ${slide.btnColor || "bg-blue-600 hover:bg-blue-500 text-white"}`}
+                      className={`font-black text-xs sm:text-sm px-7 py-4 rounded-2xl transition shadow-2xl cursor-pointer flex items-center gap-2 hover:scale-105 ${slide.btnColor || "bg-amber-500 hover:bg-amber-400 text-slate-950"}`}
                     >
                       <span>{slide.primaryButtonText || "SHOP NOW"}</span>
                       <span>&rarr;</span>
@@ -256,39 +256,12 @@ export function HeroSlider() {
                     {slide.secondaryButtonText && (
                       <Link
                         href={slide.secondaryButtonHref || "/deals"}
-                        className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md font-black text-xs sm:text-sm px-5 py-3.5 rounded-2xl transition shadow-2xs cursor-pointer"
+                        className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md font-black text-xs sm:text-sm px-6 py-4 rounded-2xl transition shadow-lg cursor-pointer hover:scale-105"
                       >
                         {slide.secondaryButtonText}
                       </Link>
                     )}
                   </div>
-                </div>
-
-                {/* Right Image (Full Fill & Cover) */}
-                <div className="relative w-full md:w-[440px] lg:w-[500px] h-60 sm:h-80 md:h-[360px] lg:h-[400px] rounded-3xl overflow-hidden shadow-2xl border-2 border-white/30 shrink-0">
-                  {idx === 0 ? (
-                    <Image
-                      src={slide.imageUrl}
-                      alt={slide.title}
-                      fill
-                      priority
-                      sizes="(max-width: 768px) 100vw, 500px"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  ) : (
-                    <img
-                      src={slide.imageUrl}
-                      alt={slide.title}
-                      loading="lazy"
-                      decoding="async"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                  )}
-                  {slide.badgeText && (
-                    <div className="absolute top-4 right-4 bg-red-600 text-white font-black text-xs sm:text-sm px-4 py-1.5 rounded-full shadow-xl animate-pulse tracking-wide">
-                      {slide.badgeText}
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
