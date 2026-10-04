@@ -1053,11 +1053,13 @@ export default function AdminProductsPage() {
         return result;
       };
 
-      const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9_]/g, ''));
+      const firstLine = lines[0] || "";
+      const headers = parseCSVLine(firstLine).map(h => h.toLowerCase().replace(/[^a-z0-9_]/g, ''));
       const parsedProducts: any[] = [];
 
       for (let i = 1; i < lines.length; i++) {
-        const values = parseCSVLine(lines[i]);
+        const lineContent = lines[i] || "";
+        const values = parseCSVLine(lineContent);
         if (values.length < 2) continue;
 
         const row: Record<string, string> = {};
@@ -1131,10 +1133,10 @@ export default function AdminProductsPage() {
       } else {
         showNotification("Failed to fetch preset CSV", "error");
       }
-    } catch (e) {
-      showNotification("Failed to load preset Jewelry CSV file", "error");
     }
   };
+
+  const categoriesList = Array.from(new Set(products.map((p: any) => p.category_slug || p.category?.slug || "general"))).filter(Boolean);
 
   return (
     <div className="p-6 md:p-8 space-y-6 w-full max-w-full text-gray-900 font-sans">
