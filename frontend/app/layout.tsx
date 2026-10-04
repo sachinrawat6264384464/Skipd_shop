@@ -72,7 +72,7 @@ export default async function RootLayout({
         <link rel="dns-prefetch" href="https://cdn.shopify.com" />
         <link rel="preconnect" href="https://skipd-ecom.onrender.com" crossOrigin="anonymous" />
       </head>
-      <body className="bg-neutral-50 text-black selection:bg-teal-300 dark:bg-neutral-900 dark:text-white dark:selection:bg-pink-500 dark:selection:text-white" suppressHydrationWarning>
+      <body className="bg-[#FAFAFA] text-gray-900 selection:bg-cyan-200" suppressHydrationWarning>
         <ClearLegacyStorage />
         <LanguageProvider>
           <AuthProvider>

@@ -5,13 +5,13 @@
 
 @layer base {
   html {
-    color-scheme: light;
-    background-color: #FAFAFA;
-    color: #111827;
+    color-scheme: light !important;
+    background-color: #FAFAFA !important;
+    color: #111827 !important;
   }
   body {
-    background-color: #FAFAFA;
-    color: #111827;
+    background-color: #FAFAFA !important;
+    color: #111827 !important;
   }
   *,
   ::after,
