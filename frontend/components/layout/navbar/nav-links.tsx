@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { fetchCategories, fetchProducts, Category } from "lib/api";
 
 export function NavLinks() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCatOpen, setIsCatOpen] = useState(false);
+  const [dbCategories, setDbCategories] = useState<Category[]>([]);
   const dropdownRef = useRef<HTMLLIElement>(null);
 
   useEffect(() => {
@@ -16,6 +18,41 @@ export function NavLinks() {
     };
 
     checkAuth();
+
+    async function loadActiveCats() {
+      try {
+        const prods = await fetchProducts().catch(() => []);
+        const cats = await fetchCategories().catch(() => []);
+        if (Array.isArray(cats) && cats.length > 0) {
+          const activeSlugs = new Set(
+            prods.map((p: any) =>
+              (typeof p.category === "object" ? p.category?.slug : p.category_slug || p.category || "").toLowerCase()
+            )
+          );
+          const filtered = cats.filter((c: any) => {
+            if (c.status === "Inactive" || c.status === "Disabled") return false;
+            if (activeSlugs.size > 0) {
+              return activeSlugs.has((c.slug || "").toLowerCase());
+            }
+            return true;
+          });
+          setDbCategories(filtered);
+        } else if (Array.isArray(prods) && prods.length > 0) {
+          const activeMap = new Map<string, Category>();
+          prods.forEach((p: any) => {
+            const catObj = typeof p.category === "object" ? p.category : null;
+            const catName = catObj?.name || p.category_name || p.category || "General";
+            const catSlug = catObj?.slug || p.category_slug || String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+            if (!activeMap.has(catSlug)) {
+              activeMap.set(catSlug, { id: p.category_id || p.id, name: catName, slug: catSlug });
+            }
+          });
+          setDbCategories(Array.from(activeMap.values()));
+        }
+      } catch (e) {}
+    }
+
+    loadActiveCats();
 
     window.addEventListener("storage", checkAuth);
     window.addEventListener("ecom_auth_changed", checkAuth);
@@ -34,6 +71,18 @@ export function NavLinks() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  const getCategoryIcon = (slug: string) => {
+    const s = slug.toLowerCase();
+    if (s.includes("sports") || s.includes("fitness")) return "🏋️";
+    if (s.includes("beauty") || s.includes("care") || s.includes("skin")) return "💄";
+    if (s.includes("mobile") || s.includes("phone")) return "📱";
+    if (s.includes("laptop") || s.includes("computer")) return "💻";
+    if (s.includes("tech") || s.includes("electronic")) return "🎧";
+    if (s.includes("fashion") || s.includes("apparel")) return "👕";
+    if (s.includes("watch")) return "⌚";
+    return "📁";
+  };
 
   return (
     <ul className="hidden lg:flex items-center gap-3 xl:gap-5 text-base font-black text-gray-900 whitespace-nowrap">
@@ -74,30 +123,18 @@ export function NavLinks() {
             >
               <span className="text-base">🛍️</span> All Categories &amp; Catalog
             </Link>
-            <Link
-              href="/search/tech"
-              prefetch={false}
-              onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
-            >
-              <span className="text-base">🎧</span> Electronics &amp; Gadgets
-            </Link>
-            <Link
-              href="/search/apparel"
-              prefetch={false}
-              onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
-            >
-              <span className="text-base">👕</span> Fashion &amp; Clothing
-            </Link>
-            <Link
-              href="/search/lifestyle"
-              prefetch={false}
-              onClick={() => setIsCatOpen(false)}
-              className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
-            >
-              <span className="text-base">⌚</span> Watches &amp; Accessories
-            </Link>
+
+            {dbCategories.map((cat) => (
+              <Link
+                key={cat.slug}
+                href={`/search/${cat.slug}`}
+                prefetch={false}
+                onClick={() => setIsCatOpen(false)}
+                className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 font-extrabold transition text-sm"
+              >
+                <span className="text-base">{getCategoryIcon(cat.slug)}</span> {cat.name}
+              </Link>
+            ))}
 
             {/* 🎁 Gift Cards Dropdown Link - ONLY SHOW WHEN LOGGED IN */}
             {isLoggedIn && (

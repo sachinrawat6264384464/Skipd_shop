@@ -59,7 +59,7 @@ function setGoogleTranslateCookies(langCode: string) {
   });
 }
 
-export function LanguagePicker() {
+export function LanguagePicker({ align = "right" }: { align?: "left" | "right" }) {
   const { setLanguage: setContextLang } = useTranslation();
   const [selectedLang, setSelectedLang] = useState<SupportedLanguage>("en");
   const [isOpen, setIsOpen] = useState(false);
@@ -129,20 +129,22 @@ export function LanguagePicker() {
   const currentLangObj = LANGUAGES.find((l) => l.code === selectedLang) ?? LANGUAGES[0]!;
 
   return (
-    <div className="relative inline-block text-left z-40">
+    <div className="relative inline-block text-left z-40 w-full sm:w-auto">
       {/* Hidden Google Translate Element Container */}
       <div id="google_translate_element" className="hidden" />
 
       {/* 🌐 Ultra-Professional Language Selector Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 text-xs font-bold text-gray-800 bg-gray-100/90 hover:bg-blue-50 hover:text-blue-600 border border-gray-200/80 hover:border-blue-300 px-3.5 py-2.5 rounded-2xl transition-all duration-200 cursor-pointer shadow-2xs group"
+        className="w-full sm:w-auto flex items-center justify-between sm:justify-start gap-2 text-xs font-bold text-gray-800 bg-gray-100/90 hover:bg-blue-50 hover:text-blue-600 border border-gray-200/80 hover:border-blue-300 px-3.5 py-2.5 rounded-2xl transition-all duration-200 cursor-pointer shadow-2xs group"
         title="Select Store Language"
       >
-        <span className="text-sm shrink-0">{currentLangObj.flag}</span>
-        <span className="font-black text-[11px] uppercase tracking-wider text-gray-900 group-hover:text-blue-600">
-          {currentLangObj.region} &nbsp;{currentLangObj.code}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm shrink-0">{currentLangObj.flag}</span>
+          <span className="font-black text-[11px] uppercase tracking-wider text-gray-900 group-hover:text-blue-600">
+            {currentLangObj.name} ({currentLangObj.region})
+          </span>
+        </div>
         <svg
           className={`w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`}
           fill="none"
@@ -157,7 +159,7 @@ export function LanguagePicker() {
       {isOpen && (
         <>
           <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
-          <div className="absolute right-0 mt-2 w-56 bg-white/95 backdrop-blur-2xl border border-gray-200/90 rounded-2xl shadow-2xl p-2 z-50 text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150">
+          <div className={`absolute ${align === "left" ? "left-0" : "right-0"} mt-2 w-56 max-w-[calc(100vw-48px)] bg-white/95 backdrop-blur-2xl border border-gray-200/90 rounded-2xl shadow-2xl p-2 z-50 text-xs space-y-1 animate-in fade-in zoom-in-95 duration-150`}>
             <div className="px-3 py-1.5 flex items-center justify-between border-b border-gray-100">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">
                 🌐 STORE LANGUAGE

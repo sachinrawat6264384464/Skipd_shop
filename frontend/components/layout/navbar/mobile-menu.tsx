@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LoginModal } from "components/auth/login-modal";
 import { LanguagePicker } from "components/language/language-picker";
+import { fetchCategories, fetchProducts, Category } from "lib/api";
 
 export default function MobileMenu() {
   const pathname = usePathname();
@@ -13,10 +14,48 @@ export default function MobileMenu() {
   const [mounted, setMounted] = useState(false);
   const [user, setUser] = useState<{ user_name: string; email: string } | null>(null);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [dbCategories, setDbCategories] = useState<Category[]>([]);
 
   // Portal mount check for SSR safety
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Fetch real active categories from DB that contain products
+  useEffect(() => {
+    async function loadCats() {
+      try {
+        const prods = await fetchProducts().catch(() => []);
+        const cats = await fetchCategories().catch(() => []);
+        if (Array.isArray(cats) && cats.length > 0) {
+          const activeSlugs = new Set(
+            prods.map((p: any) =>
+              (typeof p.category === "object" ? p.category?.slug : p.category_slug || p.category || "").toLowerCase()
+            )
+          );
+          const filtered = cats.filter((c: any) => {
+            if (c.status === "Inactive" || c.status === "Disabled") return false;
+            if (activeSlugs.size > 0) {
+              return activeSlugs.has((c.slug || "").toLowerCase());
+            }
+            return true;
+          });
+          setDbCategories(filtered);
+        } else if (Array.isArray(prods) && prods.length > 0) {
+          const activeMap = new Map<string, Category>();
+          prods.forEach((p: any) => {
+            const catObj = typeof p.category === "object" ? p.category : null;
+            const catName = catObj?.name || p.category_name || p.category || "General";
+            const catSlug = catObj?.slug || p.category_slug || String(catName).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+            if (!activeMap.has(catSlug)) {
+              activeMap.set(catSlug, { id: p.category_id || p.id, name: catName, slug: catSlug });
+            }
+          });
+          setDbCategories(Array.from(activeMap.values()));
+        }
+      } catch (e) {}
+    }
+    loadCats();
   }, []);
 
   // Re-check authentication state when drawer opens or path changes
@@ -59,6 +98,18 @@ export default function MobileMenu() {
     window.location.href = "/";
   };
 
+  const getCategoryIcon = (slug: string) => {
+    const s = slug.toLowerCase();
+    if (s.includes("sports") || s.includes("fitness")) return "🏋️";
+    if (s.includes("beauty") || s.includes("care") || s.includes("skin")) return "💄";
+    if (s.includes("mobile") || s.includes("phone")) return "📱";
+    if (s.includes("laptop") || s.includes("computer")) return "💻";
+    if (s.includes("tech") || s.includes("electronic") || s.includes("gadget")) return "🎧";
+    if (s.includes("fashion") || s.includes("apparel") || s.includes("cloth")) return "👕";
+    if (s.includes("watch")) return "⌚";
+    return "📁";
+  };
+
   return (
     <div className="lg:hidden">
       {/* ☰ Mobile Hamburger Menu Button */}
@@ -66,10 +117,10 @@ export default function MobileMenu() {
         onClick={() => setIsOpen(true)}
         aria-label="Open Store Menu"
         type="button"
-        className="flex items-center justify-center w-9 h-9 rounded-xl bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200/80 transition cursor-pointer shadow-2xs"
+        className="flex items-center justify-center w-10 h-10 rounded-xl bg-gray-100 text-gray-800 hover:bg-gray-200 border border-gray-200/80 transition cursor-pointer shadow-2xs"
       >
         <svg className="w-5 h-5 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
 
@@ -84,24 +135,21 @@ export default function MobileMenu() {
           />
 
           {/* Drawer Panel */}
-          <div className="relative w-[85%] max-w-xs bg-white h-full shadow-2xl overflow-y-auto flex flex-col z-50 text-gray-800 font-sans animate-in slide-in-from-left duration-200">
+          <div className="relative w-[88%] max-w-xs bg-white h-full shadow-2xl overflow-y-auto flex flex-col z-50 text-gray-800 font-sans animate-in slide-in-from-left duration-200">
             
-            {/* Header: Brand, Language Picker & Close Button */}
-            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+            {/* Header: Brand & Close Button */}
+            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-20 shadow-2xs">
               <Link href="/" onClick={() => setIsOpen(false)} className="flex items-center">
                 <img src="/2.png" alt="BOTCOM Logo" className="h-10 sm:h-12 object-contain" />
               </Link>
 
-              <div className="flex items-center gap-2">
-                <LanguagePicker />
-                <button
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  className="w-8 h-8 rounded-xl bg-gray-100 text-gray-500 hover:text-gray-900 font-black text-sm flex items-center justify-center cursor-pointer hover:bg-gray-200"
-                >
-                  ✕
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setIsOpen(false)}
+                className="w-9 h-9 rounded-xl bg-gray-100 text-gray-600 hover:text-gray-900 font-black text-base flex items-center justify-center cursor-pointer hover:bg-gray-200 transition"
+              >
+                ✕
+              </button>
             </div>
 
             {/* 👤 DYNAMIC USER BANNER: Logged In vs Guest */}
@@ -120,7 +168,7 @@ export default function MobileMenu() {
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="text-[11px] font-black text-red-600 bg-red-50 hover:bg-red-100 px-2.5 py-1 rounded-lg border border-red-200 shrink-0 cursor-pointer"
+                  className="text-[11px] font-black text-red-600 bg-red-50 hover:bg-red-100 px-2.5 py-1.5 rounded-lg border border-red-200 shrink-0 cursor-pointer"
                 >
                   Logout
                 </button>
@@ -198,71 +246,40 @@ export default function MobileMenu() {
                 )}
               </div>
 
-              {/* POPULAR PRODUCT CATEGORIES */}
+              {/* DYNAMIC PRODUCT CATEGORIES WITH PRODUCTS */}
               <div className="pt-3 space-y-1">
                 <p className="font-extrabold text-gray-400 uppercase text-[10px] tracking-wider mb-2 px-1">
                   PRODUCT CATEGORIES
                 </p>
 
-                <Link
-                  href="/category/mobiles"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base">📱</span>
-                    <span>Smartphones &amp; Mobiles</span>
-                  </div>
-                  <span className="text-xs text-gray-400">&rsaquo;</span>
-                </Link>
-
-                <Link
-                  href="/category/laptops"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base">💻</span>
-                    <span>Laptops &amp; Computers</span>
-                  </div>
-                  <span className="text-xs text-gray-400">&rsaquo;</span>
-                </Link>
-
-                <Link
-                  href="/category/electronics"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base">🎧</span>
-                    <span>Electronics &amp; Audio</span>
-                  </div>
-                  <span className="text-xs text-gray-400">&rsaquo;</span>
-                </Link>
-
-                <Link
-                  href="/category/fashion"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base">👕</span>
-                    <span>Fashion &amp; Apparel</span>
-                  </div>
-                  <span className="text-xs text-gray-400">&rsaquo;</span>
-                </Link>
-
-                <Link
-                  href="/category/watches"
-                  onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between py-2 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-base">⌚</span>
-                    <span>Smartwatches &amp; Chronos</span>
-                  </div>
-                  <span className="text-xs text-gray-400">&rsaquo;</span>
-                </Link>
+                {dbCategories.length > 0 ? (
+                  dbCategories.map((cat) => (
+                    <Link
+                      key={cat.slug}
+                      href={`/search/${cat.slug}`}
+                      onClick={() => setIsOpen(false)}
+                      className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-base">{getCategoryIcon(cat.slug)}</span>
+                        <span className="font-extrabold">{cat.name}</span>
+                      </div>
+                      <span className="text-xs text-gray-400">&rsaquo;</span>
+                    </Link>
+                  ))
+                ) : (
+                  <Link
+                    href="/search"
+                    onClick={() => setIsOpen(false)}
+                    className="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-gray-50 text-gray-800 transition"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-base">🛍️</span>
+                      <span>All Products &amp; Catalog</span>
+                    </div>
+                    <span className="text-xs text-gray-400">&rsaquo;</span>
+                  </Link>
+                )}
               </div>
 
               {/* DYNAMIC ACCOUNT SERVICES SECTION */}
@@ -346,6 +363,16 @@ export default function MobileMenu() {
                     </button>
                   </div>
                 )}
+              </div>
+
+              {/* 🌐 LANGUAGE & PREFERENCES SECTION */}
+              <div className="pt-3 space-y-2">
+                <p className="font-extrabold text-gray-400 uppercase text-[10px] tracking-wider px-1">
+                  STORE LANGUAGE
+                </p>
+                <div className="px-1">
+                  <LanguagePicker align="left" />
+                </div>
               </div>
 
             </div>
