@@ -87,9 +87,127 @@ export interface UserOrder {
   deliveryText?: string;
 }
 
-export const FALLBACK_PRODUCTS: Product[] = [];
+export const FALLBACK_PRODUCTS: Product[] = [
+  {
+    id: 1001,
+    title: "Sony WH-1000XM5 ANC Wireless Headphones",
+    handle: "sony-wh-1000xm5-anc-headphones",
+    description: "Industry-leading noise canceling headphones with 30-hour battery life and crystal clear hands-free calling.",
+    price: 24999,
+    compare_at_price: 29999,
+    featured: true,
+    is_new_arrival: true,
+    images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800"],
+    tags: ["electronics", "audio", "headphones", "sony"],
+    stock_quantity: 45,
+    category: { name: "Electronics", slug: "electronics" }
+  },
+  {
+    id: 1002,
+    title: "OnePlus Nord 6 5G (12GB RAM, 256GB)",
+    handle: "oneplus-nord-6-5g",
+    description: "Ultra-fast Snapdragon processor with 120Hz Fluid AMOLED display and 100W SUPERVOOC charging.",
+    price: 44499,
+    compare_at_price: 52999,
+    featured: true,
+    is_new_arrival: true,
+    images: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800"],
+    tags: ["mobiles", "smartphones", "oneplus", "electronics"],
+    stock_quantity: 30,
+    category: { name: "Mobiles", slug: "mobiles" }
+  },
+  {
+    id: 1003,
+    title: "Apple Watch Series 9 GPS 45mm Midnight",
+    handle: "apple-watch-series-9-45mm",
+    description: "Advanced health sensors, Double Tap gesture control, brighter Retina display, and ECG app.",
+    price: 41900,
+    compare_at_price: 44900,
+    featured: true,
+    is_new_arrival: true,
+    images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800"],
+    tags: ["watches", "smartwatches", "apple", "wearables"],
+    stock_quantity: 25,
+    category: { name: "Watches", slug: "watches" }
+  },
+  {
+    id: 1004,
+    title: "Nike Air Force 1 '07 Triple White Sneakers",
+    handle: "nike-air-force-1-07-white",
+    description: "Classic basketball shoe design with premium stitched overlays, crisp leather, and full Air cushioning.",
+    price: 7495,
+    compare_at_price: 8995,
+    featured: true,
+    is_new_arrival: false,
+    images: ["https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800"],
+    tags: ["footwear", "shoes", "nike", "sneakers"],
+    stock_quantity: 60,
+    category: { name: "Footwear", slug: "footwear" }
+  },
+  {
+    id: 1005,
+    title: "Apple MacBook Air M2 13.6-inch Space Grey",
+    handle: "apple-macbook-air-m2-space-grey",
+    description: "Supercharged by M2 chip with 18 hours of battery life, Liquid Retina display, and 1080p FaceTime HD camera.",
+    price: 99990,
+    compare_at_price: 114900,
+    featured: true,
+    is_new_arrival: true,
+    images: ["https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800"],
+    tags: ["laptops", "apple", "macbook", "electronics"],
+    stock_quantity: 18,
+    category: { name: "Laptops", slug: "laptops" }
+  },
+  {
+    id: 1006,
+    title: "Royal Solitaire Diamond Pendant Necklace 18K Gold",
+    handle: "royal-solitaire-diamond-pendant-necklace",
+    description: "Exquisite 18K Yellow Gold necklace featuring a brilliant 1-Carat VVS Solitaire Diamond pendant.",
+    price: 34999,
+    compare_at_price: 45999,
+    featured: true,
+    is_new_arrival: true,
+    images: ["https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800"],
+    tags: ["jewelry", "diamond", "necklace", "gold"],
+    stock_quantity: 15,
+    category: { name: "Jewelry", slug: "jewelry" }
+  }
+];
+
+// In-Memory Fast Cache for instant client-side responses (<5ms)
+let cachedProductsMemory: Product[] | null = null;
+let lastFetchTimestamp = 0;
 
 export async function fetchProducts(query?: { category?: string; search?: string; featured?: boolean }): Promise<Product[]> {
+  // 1. Instant Client-side Memory / SessionStorage retrieval (<5ms)
+  if (typeof window !== "undefined" && !query?.search) {
+    if (cachedProductsMemory && cachedProductsMemory.length > 0 && (Date.now() - lastFetchTimestamp < 60000)) {
+      let filtered = [...cachedProductsMemory];
+      if (query?.featured) filtered = filtered.filter(p => p.featured);
+      if (query?.category && query.category !== "all") {
+        filtered = filtered.filter(p => p.category?.slug === query.category || (p as any).category_slug === query.category || p.tags?.includes(query.category!));
+      }
+      return filtered;
+    }
+
+    try {
+      const stored = sessionStorage.getItem("ecom_cached_products");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          cachedProductsMemory = parsed;
+          lastFetchTimestamp = Date.now();
+          let filtered = [...parsed];
+          if (query?.featured) filtered = filtered.filter(p => p.featured);
+          if (query?.category && query.category !== "all") {
+            filtered = filtered.filter(p => p.category?.slug === query.category || (p as any).category_slug === query.category || p.tags?.includes(query.category!));
+          }
+          return filtered;
+        }
+      }
+    } catch (e) {}
+  }
+
   let backendProducts: Product[] = [];
   try {
     const params = new URLSearchParams();
@@ -97,29 +215,37 @@ export async function fetchProducts(query?: { category?: string; search?: string
     if (query?.search) params.append("search", query.search);
     if (query?.featured !== undefined) params.append("featured", String(query.featured));
 
+    // Fast 2.5s Timeout on API connection so sleeping Render instance doesn't freeze the page
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
+    const timer = setTimeout(() => controller.abort(), 2500);
 
     const res = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
       signal: controller.signal
     });
     clearTimeout(timer);
 
     if (res.ok) {
       const data = await res.json();
-      if (Array.isArray(data)) {
+      if (Array.isArray(data) && data.length > 0) {
         backendProducts = data;
+        if (typeof window !== "undefined" && !query?.search) {
+          cachedProductsMemory = data;
+          lastFetchTimestamp = Date.now();
+          try {
+            sessionStorage.setItem("ecom_cached_products", JSON.stringify(data));
+          } catch (e) {}
+        }
       }
     }
   } catch (err: any) {
     if (err && (err.$$typeof || err.message?.includes("postpone") || err.digest?.includes("NEXT_PRERENDER"))) {
       throw err;
     }
-    console.warn("[API SDK Warning] Backend error fetching products.", err);
+    console.warn("[API SDK] Fast backend fallback activated:", err?.message || err);
   }
 
-  let list = [...backendProducts];
+  let list = backendProducts.length > 0 ? [...backendProducts] : (cachedProductsMemory || FALLBACK_PRODUCTS);
 
   if (query?.featured) list = list.filter(p => p.featured);
   if (query?.category && query.category !== "all") {
