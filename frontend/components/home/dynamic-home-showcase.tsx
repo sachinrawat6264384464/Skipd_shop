@@ -467,3 +467,5 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
     </div>
   );
 }
+
+export default DynamicHomeShowcase;

@@ -142,4 +142,6 @@ export function CategoryNav() {
   );
 }
 
+export default CategoryNav;
+
 

@@ -229,3 +229,5 @@ export default function Footer() {
   );
 }
 
+export { Footer };
+

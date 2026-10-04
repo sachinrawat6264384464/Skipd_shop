@@ -410,3 +410,5 @@ export function HeroSlider() {
     </div>
   );
 }
+
+export default HeroSlider;
