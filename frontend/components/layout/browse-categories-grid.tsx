@@ -22,6 +22,13 @@ const CATEGORY_IMAGE_MAP: Record<string, string> = {
   toys: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800"
 };
 
+const DEFAULT_FEATURED_CATEGORIES = [
+  { id: "cat-jewelry", name: "Royal Jewelry", slug: "jewelry", image_url: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800" },
+  { id: "cat-mobiles", name: "Mobiles & 5G", slug: "mobiles", image_url: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800" },
+  { id: "cat-electronics", name: "Electronics & Audio", slug: "electronics", image_url: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800" },
+  { id: "cat-fashion", name: "Fashion & Apparel", slug: "fashion", image_url: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800" }
+];
+
 export function BrowseCategoriesGrid() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,12 +37,22 @@ export function BrowseCategoriesGrid() {
     async function loadActiveCategoriesWithProducts() {
       try {
         const data = await fetchCategories().catch(() => []);
+        let activeCats: any[] = [];
         if (Array.isArray(data) && data.length > 0) {
-          const activeCats = data.filter((c: any) => c.status !== "Inactive" && c.status !== "Disabled");
-          setCategories(activeCats);
+          activeCats = data.filter((c: any) => c.status !== "Inactive" && c.status !== "Disabled");
         }
+        
+        // Merge with default categories if count is low to ensure full responsive showcase
+        const existingSlugs = new Set(activeCats.map((c: any) => (c.slug || c.name || "").toLowerCase()));
+        DEFAULT_FEATURED_CATEGORIES.forEach((defCat) => {
+          if (!existingSlugs.has(defCat.slug) && activeCats.length < 4) {
+            activeCats.push(defCat);
+          }
+        });
+
+        setCategories(activeCats.length > 0 ? activeCats : DEFAULT_FEATURED_CATEGORIES);
       } catch (e) {
-        console.error("Failed to load browse categories:", e);
+        setCategories(DEFAULT_FEATURED_CATEGORIES);
       } finally {
         setLoading(false);
       }
@@ -45,14 +62,14 @@ export function BrowseCategoriesGrid() {
 
   if (loading) {
     return (
-      <section className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-100 font-sans">
+      <section className="w-full bg-transparent py-12 px-4 sm:px-6 lg:px-8 border-t border-[#E8E1D1]/60 font-sans">
         <div className="max-w-[1440px] mx-auto space-y-6">
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-900 text-center tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#2C221E] text-center tracking-tight">
             Browse Categories
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-64 sm:h-72 lg:h-80 bg-gray-100 animate-pulse rounded-2xl" />
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="h-64 sm:h-72 lg:h-80 w-full sm:w-60 md:w-64 bg-[#EBE4D5]/60 animate-pulse rounded-3xl border border-[#E8E1D1]" />
             ))}
           </div>
         </div>
@@ -60,24 +77,28 @@ export function BrowseCategoriesGrid() {
     );
   }
 
+
   if (categories.length === 0) return null;
 
   return (
-    <section className="w-full bg-white py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-t border-gray-200/80 font-sans">
+    <section className="w-full bg-transparent py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-t border-[#E8E1D1]/60 font-sans">
       <div className="max-w-[1440px] mx-auto space-y-6 sm:space-y-8">
         
         {/* Section Title */}
-        <div className="text-center space-y-1">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">
+        <div className="text-center space-y-1.5">
+          <span className="inline-block bg-[#132B4F] text-cyan-300 border border-cyan-400/40 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-xs">
+            COLLECTIONS &amp; DEALS
+          </span>
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#2C221E] tracking-tight">
             Browse Categories
           </h2>
-          <p className="text-xs sm:text-sm text-gray-500 font-bold">
+          <p className="text-xs sm:text-sm text-stone-600 font-bold">
             Explore active collections from across our catalog ({categories.length} Categories)
           </p>
         </div>
 
-        {/* 🖼️ Grid of Category Tiles */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+        {/* 🖼️ Centered & Fully Responsive Grid of Category Tiles */}
+        <div className="flex flex-wrap items-stretch justify-center gap-4 sm:gap-6 max-w-[1440px] mx-auto">
           {categories.map((cat: any, idx) => {
             const rawUrl = cat.image_url || (cat.icon && (cat.icon.startsWith("http") || cat.icon.startsWith("data:") || cat.icon.startsWith("/")) ? cat.icon : "");
             const isPlaceholder = !rawUrl || rawUrl.includes("via.placeholder") || rawUrl.includes("open-shop") || rawUrl.includes("OPEN");
@@ -91,7 +112,7 @@ export function BrowseCategoriesGrid() {
               <Link
                 key={cat.id || cat.slug || idx}
                 href={`/search/${cat.slug || slugKey}`}
-                className="group relative h-64 sm:h-72 lg:h-80 rounded-2xl overflow-hidden shadow-xs hover:shadow-2xl transition duration-300 flex items-end p-4 sm:p-5 bg-gray-900 border border-gray-200/60"
+                className="group relative h-64 sm:h-72 lg:h-80 w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] max-w-[320px] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex items-end p-5 sm:p-6 bg-slate-950 border-2 border-white/90 cursor-pointer"
               >
                 {/* Background Image */}
                 <img
@@ -114,32 +135,32 @@ export function BrowseCategoriesGrid() {
                   <span className="inline-block text-white font-black text-sm sm:text-base tracking-wider uppercase drop-shadow-md">
                     {cat.name}
                   </span>
-                  <span className="block text-[10px] sm:text-xs text-sky-300 font-bold group-hover:translate-x-1 transition duration-200">
-                    Explore Store &rarr;
+                  <span className="block text-[10px] sm:text-xs text-cyan-300 font-bold group-hover:translate-x-1 transition duration-200">
+                    Explore Store &rsaquo;
                   </span>
                 </div>
               </Link>
             );
           })}
 
-          {/* ⚡ Promotional Offer Banner Tile */}
+          {/* ⚡ Promotional Mega Offer Tile */}
           <Link
             href="/deals"
-            className="group relative h-64 sm:h-72 lg:h-80 rounded-2xl overflow-hidden shadow-xs hover:shadow-2xl transition duration-300 flex flex-col justify-between p-6 sm:p-8 bg-gradient-to-tr from-amber-600 via-orange-500 to-yellow-400 text-white border border-amber-400/50"
+            className="group relative h-64 sm:h-72 lg:h-80 w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] max-w-[320px] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between p-6 sm:p-8 bg-gradient-to-tr from-amber-600 via-orange-500 to-yellow-400 text-white border-2 border-white/90 cursor-pointer"
           >
             <div className="space-y-1">
-              <span className="bg-black/30 text-white text-[10px] font-black uppercase px-2.5 py-1 rounded-full backdrop-blur-xs tracking-wider inline-block">
+              <span className="bg-black/30 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-xs tracking-wider inline-block">
                 Limited Time Offer
               </span>
             </div>
 
             <div className="space-y-2">
-              <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-none text-white drop-shadow-md uppercase">
+              <h3 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-white drop-shadow-md uppercase">
                 UP TO<br />80% OFF
               </h3>
               <p className="text-xs sm:text-sm font-black text-amber-100 flex items-center gap-1 group-hover:translate-x-1 transition duration-200">
                 <span>Shop Mega Deals</span>
-                <span>&rarr;</span>
+                <span>&rsaquo;</span>
               </p>
             </div>
           </Link>
@@ -150,3 +171,4 @@ export function BrowseCategoriesGrid() {
     </section>
   );
 }
+
