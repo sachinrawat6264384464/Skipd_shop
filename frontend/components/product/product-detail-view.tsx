@@ -1359,7 +1359,6 @@ const SUB_NAV_ITEMS = [
                       )}
                     </div>
                     <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition">{sp.title}</h4>
-                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.8</span> <span className="text-blue-700 font-extrabold">✓ BotCom Assured</span></p>
                     <div>
                       <p className="font-black text-sm text-gray-900">₹{spPrice.toLocaleString("en-IN")}.00</p>
                       {spCompare > spPrice && (
@@ -1376,7 +1375,7 @@ const SUB_NAV_ITEMS = [
                       productHandle={sp.handle}
                       className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-2xs cursor-pointer"
                     >
-                      🛒 Cart
+                      Cart
                     </BuyNowButton>
                     <BuyNowButton
                       mode="buy"
@@ -1384,7 +1383,7 @@ const SUB_NAV_ITEMS = [
                       productHandle={sp.handle}
                       className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-xs cursor-pointer"
                     >
-                      ⚡ Buy Now
+                      Buy Now
                     </BuyNowButton>
                   </div>
                 </div>
@@ -1424,7 +1423,6 @@ const SUB_NAV_ITEMS = [
                       )}
                     </div>
                     <h4 className="font-bold text-[11px] text-gray-900 line-clamp-2 leading-tight group-hover:text-blue-600 transition">{viewed.title}</h4>
-                    <p className="text-[10px] flex items-center gap-1"><span className="text-amber-500 font-extrabold">★ 4.7</span> <span className="text-blue-700 font-extrabold">✓ Verified Quality</span></p>
                     <div>
                       <p className="font-black text-sm text-gray-900">₹{vPrice.toLocaleString("en-IN")}.00</p>
                       {vCompare > vPrice && (
@@ -1441,7 +1439,7 @@ const SUB_NAV_ITEMS = [
                       productHandle={viewed.handle}
                       className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-bold text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-2xs cursor-pointer"
                     >
-                      🛒 Cart
+                      Cart
                     </BuyNowButton>
                     <BuyNowButton
                       mode="buy"
@@ -1449,7 +1447,7 @@ const SUB_NAV_ITEMS = [
                       productHandle={viewed.handle}
                       className="bg-blue-600 hover:bg-blue-700 text-white font-black text-[9px] py-1.5 px-1 rounded-lg transition text-center flex items-center justify-center gap-0.5 shadow-xs cursor-pointer"
                     >
-                      ⚡ Buy Now
+                      Buy Now
                     </BuyNowButton>
                   </div>
                 </div>
