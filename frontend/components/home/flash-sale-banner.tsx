@@ -19,50 +19,13 @@ interface FlashSaleItem {
 
 export function FlashSaleBanner() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 12 });
+  const [flashItems, setFlashItems] = useState<FlashSaleItem[]>([]);
 
-  const [flashItems, setFlashItems] = useState<FlashSaleItem[]>([
-    {
-      id: 101,
-      title: "boAt Rockerz 450 Pro Bluetooth Headphones",
-      handle: "boat-rockerz-450-pro",
-      price: 1499,
-      compare_at_price: 3990,
-      discount_percent: 62,
-      image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400",
-      sold_percent: 84
-    },
-    {
-      id: 104,
-      title: "Nike Air Force 1 07 Triple White Sneakers",
-      handle: "nike-air-force-1",
-      price: 7495,
-      compare_at_price: 8995,
-      discount_percent: 17,
-      image: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400",
-      sold_percent: 71
-    },
-    {
-      id: 106,
-      title: "Noise ColorFit Pro 5 Smartwatch Jet Black",
-      handle: "noise-colorfit-pro-5",
-      price: 3499,
-      compare_at_price: 5999,
-      discount_percent: 41,
-      image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
-      sold_percent: 92
-    },
-    {
-      id: 108,
-      title: "Minimalist Heavyweight Graphic Tee 240 GSM",
-      handle: "minimalist-graphic-tee",
-      price: 1299,
-      compare_at_price: 1999,
-      discount_percent: 35,
-      image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400",
-      sold_percent: 65
-    }
-  ]);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     // Fetch live sales/products from localStorage & PostgreSQL Database
@@ -79,16 +42,16 @@ export function FlashSaleBanner() {
           }
         }
 
-        const { getApiBaseUrl } = await import("lib/api");
+        const { fetchProducts, getApiBaseUrl } = await import("lib/api");
         const apiBase = getApiBaseUrl().replace(/\/+$/, "");
         
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 2500);
 
-        const salesRes = await fetch(`${apiBase}/sales`, { signal: controller.signal });
+        const salesRes = await fetch(`${apiBase}/sales`, { signal: controller.signal }).catch(() => null);
         clearTimeout(timer);
 
-        if (salesRes.ok) {
+        if (salesRes && salesRes.ok) {
           const salesData = await salesRes.json();
           if (Array.isArray(salesData) && salesData.length > 0 && salesData[0].products?.length > 0) {
             const dbDealItems: FlashSaleItem[] = salesData[0].products.slice(0, 4).map((sp: any, idx: number) => ({
@@ -105,9 +68,28 @@ export function FlashSaleBanner() {
             return;
           }
         }
-      } catch (e) {
-        console.warn("Using fallback flash sale deals:", e);
-      }
+
+        // Fallback: Populate Flash Sale with real DB products (top discounted items)
+        const realProducts = await fetchProducts().catch(() => []);
+        if (Array.isArray(realProducts) && realProducts.length > 0) {
+          const dealItems: FlashSaleItem[] = realProducts.slice(0, 4).map((p: any, idx: number) => {
+            const sellingPrice = p.price || 999;
+            const comparePrice = p.compare_at_price || Math.round(sellingPrice * 1.3);
+            const discountPct = comparePrice > sellingPrice ? Math.round(((comparePrice - sellingPrice) / comparePrice) * 100) : 20;
+            return {
+              id: p.id,
+              title: p.title,
+              handle: p.handle || `product-${p.id}`,
+              price: sellingPrice,
+              compare_at_price: comparePrice,
+              discount_percent: discountPct,
+              image: p.images?.[0] || "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400",
+              sold_percent: 68 + (idx * 7)
+            };
+          });
+          setFlashItems(dealItems);
+        }
+      } catch (e) {}
     }
 
     loadDbDeals();
@@ -226,8 +208,8 @@ export function FlashSaleBanner() {
       </div>
 
       {/* Deal Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-6">
-        {flashItems.map((item) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 pt-6" suppressHydrationWarning>
+        {mounted && flashItems.map((item) => (
           <div
             key={item.id}
             className="bg-slate-900/80 border border-slate-800 hover:border-blue-500/60 rounded-2xl p-4 transition duration-200 flex flex-col justify-between space-y-3 group"

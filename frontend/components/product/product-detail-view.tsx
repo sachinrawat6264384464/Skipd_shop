@@ -33,22 +33,7 @@ interface ProductDetailViewProps {
   relatedProducts: any[];
 }
 
-const FALLBACK_RECS = [
-  { id: 101, title: "boAt Rockerz 450 Pro Bluetooth Headphones", handle: "boat-rockerz-450-pro", price: 1499, compare_at_price: 3990, images: ["https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400"] },
-  { id: 102, title: "OnePlus Nord 6 5G (12GB+256GB)", handle: "oneplus-nord-6", price: 44499, compare_at_price: 52999, images: ["https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400"] },
-  { id: 103, title: "Apple Watch Series 9 GPS 45mm Midnight", handle: "apple-watch-series-9", price: 41900, compare_at_price: 44900, images: ["https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=400"] },
-  { id: 104, title: "Nike Air Force 1 07 Triple White Sneakers", handle: "nike-air-force-1", price: 7495, compare_at_price: 8995, images: ["https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400"] },
-  { id: 105, title: "Apple MacBook Air M2 13.6-inch Space Grey", handle: "apple-macbook-air-m2", price: 99990, compare_at_price: 114900, images: ["https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400"] },
-  { id: 106, title: "Noise ColorFit Pro 5 Smartwatch Jet Black", handle: "noise-colorfit-pro-5", price: 3499, compare_at_price: 5999, images: ["https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400"] },
-  { id: 107, title: "RC 4K Camera Pro Toy Drone Quadcopter", handle: "rc-4k-camera-pro-toy-drone", price: 3999, compare_at_price: 7999, images: ["https://images.unsplash.com/photo-1527977966376-1c8408f9f108?w=400"] },
-  { id: 108, title: "Minimalist Heavyweight Graphic Tee 240 GSM", handle: "minimalist-graphic-tee", price: 1299, compare_at_price: 1999, images: ["https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=400"] },
-  { id: 109, title: "Winter Heavy Fleece Trench Jacket Black", handle: "winter-trench-jacket", price: 3999, compare_at_price: 6999, images: ["https://images.unsplash.com/photo-1544441893-675973e31985?w=400"] },
-  { id: 110, title: "Sony WH-1000XM5 Studio Headphones", handle: "sony-wh-1000xm5", price: 24999, compare_at_price: 29999, images: ["https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400"] },
-  { id: 111, title: "65W Fast Wall Adapter Charger", handle: "65w-fast-charger", price: 599, compare_at_price: 1299, images: ["https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=400"] },
-  { id: 112, title: "GadgetBite Headphone Hard EVA Case Storage Bag", handle: "headphone-hard-case", price: 400, compare_at_price: 800, images: ["https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=400"] },
-  { id: 113, title: "20000mAh Dual Port Power Bank", handle: "20000mah-power-bank", price: 999, compare_at_price: 1999, images: ["https://images.unsplash.com/photo-1609592424089-a2e4b3c4342d?w=400"] },
-  { id: 114, title: "Cold Pressed Organic Coconut Oil 1L", handle: "cold-pressed-coconut-oil", price: 249, compare_at_price: 499, images: ["https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=400"] },
-];
+const FALLBACK_RECS: any[] = [];
 
 export function ProductDetailView({ product, relatedProducts }: ProductDetailViewProps) {
   const router = useRouter();
