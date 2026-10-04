@@ -80,14 +80,14 @@ export function CustomerReviewsSection() {
   };
 
   return (
-    <div className="my-8 pt-8 border-t border-gray-200">
+    <div className="my-8 pt-8 border-t border-[#E8E1D1]">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
         <div>
-          <h3 className="text-2xl font-black text-gray-900">Verified Customer Reviews</h3>
+          <h3 className="text-2xl font-black text-[#2C221E]">Verified Customer Reviews</h3>
           <div className="flex items-center gap-2 mt-1">
-            <div className="flex text-amber-500 text-lg">★★★★★</div>
-            <span className="text-sm font-bold text-gray-900">4.9 out of 5</span>
-            <span className="text-xs text-gray-500">({reviews.length} verified buyers)</span>
+            <div className="flex text-amber-600 text-lg">★★★★★</div>
+            <span className="text-sm font-bold text-[#2C221E]">4.9 out of 5</span>
+            <span className="text-xs text-stone-500">({reviews.length} verified buyers)</span>
           </div>
         </div>
 
@@ -95,16 +95,16 @@ export function CustomerReviewsSection() {
           <button
             type="button"
             onClick={() => setReviewsHidden(!reviewsHidden)}
-            className="bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs px-4 py-2.5 rounded-xl transition cursor-pointer border border-gray-300 flex items-center gap-1.5"
+            className="bg-[#F4EFE6] hover:bg-[#EBE4D5] text-[#3B2F2F] font-bold text-xs px-4 py-2.5 rounded-xl transition cursor-pointer border border-[#E8E1D1] flex items-center gap-1.5"
           >
-            <span>{reviewsHidden ? "👁️ Show Reviews" : "🙈 Hide Reviews Section"}</span>
+            <span>{reviewsHidden ? "Show Reviews" : "Hide Reviews Section"}</span>
           </button>
 
           <button
             onClick={() => setModalOpen(true)}
-            className="bg-gray-900 hover:bg-black text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
           >
-            ✍️ Write a Review
+            Write a Review
           </button>
         </div>
       </div>
@@ -112,21 +112,20 @@ export function CustomerReviewsSection() {
       {/* Reviews List */}
       {!reviewsHidden && (
         reviews.length === 0 ? (
-          <div className="bg-gray-50 border border-gray-200 rounded-2xl p-8 text-center text-xs font-bold text-gray-500">
+          <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-2xl p-8 text-center text-xs font-bold text-stone-500">
             No customer reviews yet. Be the first to write a review!
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {reviews.map((rev) => (
-              <div key={rev.id} className="bg-white border border-gray-200 p-6 rounded-2xl flex flex-col justify-between shadow-xs relative group">
+              <div key={rev.id} className="bg-[#FFFDF9] border border-[#E8E1D1] p-6 rounded-2xl flex flex-col justify-between shadow-xs relative group">
                 {/* Delete / Hide Review Button */}
                 <button
                   type="button"
                   onClick={() => handleDeleteReview(rev.id)}
                   title="Remove / Hide this review"
-                  className="absolute top-4 right-4 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[10px] px-2 py-1 rounded-lg border border-red-200 transition cursor-pointer flex items-center gap-1"
+                  className="absolute top-4 right-4 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-[10px] px-2 py-1 rounded-lg border border-rose-200 transition cursor-pointer flex items-center gap-1"
                 >
-                  <span>🗑️</span>
                   <span>Delete</span>
                 </button>
 
@@ -134,33 +133,33 @@ export function CustomerReviewsSection() {
                   <div className="flex justify-between items-start mb-2 pr-16">
                     <div>
                       <div className="flex items-center gap-2">
-                        <h5 className="font-bold text-sm text-gray-900">{rev.author}</h5>
+                        <h5 className="font-bold text-sm text-[#2C221E]">{rev.author}</h5>
                         {rev.verified && (
-                          <span className="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold">
+                          <span className="bg-[#F4EFE6] text-[#5C4033] border border-[#E8E1D1] px-2 py-0.5 rounded text-[10px] font-bold">
                             ✓ Verified Buyer
                           </span>
                         )}
                       </div>
-                      <div className="text-amber-500 text-xs mt-0.5">{"★".repeat(rev.rating)}</div>
+                      <div className="text-amber-600 text-xs mt-0.5">{"★".repeat(rev.rating)}</div>
                     </div>
-                    <span className="text-xs text-gray-400">{rev.date}</span>
+                    <span className="text-xs text-stone-400">{rev.date}</span>
                   </div>
 
-                  <p className="text-xs text-gray-700 mt-2 leading-relaxed font-medium">{rev.comment}</p>
+                  <p className="text-xs text-[#3B2F2F] mt-2 leading-relaxed font-medium">{rev.comment}</p>
 
                   {rev.image && (
                     <img
                       src={rev.image}
                       alt="Customer Review"
-                      className="w-16 h-16 object-cover rounded-xl mt-3 border border-gray-200 shadow-xs"
+                      className="w-16 h-16 object-cover rounded-xl mt-3 border border-[#E8E1D1] shadow-xs"
                     />
                   )}
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
+                <div className="mt-4 pt-3 border-t border-[#F0ECE1] flex justify-between items-center text-xs text-stone-500">
                   <span>Was this review helpful?</span>
                   <button className="hover:text-blue-600 font-bold transition flex items-center gap-1">
-                    👍 Helpful ({rev.likes})
+                    Helpful ({rev.likes})
                   </button>
                 </div>
               </div>

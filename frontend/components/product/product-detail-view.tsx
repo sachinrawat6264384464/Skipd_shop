@@ -612,48 +612,48 @@ const SUB_NAV_ITEMS = [
               </div>
             </div>
 
-            {/* ✨ Key Product Highlights & Delivery Pincode Checker Card under Image Gallery */}
-            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-4 text-xs">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                <h3 className="font-black text-gray-900 text-sm">Product Highlights &amp; Specs</h3>
-                <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+            {/* Key Product Highlights & Delivery Pincode Checker Card under Image Gallery */}
+            <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-5 shadow-sm space-y-4 text-xs">
+              <div className="flex items-center justify-between border-b border-[#F0ECE1] pb-3">
+                <h3 className="font-black text-[#2C221E] text-sm">Product Highlights &amp; Specs</h3>
+                <span className="bg-[#F4EFE6] text-[#5C4033] border border-[#E8E1D1] text-[10px] font-extrabold px-2 py-0.5 rounded-full">
                   VERIFIED ITEM
                 </span>
               </div>
 
               {/* Highlights List */}
               <div className="space-y-2.5">
-                <div className="flex items-center gap-2.5 text-gray-700">
-                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0">⚡</span>
+                <div className="flex items-center gap-2.5 text-[#3B2F2F]">
+                  <span className="w-2 h-2 rounded-full bg-[#B8860B] shrink-0" />
                   <span className="font-semibold text-[11px]">Express 2-Day Doorstep Delivery</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-gray-700">
-                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0">🛡️</span>
+                <div className="flex items-center gap-2.5 text-[#3B2F2F]">
+                  <span className="w-2 h-2 rounded-full bg-[#B8860B] shrink-0" />
                   <span className="font-semibold text-[11px]">100% Original Sourced from Official Brand</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-gray-700">
-                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0">🔄</span>
+                <div className="flex items-center gap-2.5 text-[#3B2F2F]">
+                  <span className="w-2 h-2 rounded-full bg-[#B8860B] shrink-0" />
                   <span className="font-semibold text-[11px]">7 Days Easy Doorstep Replacement</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-gray-700">
-                  <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 font-bold flex items-center justify-center shrink-0">🏷️</span>
+                <div className="flex items-center gap-2.5 text-[#3B2F2F]">
+                  <span className="w-2 h-2 rounded-full bg-[#B8860B] shrink-0" />
                   <span className="font-semibold text-[11px]">Guaranteed Lowest Price &amp; Extra Coupons</span>
                 </div>
               </div>
 
               {/* Delivery Pincode Quick Checker */}
-              <div className="pt-2 border-t border-gray-100 space-y-2">
-                <label className="font-extrabold text-[11px] text-gray-800 flex items-center gap-1">
-                  <span>📍</span> Check Delivery Availability
+              <div className="pt-2 border-t border-[#F0ECE1] space-y-2">
+                <label className="font-extrabold text-[11px] text-[#2C221E]">
+                  Check Delivery Availability
                 </label>
                 <div className="flex gap-2">
                   <input
                     type="text"
                     defaultValue="474001"
                     placeholder="Enter 6-digit Pincode"
-                    className="flex-1 bg-gray-50 border border-gray-300 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-900 focus:outline-none focus:border-blue-500"
+                    className="flex-1 bg-[#F9F7F2] border border-[#E8E1D1] rounded-xl px-3 py-1.5 text-xs font-bold text-[#2C221E] focus:outline-none focus:border-[#B8860B]"
                   />
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer">
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer shadow-xs">
                     Check
                   </button>
                 </div>
@@ -663,56 +663,52 @@ const SUB_NAV_ITEMS = [
               </div>
             </div>
 
-            {/* 🌟 BotCom Assured Store Guarantee & Highlights Card */}
-            <div className="bg-gradient-to-br from-white via-blue-50/30 to-sky-50/40 border border-blue-200/80 rounded-3xl p-5 shadow-sm space-y-4 text-xs">
+            {/* Store Guarantee & Highlights Card */}
+            <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-5 shadow-sm space-y-4 text-xs">
               
               {/* Header Badge */}
-              <div className="flex justify-between items-center border-b border-blue-100 pb-3">
+              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-3">
                 <div className="flex items-center gap-2">
-                  <span className="w-8 h-8 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs">
+                  <span className="w-7 h-7 rounded-xl bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
                     ✓
                   </span>
                   <div>
-                    <h4 className="font-extrabold text-gray-900 text-xs tracking-tight">BotCom Assured Promise</h4>
+                    <h4 className="font-extrabold text-[#2C221E] text-xs tracking-tight">BotCom Assured Promise</h4>
                     <p className="text-[10px] text-blue-700 font-bold">100% Genuine • Fast Delivery</p>
                   </div>
                 </div>
-                <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-1 rounded-full border border-blue-200">
+                <span className="bg-[#F4EFE6] text-[#5C4033] border border-[#E8E1D1] text-[10px] font-black px-2.5 py-1 rounded-full">
                   VERIFIED
                 </span>
               </div>
 
-              {/* 4 Trust Highlights Grid */}
+              {/* Trust Highlights Grid */}
               <div className="space-y-2.5 pt-0.5">
-                <div className="flex items-start gap-3 bg-white/80 border border-blue-100/80 p-2.5 rounded-2xl shadow-2xs">
-                  <span className="text-lg shrink-0">🚚</span>
+                <div className="flex items-start gap-2.5 bg-[#F9F7F2] border border-[#E8E1D1] p-2.5 rounded-2xl">
                   <div>
-                    <h5 className="font-bold text-gray-900 text-[11px]">Same-Day Dispatch &amp; Express Shipping</h5>
-                    <p className="text-[10px] text-gray-500 leading-snug">Shipped directly from verified hub with live SMS tracking.</p>
+                    <h5 className="font-bold text-[#2C221E] text-[11px]">Same-Day Dispatch &amp; Express Shipping</h5>
+                    <p className="text-[10px] text-stone-500 leading-snug">Shipped directly from verified hub with live SMS tracking.</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 bg-white/80 border border-blue-100/80 p-2.5 rounded-2xl shadow-2xs">
-                  <span className="text-lg shrink-0">🛡️</span>
+                <div className="flex items-start gap-2.5 bg-[#F9F7F2] border border-[#E8E1D1] p-2.5 rounded-2xl">
                   <div>
-                    <h5 className="font-bold text-gray-900 text-[11px]">1-Year Brand Warranty</h5>
-                    <p className="text-[10px] text-gray-500 leading-snug">Guaranteed authentic product with manufacturer warranty.</p>
+                    <h5 className="font-bold text-[#2C221E] text-[11px]">1-Year Brand Warranty</h5>
+                    <p className="text-[10px] text-stone-500 leading-snug">Guaranteed authentic product with manufacturer warranty.</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 bg-white/80 border border-blue-100/80 p-2.5 rounded-2xl shadow-2xs">
-                  <span className="text-lg shrink-0">🔄</span>
+                <div className="flex items-start gap-2.5 bg-[#F9F7F2] border border-[#E8E1D1] p-2.5 rounded-2xl">
                   <div>
-                    <h5 className="font-bold text-gray-900 text-[11px]">7 Days Easy Return &amp; Exchange</h5>
-                    <p className="text-[10px] text-gray-500 leading-snug">No questions asked instant replacement or doorstep refund.</p>
+                    <h5 className="font-bold text-[#2C221E] text-[11px]">7 Days Easy Return &amp; Exchange</h5>
+                    <p className="text-[10px] text-stone-500 leading-snug">No questions asked instant replacement or doorstep refund.</p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-3 bg-white/80 border border-blue-100/80 p-2.5 rounded-2xl shadow-2xs">
-                  <span className="text-lg shrink-0">💳</span>
+                <div className="flex items-start gap-2.5 bg-[#F9F7F2] border border-[#E8E1D1] p-2.5 rounded-2xl">
                   <div>
-                    <h5 className="font-bold text-gray-900 text-[11px]">Pay on Delivery (COD Available)</h5>
-                    <p className="text-[10px] text-gray-500 leading-snug">Pay conveniently at your door via Cash, UPI QR or Cards.</p>
+                    <h5 className="font-bold text-[#2C221E] text-[11px]">Pay on Delivery (COD Available)</h5>
+                    <p className="text-[10px] text-stone-500 leading-snug">Pay conveniently at your door via Cash, UPI QR or Cards.</p>
                   </div>
                 </div>
               </div>
@@ -736,37 +732,31 @@ const SUB_NAV_ITEMS = [
           <div className="lg:col-span-4 space-y-4">
             
             <div>
-              <h1 className="text-lg md:text-xl font-bold text-gray-900 leading-snug">
+              <h1 className="text-lg md:text-xl font-bold text-[#2C221E] leading-snug">
                 {product.title}
               </h1>
-              <p className="text-xs text-blue-700 font-bold mt-1 hover:underline cursor-pointer">Visit the BotCom Official Store</p>
+              <p className="text-xs text-[#B8860B] font-bold mt-1">Visit the BotCom Official Store</p>
 
               {/* Rating */}
               <div className="flex items-center gap-2 mt-2 text-xs">
-                <span className="text-amber-500 font-bold">4.3 ★★★★☆</span>
-                <span className="text-blue-700 font-bold hover:underline cursor-pointer">(1,732 ratings)</span>
-                <span className="text-gray-300">|</span>
-                <span className="text-gray-500 font-medium">3k+ purchased in last month</span>
+                <span className="text-amber-600 font-bold">4.3 ★★★★☆</span>
+                <span className="text-stone-500 font-medium">(1,732 ratings)</span>
               </div>
             </div>
 
-            <div className="border-t border-b border-gray-100 py-3 space-y-2">
-              <span className="bg-red-600 text-white font-extrabold text-[10px] uppercase px-2.5 py-1 rounded-md">
-                ⚡ Lightning Deals
-              </span>
-
+            <div className="border-t border-b border-[#F0ECE1] py-3 space-y-2">
               <div className="flex items-baseline gap-3 pt-1">
-                <span className="text-red-600 font-black text-2xl">-{discountPercent}%</span>
-                <span className="text-2xl font-black text-gray-900">₹{product.price.toLocaleString("en-IN")}</span>
+                {discountPercent > 0 && <span className="text-rose-700 font-black text-2xl">-{discountPercent}%</span>}
+                <span className="text-2xl font-black text-[#2C221E]">₹{product.price.toLocaleString("en-IN")}</span>
               </div>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-stone-500">
                 M.R.P.: <span className="line-through">₹{(product.compare_at_price || Math.round(product.price * 1.2)).toLocaleString("en-IN")}</span>
               </p>
 
-              <div className="inline-flex items-center gap-1.5 bg-gray-900 text-white font-bold text-[10px] px-2.5 py-1 rounded-md uppercase">
-                <span>a</span> Fulfilled
+              <div className="inline-flex items-center gap-1.5 bg-[#3B2F2F] text-white font-bold text-[10px] px-2.5 py-1 rounded-md uppercase">
+                <span>Fulfilled</span>
               </div>
-              <p className="text-[11px] text-gray-600">Inclusive of all taxes</p>
+              <p className="text-[11px] text-stone-500">Inclusive of all taxes</p>
             </div>
 
 
@@ -1129,66 +1119,57 @@ const SUB_NAV_ITEMS = [
           <div className="lg:col-span-3 space-y-4">
             
             {/* 1. Buy Box Main Card */}
-            <div className="bg-white border border-gray-300 rounded-3xl p-5 shadow-md space-y-4">
+            <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-5 shadow-sm space-y-4">
               
-              {/* Prime Badge */}
-              <div className="bg-blue-50/80 border border-blue-200 rounded-2xl p-3 text-xs space-y-1">
-                <div className="flex items-center gap-1 font-black text-blue-800 text-sm">
-                  <span>prime</span>
-                </div>
-                <p className="text-[11px] text-gray-600 leading-tight">Enjoy unlimited free same-day/1-day delivery &amp; extra offers.</p>
-                <button className="text-[10px] font-bold text-blue-700 hover:underline cursor-pointer">Join Prime &rsaquo;&rsaquo;</button>
-              </div>
-
               {/* Delivery Info */}
-              <div className="space-y-1 text-xs text-gray-700">
-                <p className="font-bold text-blue-700">FREE delivery Saturday, Aug 15.</p>
-                <p className="text-[11px] text-gray-500">📍 Deliver to Gwalior 474001</p>
+              <div className="space-y-1 text-xs text-[#3B2F2F]">
+                <p className="font-bold text-blue-700">FREE Express Delivery</p>
+                <p className="text-[11px] text-stone-500">Deliver to Pincode 474001</p>
                 {(() => {
                   const numId = typeof product.id === "number" ? product.id : (parseInt(String(product.id || "").replace(/[^0-9]/g, "")) || 1);
                   const maxStock = typeof product.stock_quantity === "number" ? product.stock_quantity : 12;
                   if (maxStock === 0) {
-                    return <p className="text-red-600 font-black text-sm pt-1 uppercase tracking-wider flex items-center gap-1"><span>❌</span> Out of Stock (Unavailable)</p>;
+                    return <p className="text-rose-700 font-black text-sm pt-1 uppercase tracking-wider">Out of Stock (Unavailable)</p>;
                   }
                   if (maxStock <= 5) {
-                    return <p className="text-amber-900 font-black text-xs pt-1 bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg animate-pulse flex items-center gap-1"><span>⚡</span> Low Stock: Only {maxStock} left in stock!</p>;
+                    return <p className="text-amber-900 font-black text-xs pt-1 bg-amber-100 border border-amber-300 px-2.5 py-1 rounded-lg animate-pulse">Low Stock: Only {maxStock} left in stock!</p>;
                   }
-                  return <p className="text-blue-600 font-extrabold text-sm pt-1 flex items-center gap-1"><span>📦</span> In Stock ({maxStock} units available)</p>;
+                  return <p className="text-blue-700 font-extrabold text-sm pt-1">In Stock ({maxStock} units available)</p>;
                 })()}
-                <p className="text-[10px] text-gray-500">Ships from and sold by BotCom Official Retail.</p>
+                <p className="text-[10px] text-stone-500">Ships from and sold by BotCom Official Retail.</p>
               </div>
 
-              {/* 🛒 Add to Cart (White) & ⚡ Buy Now (Brand Emerald Logo Color) Buttons */}
+              {/* Add to Cart & Buy Now Buttons */}
               <div className="space-y-2 pt-2">
                 {product.stock_quantity === 0 ? (
                   <button
                     disabled
-                    className="w-full bg-gray-100 border-2 border-gray-300 text-gray-400 font-black text-xs py-3.5 rounded-2xl text-center uppercase tracking-wider cursor-not-allowed opacity-80 flex items-center justify-center gap-1.5 shadow-xs"
+                    className="w-full bg-[#EBE4D5] text-stone-400 font-black text-xs py-3.5 rounded-2xl text-center uppercase tracking-wider cursor-not-allowed opacity-80 shadow-2xs"
                   >
-                    🚫 Unavailable / Out of Stock
+                    Unavailable / Out of Stock
                   </button>
                 ) : (
                   <>
                     <button
                       type="button"
                       onClick={handleAddToCart}
-                      className="w-full bg-white border-2 border-gray-300 hover:bg-gray-50 text-gray-900 font-black text-xs py-3.5 rounded-2xl transition shadow-xs text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full bg-[#FFFDF9] border border-[#E8E1D1] hover:bg-[#F4EFE6] text-[#3B2F2F] font-black text-xs py-3.5 rounded-2xl transition shadow-2xs text-center cursor-pointer"
                     >
-                      {cartAddedToast ? "✓ Added to Cart!" : "🛒 Add to Cart"}
+                      {cartAddedToast ? "✓ Added to Cart!" : "Add to Cart"}
                     </button>
 
                     <button
                       type="button"
                       onClick={handleBuyNow}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-blue-600/20 text-center flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-blue-600/20 text-center cursor-pointer"
                     >
-                      ⚡ Buy Now
+                      Buy Now
                     </button>
                   </>
                 )}
               </div>
 
-              {/* ❤️ Add to Wishlist Button */}
+              {/* Add to Wishlist Button */}
               <button
                 type="button"
                 onClick={() => {
@@ -1205,40 +1186,40 @@ const SUB_NAV_ITEMS = [
                   const wasLiked = isInWishlist(product.id);
                   toggleWishlist(item);
                   if (wasLiked) {
-                    toast("💔 Removed from Wishlist", { description: product.title });
+                    toast("Removed from Wishlist", { description: product.title });
                   } else {
-                    toast.success("❤️ Added to Wishlist!", { description: product.title });
+                    toast.success("Added to Wishlist!", { description: product.title });
                   }
                 }}
-                className={`w-full font-black text-xs py-3 rounded-2xl transition border flex items-center justify-center gap-1.5 cursor-pointer ${
+                className={`w-full font-black text-xs py-3 rounded-2xl transition border flex items-center justify-center cursor-pointer ${
                   isInWishlist(product.id)
-                    ? "bg-red-50 border-red-300 text-red-600 hover:bg-red-100"
-                    : "bg-white border-gray-200 text-gray-700 hover:bg-rose-50 hover:border-rose-300 hover:text-rose-600"
+                    ? "bg-rose-50 border-rose-200 text-rose-600 hover:bg-rose-100"
+                    : "bg-[#FFFDF9] border-[#E8E1D1] text-[#3B2F2F] hover:bg-[#F4EFE6]"
                 }`}
               >
-                {isInWishlist(product.id) ? "❤️ In Your Wishlist" : "🤍 Add to Wishlist"}
+                {isInWishlist(product.id) ? "In Your Wishlist" : "Add to Wishlist"}
               </button>
 
             </div>
 
-            {/* 2. 🛡️ BotCom Protection Plan Card */}
+            {/* 2. BotCom Protection Plan Card */}
             <div className={`border rounded-3xl p-5 shadow-2xs space-y-3 text-xs transition-all duration-300 ${
-              warrantyAdded ? "bg-blue-50/70 border-blue-300 shadow-blue-500/10" : "bg-white border-gray-200"
+              warrantyAdded ? "bg-blue-50/70 border-blue-300 shadow-blue-500/10" : "bg-[#FFFDF9] border-[#E8E1D1]"
             }`}>
               <div className="flex items-center justify-between">
-                <span className="font-extrabold text-gray-900 flex items-center gap-1.5">
-                  <span>🛡️</span> BotCom Protect Plan
+                <span className="font-extrabold text-[#2C221E]">
+                  BotCom Protect Plan
                 </span>
                 <span className="text-blue-700 font-black text-sm">₹199</span>
               </div>
-              <p className="text-gray-500 text-[11px] leading-tight">Add 1-Year Extended Warranty covering accidental damage &amp; battery replacement.</p>
+              <p className="text-stone-500 text-[11px] leading-tight">Add 1-Year Extended Warranty covering accidental damage &amp; battery replacement.</p>
               <button
                 type="button"
                 onClick={handleToggleWarranty}
                 className={`w-full font-extrabold py-2.5 rounded-xl text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs ${
                   warrantyAdded 
                     ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20" 
-                    : "bg-gray-100 hover:bg-gray-200 text-gray-900"
+                    : "bg-[#F4EFE6] hover:bg-[#EBE4D5] text-[#3B2F2F] border border-[#E8E1D1]"
                 }`}
               >
                 {warrantyAdded ? (
@@ -1255,43 +1236,43 @@ const SUB_NAV_ITEMS = [
               </button>
             </div>
 
-            {/* 3. 🏪 Seller & Express Shipping Info */}
-            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
+            {/* 3. Seller & Express Shipping Info */}
+            <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-5 shadow-sm space-y-3 text-xs">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-gray-900 text-white font-black text-xs flex items-center justify-center">
-                  E
+                <div className="w-10 h-10 rounded-2xl bg-[#3B2F2F] text-white font-black text-xs flex items-center justify-center">
+                  B
                 </div>
                 <div>
-                  <p className="font-bold text-gray-900">BotCom Official Retail Hub</p>
-                  <p className="text-[10px] text-blue-600 font-bold">4.9 ★ 98% Positive Feedback</p>
+                  <p className="font-bold text-[#2C221E]">BotCom Official Retail Hub</p>
+                  <p className="text-[10px] text-blue-700 font-bold">4.9 ★ 98% Positive Feedback</p>
                 </div>
               </div>
 
-              <div className="border-t border-gray-100 pt-2 space-y-1.5 text-[11px] text-gray-600">
+              <div className="border-t border-[#F0ECE1] pt-2 space-y-1.5 text-[11px] text-stone-600">
                 <div className="flex justify-between">
                   <span>Payment</span>
-                  <span className="font-bold text-gray-900">Secure Transaction</span>
+                  <span className="font-bold text-[#2C221E]">Secure Transaction</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Ships from</span>
-                  <span className="font-bold text-gray-900">BotCom Express Logistics</span>
+                  <span className="font-bold text-[#2C221E]">BotCom Express Logistics</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Returns</span>
-                  <span className="font-bold text-gray-900">10-Day Replacement</span>
+                  <span className="font-bold text-[#2C221E]">10-Day Replacement</span>
                 </div>
               </div>
             </div>
 
-            {/* 4. 🎧 Recommended Accessories Card (+ Add Working Buttons) */}
-            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
-              <h4 className="font-black text-gray-900 text-xs uppercase tracking-wider">⚡ Frequently Add-on Items</h4>
+            {/* 4. Recommended Accessories Card */}
+            <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-5 shadow-sm space-y-3 text-xs">
+              <h4 className="font-black text-[#2C221E] text-xs uppercase tracking-wider">Frequently Add-on Items</h4>
               
               <div className="space-y-2">
-                <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                <div className="flex items-center gap-3 bg-[#F9F7F2] p-2 rounded-2xl border border-[#E8E1D1]">
                   <img src="https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=200" alt="EVA Case" className="w-9 h-9 object-contain rounded-lg bg-white p-0.5" />
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-900 truncate">EVA Hard Storage Case</p>
+                    <p className="font-bold text-[#2C221E] truncate">EVA Hard Storage Case</p>
                     <p className="font-black text-blue-700 text-xs">₹400.00</p>
                   </div>
                   <button
@@ -1304,17 +1285,17 @@ const SUB_NAV_ITEMS = [
                       }
                     }}
                     className={`font-extrabold text-[10px] px-3 py-1.5 rounded-xl transition cursor-pointer ${
-                      addon1Added ? "bg-blue-600 text-white" : "bg-gray-900 hover:bg-black text-white"
+                      addon1Added ? "bg-blue-600 text-white" : "bg-[#3B2F2F] hover:bg-[#2C221E] text-white"
                     }`}
                   >
                     {addon1Added ? "✓ Added" : "+ Add"}
                   </button>
                 </div>
 
-                <div className="flex items-center gap-3 bg-gray-50 p-2 rounded-2xl border border-gray-100">
+                <div className="flex items-center gap-3 bg-[#F9F7F2] p-2 rounded-2xl border border-[#E8E1D1]">
                   <img src="https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=200" alt="Fast Charger" className="w-9 h-9 object-contain rounded-lg bg-white p-0.5" />
                   <div className="flex-1 min-w-0">
-                    <p className="font-bold text-gray-900 truncate">65W Fast Wall Adapter</p>
+                    <p className="font-bold text-[#2C221E] truncate">65W Fast Wall Adapter</p>
                     <p className="font-black text-blue-700 text-xs">₹599.00</p>
                   </div>
                   <button
@@ -1327,7 +1308,7 @@ const SUB_NAV_ITEMS = [
                       }
                     }}
                     className={`font-extrabold text-[10px] px-3 py-1.5 rounded-xl transition cursor-pointer ${
-                      addon2Added ? "bg-blue-600 text-white" : "bg-gray-900 hover:bg-black text-white"
+                      addon2Added ? "bg-blue-600 text-white" : "bg-[#3B2F2F] hover:bg-[#2C221E] text-white"
                     }`}
                   >
                     {addon2Added ? "✓ Added" : "+ Add"}
@@ -1341,9 +1322,9 @@ const SUB_NAV_ITEMS = [
         </div>
       </div>
 
-      {/* 🧩 "Frequently Bought Together" Section */}
+      {/* "Frequently Bought Together" Section */}
       <div className="max-w-[1536px] mx-auto px-4 lg:px-8 pt-6">
-        <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-6">
+        <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-6 shadow-sm space-y-6">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="text-base font-black text-gray-900 uppercase tracking-wider flex items-center gap-2">
               <span>Frequently Bought Together</span>
