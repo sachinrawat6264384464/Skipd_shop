@@ -212,11 +212,11 @@ export function FlashSaleBanner() {
         {mounted && flashItems.map((item) => (
           <div
             key={item.id}
-            className="bg-[#5B0B0B]/85 border border-red-800/80 hover:border-amber-400/70 rounded-2xl p-4 transition duration-200 flex flex-col justify-between space-y-3 group shadow-lg"
+            className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#B8860B] rounded-2xl p-4 transition duration-300 flex flex-col justify-between space-y-3 group shadow-xl"
           >
             <div>
               {/* Product Image + Discount Pill */}
-              <Link href={`/product/${item.handle}`} className="block relative aspect-square rounded-xl overflow-hidden bg-[#3B0505] mb-3 border border-red-900 cursor-pointer">
+              <Link href={`/product/${item.handle}`} className="block relative aspect-square rounded-xl overflow-hidden bg-[#F9F7F2] mb-3 border border-[#E8E1D1] cursor-pointer">
                 <img
                   src={item.image}
                   alt={item.title}
@@ -224,42 +224,42 @@ export function FlashSaleBanner() {
                   decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                 />
-                <span className="absolute top-2 left-2 bg-amber-500 text-slate-950 font-black text-[10px] px-2 py-0.5 rounded-md shadow-md uppercase">
+                <span className="absolute top-2 left-2 bg-[#B8860B] text-white font-black text-[10px] px-2 py-0.5 rounded-md shadow-xs uppercase">
                   -{item.discount_percent}% OFF
                 </span>
               </Link>
 
-              <h3 className="font-extrabold text-white text-xs truncate group-hover:text-amber-200 transition">
+              <h3 className="font-extrabold text-[#2C221E] text-xs truncate group-hover:text-[#B8860B] transition">
                 <Link href={`/product/${item.handle}`}>{item.title}</Link>
               </h3>
 
               {/* Price Row */}
               <div className="flex items-baseline gap-2 pt-1">
-                <span className="text-base font-black text-amber-300">
+                <span className="text-base font-black text-[#2C221E]">
                   ₹{item.price.toLocaleString("en-IN")}
                 </span>
-                <span className="text-xs text-rose-200/60 line-through font-bold">
+                <span className="text-xs text-stone-400 line-through font-bold">
                   ₹{item.compare_at_price.toLocaleString("en-IN")}
                 </span>
               </div>
             </div>
 
             {/* Stock Progress Bar */}
-            <div className="space-y-2 pt-2 border-t border-red-900/80">
-              <div className="flex justify-between text-[10px] font-bold text-rose-200/80">
+            <div className="space-y-2 pt-2 border-t border-[#F0ECE1]">
+              <div className="flex justify-between text-[10px] font-bold text-stone-600">
                 <span>Stock Claimed</span>
-                <span className="text-amber-300">{item.sold_percent}% Sold</span>
+                <span className="text-[#B8860B] font-extrabold">{item.sold_percent}% Sold</span>
               </div>
-              <div className="w-full h-2 bg-[#3B0505] rounded-full overflow-hidden border border-red-900">
+              <div className="w-full h-2 bg-[#F4EFE6] rounded-full overflow-hidden border border-[#E8E1D1]">
                 <div
-                  className="h-full bg-gradient-to-r from-amber-500 to-amber-300 rounded-full transition-all duration-500"
+                  className="h-full bg-gradient-to-r from-[#B8860B] to-[#8B5E3C] rounded-full transition-all duration-500"
                   style={{ width: `${item.sold_percent}%` }}
                 />
               </div>
 
               <button
                 onClick={(e) => handleClaimDeal(e, item)}
-                className="w-full py-2.5 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1 active:scale-95"
+                className="w-full py-2.5 bg-gradient-to-r from-[#B8860B] via-[#966D08] to-[#8B5E3C] hover:from-[#966D08] hover:to-[#70482D] text-white font-black text-xs text-center uppercase tracking-wider rounded-xl transition shadow-md cursor-pointer flex items-center justify-center gap-1 active:scale-95"
               >
                 ⚡ Claim Deal &rsaquo;
               </button>
