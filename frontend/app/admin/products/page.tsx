@@ -1147,7 +1147,7 @@ export default function AdminProductsPage() {
       {actionMessage && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           actionMessage.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{actionMessage.text}</span>
@@ -1158,13 +1158,13 @@ export default function AdminProductsPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <Link href="/admin" className="text-xs text-emerald-700 font-bold hover:underline">&larr; Back to Admin Dashboard</Link>
+            <Link href="/admin" className="text-xs text-blue-700 font-bold hover:underline">&larr; Back to Admin Dashboard</Link>
             <span className="text-gray-400">/</span>
             <span className="text-xs text-gray-500 font-bold">Catalog Management</span>
           </div>
           <h1 className="text-2xl font-black text-gray-900 mt-1">📦 Store Catalog &amp; Products Manager</h1>
           <p className="text-xs text-gray-500 font-medium mt-0.5">
-            Total Database Products: <span className="font-bold text-emerald-700">{products.length} Items</span> • Live PostgreSQL Neon DB Sync
+            Total Database Products: <span className="font-bold text-blue-700">{products.length} Items</span> • Live PostgreSQL Neon DB Sync
           </p>
         </div>
 
@@ -1190,7 +1190,7 @@ export default function AdminProductsPage() {
 
           <button
             onClick={openFreshCreateProductModal}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
           >
             <span className="text-sm">+</span>
             <span>Add New Product</span>
@@ -1210,7 +1210,7 @@ export default function AdminProductsPage() {
               }
             }}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap ${
-              activeTab === tab ? "bg-emerald-600 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+              activeTab === tab ? "bg-blue-600 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             {tab}
@@ -1227,13 +1227,13 @@ export default function AdminProductsPage() {
             
             {/* Total Products Card */}
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3.5">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-xl shrink-0 border border-emerald-100">
+              <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-xl shrink-0 border border-blue-100">
                 📦
               </div>
               <div>
                 <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Total Store Products</p>
                 <h3 className="text-xl font-black text-gray-900 mt-0.5">{products.length} Items</h3>
-                <p className="text-[10px] text-emerald-600 font-bold">✓ Live Runtime Sync</p>
+                <p className="text-[10px] text-blue-600 font-bold">✓ Live Runtime Sync</p>
               </div>
             </div>
 
@@ -1294,7 +1294,7 @@ export default function AdminProductsPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-emerald-500 focus:outline-none transition"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-blue-500 focus:outline-none transition"
               />
             </div>
 
@@ -1308,7 +1308,7 @@ export default function AdminProductsPage() {
                     setSelectedCategory(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none capitalize"
+                  className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none capitalize"
                 >
                   <option value="ALL">All Categories ({products.length})</option>
                   {categoriesList.map(c => (
@@ -1325,7 +1325,7 @@ export default function AdminProductsPage() {
                     setStockFilter(e.target.value);
                     setCurrentPage(1);
                   }}
-                  className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+                  className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
                 >
                   <option value="ALL">All Stock Status</option>
                   <option value="IN_STOCK">In Stock (&gt;15)</option>
@@ -1354,7 +1354,7 @@ export default function AdminProductsPage() {
           {/* Table View */}
           {loading ? (
             <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center space-y-3 shadow-2xs">
-              <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-xs text-gray-500 font-bold">Loading products catalog from Neon PostgreSQL Database...</p>
             </div>
           ) : paginatedProducts.length === 0 ? (
@@ -1371,7 +1371,7 @@ export default function AdminProductsPage() {
                   setStockFilter("ALL");
                   setCurrentPage(1);
                 }}
-                className="bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition hover:bg-emerald-700 shadow-xs cursor-pointer"
+                className="bg-blue-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition hover:bg-blue-700 shadow-xs cursor-pointer"
               >
                 Reset All Filters
               </button>
@@ -1423,7 +1423,7 @@ export default function AdminProductsPage() {
                                 <Link
                                   href={`/product/${p.handle}`}
                                   target="_blank"
-                                  className="text-[10px] text-emerald-600 font-bold hover:underline"
+                                  className="text-[10px] text-blue-600 font-bold hover:underline"
                                 >
                                   View Store ↗
                                 </Link>
@@ -1443,7 +1443,7 @@ export default function AdminProductsPage() {
                               const matchingCat = categories.find(c => c.id === p.category_id || (c.slug && (c.slug === p.category_slug || c.slug === p.category?.slug)));
                               const rawName = matchingCat ? matchingCat.name : (p.category_name || p.category?.name || (p.category_slug ? p.category_slug.replace(/-/g, " ") : (p.tags && p.tags[0] ? String(p.tags[0]).replace(/-/g, " ") : "General")));
                               return (
-                                <span className="bg-emerald-50 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-200 capitalize block w-max mb-1">
+                                <span className="bg-blue-50 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-200 capitalize block w-max mb-1">
                                   📂 {rawName}
                                 </span>
                               );
@@ -1458,7 +1458,7 @@ export default function AdminProductsPage() {
                             <div className="flex items-center gap-1.5">
                               <p className="font-black text-gray-900 text-xs">₹{price.toLocaleString("en-IN")}</p>
                               {itemOffPct > 0 && (
-                                <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-1 py-0.2 rounded">
+                                <span className="bg-blue-100 text-blue-800 text-[9px] font-black px-1 py-0.2 rounded">
                                   -{itemOffPct}%
                                 </span>
                               )}
@@ -1485,7 +1485,7 @@ export default function AdminProductsPage() {
                             <div className="space-y-0.5 text-[11px]">
                               <p className="font-bold text-gray-800">{p.weight ? `⚖️ ${p.weight} kg` : "⚖️ N/A"}</p>
                               {p.dimensions && <p className="text-[10px] text-gray-500 font-mono">📦 {p.dimensions}</p>}
-                              <p className="text-[10px] text-emerald-700 font-bold">{p.gst_rate ? `GST: ${p.gst_rate}%` : "18% GST"}</p>
+                              <p className="text-[10px] text-blue-700 font-bold">{p.gst_rate ? `GST: ${p.gst_rate}%` : "18% GST"}</p>
                               {p.country_of_origin && <p className="text-[9px] text-gray-400">🌐 {p.country_of_origin}</p>}
                             </div>
                           </td>
@@ -1506,7 +1506,7 @@ export default function AdminProductsPage() {
                               onClick={() => handleToggleNewArrival(p)}
                               className={`px-2.5 py-1 rounded-xl text-[10px] font-black border transition cursor-pointer flex items-center gap-1 whitespace-nowrap ${
                                 isNewArrival
-                                  ? "bg-emerald-500 text-white border-emerald-400 shadow-md shadow-emerald-500/20"
+                                  ? "bg-blue-500 text-white border-blue-400 shadow-md shadow-blue-500/20"
                                   : "bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200"
                               }`}
                               title={isNewArrival ? "Click to remove from New Arrivals" : "Click to add to New Arrivals"}
@@ -1526,7 +1526,7 @@ export default function AdminProductsPage() {
                                 ⚠️ Low Stock
                               </span>
                             ) : (
-                              <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-emerald-200 whitespace-nowrap">
+                              <span className="bg-blue-100 text-blue-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-blue-200 whitespace-nowrap">
                                 ✓ In Stock
                               </span>
                             )}
@@ -1588,7 +1588,7 @@ export default function AdminProductsPage() {
                         onClick={() => setCurrentPage(pageNum)}
                         className={`w-8 h-8 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center ${
                           currentPage === pageNum
-                            ? "bg-[#059669] text-white shadow-xs"
+                            ? "bg-[#2563EB] text-white shadow-xs"
                             : "border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
                         }`}
                       >
@@ -1629,16 +1629,16 @@ export default function AdminProductsPage() {
         <div className="space-y-6">
           
           {/* Hero Banner Header */}
-          <div className="bg-gradient-to-r from-[#041510] via-[#0B2E24] to-[#041510] text-white p-6 rounded-3xl border border-emerald-500/30 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="bg-gradient-to-r from-[#041510] via-[#0B2E24] to-[#041510] text-white p-6 rounded-3xl border border-blue-500/30 shadow-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
+              <div className="inline-flex items-center gap-2 bg-blue-500/20 text-blue-300 border border-blue-500/40 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider">
                 <span>✨ CATALOG DROP CONTROL</span>
               </div>
               <h2 className="text-xl font-black text-white flex items-center gap-2">
                 <span>🔥 New Arrivals &amp; Fresh Drops Management</span>
               </h2>
               <p className="text-xs text-gray-300">
-                Products marked here will immediately appear on the storefront <span className="text-emerald-400 font-bold">/new-arrivals</span> page. Toggle ON/OFF or add products manually.
+                Products marked here will immediately appear on the storefront <span className="text-blue-400 font-bold">/new-arrivals</span> page. Toggle ON/OFF or add products manually.
               </p>
             </div>
 
@@ -1657,10 +1657,10 @@ export default function AdminProductsPage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
               <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">ACTIVE NEW ARRIVALS</span>
-              <p className="text-2xl font-black text-emerald-600">
+              <p className="text-2xl font-black text-blue-600">
                 {newArrivalsDbProducts.length} Items
               </p>
-              <p className="text-[11px] text-emerald-700 font-bold">PostgreSQL new_arrivals DB Table</p>
+              <p className="text-[11px] text-blue-700 font-bold">PostgreSQL new_arrivals DB Table</p>
             </div>
 
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
@@ -1688,7 +1688,7 @@ export default function AdminProductsPage() {
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <select
                 id="new-arrival-select"
-                className="flex-1 w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                className="flex-1 w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-xs text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
               >
                 <option value="">-- Select Product from Catalog --</option>
                 {products
@@ -1711,7 +1711,7 @@ export default function AdminProductsPage() {
                     showNotification("Please select a product from the dropdown", "error");
                   }
                 }}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-xl transition shadow-xs cursor-pointer w-full sm:w-auto shrink-0"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-xl transition shadow-xs cursor-pointer w-full sm:w-auto shrink-0"
               >
                 + Add to New Arrivals DB
               </button>
@@ -1724,7 +1724,7 @@ export default function AdminProductsPage() {
               <h3 className="text-sm font-black text-gray-900 flex items-center gap-2">
                 <span>✨ Active New Arrival Products ({newArrivalsDbProducts.length})</span>
               </h3>
-              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-extrabold px-2.5 py-1 rounded-full uppercase">
+              <span className="text-[10px] bg-blue-100 text-blue-800 font-extrabold px-2.5 py-1 rounded-full uppercase">
                 100% Live PostgreSQL Table
               </span>
             </div>
@@ -1740,12 +1740,12 @@ export default function AdminProductsPage() {
                 {newArrivalsDbProducts.map(p => {
                   const image = p.images && p.images.length > 0 ? p.images[0] : "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200";
                   return (
-                    <div key={p.id} className="bg-gray-50/80 border border-gray-200 p-4 rounded-2xl flex items-center justify-between gap-3 shadow-2xs hover:border-emerald-300 transition">
+                    <div key={p.id} className="bg-gray-50/80 border border-gray-200 p-4 rounded-2xl flex items-center justify-between gap-3 shadow-2xs hover:border-blue-300 transition">
                       <div className="flex items-center gap-3 min-w-0">
                         <img src={image} alt={p.title} className="w-12 h-12 rounded-xl object-contain bg-white p-1 border border-gray-200 shrink-0" />
                         <div className="min-w-0 space-y-0.5">
                           <p className="font-bold text-xs text-gray-900 truncate">{p.title}</p>
-                          <p className="text-[11px] text-emerald-600 font-black">₹{Number(p.price || 0).toLocaleString("en-IN")}</p>
+                          <p className="text-[11px] text-blue-600 font-black">₹{Number(p.price || 0).toLocaleString("en-IN")}</p>
                         </div>
                       </div>
                       <button
@@ -1768,14 +1768,14 @@ export default function AdminProductsPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-4">
             <div>
               <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
+                <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" /></svg>
                 <span>Categories Taxonomy Manager</span>
               </h2>
               <p className="text-xs text-gray-500 mt-0.5">Manage store categories, slugs, icons and storefront navigation structure</p>
             </div>
             <button
               onClick={() => setShowAddCategoryModal(true)}
-              className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
             >
               <span>+ Create Category</span>
             </button>
@@ -1806,7 +1806,7 @@ export default function AdminProductsPage() {
                     <td className="px-6 py-4 font-mono text-gray-500 text-[11px]">/category/{c.slug}</td>
                     <td className="px-6 py-4 font-black text-gray-900">{c.count} items</td>
                     <td className="px-6 py-4">
-                      <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-emerald-200">
+                      <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-blue-200">
                         ✓ {c.status}
                       </span>
                     </td>
@@ -1849,7 +1849,7 @@ export default function AdminProductsPage() {
             </div>
             <button
               onClick={() => setShowAddSubCategoryModal(true)}
-              className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
             >
               <span>+ Add Sub Category</span>
             </button>
@@ -1916,7 +1916,7 @@ export default function AdminProductsPage() {
             </div>
             <button
               onClick={() => setShowAddBrandModal(true)}
-              className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
             >
               <span>+ Add Official Brand</span>
             </button>
@@ -1925,7 +1925,7 @@ export default function AdminProductsPage() {
           {/* Brands Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {brands.map((b) => (
-              <div key={b.id} className="bg-gray-50 border border-gray-200 p-5 rounded-2xl space-y-3 hover:bg-white hover:border-emerald-300 transition shadow-2xs group">
+              <div key={b.id} className="bg-gray-50 border border-gray-200 p-5 rounded-2xl space-y-3 hover:bg-white hover:border-blue-300 transition shadow-2xs group">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <img
@@ -1936,10 +1936,10 @@ export default function AdminProductsPage() {
                     <div>
                       <p className="font-black text-gray-900 text-base leading-tight">{b.name}</p>
                       <p className="text-[10px] text-gray-400 font-mono">{b.website}</p>
-                      <p className="text-[11px] text-emerald-700 font-bold mt-0.5">{b.count || 0} Store Products</p>
+                      <p className="text-[11px] text-blue-700 font-bold mt-0.5">{b.count || 0} Store Products</p>
                     </div>
                   </div>
-                  <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-emerald-200">
+                  <span className="bg-blue-100 text-blue-800 text-[9px] font-black px-2 py-0.5 rounded-full uppercase border border-blue-200">
                     {b.status || "Verified"}
                   </span>
                 </div>
@@ -1979,7 +1979,7 @@ export default function AdminProductsPage() {
             </div>
             <button
               onClick={() => setShowAddAttributeModal(true)}
-              className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
             >
               <span>+ Create Attribute</span>
             </button>
@@ -2006,7 +2006,7 @@ export default function AdminProductsPage() {
                       </span>
                     </td>
                     <td className="px-6 py-4 font-mono text-gray-600 text-[11px] max-w-xs truncate">{attr.values}</td>
-                    <td className="px-6 py-4 font-bold text-emerald-700">{attr.count || 0} Items</td>
+                    <td className="px-6 py-4 font-bold text-blue-700">{attr.count || 0} Items</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
@@ -2046,7 +2046,7 @@ export default function AdminProductsPage() {
             </div>
             <button
               onClick={() => setShowAddVariantModal(true)}
-              className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
             >
               <span>+ Generate SKU Variant</span>
             </button>
@@ -2069,7 +2069,7 @@ export default function AdminProductsPage() {
                   <tr key={v.id} className="hover:bg-gray-50 transition">
                     <td className="px-6 py-4 font-mono font-bold text-gray-900">{v.id}</td>
                     <td className="px-6 py-4 font-bold text-gray-900">{v.product}</td>
-                    <td className="px-6 py-4 font-semibold text-emerald-800">{v.variant}</td>
+                    <td className="px-6 py-4 font-semibold text-blue-800">{v.variant}</td>
                     <td className="px-6 py-4 font-black text-gray-900">{v.priceExtra}</td>
                     <td className="px-6 py-4 font-black text-gray-900">{v.stock} units</td>
                     <td className="px-6 py-4 text-right">
@@ -2119,7 +2119,7 @@ export default function AdminProductsPage() {
               <div key={rev.id} className="bg-gray-50 border border-gray-200 p-5 rounded-2xl space-y-2 hover:bg-white transition shadow-2xs">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 font-black text-xs flex items-center justify-center">
+                    <span className="w-8 h-8 rounded-full bg-blue-100 text-blue-800 font-black text-xs flex items-center justify-center">
                       {rev.customer.charAt(0)}
                     </span>
                     <div>
@@ -2135,7 +2135,7 @@ export default function AdminProductsPage() {
                 <div className="flex justify-end gap-2 pt-2 border-t border-gray-100">
                   <button
                     onClick={() => handleToggleReviewStatus(rev.id)}
-                    className={`${rev.status === "Approved" ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-700 border-amber-200"} font-bold px-3 py-1 rounded-xl border transition text-xs cursor-pointer`}
+                    className={`${rev.status === "Approved" ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-amber-50 text-amber-700 border-amber-200"} font-bold px-3 py-1 rounded-xl border transition text-xs cursor-pointer`}
                   >
                     {rev.status === "Approved" ? "✓ Approved" : "⏳ Set Approved"}
                   </button>
@@ -2158,7 +2158,7 @@ export default function AdminProductsPage() {
           <div onClick={(e) => e.stopPropagation()} className="bg-white border border-gray-200 rounded-3xl p-6 sm:p-8 max-w-md w-full space-y-5 shadow-2xl relative cursor-default">
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-2xl bg-emerald-50 text-emerald-700 font-bold flex items-center justify-center text-lg">
+                <div className="w-9 h-9 rounded-2xl bg-blue-50 text-blue-700 font-bold flex items-center justify-center text-lg">
                   📁
                 </div>
                 <div>
@@ -2182,7 +2182,7 @@ export default function AdminProductsPage() {
                     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
                     setNewCategoryForm({ ...newCategoryForm, name, slug });
                   }}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -2194,7 +2194,7 @@ export default function AdminProductsPage() {
                   placeholder="e.g. sarees, furniture"
                   value={newCategoryForm.slug}
                   onChange={(e) => setNewCategoryForm({ ...newCategoryForm, slug: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-700 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-700 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -2203,7 +2203,7 @@ export default function AdminProductsPage() {
                 
                 {/* Live Image Preview */}
                 {newCategoryForm.icon && (newCategoryForm.icon.startsWith("data:") || newCategoryForm.icon.startsWith("http") || newCategoryForm.icon.startsWith("/")) ? (
-                  <div className="relative mb-2.5 w-20 h-20 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-sm group">
+                  <div className="relative mb-2.5 w-20 h-20 rounded-2xl overflow-hidden border-2 border-blue-500 shadow-sm group">
                     <img src={newCategoryForm.icon} alt="Category Preview" className="w-full h-full object-cover" />
                     <button
                       type="button"
@@ -2216,13 +2216,13 @@ export default function AdminProductsPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl bg-emerald-50 p-2 rounded-xl border border-emerald-200">{newCategoryForm.icon || "📁"}</span>
+                    <span className="text-2xl bg-blue-50 p-2 rounded-xl border border-blue-200">{newCategoryForm.icon || "📁"}</span>
                     <span className="text-[11px] text-gray-500 font-medium">Default Icon / Emoji</span>
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <label className="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 border-dashed rounded-xl px-3.5 py-2.5 cursor-pointer text-xs font-bold transition">
+                  <label className="flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 border-dashed rounded-xl px-3.5 py-2.5 cursor-pointer text-xs font-bold transition">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
@@ -2251,7 +2251,7 @@ export default function AdminProductsPage() {
                     placeholder="Or paste Image URL / type Emoji (e.g. https://... or 👗)"
                     value={newCategoryForm.icon}
                     onChange={(e) => setNewCategoryForm({ ...newCategoryForm, icon: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -2266,7 +2266,7 @@ export default function AdminProductsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"
                 >
                   + Add to Dropdown
                 </button>
@@ -2300,7 +2300,7 @@ export default function AdminProductsPage() {
                     const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
                     setEditCategoryForm({ ...editCategoryForm, name, slug });
                   }}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -2311,7 +2311,7 @@ export default function AdminProductsPage() {
                   required
                   value={editCategoryForm.slug}
                   onChange={(e) => setEditCategoryForm({ ...editCategoryForm, slug: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-700 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-mono text-gray-700 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -2320,7 +2320,7 @@ export default function AdminProductsPage() {
                 
                 {/* Live Image Preview */}
                 {editCategoryForm.icon && (editCategoryForm.icon.startsWith("data:") || editCategoryForm.icon.startsWith("http") || editCategoryForm.icon.startsWith("/")) ? (
-                  <div className="relative mb-2.5 w-20 h-20 rounded-2xl overflow-hidden border-2 border-emerald-500 shadow-sm group">
+                  <div className="relative mb-2.5 w-20 h-20 rounded-2xl overflow-hidden border-2 border-blue-500 shadow-sm group">
                     <img src={editCategoryForm.icon} alt="Category Preview" className="w-full h-full object-cover" />
                     <button
                       type="button"
@@ -2333,13 +2333,13 @@ export default function AdminProductsPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-2xl bg-emerald-50 p-2 rounded-xl border border-emerald-200">{editCategoryForm.icon || "📁"}</span>
+                    <span className="text-2xl bg-blue-50 p-2 rounded-xl border border-blue-200">{editCategoryForm.icon || "📁"}</span>
                     <span className="text-[11px] text-gray-500 font-medium">Default Icon / Emoji</span>
                   </div>
                 )}
 
                 <div className="space-y-2">
-                  <label className="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 border-dashed rounded-xl px-3.5 py-2.5 cursor-pointer text-xs font-bold transition">
+                  <label className="flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 border-dashed rounded-xl px-3.5 py-2.5 cursor-pointer text-xs font-bold transition">
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                     </svg>
@@ -2368,7 +2368,7 @@ export default function AdminProductsPage() {
                     placeholder="Or paste Image URL / type Emoji (e.g. https://... or 👗)"
                     value={editCategoryForm.icon}
                     onChange={(e) => setEditCategoryForm({ ...editCategoryForm, icon: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs text-gray-900 focus:border-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -2378,7 +2378,7 @@ export default function AdminProductsPage() {
                 <select
                   value={editCategoryForm.status}
                   onChange={(e) => setEditCategoryForm({ ...editCategoryForm, status: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
@@ -2395,7 +2395,7 @@ export default function AdminProductsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md transition cursor-pointer"
                 >
                   ✓ Save Changes
                 </button>
@@ -2483,7 +2483,7 @@ export default function AdminProductsPage() {
                     className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs text-gray-900 font-mono"
                   />
                   <div className="flex items-center gap-3">
-                    <label className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl border border-emerald-200 text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                    <label className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold px-3 py-1.5 rounded-xl border border-blue-200 text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs">
                       <span>📁 Upload Logo File</span>
                       <input
                         type="file"
@@ -2509,7 +2509,7 @@ export default function AdminProductsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer"
+                  className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer"
                 >
                   Create Brand
                 </button>
@@ -2601,7 +2601,7 @@ export default function AdminProductsPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer"
+                  className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer"
                 >
                   Generate Variant
                 </button>
@@ -2668,7 +2668,7 @@ export default function AdminProductsPage() {
 
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowAddSubCategoryModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer">Create Sub Category</button>
+                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer">Create Sub Category</button>
               </div>
             </form>
           </div>
@@ -2724,7 +2724,7 @@ export default function AdminProductsPage() {
 
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowEditSubCategoryModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
+                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
               </div>
             </form>
           </div>
@@ -2775,7 +2775,7 @@ export default function AdminProductsPage() {
                     className="w-full bg-gray-50 border rounded-xl p-2.5 text-xs font-mono text-gray-700"
                   />
                   <div className="flex items-center gap-3">
-                    <label className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold px-3 py-1.5 rounded-xl border border-emerald-200 text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                    <label className="bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold px-3 py-1.5 rounded-xl border border-blue-200 text-xs transition cursor-pointer flex items-center gap-1.5 shadow-2xs">
                       <span>📁 Upload Logo File</span>
                       <input
                         type="file"
@@ -2793,7 +2793,7 @@ export default function AdminProductsPage() {
 
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowEditBrandModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs cursor-pointer">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer">✓ Save Changes</button>
+                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md cursor-pointer">✓ Save Changes</button>
               </div>
             </form>
           </div>
@@ -2852,7 +2852,7 @@ export default function AdminProductsPage() {
 
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowAddAttributeModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">Create Attribute</button>
+                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">Create Attribute</button>
               </div>
             </form>
           </div>
@@ -2909,7 +2909,7 @@ export default function AdminProductsPage() {
 
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowEditAttributeModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
+                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
               </div>
             </form>
           </div>
@@ -2974,7 +2974,7 @@ export default function AdminProductsPage() {
 
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowEditVariantModal(false)} className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 rounded-xl text-xs">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
+                <button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs shadow-md">✓ Save Changes</button>
               </div>
             </form>
           </div>
@@ -3021,7 +3021,7 @@ export default function AdminProductsPage() {
                 type="button"
                 onClick={() => setCreateStep("basic")}
                 className={`pb-2 transition cursor-pointer whitespace-nowrap border-b-2 ${
-                  createStep === "basic" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
+                  createStep === "basic" ? "border-blue-600 text-blue-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 Basic Information
@@ -3030,7 +3030,7 @@ export default function AdminProductsPage() {
                 type="button"
                 onClick={() => setCreateStep("pricing")}
                 className={`pb-2 transition cursor-pointer whitespace-nowrap border-b-2 ${
-                  createStep === "pricing" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
+                  createStep === "pricing" ? "border-blue-600 text-blue-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 Pricing &amp; Inventory
@@ -3039,7 +3039,7 @@ export default function AdminProductsPage() {
                 type="button"
                 onClick={() => setCreateStep("images")}
                 className={`pb-2 transition cursor-pointer whitespace-nowrap border-b-2 ${
-                  createStep === "images" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
+                  createStep === "images" ? "border-blue-600 text-blue-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 Images &amp; Media
@@ -3048,7 +3048,7 @@ export default function AdminProductsPage() {
                 type="button"
                 onClick={() => setCreateStep("variants")}
                 className={`pb-2 transition cursor-pointer whitespace-nowrap border-b-2 ${
-                  createStep === "variants" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
+                  createStep === "variants" ? "border-blue-600 text-blue-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 Variants
@@ -3057,7 +3057,7 @@ export default function AdminProductsPage() {
                 type="button"
                 onClick={() => setCreateStep("highlights")}
                 className={`pb-2 transition cursor-pointer whitespace-nowrap border-b-2 ${
-                  createStep === "highlights" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
+                  createStep === "highlights" ? "border-blue-600 text-blue-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 Highlights &amp; Box Contents
@@ -3066,7 +3066,7 @@ export default function AdminProductsPage() {
                 type="button"
                 onClick={() => setCreateStep("seo")}
                 className={`pb-2 transition cursor-pointer whitespace-nowrap border-b-2 ${
-                  createStep === "seo" ? "border-emerald-600 text-emerald-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
+                  createStep === "seo" ? "border-blue-600 text-blue-700 font-black" : "border-transparent text-gray-500 hover:text-gray-900"
                 }`}
               >
                 SEO &amp; Other Details
@@ -3082,7 +3082,7 @@ export default function AdminProductsPage() {
                   <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-4">
                     
                     <div className="flex justify-between items-center pb-2 border-b border-gray-200">
-                      <div className="flex items-center gap-2 text-emerald-800 font-black text-sm">
+                      <div className="flex items-center gap-2 text-blue-800 font-black text-sm">
                         <span>📗</span>
                         <span>Basic Information</span>
                       </div>
@@ -3091,7 +3091,7 @@ export default function AdminProductsPage() {
                       <button
                         type="button"
                         onClick={() => setCustomTaxonomyMode(!customTaxonomyMode)}
-                        className="bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs flex items-center gap-1.5 shadow-2xs"
+                        className="bg-white border border-blue-300 hover:bg-blue-50 text-blue-800 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs flex items-center gap-1.5 shadow-2xs"
                       >
                         <span>🔄</span>
                         <span>{customTaxonomyMode ? "Switch to Dropdown Select" : "Switch to Manual Custom Text"}</span>
@@ -3107,7 +3107,7 @@ export default function AdminProductsPage() {
                           value={newProduct.title}
                           onChange={(e) => setNewProduct({ ...newProduct, title: e.target.value })}
                           placeholder="e.g. Sony WH-1000XM5 Studio Headphones"
-                          className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                          className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                         />
                       </div>
 
@@ -3119,7 +3119,7 @@ export default function AdminProductsPage() {
                           value={newProduct.sku}
                           onChange={(e) => setNewProduct({ ...newProduct, sku: e.target.value })}
                           placeholder="e.g. SKU12345"
-                          className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-mono focus:border-emerald-500 focus:outline-none"
+                          className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 font-mono focus:border-blue-500 focus:outline-none"
                         />
                         <p className="text-[10px] text-gray-400 mt-1">Unique identifier for this product</p>
                       </div>
@@ -3138,13 +3138,13 @@ export default function AdminProductsPage() {
                             value={newProduct.category_slug}
                             onChange={(e) => setNewProduct({ ...newProduct, category_slug: e.target.value })}
                             placeholder="Type custom category e.g. Smart Home AI"
-                            className="w-full bg-white border border-emerald-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
+                            className="w-full bg-white border border-blue-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-blue-500 focus:outline-none"
                           />
                         ) : (
                           <select
                             value={newProduct.category_slug}
                             onChange={(e) => setNewProduct({ ...newProduct, category_slug: e.target.value, subcategory: "" })}
-                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none capitalize cursor-pointer"
+                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-blue-500 focus:outline-none capitalize cursor-pointer"
                           >
                             {categories.map((c: any) => (
                               <option key={c.slug || c.id} value={c.slug}>
@@ -3165,13 +3165,13 @@ export default function AdminProductsPage() {
                             value={newProduct.subcategory}
                             onChange={(e) => setNewProduct({ ...newProduct, subcategory: e.target.value })}
                             placeholder="Type custom sub category e.g. Robotic Vacuums"
-                            className="w-full bg-white border border-emerald-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
+                            className="w-full bg-white border border-blue-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-blue-500 focus:outline-none"
                           />
                         ) : (
                           <select
                             value={newProduct.subcategory}
                             onChange={(e) => setNewProduct({ ...newProduct, subcategory: e.target.value })}
-                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none cursor-pointer"
+                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-blue-500 focus:outline-none cursor-pointer"
                           >
                             <option value="">
                               {activeSubCategories.length > 0 ? "Select Sub Category ▾" : "No Sub-Category created for this category yet"}
@@ -3198,13 +3198,13 @@ export default function AdminProductsPage() {
                             value={newProduct.brand}
                             onChange={(e) => setNewProduct({ ...newProduct, brand: e.target.value })}
                             placeholder="Type custom brand e.g. Dyson / Bose"
-                            className="w-full bg-white border border-emerald-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
+                            className="w-full bg-white border border-blue-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-blue-500 focus:outline-none"
                           />
                         ) : (
                           <select
                             value={newProduct.brand}
                             onChange={(e) => setNewProduct({ ...newProduct, brand: e.target.value })}
-                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
+                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2.5 text-xs font-bold text-gray-900 focus:border-blue-500 focus:outline-none"
                           >
                             <option value="">Select Brand ▾</option>
                             {brands.map(b => (
@@ -3221,7 +3221,7 @@ export default function AdminProductsPage() {
                           value={newProduct.tags}
                           onChange={(e) => setNewProduct({ ...newProduct, tags: e.target.value })}
                           placeholder="Enter tags and press Enter"
-                          className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                          className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none"
                         />
                         <p className="text-[10px] text-gray-400 mt-1">E.g. Wireless, Headphones, Noise Cancellation</p>
                       </div>
@@ -3238,7 +3238,7 @@ export default function AdminProductsPage() {
                         value={newProduct.short_description}
                         onChange={(e) => setNewProduct({ ...newProduct, short_description: e.target.value })}
                         placeholder="A short description about the product (max 160 characters)"
-                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none"
                       />
                     </div>
 
@@ -3273,20 +3273,20 @@ export default function AdminProductsPage() {
               {/* STEP 2: PRICING & INVENTORY */}
               {createStep === "pricing" && (
                 <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-5">
-                  <div className="flex items-center gap-2 text-emerald-800 font-black text-sm pb-2 border-b border-gray-200">
+                  <div className="flex items-center gap-2 text-blue-800 font-black text-sm pb-2 border-b border-gray-200">
                     <span>💳</span>
                     <span>Pricing &amp; Inventory Settings</span>
                   </div>
 
-                  <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl flex items-center justify-between">
+                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-2xl flex items-center justify-between">
                     <div>
-                      <p className="text-[10px] text-emerald-600 font-extrabold uppercase tracking-wider">Live Discount Calculation</p>
+                      <p className="text-[10px] text-blue-600 font-extrabold uppercase tracking-wider">Live Discount Calculation</p>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="text-2xl font-black text-emerald-700">
+                        <span className="text-2xl font-black text-blue-700">
                           {discountOffPct > 0 ? `${discountOffPct}% OFF` : "No Discount Active"}
                         </span>
                         {totalSavingsAmount > 0 && (
-                          <span className="bg-emerald-600 text-white font-black text-xs px-3 py-1 rounded-full shadow-xs">
+                          <span className="bg-blue-600 text-white font-black text-xs px-3 py-1 rounded-full shadow-xs">
                             Customer Saves ₹{totalSavingsAmount.toLocaleString("en-IN")}
                           </span>
                         )}
@@ -3310,7 +3310,7 @@ export default function AdminProductsPage() {
                         value={newProduct.price}
                         onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
                         placeholder="29999"
-                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-black text-gray-900 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-black text-gray-900 focus:border-blue-500 focus:outline-none"
                       />
                     </div>
 
@@ -3321,7 +3321,7 @@ export default function AdminProductsPage() {
                         value={newProduct.compare_at_price}
                         onChange={(e) => setNewProduct({ ...newProduct, compare_at_price: e.target.value })}
                         placeholder="34999"
-                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -3334,7 +3334,7 @@ export default function AdminProductsPage() {
                         value={newProduct.cost_per_item}
                         onChange={(e) => setNewProduct({ ...newProduct, cost_per_item: e.target.value })}
                         placeholder="22000"
-                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none"
                       />
                       <p className="text-[10px] text-gray-400 mt-1">Customers won't see this</p>
                     </div>
@@ -3344,7 +3344,7 @@ export default function AdminProductsPage() {
                       <select
                         value={newProduct.tax_rate}
                         onChange={(e) => setNewProduct({ ...newProduct, tax_rate: e.target.value })}
-                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-blue-500 focus:outline-none"
                       >
                         <option value="18% GST">18% GST (Standard E-Commerce Rate)</option>
                         <option value="12% GST">12% GST</option>
@@ -3363,7 +3363,7 @@ export default function AdminProductsPage() {
                         value={newProduct.stock_quantity}
                         onChange={(e) => setNewProduct({ ...newProduct, stock_quantity: e.target.value })}
                         placeholder="50"
-                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs font-bold text-gray-900 focus:border-blue-500 focus:outline-none"
                       />
                     </div>
 
@@ -3374,7 +3374,7 @@ export default function AdminProductsPage() {
                         value={newProduct.low_stock_threshold}
                         onChange={(e) => setNewProduct({ ...newProduct, low_stock_threshold: e.target.value })}
                         placeholder="10"
-                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none"
                       />
                     </div>
                   </div>
@@ -3384,7 +3384,7 @@ export default function AdminProductsPage() {
               {/* STEP 3: IMAGES & MEDIA */}
               {createStep === "images" && (
                 <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-5">
-                  <div className="flex items-center gap-2 text-emerald-800 font-black text-sm pb-2 border-b border-gray-200">
+                  <div className="flex items-center gap-2 text-blue-800 font-black text-sm pb-2 border-b border-gray-200">
                     <span>🖼️</span>
                     <span>Images &amp; Media Gallery</span>
                   </div>
@@ -3397,7 +3397,7 @@ export default function AdminProductsPage() {
                         required
                         value={newProduct.image_url}
                         onChange={(e) => setNewProduct({ ...newProduct, image_url: e.target.value })}
-                        className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-mono text-gray-900 focus:border-emerald-500 focus:outline-none"
+                        className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-mono text-gray-900 focus:border-blue-500 focus:outline-none"
                       />
                     </div>
 
@@ -3407,7 +3407,7 @@ export default function AdminProductsPage() {
                         type="file"
                         accept="image/*"
                         onChange={handleLocalFileUpload}
-                        className="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100 cursor-pointer"
+                        className="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
                       />
                     </div>
                   </div>
@@ -3423,7 +3423,7 @@ export default function AdminProductsPage() {
                             setNewProduct({ ...newProduct, image_url: preset.url });
                             showNotification(`Selected ${preset.title} image!`);
                           }}
-                          className="flex items-center gap-2 p-1.5 bg-gray-50 border border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 transition cursor-pointer text-xs font-bold text-gray-700 shrink-0"
+                          className="flex items-center gap-2 p-1.5 bg-gray-50 border border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition cursor-pointer text-xs font-bold text-gray-700 shrink-0"
                         >
                           <img src={preset.url} alt={preset.title} className="w-8 h-8 rounded-lg object-cover" />
                           <span>{preset.title}</span>
@@ -3436,7 +3436,7 @@ export default function AdminProductsPage() {
                     <img src={newProduct.image_url} alt="Main" className="w-20 h-20 rounded-2xl object-contain bg-gray-50 p-2 border border-gray-200 shadow-2xs" />
                     <div>
                       <p className="font-bold text-gray-900 text-xs">Featured Main Product Cover</p>
-                      <p className="text-[10px] text-emerald-600 font-bold mt-0.5">High resolution preview ready for storefront</p>
+                      <p className="text-[10px] text-blue-600 font-bold mt-0.5">High resolution preview ready for storefront</p>
                     </div>
                   </div>
                 </div>
@@ -3445,7 +3445,7 @@ export default function AdminProductsPage() {
               {/* STEP 4: VARIANTS */}
               {createStep === "variants" && (
                 <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-4">
-                  <div className="flex items-center gap-2 text-emerald-800 font-black text-sm pb-2 border-b border-gray-200">
+                  <div className="flex items-center gap-2 text-blue-800 font-black text-sm pb-2 border-b border-gray-200">
                     <span>🧩</span>
                     <span>Product Variants Settings</span>
                   </div>
@@ -3459,7 +3459,7 @@ export default function AdminProductsPage() {
                       type="checkbox"
                       checked={newProduct.has_variants}
                       onChange={(e) => setNewProduct({ ...newProduct, has_variants: e.target.checked })}
-                      className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                      className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
                     />
                   </div>
                 </div>
@@ -3471,7 +3471,7 @@ export default function AdminProductsPage() {
                   {/* 1. Dynamic Bullet Points Highlights with "+ Add One More Highlight" Button */}
                   <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-4">
                     <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-                      <div className="flex items-center gap-2 text-emerald-800 font-black text-sm">
+                      <div className="flex items-center gap-2 text-blue-800 font-black text-sm">
                         <span>✨</span>
                         <span>Product Highlights &amp; Bullet Points ("About This Item")</span>
                       </div>
@@ -3481,7 +3481,7 @@ export default function AdminProductsPage() {
                           ...newProduct,
                           highlights: [...(newProduct.highlights || []), ""]
                         })}
-                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1 shadow-2xs"
                       >
                         <span>+ Add One More Highlight</span>
                       </button>
@@ -3518,7 +3518,7 @@ export default function AdminProductsPage() {
                               newH[idx] = e.target.value;
                               setNewProduct({ ...newProduct, highlights: newH });
                             }}
-                            className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:bg-white focus:outline-none"
+                            className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs focus:border-blue-500 focus:bg-white focus:outline-none"
                           />
                         </div>
                       ))}
@@ -3530,7 +3530,7 @@ export default function AdminProductsPage() {
                         ...newProduct,
                         highlights: [...(newProduct.highlights || []), ""]
                       })}
-                      className="w-full bg-white border border-emerald-300 hover:bg-emerald-50 text-emerald-800 font-extrabold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
+                      className="w-full bg-white border border-blue-300 hover:bg-blue-50 text-blue-800 font-extrabold text-xs py-2.5 rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5 shadow-2xs"
                     >
                       <span>➕ Click to Add One More Highlight</span>
                     </button>
@@ -3657,7 +3657,7 @@ export default function AdminProductsPage() {
               {/* STEP 5: SEO */}
               {createStep === "seo" && (
                 <div className="bg-gray-50/70 border border-gray-200 p-5 rounded-2xl space-y-4">
-                  <div className="flex items-center gap-2 text-emerald-800 font-black text-sm pb-2 border-b border-gray-200">
+                  <div className="flex items-center gap-2 text-blue-800 font-black text-sm pb-2 border-b border-gray-200">
                     <span>🔍</span>
                     <span>SEO &amp; Other Details</span>
                   </div>
@@ -3726,7 +3726,7 @@ export default function AdminProductsPage() {
 
                   <button
                     type="submit"
-                    className="bg-[#059669] hover:bg-[#047857] text-white font-black px-6 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
+                    className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black px-6 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
                   >
                     <span>{editingProduct ? "✓" : "🚀"}</span>
                     <span>{editingProduct ? "Save & Update Product" : "Save & Publish"}</span>
@@ -3823,7 +3823,7 @@ export default function AdminProductsPage() {
                     <span className="text-[10px] text-gray-400 font-mono">ID: #{viewProductSpecs.id}</span>
                   </div>
                   <h3 className="text-lg font-black text-gray-900 mt-0.5">{viewProductSpecs.title}</h3>
-                  <p className="text-xs text-emerald-700 font-bold">Handle: {viewProductSpecs.handle}</p>
+                  <p className="text-xs text-blue-700 font-bold">Handle: {viewProductSpecs.handle}</p>
                 </div>
               </div>
 
@@ -3852,7 +3852,7 @@ export default function AdminProductsPage() {
 
               <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
                 <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Stock Quantity</span>
-                <span className="text-xs font-black text-emerald-700">{viewProductSpecs.stock_quantity ?? 0} units</span>
+                <span className="text-xs font-black text-blue-700">{viewProductSpecs.stock_quantity ?? 0} units</span>
               </div>
               <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
                 <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Low Stock Alert Limit</span>
@@ -3878,7 +3878,7 @@ export default function AdminProductsPage() {
 
               <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
                 <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Category Slug</span>
-                <span className="text-xs font-bold text-emerald-700 capitalize">{viewProductSpecs.category_slug || viewProductSpecs.category?.name || "General"}</span>
+                <span className="text-xs font-bold text-blue-700 capitalize">{viewProductSpecs.category_slug || viewProductSpecs.category?.name || "General"}</span>
               </div>
               <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
                 <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Sub Category</span>
@@ -3912,7 +3912,7 @@ export default function AdminProductsPage() {
               </div>
               <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
                 <span className="text-[9px] font-extrabold text-gray-400 uppercase block">GST Rate %</span>
-                <span className="text-xs font-black text-emerald-700">{viewProductSpecs.gst_rate ? `${viewProductSpecs.gst_rate}% GST` : "18% GST"}</span>
+                <span className="text-xs font-black text-blue-700">{viewProductSpecs.gst_rate ? `${viewProductSpecs.gst_rate}% GST` : "18% GST"}</span>
               </div>
 
               <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
@@ -3925,7 +3925,7 @@ export default function AdminProductsPage() {
               </div>
               <div className="bg-gray-50 p-3 rounded-2xl border border-gray-200/80">
                 <span className="text-[9px] font-extrabold text-gray-400 uppercase block">Live Active Status</span>
-                <span className="text-xs font-bold text-emerald-700">{viewProductSpecs.is_active !== false ? "✓ TRUE (Live)" : "FALSE (Hidden)"}</span>
+                <span className="text-xs font-bold text-blue-700">{viewProductSpecs.is_active !== false ? "✓ TRUE (Live)" : "FALSE (Hidden)"}</span>
               </div>
             </div>
 
@@ -3954,7 +3954,7 @@ export default function AdminProductsPage() {
                   setViewProductSpecs(null);
                   openEditProductModal(p);
                 }}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-2xl transition text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5"
+                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-2xl transition text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <span>✏️</span>
                 <span>Edit Full Product Attributes</span>

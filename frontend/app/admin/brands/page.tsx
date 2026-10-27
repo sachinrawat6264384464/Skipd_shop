@@ -17,7 +17,7 @@ export default function AdminBrandsPage() {
           <h1 className="text-2xl font-black text-gray-900">🏷️ Brands Manager</h1>
           <p className="text-xs text-gray-500 font-medium mt-0.5">Manage brand partners, manufacturer logos, and official brand pages</p>
         </div>
-        <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer">
+        <button className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer">
           + Add Brand
         </button>
       </div>
@@ -29,7 +29,7 @@ export default function AdminBrandsPage() {
             <div>
               <h4 className="font-black text-gray-900 text-sm">{b.name}</h4>
               <p className="text-xs text-gray-400 font-medium">{b.products} Products</p>
-              <span className="inline-block mt-1 bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">
+              <span className="inline-block mt-1 bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">
                 {b.status}
               </span>
             </div>

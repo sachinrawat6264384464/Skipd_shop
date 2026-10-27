@@ -248,7 +248,7 @@ export default function AdminDeliveryPage() {
     datasets: [
       {
         data: shipments.length > 0 ? [inTransitCount, outCount, delCount, rtoCount, cancelCount] : [0, 0, 0, 0, 0],
-        backgroundColor: ["#059669", "#f59e0b", "#3b82f6", "#ef4444", "#6b7280"],
+        backgroundColor: ["#2563EB", "#f59e0b", "#3b82f6", "#ef4444", "#6b7280"],
         borderWidth: 0,
         hoverOffset: 6
       }
@@ -270,10 +270,10 @@ export default function AdminDeliveryPage() {
       {
         label: "Delivered",
         data: shipments.length > 0 ? [delCount * 0.1, delCount * 0.2, delCount * 0.15, delCount * 0.25, delCount * 0.1, delCount * 0.1, delCount * 0.1] : [0, 0, 0, 0, 0, 0, 0],
-        borderColor: "#059669",
+        borderColor: "#2563EB",
         backgroundColor: "rgba(5, 150, 105, 0.08)",
         tension: 0.4,
-        pointBackgroundColor: "#059669",
+        pointBackgroundColor: "#2563EB",
         pointRadius: 4
       },
       {
@@ -306,7 +306,7 @@ export default function AdminDeliveryPage() {
       {toastMessage && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           toastMessage.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{toastMessage.text}</span>
@@ -316,8 +316,8 @@ export default function AdminDeliveryPage() {
       {/* TOP PAGE HEADER */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/60 shadow-2xs">
-            <svg className="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
+            <svg className="w-6 h-6 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="1" y="3" width="15" height="13" rx="2" />
               <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
               <circle cx="5.5" cy="18.5" r="2.5" />
@@ -350,7 +350,7 @@ export default function AdminDeliveryPage() {
               setNewAwb(`SR-${Math.floor(1000000 + Math.random() * 9000000)}`);
               setShowCreateModal(true);
             }}
-            className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-2"
+            className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-2"
           >
             <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <line x1="12" y1="5" x2="12" y2="19" />
@@ -378,7 +378,7 @@ export default function AdminDeliveryPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.totalShipments}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 18.6%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -386,11 +386,11 @@ export default function AdminDeliveryPage() {
         </div>
 
         {/* Card 2: In Transit */}
-        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-emerald-300 transition group">
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-blue-300 transition group">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">In Transit</p>
-            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 group-hover:scale-110 transition">
-              <svg className="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <span className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 group-hover:scale-110 transition">
+              <svg className="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="1" y="3" width="15" height="13" rx="2" />
                 <polygon points="16 8 20 8 23 11 23 16 16 16 16 8" />
                 <circle cx="5.5" cy="18.5" r="2.5" />
@@ -400,7 +400,7 @@ export default function AdminDeliveryPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.inTransit}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 15.3%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -423,7 +423,7 @@ export default function AdminDeliveryPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.outForDelivery}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 8.7%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -431,11 +431,11 @@ export default function AdminDeliveryPage() {
         </div>
 
         {/* Card 4: Delivered */}
-        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-emerald-300 transition group">
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-blue-300 transition group">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Delivered</p>
-            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 group-hover:scale-110 transition">
-              <svg className="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <span className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 group-hover:scale-110 transition">
+              <svg className="w-4 h-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                 <polyline points="22 4 12 14.01 9 11.01" />
               </svg>
@@ -443,7 +443,7 @@ export default function AdminDeliveryPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.delivered}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 20.4%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -463,7 +463,7 @@ export default function AdminDeliveryPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.successRate}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 2.4%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -498,7 +498,7 @@ export default function AdminDeliveryPage() {
         <button
           onClick={() => setActiveTab("Shipments")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
-            activeTab === "Shipments" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Shipments" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -513,7 +513,7 @@ export default function AdminDeliveryPage() {
         <button
           onClick={() => setActiveTab("Tracking")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
-            activeTab === "Tracking" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Tracking" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -526,7 +526,7 @@ export default function AdminDeliveryPage() {
         <button
           onClick={() => setActiveTab("Delivery Partners")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
-            activeTab === "Delivery Partners" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Delivery Partners" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -541,7 +541,7 @@ export default function AdminDeliveryPage() {
         <button
           onClick={() => setActiveTab("Shipping Zones")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
-            activeTab === "Shipping Zones" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Shipping Zones" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -555,7 +555,7 @@ export default function AdminDeliveryPage() {
         <button
           onClick={() => setActiveTab("Shipping Rates")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
-            activeTab === "Shipping Rates" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Shipping Rates" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -584,7 +584,7 @@ export default function AdminDeliveryPage() {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-emerald-500 focus:outline-none transition"
+            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-blue-500 focus:outline-none transition"
           />
         </div>
 
@@ -595,7 +595,7 @@ export default function AdminDeliveryPage() {
               setSelectedStatus(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Status ▾</option>
             <option value="TRANSIT">IN TRANSIT</option>
@@ -611,7 +611,7 @@ export default function AdminDeliveryPage() {
               setSelectedCourier(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Couriers ▾</option>
             <option value="Delhivery">Delhivery</option>
@@ -627,7 +627,7 @@ export default function AdminDeliveryPage() {
               setSelectedZone(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Zones ▾</option>
             <option value="North">North Zone</option>
@@ -693,12 +693,12 @@ export default function AdminDeliveryPage() {
                     <tr key={s.id} className="hover:bg-gray-50/80 transition group">
                       
                       {/* AWB TRACKING CODE */}
-                      <td className="px-6 py-4 font-black font-mono text-[#059669]">
+                      <td className="px-6 py-4 font-black font-mono text-[#2563EB]">
                         {s.awbCode}
                       </td>
 
                       {/* ORDER ID */}
-                      <td className="px-6 py-4 font-mono font-black text-[#059669]">
+                      <td className="px-6 py-4 font-mono font-black text-[#2563EB]">
                         {s.orderId}
                       </td>
 
@@ -745,7 +745,7 @@ export default function AdminDeliveryPage() {
                       {/* SHIPMENT STATUS BADGE */}
                       <td className="px-6 py-4">
                         {s.status === "IN TRANSIT" ? (
-                          <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-emerald-200">
+                          <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-blue-200">
                             IN TRANSIT
                           </span>
                         ) : s.status === "OUT FOR DELIVERY" ? (
@@ -785,7 +785,7 @@ export default function AdminDeliveryPage() {
                                 updateOrderStatusGlobal(s.orderId || s.awbCode, "DELIVERED");
                                 showToast(`Order ${s.orderId} marked as DELIVERED!`);
                               }}
-                              className="bg-[#059669] hover:bg-[#047857] text-white text-[10px] font-black px-3 py-1.5 rounded-xl transition shadow-xs flex items-center gap-1 cursor-pointer shrink-0"
+                              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[10px] font-black px-3 py-1.5 rounded-xl transition shadow-xs flex items-center gap-1 cursor-pointer shrink-0"
                               title="Mark as Delivered"
                             >
                               <span>✓</span>
@@ -841,7 +841,7 @@ export default function AdminDeliveryPage() {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`w-8 h-8 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center ${
                       currentPage === pageNum
-                        ? "bg-[#059669] text-white shadow-xs"
+                        ? "bg-[#2563EB] text-white shadow-xs"
                         : "border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
                     }`}
                   >
@@ -894,7 +894,7 @@ export default function AdminDeliveryPage() {
               placeholder="Enter AWB Code (e.g. SR-8849201) or Order ID (#BotCom-25879)..."
               value={trackSearchCode}
               onChange={(e) => setTrackSearchCode(e.target.value)}
-              className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-3 text-xs font-mono font-bold text-gray-900 focus:border-emerald-500 focus:outline-none"
+              className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-3 text-xs font-mono font-bold text-gray-900 focus:border-blue-500 focus:outline-none"
             />
             <button
               onClick={() => {
@@ -922,7 +922,7 @@ export default function AdminDeliveryPage() {
                   showToast(`AWB ${trackSearchCode} queried (Live Courier API connected)`, "success");
                 }
               }}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-2xl transition cursor-pointer shadow-xs"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-2xl transition cursor-pointer shadow-xs"
             >
               🔍 Track Shipment Now
             </button>
@@ -933,7 +933,7 @@ export default function AdminDeliveryPage() {
             <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
               <div className="bg-white p-3.5 rounded-xl border border-gray-200">
                 <span className="text-[10px] text-gray-400 font-bold uppercase">AWB CODE</span>
-                <p className="font-mono font-black text-emerald-700 text-sm">{activeTrackingData.awbCode}</p>
+                <p className="font-mono font-black text-blue-700 text-sm">{activeTrackingData.awbCode}</p>
               </div>
               <div className="bg-white p-3.5 rounded-xl border border-gray-200">
                 <span className="text-[10px] text-gray-400 font-bold uppercase">ORDER ID</span>
@@ -945,7 +945,7 @@ export default function AdminDeliveryPage() {
               </div>
               <div className="bg-white p-3.5 rounded-xl border border-gray-200">
                 <span className="text-[10px] text-gray-400 font-bold uppercase">EST. DELIVERY</span>
-                <p className="font-bold text-emerald-600 text-sm">{activeTrackingData.estDate}</p>
+                <p className="font-bold text-blue-600 text-sm">{activeTrackingData.estDate}</p>
               </div>
             </div>
 
@@ -957,7 +957,7 @@ export default function AdminDeliveryPage() {
                   <div key={idx} className="flex items-start gap-3 text-xs">
                     <span className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs shrink-0 ${
                       item.status === "completed" 
-                        ? "bg-emerald-100 text-emerald-700 border border-emerald-300" 
+                        ? "bg-blue-100 text-blue-700 border border-blue-300" 
                         : item.status === "active" 
                         ? "bg-amber-100 text-amber-800 border border-amber-300 animate-pulse" 
                         : "bg-gray-200 text-gray-400"
@@ -1007,7 +1007,7 @@ export default function AdminDeliveryPage() {
                       showToast(`${p.name} status toggled!`);
                     }}
                     className={`px-3 py-1 rounded-full text-[10px] font-black border transition cursor-pointer ${
-                      p.status === "Active" ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "bg-gray-200 text-gray-700 border-gray-300"
+                      p.status === "Active" ? "bg-blue-100 text-blue-800 border-blue-300" : "bg-gray-200 text-gray-700 border-gray-300"
                     }`}
                   >
                     {p.status}
@@ -1029,7 +1029,7 @@ export default function AdminDeliveryPage() {
 
           <button
             onClick={() => showToast("🎉 Courier API Credentials saved & verified!")}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-2xl transition text-xs shadow-xs cursor-pointer"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-2xl transition text-xs shadow-xs cursor-pointer"
           >
             Save Partner Configurations
           </button>
@@ -1046,7 +1046,7 @@ export default function AdminDeliveryPage() {
             </div>
             <button
               onClick={() => showToast("Add Shipping Zone modal opened")}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition cursor-pointer"
             >
               + Add New Zone
             </button>
@@ -1058,14 +1058,14 @@ export default function AdminDeliveryPage() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="font-black text-gray-900 text-sm">{z.name}</span>
-                    <span className="bg-emerald-100 text-emerald-800 font-extrabold text-[10px] px-2 py-0.5 rounded-full border border-emerald-200">{z.status}</span>
+                    <span className="bg-blue-100 text-blue-800 font-extrabold text-[10px] px-2 py-0.5 rounded-full border border-blue-200">{z.status}</span>
                   </div>
                   <p className="text-gray-500">{z.cities}</p>
                 </div>
                 <div className="flex items-center gap-4 shrink-0">
                   <div className="text-right">
                     <span className="font-black text-gray-900 text-xs block">{z.estDays} SLA</span>
-                    <span className="text-emerald-700 font-bold text-[11px]">{z.fee}</span>
+                    <span className="text-blue-700 font-bold text-[11px]">{z.fee}</span>
                   </div>
                   <button
                     onClick={() => showToast(`Edit ${z.name}`)}
@@ -1095,7 +1095,7 @@ export default function AdminDeliveryPage() {
                 type="number"
                 value={shippingRates.freeThreshold}
                 onChange={(e) => setShippingRates({ ...shippingRates, freeThreshold: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div className="space-y-1">
@@ -1104,7 +1104,7 @@ export default function AdminDeliveryPage() {
                 type="number"
                 value={shippingRates.standardRate}
                 onChange={(e) => setShippingRates({ ...shippingRates, standardRate: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div className="space-y-1">
@@ -1113,7 +1113,7 @@ export default function AdminDeliveryPage() {
                 type="number"
                 value={shippingRates.expressAirRate}
                 onChange={(e) => setShippingRates({ ...shippingRates, expressAirRate: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div className="space-y-1">
@@ -1122,7 +1122,7 @@ export default function AdminDeliveryPage() {
                 type="number"
                 value={shippingRates.codSurcharge}
                 onChange={(e) => setShippingRates({ ...shippingRates, codSurcharge: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -1136,7 +1136,7 @@ export default function AdminDeliveryPage() {
               }
               showToast("🎉 Shipping rate slabs saved & synced live across checkout!");
             }}
-            className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-2xl transition text-xs shadow-xs cursor-pointer"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-2xl transition text-xs shadow-xs cursor-pointer"
           >
             Save Shipping Rates Configuration
           </button>
@@ -1165,7 +1165,7 @@ export default function AdminDeliveryPage() {
             <div className="sm:col-span-6 space-y-2 text-xs font-bold text-gray-700">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#059669]"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]"></span>
                   <span>In Transit</span>
                 </div>
                 <span className="text-[11px] text-gray-500 font-bold">842 (67.6%)</span>
@@ -1207,7 +1207,7 @@ export default function AdminDeliveryPage() {
           </div>
 
           <div className="border-t pt-3">
-            <a href="#" className="text-xs font-black text-[#059669] hover:underline flex items-center gap-1">
+            <a href="#" className="text-xs font-black text-[#2563EB] hover:underline flex items-center gap-1">
               View Full Report →
             </a>
           </div>
@@ -1236,7 +1236,7 @@ export default function AdminDeliveryPage() {
                     <div className="flex items-center justify-end gap-2">
                       <span className="text-[11px]">96.9%</span>
                       <div className="w-10 bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#059669] h-full w-[96.9%]"></div>
+                        <div className="bg-[#2563EB] h-full w-[96.9%]"></div>
                       </div>
                     </div>
                   </td>
@@ -1250,7 +1250,7 @@ export default function AdminDeliveryPage() {
                     <div className="flex items-center justify-end gap-2">
                       <span className="text-[11px]">96.5%</span>
                       <div className="w-10 bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#059669] h-full w-[96.5%]"></div>
+                        <div className="bg-[#2563EB] h-full w-[96.5%]"></div>
                       </div>
                     </div>
                   </td>
@@ -1264,7 +1264,7 @@ export default function AdminDeliveryPage() {
                     <div className="flex items-center justify-end gap-2">
                       <span className="text-[11px]">95.9%</span>
                       <div className="w-10 bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#059669] h-full w-[95.9%]"></div>
+                        <div className="bg-[#2563EB] h-full w-[95.9%]"></div>
                       </div>
                     </div>
                   </td>
@@ -1278,7 +1278,7 @@ export default function AdminDeliveryPage() {
                     <div className="flex items-center justify-end gap-2">
                       <span className="text-[11px]">95.1%</span>
                       <div className="w-10 bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#059669] h-full w-[95.1%]"></div>
+                        <div className="bg-[#2563EB] h-full w-[95.1%]"></div>
                       </div>
                     </div>
                   </td>
@@ -1292,7 +1292,7 @@ export default function AdminDeliveryPage() {
                     <div className="flex items-center justify-end gap-2">
                       <span className="text-[11px]">92.7%</span>
                       <div className="w-10 bg-gray-200 h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#059669] h-full w-[92.7%]"></div>
+                        <div className="bg-[#2563EB] h-full w-[92.7%]"></div>
                       </div>
                     </div>
                   </td>
@@ -1302,7 +1302,7 @@ export default function AdminDeliveryPage() {
           </div>
 
           <div className="border-t pt-3">
-            <a href="#" className="text-xs font-black text-[#059669] hover:underline flex items-center gap-1">
+            <a href="#" className="text-xs font-black text-[#2563EB] hover:underline flex items-center gap-1">
               View All Partners →
             </a>
           </div>
@@ -1319,7 +1319,7 @@ export default function AdminDeliveryPage() {
 
           <div className="flex items-center gap-4 text-xs font-bold text-gray-600">
             <div className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#059669]"></span>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]"></span>
               <span>Delivered</span>
             </div>
             <div className="flex items-center gap-1.5">
@@ -1333,7 +1333,7 @@ export default function AdminDeliveryPage() {
           </div>
 
           <div className="border-t pt-3">
-            <a href="#" className="text-xs font-black text-[#059669] hover:underline flex items-center gap-1">
+            <a href="#" className="text-xs font-black text-[#2563EB] hover:underline flex items-center gap-1">
               View Analytics →
             </a>
           </div>
@@ -1363,7 +1363,7 @@ export default function AdminDeliveryPage() {
                   required
                   value={newAwb}
                   onChange={(e) => setNewAwb(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-mono font-bold text-emerald-700 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-mono font-bold text-blue-700 focus:outline-none"
                 />
               </div>
 
@@ -1430,7 +1430,7 @@ export default function AdminDeliveryPage() {
 
               <button
                 type="submit"
-                className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-3 rounded-xl transition text-xs shadow-md cursor-pointer mt-2"
+                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-3 rounded-xl transition text-xs shadow-md cursor-pointer mt-2"
               >
                 Create Shipment
               </button>
@@ -1446,7 +1446,7 @@ export default function AdminDeliveryPage() {
             <div className="flex justify-between items-start border-b border-gray-100 pb-4">
               <div>
                 <h3 className="text-lg font-black text-gray-900">AWB Tracking: {selectedShipmentForModal.awbCode}</h3>
-                <p className="text-xs text-emerald-600 font-mono font-black">{selectedShipmentForModal.orderId}</p>
+                <p className="text-xs text-blue-600 font-mono font-black">{selectedShipmentForModal.orderId}</p>
               </div>
               <button
                 onClick={() => setSelectedShipmentForModal(null)}
@@ -1472,7 +1472,7 @@ export default function AdminDeliveryPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 font-bold">Status:</span>
-                  <span className="font-black text-emerald-700">{selectedShipmentForModal.status}</span>
+                  <span className="font-black text-blue-700">{selectedShipmentForModal.status}</span>
                 </div>
                 <div className="flex justify-between border-t pt-2 mt-2">
                   <span className="text-gray-900 font-black">Current Location:</span>
@@ -1506,7 +1506,7 @@ export default function AdminDeliveryPage() {
                   showToast(res?.message || "Courier pickup scheduled successfully!");
                   loadLiveShipmentsData();
                 }}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
               >
                 <span>📦 Schedule Pickup</span>
               </button>

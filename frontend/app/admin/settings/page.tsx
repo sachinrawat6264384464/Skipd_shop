@@ -103,7 +103,7 @@ export default function AdminSettingsPage() {
       {toastMessage && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           toastMessage.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{toastMessage.text}</span>
@@ -128,7 +128,7 @@ export default function AdminSettingsPage() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap ${
               activeTab === tab 
-                ? "bg-emerald-600 text-white shadow-xs" 
+                ? "bg-blue-600 text-white shadow-xs" 
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
@@ -150,7 +150,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={settings.storeName}
                 onChange={(e) => setSettings({ ...settings, storeName: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div>
@@ -159,7 +159,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={settings.storeTagline}
                 onChange={(e) => setSettings({ ...settings, storeTagline: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -168,7 +168,7 @@ export default function AdminSettingsPage() {
                 <select
                   value={settings.currency}
                   onChange={(e) => setSettings({ ...settings, currency: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                 >
                   <option value="INR (₹)">INR (₹) - Indian Rupee</option>
                   <option value="USD ($)">USD ($) - US Dollar</option>
@@ -181,7 +181,7 @@ export default function AdminSettingsPage() {
                   type="email"
                   value={settings.supportEmail}
                   onChange={(e) => setSettings({ ...settings, supportEmail: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -191,7 +191,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={settings.storeAddress}
                 onChange={(e) => setSettings({ ...settings, storeAddress: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -210,7 +210,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.maintenanceMode}
                 onChange={(e) => setSettings({ ...settings, maintenanceMode: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -222,7 +222,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.guestCheckout}
                 onChange={(e) => setSettings({ ...settings, guestCheckout: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -234,7 +234,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.autoInventoryDeduct}
                 onChange={(e) => setSettings({ ...settings, autoInventoryDeduct: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -244,7 +244,7 @@ export default function AdminSettingsPage() {
                   type="number"
                   value={settings.lowStockThreshold}
                   onChange={(e) => setSettings({ ...settings, lowStockThreshold: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
                 />
               </div>
               <div>
@@ -253,7 +253,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.defaultWarehouse}
                   onChange={(e) => setSettings({ ...settings, defaultWarehouse: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -270,7 +270,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={settings.razorpayKey}
                 onChange={(e) => setSettings({ ...settings, razorpayKey: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div>
@@ -279,7 +279,7 @@ export default function AdminSettingsPage() {
                 type="password"
                 value={settings.razorpaySecret}
                 onChange={(e) => setSettings({ ...settings, razorpaySecret: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div>
@@ -288,7 +288,7 @@ export default function AdminSettingsPage() {
                 type="text"
                 value={settings.upiGatewayId}
                 onChange={(e) => setSettings({ ...settings, upiGatewayId: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -300,7 +300,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.codEnabled}
                 onChange={(e) => setSettings({ ...settings, codEnabled: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
             <div>
@@ -309,7 +309,7 @@ export default function AdminSettingsPage() {
                 type="number"
                 value={settings.maxCodLimit}
                 onChange={(e) => setSettings({ ...settings, maxCodLimit: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -325,7 +325,7 @@ export default function AdminSettingsPage() {
                 type="email"
                 value={settings.shiprocketUser}
                 onChange={(e) => setSettings({ ...settings, shiprocketUser: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -335,7 +335,7 @@ export default function AdminSettingsPage() {
                   type="number"
                   value={settings.freeShippingThreshold}
                   onChange={(e) => setSettings({ ...settings, freeShippingThreshold: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
                 />
               </div>
               <div>
@@ -344,7 +344,7 @@ export default function AdminSettingsPage() {
                   type="number"
                   value={settings.standardShippingFee}
                   onChange={(e) => setSettings({ ...settings, standardShippingFee: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -354,7 +354,7 @@ export default function AdminSettingsPage() {
                 type="number"
                 value={settings.expressAirShippingFee}
                 onChange={(e) => setSettings({ ...settings, expressAirShippingFee: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
               />
             </div>
           </div>
@@ -370,7 +370,7 @@ export default function AdminSettingsPage() {
                 <select
                   value={settings.defaultGstRate}
                   onChange={(e) => setSettings({ ...settings, defaultGstRate: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                 >
                   <option value="18%">18% Standard GST</option>
                   <option value="12%">12% Reduced GST</option>
@@ -384,7 +384,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.defaultHsnCode}
                   onChange={(e) => setSettings({ ...settings, defaultHsnCode: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -397,7 +397,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.taxInclusivePrice}
                 onChange={(e) => setSettings({ ...settings, taxInclusivePrice: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
           </div>
@@ -414,7 +414,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.smtpHost}
                   onChange={(e) => setSettings({ ...settings, smtpHost: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-blue-500 focus:outline-none"
                 />
               </div>
               <div>
@@ -423,7 +423,7 @@ export default function AdminSettingsPage() {
                   type="text"
                   value={settings.smtpPort}
                   onChange={(e) => setSettings({ ...settings, smtpPort: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-blue-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -433,7 +433,7 @@ export default function AdminSettingsPage() {
                 type="email"
                 value={settings.adminNotifyEmail}
                 onChange={(e) => setSettings({ ...settings, adminNotifyEmail: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
               />
             </div>
             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -445,7 +445,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.welcomeEmailActive}
                 onChange={(e) => setSettings({ ...settings, welcomeEmailActive: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
           </div>
@@ -464,7 +464,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.newOrderSmsAlert}
                 onChange={(e) => setSettings({ ...settings, newOrderSmsAlert: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -476,7 +476,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.whatsappAlertsActive}
                 onChange={(e) => setSettings({ ...settings, whatsappAlertsActive: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
             <div className="flex items-center justify-between bg-gray-50 p-4 rounded-xl border border-gray-200">
@@ -488,7 +488,7 @@ export default function AdminSettingsPage() {
                 type="checkbox"
                 checked={settings.lowStockAdminPush}
                 onChange={(e) => setSettings({ ...settings, lowStockAdminPush: e.target.checked })}
-                className="w-5 h-5 accent-emerald-600 rounded cursor-pointer"
+                className="w-5 h-5 accent-blue-600 rounded cursor-pointer"
               />
             </div>
           </div>
@@ -496,7 +496,7 @@ export default function AdminSettingsPage() {
 
         <button
           type="submit"
-          className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3.5 rounded-xl transition shadow-md text-xs cursor-pointer mt-4"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3.5 rounded-xl transition shadow-md text-xs cursor-pointer mt-4"
         >
           Save System Settings
         </button>

@@ -150,7 +150,7 @@ export default function AdminSalesPage() {
           startDate: s.start_date ? new Date(s.start_date).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "May 24, 2026",
           endDate: s.end_date ? new Date(s.end_date).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" }) : "May 30, 2026",
           status: s.status === "ACTIVE" ? "Active" : s.status === "DRAFT" ? "Draft" : "Active",
-          statusBg: s.status === "ACTIVE" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700",
+          statusBg: s.status === "ACTIVE" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-700",
           priority: "High",
           priorityBg: "bg-red-50 text-red-600 border-red-200"
         }));
@@ -200,23 +200,23 @@ export default function AdminSalesPage() {
           startDate: "May 24, 2026 10:00 AM",
           endDate: "May 30, 2026 11:59 PM",
           status: "Active",
-          statusBg: "bg-emerald-100 text-emerald-800",
+          statusBg: "bg-blue-100 text-blue-800",
           priority: "High",
           priorityBg: "bg-red-50 text-red-600 border-red-200"
         },
         {
           id: 1002,
           icon: "🏷️",
-          iconBg: "bg-emerald-50 text-emerald-600",
+          iconBg: "bg-blue-50 text-blue-600",
           title: "New Customer Welcome Voucher",
           subtitle: "Flat ₹500 discount for first-time signups",
           type: "Promo Code",
-          typeBg: "bg-emerald-50 text-emerald-700 border-emerald-100",
+          typeBg: "bg-blue-50 text-blue-700 border-blue-100",
           discountOffer: "Flat ₹500 OFF (Code: WELCOME500)",
           startDate: "May 01, 2026 12:00 AM",
           endDate: "Dec 31, 2026 11:59 PM",
           status: "Active",
-          statusBg: "bg-emerald-100 text-emerald-800",
+          statusBg: "bg-blue-100 text-blue-800",
           priority: "High",
           priorityBg: "bg-red-50 text-red-600 border-red-200"
         },
@@ -232,7 +232,7 @@ export default function AdminSalesPage() {
           startDate: "May 25, 2026 09:00 AM",
           endDate: "May 28, 2026 11:59 PM",
           status: "Active",
-          statusBg: "bg-emerald-100 text-emerald-800",
+          statusBg: "bg-blue-100 text-blue-800",
           priority: "Medium",
           priorityBg: "bg-amber-50 text-amber-700 border-amber-200"
         }
@@ -263,7 +263,7 @@ export default function AdminSalesPage() {
       startDate: newCampaign.startDate || "May 25, 2025 10:00 AM",
       endDate: newCampaign.endDate || "May 31, 2025 11:59 PM",
       status: newCampaign.status,
-      statusBg: newCampaign.status === "Active" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700",
+      statusBg: newCampaign.status === "Active" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-700",
       priority: newCampaign.priority,
       priorityBg: newCampaign.priority === "High" ? "bg-red-50 text-red-600" : "bg-amber-50 text-amber-700"
     };
@@ -326,7 +326,7 @@ export default function AdminSalesPage() {
 
   const handleToggleStatus = async (c: any) => {
     const newStatus = c.status === "Active" ? "Draft" : "Active";
-    const newStatusBg = newStatus === "Active" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700";
+    const newStatusBg = newStatus === "Active" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-700";
 
     const updated = campaigns.map(item => item.id === c.id ? { ...item, status: newStatus, statusBg: newStatusBg } : item);
     setCampaigns(updated);
@@ -366,7 +366,7 @@ export default function AdminSalesPage() {
 
     const updated = campaigns.map(item => item.id === viewModalCampaign.id ? {
       ...viewModalCampaign,
-      statusBg: viewModalCampaign.status === "Active" ? "bg-emerald-100 text-emerald-800" : "bg-gray-100 text-gray-700"
+      statusBg: viewModalCampaign.status === "Active" ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-700"
     } : item);
 
     setCampaigns(updated);
@@ -429,7 +429,7 @@ export default function AdminSalesPage() {
       {toastMessage && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           toastMessage.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{toastMessage.text}</span>
@@ -439,7 +439,7 @@ export default function AdminSalesPage() {
       {/* TOP HEADER (Matching Screenshot 100%) */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-200/60 shadow-2xs text-lg">
+          <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs text-lg">
             📢
           </div>
           <div>
@@ -461,16 +461,16 @@ export default function AdminSalesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
         
         {/* Card 1: Total Campaigns */}
-        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-emerald-300 transition group">
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-blue-300 transition group">
           <div className="flex items-center justify-between">
-            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 text-sm font-bold">
+            <span className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 text-sm font-bold">
               ⚡
             </span>
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Total Campaigns</p>
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{totalCount}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>{totalCount > 0 ? "▲ 18%" : "0"}</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -487,7 +487,7 @@ export default function AdminSalesPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{activeCount}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>{activeCount > 0 ? "▲ 50%" : "0"}</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -504,7 +504,7 @@ export default function AdminSalesPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{totalReachFormatted}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>▲ 22%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -512,16 +512,16 @@ export default function AdminSalesPage() {
         </div>
 
         {/* Card 4: Total Sales (Promo) */}
-        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-emerald-300 transition group">
+        <div className="bg-white border border-gray-200/80 p-4 rounded-2xl space-y-3 shadow-2xs hover:border-blue-300 transition group">
           <div className="flex items-center justify-between">
-            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 text-sm font-bold">
+            <span className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 text-sm font-bold">
               👛
             </span>
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Total Sales (Promo)</p>
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{totalSalesFormatted}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>▲ 26%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -538,7 +538,7 @@ export default function AdminSalesPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{customersEngagedFormatted}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>▲ 19%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -565,7 +565,7 @@ export default function AdminSalesPage() {
             }}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
               activeTab === tab.title
-                ? "bg-[#059669] text-white shadow-xs"
+                ? "bg-[#2563EB] text-white shadow-xs"
                 : "text-gray-600 hover:bg-gray-100"
             }`}
           >
@@ -588,7 +588,7 @@ export default function AdminSalesPage() {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-emerald-500 focus:outline-none transition"
+            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-blue-500 focus:outline-none transition"
           />
         </div>
 
@@ -599,7 +599,7 @@ export default function AdminSalesPage() {
               setSelectedStatus(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Status ▾</option>
             <option value="Active">Active</option>
@@ -614,7 +614,7 @@ export default function AdminSalesPage() {
               setSelectedType(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Types ▾</option>
             <option value="Flash Sale">Flash Sale</option>
@@ -656,7 +656,7 @@ export default function AdminSalesPage() {
               <thead className="bg-gray-50 text-gray-400 font-extrabold uppercase text-[10px] border-b border-gray-100 tracking-wider">
                 <tr>
                   <th className="w-10 px-4 py-4 text-center">
-                    <input type="checkbox" className="rounded accent-emerald-600" />
+                    <input type="checkbox" className="rounded accent-blue-600" />
                   </th>
                   <th className="px-6 py-4">CAMPAIGN TITLE</th>
                   <th className="px-6 py-4">TYPE ▾</th>
@@ -674,7 +674,7 @@ export default function AdminSalesPage() {
                     
                     {/* CHECKBOX */}
                     <td className="w-10 px-4 py-4 text-center">
-                      <input type="checkbox" className="rounded accent-emerald-600" />
+                      <input type="checkbox" className="rounded accent-blue-600" />
                     </td>
 
                     {/* CAMPAIGN TITLE */}
@@ -749,7 +749,7 @@ export default function AdminSalesPage() {
                             setIsEditingModal(true);
                           }}
                           title="Edit Campaign"
-                          className="w-8 h-8 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-700 inline-flex items-center justify-center transition cursor-pointer text-xs font-bold"
+                          className="w-8 h-8 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 inline-flex items-center justify-center transition cursor-pointer text-xs font-bold"
                         >
                           ✏️
                         </button>
@@ -792,7 +792,7 @@ export default function AdminSalesPage() {
                   onClick={() => setCurrentPage(pageNum)}
                   className={`w-8 h-8 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center ${
                     currentPage === pageNum
-                      ? "bg-[#059669] text-white shadow-xs"
+                      ? "bg-[#2563EB] text-white shadow-xs"
                       : "border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
                   }`}
                 >
@@ -904,7 +904,7 @@ export default function AdminSalesPage() {
                   placeholder="e.g. Flat ₹500 OFF or Up to 60% OFF"
                   value={newCampaign.discountOffer}
                   onChange={(e) => setNewCampaign({ ...newCampaign, discountOffer: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-emerald-700 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-blue-700 focus:outline-none"
                 />
               </div>
 
@@ -971,7 +971,7 @@ export default function AdminSalesPage() {
                     required
                     value={viewModalCampaign.discountOffer}
                     onChange={(e) => setViewModalCampaign({ ...viewModalCampaign, discountOffer: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-emerald-700 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 font-bold text-blue-700 focus:outline-none"
                   />
                 </div>
 
@@ -1013,7 +1013,7 @@ export default function AdminSalesPage() {
                   </button>
                   <button
                     type="submit"
-                    className="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl transition text-xs shadow-md cursor-pointer"
+                    className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl transition text-xs shadow-md cursor-pointer"
                   >
                     Save Changes
                   </button>
@@ -1033,9 +1033,9 @@ export default function AdminSalesPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl">
-                    <span className="text-[10px] font-bold text-emerald-600 uppercase block">Discount / Badge</span>
-                    <span className="text-sm font-black text-emerald-800">{viewModalCampaign.discountOffer}</span>
+                  <div className="bg-blue-50 border border-blue-100 p-3 rounded-xl">
+                    <span className="text-[10px] font-bold text-blue-600 uppercase block">Discount / Badge</span>
+                    <span className="text-sm font-black text-blue-800">{viewModalCampaign.discountOffer}</span>
                   </div>
 
                   <div className="bg-purple-50 border border-purple-100 p-3 rounded-xl">
@@ -1058,7 +1058,7 @@ export default function AdminSalesPage() {
                 <div className="flex gap-3 pt-2">
                   <button
                     onClick={() => setIsEditingModal(true)}
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-xl transition text-xs shadow-md cursor-pointer flex items-center justify-center gap-1"
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition text-xs shadow-md cursor-pointer flex items-center justify-center gap-1"
                   >
                     <span>✏️</span>
                     <span>Edit This Campaign</span>

@@ -234,13 +234,13 @@ export default function AdminPaymentsPage() {
       });
       const deduplicatedRaw = Array.from(uniqueTxnsMap.values());
 
-      const colors = ["bg-purple-600", "bg-emerald-600", "bg-amber-500", "bg-blue-600", "bg-[#8b5cf6]", "bg-rose-500"];
+      const colors = ["bg-purple-600", "bg-blue-600", "bg-amber-500", "bg-blue-600", "bg-[#8b5cf6]", "bg-rose-500"];
       const formatted = deduplicatedRaw.map((t: any, idx: number) => ({
         id: t.id || `PAY-${99201 + idx}`,
         orderId: t.orderId || `#BotCom-${25879 - idx}`,
         customerName: t.customerName || "Store Customer",
         customerEmail: t.customerEmail || "customer@e-com.in",
-        avatarBg: colors[idx % colors.length] || "bg-emerald-600",
+        avatarBg: colors[idx % colors.length] || "bg-blue-600",
         paymentMethod: t.payment_method || "Razorpay UPI",
         methodIcon: (t.payment_method || "").includes("UPI") ? "UPI" : (t.payment_method || "").includes("VISA") ? "VISA" : "PAY",
         gateway: t.gateway || "Razorpay",
@@ -315,7 +315,7 @@ export default function AdminPaymentsPage() {
           methodChartStats.wallet,
           methodChartStats.others
         ],
-        backgroundColor: ["#059669", "#3b82f6", "#f59e0b", "#8b5cf6", "#6b7280"],
+        backgroundColor: ["#2563EB", "#3b82f6", "#f59e0b", "#8b5cf6", "#6b7280"],
         borderWidth: 0,
         hoverOffset: 6
       }
@@ -342,11 +342,11 @@ export default function AdminPaymentsPage() {
       {
         label: "Daily Revenue (₹)",
         data: dailyTrendStats.data,
-        borderColor: "#059669",
+        borderColor: "#2563EB",
         backgroundColor: "rgba(5, 150, 105, 0.08)",
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: "#059669",
+        pointBackgroundColor: "#2563EB",
         pointRadius: 4,
         pointHoverRadius: 6
       }
@@ -384,7 +384,7 @@ export default function AdminPaymentsPage() {
           gatewayChartStats.cashfreeCount,
           gatewayChartStats.otherCount
         ],
-        backgroundColor: ["#059669", "#3b82f6", "#f59e0b"],
+        backgroundColor: ["#2563EB", "#3b82f6", "#f59e0b"],
         borderWidth: 0,
         hoverOffset: 6
       }
@@ -406,7 +406,7 @@ export default function AdminPaymentsPage() {
       {toastMessage && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           toastMessage.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{toastMessage.text}</span>
@@ -427,7 +427,7 @@ export default function AdminPaymentsPage() {
 
         <div className="flex items-center gap-3 flex-wrap">
           {/* Date Selector */}
-          <div className="bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-700 flex items-center gap-2 shadow-2xs cursor-pointer hover:border-emerald-500 transition">
+          <div className="bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-700 flex items-center gap-2 shadow-2xs cursor-pointer hover:border-blue-500 transition">
             <span className="text-gray-400">📅</span>
             <span>May 19, 2025 - May 25, 2025</span>
             <span className="text-gray-400 text-[10px]">▾</span>
@@ -436,7 +436,7 @@ export default function AdminPaymentsPage() {
           {/* Export Settlement Statement Button */}
           <button
             onClick={handleExportStatement}
-            className="bg-white hover:bg-emerald-50 text-[#059669] border border-emerald-500 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5"
+            className="bg-white hover:bg-blue-50 text-[#2563EB] border border-blue-500 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5"
           >
             <span>📥</span>
             <span>Export Settlement Statement</span>
@@ -448,46 +448,46 @@ export default function AdminPaymentsPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
         
         {/* Card 1: Total Transaction Amount */}
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl space-y-3 shadow-2xs hover:border-emerald-300 transition group">
+        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl space-y-3 shadow-2xs hover:border-blue-300 transition group">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Total Transaction Amount</p>
-            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-black border border-emerald-100 group-hover:scale-110 transition">
+            <span className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-black border border-blue-100 group-hover:scale-110 transition">
               💡
             </span>
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.totalAmount}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 18.6%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
           </div>
           {/* Green Sparkline */}
           <div className="h-6 w-full pt-1">
-            <svg className="w-full h-full text-emerald-500" viewBox="0 0 100 25" fill="none">
+            <svg className="w-full h-full text-blue-500" viewBox="0 0 100 25" fill="none">
               <path d="M0 20 L20 15 L40 18 L60 8 L80 12 L100 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
         </div>
 
         {/* Card 2: Successful Payments */}
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl space-y-3 shadow-2xs hover:border-emerald-300 transition group">
+        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl space-y-3 shadow-2xs hover:border-blue-300 transition group">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">Successful Payments</p>
-            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-black border border-emerald-100 group-hover:scale-110 transition">
+            <span className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-black border border-blue-100 group-hover:scale-110 transition">
               ✓
             </span>
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.successfulPayments}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 22.4%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
           </div>
           {/* Green Sparkline */}
           <div className="h-6 w-full pt-1">
-            <svg className="w-full h-full text-emerald-500" viewBox="0 0 100 25" fill="none">
+            <svg className="w-full h-full text-blue-500" viewBox="0 0 100 25" fill="none">
               <path d="M0 18 L25 12 L50 16 L75 6 L100 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
           </div>
@@ -503,7 +503,7 @@ export default function AdminPaymentsPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.refundsProcessed}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 9.8%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -549,7 +549,7 @@ export default function AdminPaymentsPage() {
           </div>
           <div>
             <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.gatewayCharges}</p>
-            <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600 mt-0.5">
+            <div className="flex items-center gap-1 text-[11px] font-black text-blue-600 mt-0.5">
               <span>↑ 6.7%</span>
               <span className="text-gray-400 font-normal">vs last 7 days</span>
             </div>
@@ -586,7 +586,7 @@ export default function AdminPaymentsPage() {
             <div className="sm:col-span-6 space-y-2 text-xs font-bold text-gray-700">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#059669]"></span>
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]"></span>
                   <span>UPI</span>
                 </div>
                 <span className="text-[11px] font-black text-gray-900">₹{methodChartStats.upi.toLocaleString("en-IN")}</span>
@@ -657,7 +657,7 @@ export default function AdminPaymentsPage() {
           <div className="space-y-1.5 text-xs font-bold text-gray-700 pt-1">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-[#059669]"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-[#2563EB]"></span>
                 <span>Razorpay</span>
               </div>
               <span className="text-[11px] text-gray-500 font-bold">({gatewayChartStats.razorpayCount})</span>
@@ -688,7 +688,7 @@ export default function AdminPaymentsPage() {
         <button
           onClick={() => setActiveTab("Transactions")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-            activeTab === "Transactions" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Transactions" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <span>💳</span>
@@ -698,7 +698,7 @@ export default function AdminPaymentsPage() {
         <button
           onClick={() => setActiveTab("Payment Methods")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-            activeTab === "Payment Methods" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Payment Methods" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <span>💳</span>
@@ -708,7 +708,7 @@ export default function AdminPaymentsPage() {
         <button
           onClick={() => setActiveTab("Refunds")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-            activeTab === "Refunds" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Refunds" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <span>❌</span>
@@ -718,7 +718,7 @@ export default function AdminPaymentsPage() {
         <button
           onClick={() => setActiveTab("Failed Payments")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-            activeTab === "Failed Payments" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Failed Payments" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <span>❌</span>
@@ -728,7 +728,7 @@ export default function AdminPaymentsPage() {
         <button
           onClick={() => setActiveTab("Coupons Usage")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-            activeTab === "Coupons Usage" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Coupons Usage" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <span>🏷️</span>
@@ -738,7 +738,7 @@ export default function AdminPaymentsPage() {
         <button
           onClick={() => setActiveTab("Revenue Reports")}
           className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-            activeTab === "Revenue Reports" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "Revenue Reports" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           <span>📊</span>
@@ -759,7 +759,7 @@ export default function AdminPaymentsPage() {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-emerald-500 focus:outline-none transition"
+            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-blue-500 focus:outline-none transition"
           />
         </div>
 
@@ -770,7 +770,7 @@ export default function AdminPaymentsPage() {
               setSelectedMethod(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Payment Methods ▾</option>
             <option value="UPI">Razorpay UPI</option>
@@ -787,7 +787,7 @@ export default function AdminPaymentsPage() {
               setSelectedStatus(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Status ▾</option>
             <option value="SUCCESS">SUCCESS</option>
@@ -801,7 +801,7 @@ export default function AdminPaymentsPage() {
               setSelectedGateway(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Gateways ▾</option>
             <option value="Razorpay">Razorpay</option>
@@ -840,7 +840,7 @@ export default function AdminPaymentsPage() {
                         type="checkbox"
                         checked={selectedTxnIds.length === paginatedPayments.length && paginatedPayments.length > 0}
                         onChange={toggleSelectAll}
-                        className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                        className="w-4 h-4 accent-blue-600 rounded cursor-pointer"
                       />
                     </th>
                     <th className="px-6 py-4">TXN ID</th>
@@ -860,13 +860,13 @@ export default function AdminPaymentsPage() {
                     const isChecked = selectedTxnIds.includes(p.id);
 
                     return (
-                      <tr key={p.id} className={`hover:bg-gray-50/80 transition group ${isChecked ? "bg-emerald-50/40" : ""}`}>
+                      <tr key={p.id} className={`hover:bg-gray-50/80 transition group ${isChecked ? "bg-blue-50/40" : ""}`}>
                         <td className="px-4 py-4 text-center">
                           <input
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => toggleSelectTxn(p.id)}
-                            className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                            className="w-4 h-4 accent-blue-600 rounded cursor-pointer"
                           />
                         </td>
 
@@ -876,7 +876,7 @@ export default function AdminPaymentsPage() {
                         </td>
 
                         {/* ORDER ID */}
-                        <td className="px-6 py-4 font-mono font-black text-[#059669]">
+                        <td className="px-6 py-4 font-mono font-black text-[#2563EB]">
                           {p.orderId}
                         </td>
 
@@ -920,7 +920,7 @@ export default function AdminPaymentsPage() {
                         {/* STATUS BADGE */}
                         <td className="px-6 py-4">
                           {p.status === "SUCCESS" ? (
-                            <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-emerald-200">
+                            <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-blue-200">
                               SUCCESS
                             </span>
                           ) : p.status === "REFUNDED" ? (
@@ -992,7 +992,7 @@ export default function AdminPaymentsPage() {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`w-8 h-8 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center ${
                       currentPage === pageNum
-                        ? "bg-[#059669] text-white shadow-xs"
+                        ? "bg-[#2563EB] text-white shadow-xs"
                         : "border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
                     }`}
                   >
@@ -1068,7 +1068,7 @@ export default function AdminPaymentsPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 font-bold">Order ID:</span>
-                  <span className="font-mono font-black text-[#059669]">{selectedTxnForModal.orderId}</span>
+                  <span className="font-mono font-black text-[#2563EB]">{selectedTxnForModal.orderId}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500 font-bold">Razorpay Payment ID:</span>
@@ -1084,14 +1084,14 @@ export default function AdminPaymentsPage() {
                 </div>
                 <div className="flex justify-between border-t pt-2 mt-2">
                   <span className="text-gray-900 font-black text-sm">Total Paid Amount:</span>
-                  <span className="font-black text-emerald-700 text-base">₹{selectedTxnForModal.amount.toLocaleString("en-IN")}</span>
+                  <span className="font-black text-blue-700 text-base">₹{selectedTxnForModal.amount.toLocaleString("en-IN")}</span>
                 </div>
               </div>
             </div>
 
             <button
               onClick={() => setSelectedTxnForModal(null)}
-              className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl transition text-xs shadow-md cursor-pointer"
+              className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-2.5 rounded-xl transition text-xs shadow-md cursor-pointer"
             >
               Close Details
             </button>
@@ -1102,7 +1102,7 @@ export default function AdminPaymentsPage() {
       {/* 🏷️ FLOATING BULK SELECTION ACTION BAR */}
       {selectedTxnIds.length > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white p-3.5 px-6 rounded-2xl shadow-2xl border border-gray-700 flex items-center gap-4 animate-bounce">
-          <span className="text-xs font-black text-emerald-400">
+          <span className="text-xs font-black text-blue-400">
             ✓ {selectedTxnIds.length} {selectedTxnIds.length === 1 ? "Transaction" : "Transactions"} Selected
           </span>
 

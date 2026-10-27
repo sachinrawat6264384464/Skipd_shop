@@ -166,7 +166,7 @@ export default function AdminEngagementPage() {
       {toastMsg && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           toastMsg.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{toastMsg.text}</span>
@@ -182,7 +182,7 @@ export default function AdminEngagementPage() {
           <div>
             <h1 className="text-2xl font-black text-gray-900">Customer Engagement &amp; Loyalty Hub</h1>
             <p className="text-xs text-gray-500 font-medium mt-0.5">
-              Live PostgreSQL database synchronization • <span className="text-emerald-700 font-bold">Direct DB Read/Write</span>
+              Live PostgreSQL database synchronization • <span className="text-blue-700 font-bold">Direct DB Read/Write</span>
             </p>
           </div>
         </div>
@@ -192,7 +192,7 @@ export default function AdminEngagementPage() {
           {activeTab === "Gift Cards" && (
             <button
               onClick={() => setShowGiftCardModal(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-2"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-2"
             >
               <span>🎁</span>
               <span>+ Issue Gift Card (DB)</span>
@@ -224,7 +224,7 @@ export default function AdminEngagementPage() {
             onClick={() => setActiveTab(t.id as any)}
             className={`px-5 py-2.5 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
               activeTab === t.id
-                ? "bg-[#059669] text-white shadow-md"
+                ? "bg-[#2563EB] text-white shadow-md"
                 : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
             }`}
           >
@@ -251,11 +251,11 @@ export default function AdminEngagementPage() {
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
               <p className="text-xs text-gray-500 font-semibold">Total Customers Who Wishlisted</p>
               <h3 className="text-2xl font-black text-gray-900">{wishlistStats?.total_wishlist_saves ?? 0} Saves</h3>
-              <p className="text-[11px] font-bold text-emerald-600">Real count from Neon PostgreSQL DB</p>
+              <p className="text-[11px] font-bold text-blue-600">Real count from Neon PostgreSQL DB</p>
             </div>
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
               <p className="text-xs text-gray-500 font-semibold">Top Wishlisted Product (DB)</p>
-              <h3 className="text-lg font-black text-emerald-700 truncate">
+              <h3 className="text-lg font-black text-blue-700 truncate">
                 {wishlistProducts.find((p: any) => p.wishlist_count > 0)?.title || "No wishlists yet"}
               </h3>
               <p className="text-[11px] text-gray-400 font-medium">Most-saved item from PostgreSQL</p>
@@ -332,7 +332,7 @@ export default function AdminEngagementPage() {
                           )}
                         </td>
 
-                        <td className="px-6 py-4 font-black text-emerald-600">
+                        <td className="px-6 py-4 font-black text-blue-600">
                           {p.conversion_rate}
                         </td>
 
@@ -367,11 +367,11 @@ export default function AdminEngagementPage() {
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
               <p className="text-xs text-gray-500 font-semibold">Total Issued Gift Vouchers in DB</p>
               <h3 className="text-2xl font-black text-gray-900">{giftCards.length} Vouchers</h3>
-              <p className="text-[11px] font-bold text-emerald-600">Stored in PostgreSQL `gift_cards` table</p>
+              <p className="text-[11px] font-bold text-blue-600">Stored in PostgreSQL `gift_cards` table</p>
             </div>
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
               <p className="text-xs text-gray-500 font-semibold">Total Initial Issued Value</p>
-              <h3 className="text-2xl font-black text-emerald-700">
+              <h3 className="text-2xl font-black text-blue-700">
                 ₹{giftCards.reduce((s, g) => s + (g.initial_balance || 0), 0).toLocaleString("en-IN")}
               </h3>
               <p className="text-[11px] text-gray-400 font-medium">Real-time checkout balance</p>
@@ -391,7 +391,7 @@ export default function AdminEngagementPage() {
               <h3 className="font-black text-base text-gray-900">Issued Store Digital Gift Vouchers</h3>
               <button
                 onClick={() => setShowGiftCardModal(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-3.5 py-2 rounded-xl transition cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-3.5 py-2 rounded-xl transition cursor-pointer"
               >
                 + Issue New Voucher (DB)
               </button>
@@ -417,7 +417,7 @@ export default function AdminEngagementPage() {
                         <p>No gift cards issued in PostgreSQL database yet.</p>
                         <button
                           onClick={() => setShowGiftCardModal(true)}
-                          className="bg-emerald-50 text-emerald-700 border border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-emerald-100 transition cursor-pointer"
+                          className="bg-blue-50 text-blue-700 border border-blue-300 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition cursor-pointer"
                         >
                           + Issue First Gift Card
                         </button>
@@ -438,13 +438,13 @@ export default function AdminEngagementPage() {
                           ₹{Number(gc.initial_balance || 0).toLocaleString("en-IN")}
                         </td>
 
-                        <td className="px-6 py-4 font-black text-emerald-600">
+                        <td className="px-6 py-4 font-black text-blue-600">
                           ₹{Number(gc.current_balance || 0).toLocaleString("en-IN")}
                         </td>
 
                         <td className="px-6 py-4">
                           {gc.is_active ? (
-                            <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-black px-2.5 py-1 rounded-md">
+                            <span className="bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-black px-2.5 py-1 rounded-md">
                               Active
                             </span>
                           ) : (
@@ -511,7 +511,7 @@ export default function AdminEngagementPage() {
 
             <div className="bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs space-y-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center text-lg">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-lg">
                   🎁
                 </div>
                 <div>
@@ -640,7 +640,7 @@ export default function AdminEngagementPage() {
               <p className="text-xs text-gray-500 font-semibold">Average Store Rating</p>
               <div className="flex items-center gap-2">
                 <h3 className="text-2xl font-black text-amber-500">{avgRating} ★</h3>
-                <span className="text-xs font-bold text-emerald-600">Live PostgreSQL DB</span>
+                <span className="text-xs font-bold text-blue-600">Live PostgreSQL DB</span>
               </div>
             </div>
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
@@ -649,7 +649,7 @@ export default function AdminEngagementPage() {
             </div>
             <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
               <p className="text-xs text-gray-500 font-semibold">5-Star Feedback</p>
-              <h3 className="text-2xl font-black text-emerald-600">
+              <h3 className="text-2xl font-black text-blue-600">
                 {reviews.filter(r => Math.floor(Number(r.rating || 5)) === 5).length}
               </h3>
             </div>
@@ -774,7 +774,7 @@ export default function AdminEngagementPage() {
                   placeholder="e.g. BotCom-GIFT-1000"
                   value={newGcCode}
                   onChange={(e) => setNewGcCode(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-medium focus:border-emerald-500 uppercase"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-medium focus:border-blue-500 uppercase"
                 />
               </div>
 
@@ -785,7 +785,7 @@ export default function AdminEngagementPage() {
                   placeholder="500"
                   value={newGcAmount}
                   onChange={(e) => setNewGcAmount(e.target.value ? Number(e.target.value) : "")}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-500"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-bold focus:border-blue-500"
                   required
                 />
               </div>
@@ -797,7 +797,7 @@ export default function AdminEngagementPage() {
                   placeholder="customer@example.com"
                   value={newGcEmail}
                   onChange={(e) => setNewGcEmail(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-medium focus:border-emerald-500"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2.5 text-xs text-gray-900 font-medium focus:border-blue-500"
                 />
               </div>
 
@@ -812,7 +812,7 @@ export default function AdminEngagementPage() {
                 <button
                   type="submit"
                   disabled={submittingGc}
-                  className="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl transition shadow-md disabled:opacity-50"
+                  className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl transition shadow-md disabled:opacity-50"
                 >
                   {submittingGc ? "Saving to DB..." : "Issue Voucher (DB)"}
                 </button>

@@ -8,7 +8,7 @@ export default function AdminMediaPage() {
           <h1 className="text-2xl font-black text-gray-900">🌄 Media &amp; Asset Library</h1>
           <p className="text-xs text-gray-500 font-medium mt-0.5">Upload product photos, banner artwork, SVG logos &amp; CDN asset management</p>
         </div>
-        <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer">
+        <button className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer">
           + Upload Media File
         </button>
       </div>

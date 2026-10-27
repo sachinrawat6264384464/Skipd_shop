@@ -16,7 +16,7 @@ export default function AdminCouponsPage() {
           <h1 className="text-2xl font-black text-gray-900">🎟️ Coupons &amp; Discount Code Manager</h1>
           <p className="text-xs text-gray-500 font-medium mt-0.5">Create promo codes, set percentage or fixed discounts, minimum cart value &amp; usage limits</p>
         </div>
-        <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer">
+        <button className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer">
           + Create Coupon Code
         </button>
       </div>
@@ -37,13 +37,13 @@ export default function AdminCouponsPage() {
             <tbody className="divide-y divide-gray-100 font-medium">
               {coupons.map((c) => (
                 <tr key={c.id} className="hover:bg-gray-50 transition">
-                  <td className="px-6 py-4 font-black text-emerald-700 font-mono text-sm">{c.code}</td>
+                  <td className="px-6 py-4 font-black text-blue-700 font-mono text-sm">{c.code}</td>
                   <td className="px-6 py-4 font-bold text-gray-900">{c.discount}</td>
                   <td className="px-6 py-4 font-bold text-gray-700">{c.maxDiscount}</td>
                   <td className="px-6 py-4 text-gray-500">{c.minOrder}</td>
                   <td className="px-6 py-4 font-bold text-gray-900">{c.uses}</td>
                   <td className="px-6 py-4">
-                    <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-0.5 rounded uppercase">
+                    <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-0.5 rounded uppercase">
                       {c.status}
                     </span>
                   </td>

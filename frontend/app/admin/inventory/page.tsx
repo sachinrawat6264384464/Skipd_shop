@@ -501,7 +501,7 @@ export default function AdminInventoryPage() {
       {notification && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           notification.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{notification.text}</span>
@@ -511,7 +511,7 @@ export default function AdminInventoryPage() {
       {/* 📊 Top Title Bar (Exact Match to Screenshot) */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center text-xl shadow-2xs border border-emerald-100">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xl shadow-2xs border border-blue-100">
             📦
           </div>
           <div>
@@ -526,7 +526,7 @@ export default function AdminInventoryPage() {
           {/* Total SKUs Tracked Pill */}
           <div className="bg-gray-50 border border-gray-200 rounded-2xl px-4 py-2 text-center shadow-2xs">
             <p className="text-[10px] text-gray-400 font-bold uppercase">Total SKUs Tracked</p>
-            <p className="text-base font-black text-emerald-700">{totalProductsCount}</p>
+            <p className="text-base font-black text-blue-700">{totalProductsCount}</p>
           </div>
 
           {/* Import Inventory Button */}
@@ -541,7 +541,7 @@ export default function AdminInventoryPage() {
           {/* Add New Product Button */}
           <button
             onClick={() => setShowAddProductModal(true)}
-            className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-2"
+            className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-2"
           >
             <span className="text-base font-normal">+</span>
             <span>Add New Product</span>
@@ -563,7 +563,7 @@ export default function AdminInventoryPage() {
           <p className="text-[11px] text-gray-500 font-semibold">In Stock</p>
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-black text-gray-900">{inStockCount.toLocaleString("en-IN")}</h3>
-            <span className="text-xs font-bold text-emerald-600">{inStockPct}%</span>
+            <span className="text-xs font-bold text-blue-600">{inStockPct}%</span>
           </div>
         </div>
 
@@ -613,7 +613,7 @@ export default function AdminInventoryPage() {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-emerald-500 focus:outline-none transition"
+            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-blue-500 focus:outline-none transition"
           />
         </div>
 
@@ -626,7 +626,7 @@ export default function AdminInventoryPage() {
               setSelectedCategory(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none capitalize"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none capitalize"
           >
             <option value="ALL">All Categories ▾</option>
             <option value="mobiles">Mobiles</option>
@@ -643,7 +643,7 @@ export default function AdminInventoryPage() {
               setSelectedWarehouse(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Warehouses ▾</option>
             <option value="Mumbai">Mumbai FC</option>
@@ -660,7 +660,7 @@ export default function AdminInventoryPage() {
               setSelectedStatus(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">All Status ▾</option>
             <option value="Active">Active Catalog</option>
@@ -673,7 +673,7 @@ export default function AdminInventoryPage() {
               setStockStatusFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">Stock Status ▾</option>
             <option value="IN_STOCK">In Stock</option>
@@ -713,7 +713,7 @@ export default function AdminInventoryPage() {
         <div className="overflow-x-auto">
           {loading ? (
             <div className="p-12 text-center text-gray-500 font-bold space-y-3">
-              <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+              <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
               <p className="text-xs">Loading live warehouse inventory from Neon PostgreSQL database...</p>
             </div>
           ) : paginatedProducts.length === 0 ? (
@@ -731,7 +731,7 @@ export default function AdminInventoryPage() {
                       type="checkbox"
                       checked={selectedRows.length === paginatedProducts.length && paginatedProducts.length > 0}
                       onChange={toggleSelectAll}
-                      className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                      className="w-4 h-4 accent-blue-600 rounded cursor-pointer"
                     />
                   </th>
                   <th className="px-6 py-4">Product</th>
@@ -751,13 +751,13 @@ export default function AdminInventoryPage() {
                   const isChecked = selectedRows.includes(p.id);
 
                   return (
-                    <tr key={p.id} className={`hover:bg-gray-50/80 transition ${isChecked ? "bg-emerald-50/40" : ""}`}>
+                    <tr key={p.id} className={`hover:bg-gray-50/80 transition ${isChecked ? "bg-blue-50/40" : ""}`}>
                       <td className="px-4 py-4 text-center">
                         <input
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => toggleSelectRow(p.id)}
-                          className="w-4 h-4 accent-emerald-600 rounded cursor-pointer"
+                          className="w-4 h-4 accent-blue-600 rounded cursor-pointer"
                         />
                       </td>
 
@@ -804,7 +804,7 @@ export default function AdminInventoryPage() {
                       {/* Status Badge */}
                       <td className="px-6 py-4">
                         {p.status === "In Stock" ? (
-                          <span className="bg-[#EAF8F2] text-[#059669] border border-emerald-200 text-[10px] font-black px-2.5 py-1 rounded-md">
+                          <span className="bg-[#EFF6FF] text-[#2563EB] border border-blue-200 text-[10px] font-black px-2.5 py-1 rounded-md">
                             In Stock
                           </span>
                         ) : p.status === "Low Stock" ? (
@@ -883,7 +883,7 @@ export default function AdminInventoryPage() {
                   onClick={() => setCurrentPage(pageNum)}
                   className={`w-8 h-8 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center ${
                     currentPage === pageNum
-                      ? "bg-[#059669] text-white shadow-xs"
+                      ? "bg-[#2563EB] text-white shadow-xs"
                       : "border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
                   }`}
                 >
@@ -940,7 +940,7 @@ export default function AdminInventoryPage() {
                 type="number"
                 value={adjustQtyInput}
                 onChange={(e) => setAdjustQtyInput(parseInt(e.target.value) || 0)}
-                className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-base font-black text-gray-900 focus:border-emerald-500 focus:outline-none"
+                className="w-full bg-white border border-gray-300 rounded-xl px-3.5 py-2.5 text-base font-black text-gray-900 focus:border-blue-500 focus:outline-none"
               />
             </div>
 
@@ -955,7 +955,7 @@ export default function AdminInventoryPage() {
               <button
                 type="button"
                 onClick={() => setAdjustQtyInput(prev => prev + 10)}
-                className="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold py-2 rounded-xl text-xs border border-emerald-200"
+                className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-800 font-bold py-2 rounded-xl text-xs border border-blue-200"
               >
                 +10 Units
               </button>
@@ -970,7 +970,7 @@ export default function AdminInventoryPage() {
               </button>
               <button
                 onClick={handleSaveStockAdjustment}
-                className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
+                className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
               >
                 Save Stock Live
               </button>
@@ -1049,7 +1049,7 @@ export default function AdminInventoryPage() {
               >
                 🖼️ Product Images
                 {bulkImages.length > 0 && (
-                  <span className="bg-emerald-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
+                  <span className="bg-blue-600 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">
                     {bulkImages.length}
                   </span>
                 )}
@@ -1060,21 +1060,21 @@ export default function AdminInventoryPage() {
             {importTab === "data" && (
               <div className="space-y-4">
                 {/* Drag & Drop Zone */}
-                <div className="border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/40 p-8 rounded-2xl text-center space-y-3 transition relative group cursor-pointer">
+                <div className="border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/40 p-8 rounded-2xl text-center space-y-3 transition relative group cursor-pointer">
                   <input
                     type="file"
                     accept=".csv,.json,.txt,.xlsx,.xls"
                     onChange={handleFileUpload}
                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   />
-                  <div className="w-12 h-12 bg-white rounded-2xl border border-emerald-200 flex items-center justify-center mx-auto text-2xl shadow-xs group-hover:scale-110 transition">
+                  <div className="w-12 h-12 bg-white rounded-2xl border border-blue-200 flex items-center justify-center mx-auto text-2xl shadow-xs group-hover:scale-110 transition">
                     📄
                   </div>
                   <div>
                     <p className="text-xs font-black text-gray-900">Click or Drag &amp; Drop Inventory Sheet</p>
                     <p className="text-[10px] text-gray-500 mt-0.5">Supports CSV, Excel (.xlsx/.xls), JSON, TXT files</p>
                   </div>
-                  <span className="inline-block bg-[#059669] text-white font-black text-[10px] px-3.5 py-1.5 rounded-xl shadow-2xs">
+                  <span className="inline-block bg-[#2563EB] text-white font-black text-[10px] px-3.5 py-1.5 rounded-xl shadow-2xs">
                     Browse File from Computer
                   </span>
                 </div>
@@ -1082,7 +1082,7 @@ export default function AdminInventoryPage() {
                 {/* CSV Format Info — supports all 6 steps of Add Product form */}
                 <div className="bg-gray-50 border border-gray-200 p-3 rounded-xl text-[10px] text-gray-600 space-y-2">
                   <p className="font-bold text-gray-900">📋 Comprehensive CSV Columns Format (All 6 Form Steps Supported):</p>
-                  <p className="font-mono text-emerald-700 bg-white p-2 rounded-lg border border-gray-200 whitespace-pre-wrap break-all leading-relaxed text-[9px]">
+                  <p className="font-mono text-blue-700 bg-white p-2 rounded-lg border border-gray-200 whitespace-pre-wrap break-all leading-relaxed text-[9px]">
                     Product Title, Price, Stock Qty, Category, Warehouse, Image URL, SKU, Compare At Price, Brand, Sub Category, Tags, Short Description, Description, Highlights, Box Contents, HSN Code, Meta Title, Meta Description
                   </p>
                   <p className="text-gray-400 leading-relaxed">
@@ -1092,11 +1092,11 @@ export default function AdminInventoryPage() {
 
                 {/* Bulk Image Count Badge */}
                 {bulkImages.length > 0 && (
-                  <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 p-3 rounded-xl text-xs">
+                  <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 p-3 rounded-xl text-xs">
                     <span className="text-lg">📸</span>
                     <div>
-                      <p className="font-black text-emerald-800">{bulkImages.length} product images ready</p>
-                      <p className="text-[10px] text-emerald-600">Will be auto-matched to products when you import the CSV.</p>
+                      <p className="font-black text-blue-800">{bulkImages.length} product images ready</p>
+                      <p className="text-[10px] text-blue-600">Will be auto-matched to products when you import the CSV.</p>
                     </div>
                   </div>
                 )}
@@ -1112,7 +1112,7 @@ export default function AdminInventoryPage() {
                       a.click();
                       showToast("📥 Sports & Fitness 10-Product CSV Downloaded!");
                     }}
-                    className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1 cursor-pointer transition"
+                    className="bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 font-bold py-2 rounded-xl text-[11px] flex items-center justify-center gap-1 cursor-pointer transition"
                   >
                     <span>⚽</span>
                     <span>Sports &amp; Fitness (10 CSV)</span>
@@ -1240,7 +1240,7 @@ export default function AdminInventoryPage() {
                 <div className="flex gap-2.5 pt-2">
                   <button
                     onClick={() => setImportTab("data")}
-                    className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl text-xs cursor-pointer flex items-center justify-center gap-1.5"
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl text-xs cursor-pointer flex items-center justify-center gap-1.5"
                   >
                     <span>→</span>
                     <span>Go to CSV Import</span>
@@ -1282,7 +1282,7 @@ export default function AdminInventoryPage() {
                   placeholder="e.g. Samsung Galaxy S24 Ultra 512GB Titanium"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -1296,7 +1296,7 @@ export default function AdminInventoryPage() {
                     min="1"
                     value={newPrice}
                     onChange={(e) => setNewPrice(Number(e.target.value))}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -1306,7 +1306,7 @@ export default function AdminInventoryPage() {
                     min="1"
                     value={newComparePrice}
                     onChange={(e) => setNewComparePrice(Number(e.target.value))}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -1318,7 +1318,7 @@ export default function AdminInventoryPage() {
                   <select
                     value={newCategory}
                     onChange={(e) => setNewCategory(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                   >
                     <option value="Mobiles">Mobiles</option>
                     <option value="Electronics">Electronics</option>
@@ -1335,7 +1335,7 @@ export default function AdminInventoryPage() {
                   <select
                     value={newWarehouse}
                     onChange={(e) => setNewWarehouse(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                   >
                     <option value="Mobiles FC Mumbai">Mobiles FC Mumbai</option>
                     <option value="Electronics FC Delhi">Electronics FC Delhi</option>
@@ -1357,7 +1357,7 @@ export default function AdminInventoryPage() {
                     min="0"
                     value={newStockQty}
                     onChange={(e) => setNewStockQty(Number(e.target.value))}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                   />
                 </div>
 
@@ -1368,7 +1368,7 @@ export default function AdminInventoryPage() {
                     placeholder="Auto-generated if empty"
                     value={newSku}
                     onChange={(e) => setNewSku(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-mono text-xs focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-mono text-xs focus:border-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -1381,7 +1381,7 @@ export default function AdminInventoryPage() {
                   placeholder="https://images.unsplash.com/photo-..."
                   value={newImage}
                   onChange={(e) => setNewImage(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-medium focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 font-medium focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -1396,7 +1396,7 @@ export default function AdminInventoryPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
+                  className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
                 >
                   Save &amp; Add Product
                 </button>

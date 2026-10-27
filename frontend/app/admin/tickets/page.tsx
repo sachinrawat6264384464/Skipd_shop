@@ -13,7 +13,7 @@ export default function AdminTicketsPage() {
       <div className="bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-3 text-xs">
         <div className="flex justify-between items-center py-2 border-b border-gray-100">
           <div>
-            <span className="font-bold font-mono text-emerald-700">#TCK-8812</span>
+            <span className="font-bold font-mono text-blue-700">#TCK-8812</span>
             <p className="font-bold text-gray-900 text-sm">Where is my order Shiprocket tracking AWB?</p>
             <p className="text-gray-400">By Rahul Sharma • 2 hours ago</p>
           </div>

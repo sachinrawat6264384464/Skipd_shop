@@ -141,7 +141,7 @@ export default function AdminProductQueriesPage() {
           <button onClick={loadQueriesFromDB} className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer flex items-center gap-1.5">
             🔄 Refresh DB
           </button>
-          <button onClick={() => setIsModalOpen(true)} className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1">
+          <button onClick={() => setIsModalOpen(true)} className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1">
             + New Query
           </button>
         </div>
@@ -164,13 +164,13 @@ export default function AdminProductQueriesPage() {
 
         {/* Card 2: Resolved */}
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-4">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center text-xl shrink-0">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-xl shrink-0">
             ✓
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Resolved</p>
             <h3 className="text-xl font-black text-gray-900 mt-0.5">{stats.resolved}</h3>
-            <p className="text-[10px] text-emerald-600 font-medium mt-0.5">{stats.total > 0 ? `${((stats.resolved / stats.total) * 100).toFixed(1)}% of total` : "0.0%"}</p>
+            <p className="text-[10px] text-blue-600 font-medium mt-0.5">{stats.total > 0 ? `${((stats.resolved / stats.total) * 100).toFixed(1)}% of total` : "0.0%"}</p>
           </div>
         </div>
 
@@ -300,7 +300,7 @@ export default function AdminProductQueriesPage() {
                     </td>
                     <td className="px-4 py-3.5">
                       <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                        q.status === "Resolved" ? "bg-emerald-100 text-emerald-800" :
+                        q.status === "Resolved" ? "bg-blue-100 text-blue-800" :
                         q.status === "Pending" ? "bg-amber-100 text-amber-800" : "bg-rose-100 text-rose-800"
                       }`}>
                         {q.status}
@@ -311,7 +311,7 @@ export default function AdminProductQueriesPage() {
                     </td>
                     <td className="px-4 py-3.5 text-gray-400 text-[11px]">{q.date}</td>
                     <td className="px-4 py-3.5 text-right space-x-1">
-                      <button onClick={() => handleStatusChange(q, "Resolved")} title="Approve / Resolve" className="p-1.5 text-emerald-600 hover:bg-emerald-50 border border-emerald-200 rounded-lg cursor-pointer">✓</button>
+                      <button onClick={() => handleStatusChange(q, "Resolved")} title="Approve / Resolve" className="p-1.5 text-blue-600 hover:bg-blue-50 border border-blue-200 rounded-lg cursor-pointer">✓</button>
                       <button onClick={() => handleStatusChange(q, "Rejected")} title="Reject Query" className="p-1.5 text-red-600 hover:bg-red-50 border border-red-200 rounded-lg cursor-pointer">✕</button>
                     </td>
                   </tr>
@@ -340,7 +340,7 @@ export default function AdminProductQueriesPage() {
                   placeholder="e.g. Sachin Rawat"
                   value={newCustName}
                   onChange={(e) => setNewCustName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-blue-500 focus:outline-none font-medium"
                 />
               </div>
 
@@ -352,7 +352,7 @@ export default function AdminProductQueriesPage() {
                   placeholder="e.g. sachin@gmail.com"
                   value={newCustEmail}
                   onChange={(e) => setNewCustEmail(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-blue-500 focus:outline-none font-medium"
                 />
               </div>
 
@@ -363,7 +363,7 @@ export default function AdminProductQueriesPage() {
                   placeholder="e.g. Nike Air Force 1"
                   value={newProdName}
                   onChange={(e) => setNewProdName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-blue-500 focus:outline-none font-medium"
                 />
               </div>
 
@@ -389,7 +389,7 @@ export default function AdminProductQueriesPage() {
                   placeholder="e.g. Size Exchange Inquiry"
                   value={newSubject}
                   onChange={(e) => setNewSubject(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-blue-500 focus:outline-none font-medium"
                 />
               </div>
 
@@ -401,7 +401,7 @@ export default function AdminProductQueriesPage() {
                   placeholder="Type customer message or query..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-emerald-500 focus:outline-none font-medium"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs focus:border-blue-500 focus:outline-none font-medium"
                 />
               </div>
 
@@ -415,7 +415,7 @@ export default function AdminProductQueriesPage() {
                 </button>
                 <button
                   type="submit"
-                  className="w-1/2 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-2.5 rounded-xl transition shadow-sm"
+                  className="w-1/2 bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-2.5 rounded-xl transition shadow-sm"
                 >
                   Save to DB
                 </button>

@@ -62,7 +62,7 @@ export default function AdminCustomersCRMPage() {
     { name: "VIP Platinum", count: 0, avgSpent: "₹0", badge: "bg-purple-100 text-purple-800" },
     { name: "VIP Gold", count: 0, avgSpent: "₹0", badge: "bg-amber-100 text-amber-800" },
     { name: "Silver Regular", count: 0, avgSpent: "₹0", badge: "bg-blue-100 text-blue-800" },
-    { name: "New Buyers", count: 0, avgSpent: "₹0", badge: "bg-emerald-100 text-emerald-800" }
+    { name: "New Buyers", count: 0, avgSpent: "₹0", badge: "bg-blue-100 text-blue-800" }
   ]);
 
   useEffect(() => {
@@ -143,13 +143,13 @@ export default function AdminCustomersCRMPage() {
         { name: "VIP Platinum", count: platUsers.length, avgSpent: `₹${calcAvgSpent(platUsers).toLocaleString("en-IN")}`, badge: "bg-purple-100 text-purple-800" },
         { name: "VIP Gold", count: goldUsers.length, avgSpent: `₹${calcAvgSpent(goldUsers).toLocaleString("en-IN")}`, badge: "bg-amber-100 text-amber-800" },
         { name: "Silver Regular", count: silverUsers.length, avgSpent: `₹${calcAvgSpent(silverUsers).toLocaleString("en-IN")}`, badge: "bg-blue-100 text-blue-800" },
-        { name: "New Buyers", count: bronzeUsers.length, avgSpent: `₹${calcAvgSpent(bronzeUsers).toLocaleString("en-IN")}`, badge: "bg-emerald-100 text-emerald-800" }
+        { name: "New Buyers", count: bronzeUsers.length, avgSpent: `₹${calcAvgSpent(bronzeUsers).toLocaleString("en-IN")}`, badge: "bg-blue-100 text-blue-800" }
       ]);
 
       // 3. Fetch Real Reviews from PostgreSQL Database
       let rawReviews = Array.isArray(apiReviews) ? apiReviews : [];
 
-      const colors = ["bg-emerald-600", "bg-purple-600", "bg-amber-500", "bg-blue-600", "bg-rose-500"];
+      const colors = ["bg-blue-600", "bg-purple-600", "bg-amber-500", "bg-blue-600", "bg-rose-500"];
       const formattedRevs = rawReviews.map((r: any, idx: number) => {
         const matchedProd = liveProducts?.find((p: any) => p.id === r.product_id);
         const matchedCust = formattedCusts.find((c: any) => c.id === r.user_id);
@@ -159,7 +159,7 @@ export default function AdminCustomersCRMPage() {
           id: r.id,
           customerName: r.user_name || matchedCust?.name || "Store Customer",
           customerEmail: custEmail,
-          avatarBg: colors[idx % colors.length] || "bg-emerald-600",
+          avatarBg: colors[idx % colors.length] || "bg-blue-600",
           rating: r.rating || 5.0,
           reviewText: r.comment || "Great product experience!",
           productTitle: matchedProd?.title || r.product_title || "Store Catalog Item",
@@ -265,7 +265,7 @@ export default function AdminCustomersCRMPage() {
       {toastMessage && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           toastMessage.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{toastMessage.text}</span>
@@ -275,7 +275,7 @@ export default function AdminCustomersCRMPage() {
       {/* TOP CRM HEADER BAR */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold border border-emerald-200/60 shadow-2xs">
+          <div className="w-11 h-11 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold border border-blue-200/60 shadow-2xs">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
           </div>
           <div>
@@ -286,7 +286,7 @@ export default function AdminCustomersCRMPage() {
 
         <div className="flex items-center gap-3 flex-wrap">
           {/* Date Filter Picker */}
-          <div className="bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-700 flex items-center gap-2 shadow-2xs cursor-pointer hover:border-emerald-500 transition">
+          <div className="bg-white border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-700 flex items-center gap-2 shadow-2xs cursor-pointer hover:border-blue-500 transition">
             <span className="text-gray-400">📅</span>
             <span>May 19, 2025 - May 25, 2025</span>
             <span className="text-gray-400 text-[10px]">▾</span>
@@ -295,7 +295,7 @@ export default function AdminCustomersCRMPage() {
           {/* Export Report CSV Button */}
           <button
             onClick={handleExportCSV}
-            className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
+            className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-md cursor-pointer flex items-center gap-1.5"
           >
             <span>📥</span>
             <span>Export Report</span>
@@ -315,22 +315,22 @@ export default function AdminCustomersCRMPage() {
             </span>
           </div>
           <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.totalCustomers}</p>
-          <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600">
+          <div className="flex items-center gap-1 text-[11px] font-black text-blue-600">
             <span>↑ 18.6%</span>
             <span className="text-gray-400 font-normal">vs last 7 days</span>
           </div>
         </div>
 
         {/* Card 2: New Customers */}
-        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl space-y-2 shadow-2xs hover:border-emerald-300 transition group">
+        <div className="bg-white border border-gray-200/80 p-5 rounded-2xl space-y-2 shadow-2xs hover:border-blue-300 transition group">
           <div className="flex items-center justify-between">
             <p className="text-[11px] font-extrabold text-gray-400 uppercase tracking-wider">New Customers</p>
-            <span className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm font-black border border-emerald-100 group-hover:scale-110 transition">
+            <span className="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-black border border-blue-100 group-hover:scale-110 transition">
               👤+
             </span>
           </div>
           <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.newCustomers}</p>
-          <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600">
+          <div className="flex items-center gap-1 text-[11px] font-black text-blue-600">
             <span>↑ 12.4%</span>
             <span className="text-gray-400 font-normal">vs last 7 days</span>
           </div>
@@ -345,7 +345,7 @@ export default function AdminCustomersCRMPage() {
             </span>
           </div>
           <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.repeatCustomers}</p>
-          <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600">
+          <div className="flex items-center gap-1 text-[11px] font-black text-blue-600">
             <span>↑ 8.7%</span>
             <span className="text-gray-400 font-normal">vs last 7 days</span>
           </div>
@@ -360,7 +360,7 @@ export default function AdminCustomersCRMPage() {
             </span>
           </div>
           <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.avgOrderValue}</p>
-          <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600">
+          <div className="flex items-center gap-1 text-[11px] font-black text-blue-600">
             <span>↑ 5.3%</span>
             <span className="text-gray-400 font-normal">vs last 7 days</span>
           </div>
@@ -375,7 +375,7 @@ export default function AdminCustomersCRMPage() {
             </span>
           </div>
           <p className="text-2xl font-black text-gray-900 tracking-tight">{metrics.totalRevenue}</p>
-          <div className="flex items-center gap-1 text-[11px] font-black text-emerald-600">
+          <div className="flex items-center gap-1 text-[11px] font-black text-blue-600">
             <span>↑ 21.6%</span>
             <span className="text-gray-400 font-normal">vs last 7 days</span>
           </div>
@@ -389,7 +389,7 @@ export default function AdminCustomersCRMPage() {
           <button
             onClick={() => setActiveTab("All Customers")}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === "All Customers" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "All Customers" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             <span>👥</span>
@@ -399,7 +399,7 @@ export default function AdminCustomersCRMPage() {
           <button
             onClick={() => setActiveTab("Customer Groups")}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === "Customer Groups" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "Customer Groups" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             <span>🏷️</span>
@@ -409,7 +409,7 @@ export default function AdminCustomersCRMPage() {
           <button
             onClick={() => setActiveTab("Customer Reviews")}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === "Customer Reviews" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "Customer Reviews" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             <span>⭐</span>
@@ -419,7 +419,7 @@ export default function AdminCustomersCRMPage() {
           <button
             onClick={() => setActiveTab("Customer Activity")}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === "Customer Activity" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "Customer Activity" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             <span>💎</span>
@@ -429,7 +429,7 @@ export default function AdminCustomersCRMPage() {
           <button
             onClick={() => setActiveTab("Segments")}
             className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-              activeTab === "Segments" ? "bg-[#059669] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+              activeTab === "Segments" ? "bg-[#2563EB] text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
             }`}
           >
             <span>░░</span>
@@ -439,7 +439,7 @@ export default function AdminCustomersCRMPage() {
 
         <button
           onClick={() => setShowAddCustomerModal(true)}
-          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-extrabold text-xs px-3.5 py-1.5 rounded-xl border border-emerald-200 transition cursor-pointer shrink-0"
+          className="bg-blue-50 hover:bg-blue-100 text-blue-700 font-extrabold text-xs px-3.5 py-1.5 rounded-xl border border-blue-200 transition cursor-pointer shrink-0"
         >
           + Add New Customer
         </button>
@@ -471,37 +471,37 @@ export default function AdminCustomersCRMPage() {
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">Total Reviews</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? "Live" : "0"}</span>
+                    <span className="text-[9px] text-blue-600 font-black">{reviews.length > 0 ? "Live" : "0"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">5 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 5).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 5).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
+                    <span className="text-[9px] text-blue-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 5).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">4 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 4).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 4).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
+                    <span className="text-[9px] text-blue-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 4).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">3 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 3).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 3).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
+                    <span className="text-[9px] text-blue-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 3).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">2 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 2).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 2).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
+                    <span className="text-[9px] text-blue-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 2).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
 
                   <div className="bg-gray-50 p-2.5 rounded-xl border border-gray-200/60">
                     <p className="text-[10px] text-gray-400 font-bold uppercase">1 Star</p>
                     <p className="font-black text-gray-900 text-sm mt-0.5">{reviews.filter(r => Math.round(r.rating) === 1).length}</p>
-                    <span className="text-[9px] text-emerald-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 1).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
+                    <span className="text-[9px] text-blue-600 font-black">{reviews.length > 0 ? `${((reviews.filter(r => Math.round(r.rating) === 1).length / reviews.length) * 100).toFixed(1)}%` : "0%"}</span>
                   </div>
                 </div>
               </div>
@@ -515,7 +515,7 @@ export default function AdminCustomersCRMPage() {
                     <div key={star} className="flex items-center gap-3">
                       <span className="w-8 shrink-0 text-right">{star} ★</span>
                       <div className="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
-                        <div className="bg-[#059669] h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+                        <div className="bg-[#2563EB] h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
                       </div>
                       <span className="w-20 text-right text-[11px] text-gray-500">{cnt} ({pct}%)</span>
                     </div>
@@ -539,7 +539,7 @@ export default function AdminCustomersCRMPage() {
                   setSearchQuery(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-emerald-500 focus:outline-none transition"
+                className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-blue-500 focus:outline-none transition"
               />
             </div>
 
@@ -550,7 +550,7 @@ export default function AdminCustomersCRMPage() {
                   setSelectedGroup(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+                className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
               >
                 <option value="ALL">All Groups ▾</option>
                 <option value="VIP Gold">VIP Gold</option>
@@ -565,7 +565,7 @@ export default function AdminCustomersCRMPage() {
                   setSelectedTier(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+                className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
               >
                 <option value="ALL">All Tiers ▾</option>
                 <option value="Platinum">Platinum</option>
@@ -580,7 +580,7 @@ export default function AdminCustomersCRMPage() {
                   setSelectedStatus(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+                className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
               >
                 <option value="ALL">All Status ▾</option>
                 <option value="Approved">Approved</option>
@@ -677,7 +677,7 @@ export default function AdminCustomersCRMPage() {
                       {/* Status Badge */}
                       <td className="px-6 py-4">
                         {r.status === "Approved" ? (
-                          <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-emerald-200">
+                          <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-1 rounded-lg border border-blue-200">
                             Approved
                           </span>
                         ) : r.status === "Pending" ? (
@@ -748,7 +748,7 @@ export default function AdminCustomersCRMPage() {
                       onClick={() => setCurrentPage(pageNum)}
                       className={`w-8 h-8 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center ${
                         currentPage === pageNum
-                          ? "bg-[#059669] text-white shadow-xs"
+                          ? "bg-[#2563EB] text-white shadow-xs"
                           : "border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
                       }`}
                     >
@@ -793,7 +793,7 @@ export default function AdminCustomersCRMPage() {
               <h2 className="text-lg font-black text-gray-900">👥 All Registered Customer Accounts</h2>
               <p className="text-xs text-gray-500 mt-0.5">Live PostgreSQL Neon Database Sync</p>
             </div>
-            <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-3.5 py-1 rounded-full border border-emerald-200">
+            <span className="bg-blue-100 text-blue-800 text-xs font-black px-3.5 py-1 rounded-full border border-blue-200">
               {customers.length} Accounts Active
             </span>
           </div>
@@ -818,7 +818,7 @@ export default function AdminCustomersCRMPage() {
                   {customers.map((c) => (
                     <tr key={c.id} className="hover:bg-gray-50 transition">
                       <td className="px-6 py-4 flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-emerald-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">
+                        <div className="w-9 h-9 rounded-full bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-2xs">
                           {c.name.charAt(0)}
                         </div>
                         <div>
@@ -862,7 +862,7 @@ export default function AdminCustomersCRMPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {customerGroups.map((grp, idx) => (
-              <div key={idx} className="bg-gray-50 border border-gray-200 p-6 rounded-2xl space-y-3 hover:bg-white hover:border-emerald-300 transition shadow-2xs">
+              <div key={idx} className="bg-gray-50 border border-gray-200 p-6 rounded-2xl space-y-3 hover:bg-white hover:border-blue-300 transition shadow-2xs">
                 <div className="flex justify-between items-center">
                   <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase border ${grp.badge}`}>
                     {grp.name}
@@ -922,7 +922,7 @@ export default function AdminCustomersCRMPage() {
                 <p className="text-xs text-gray-800 font-medium italic">"{selectedReviewForModal.reviewText}"</p>
                 <div className="flex justify-between text-[10px] text-gray-400 pt-1 border-t border-gray-200">
                   <span>Reviewed on {selectedReviewForModal.date} ({selectedReviewForModal.time})</span>
-                  <span className="font-bold text-emerald-700">{selectedReviewForModal.status}</span>
+                  <span className="font-bold text-blue-700">{selectedReviewForModal.status}</span>
                 </div>
               </div>
 
@@ -934,7 +934,7 @@ export default function AdminCustomersCRMPage() {
                 />
                 <div>
                   <p className="font-black text-gray-900 text-xs">{selectedReviewForModal.productTitle}</p>
-                  <p className="text-xs font-extrabold text-emerald-700 mt-0.5">{selectedReviewForModal.productPrice}</p>
+                  <p className="text-xs font-extrabold text-blue-700 mt-0.5">{selectedReviewForModal.productPrice}</p>
                   <p className="text-[10px] text-gray-400 font-mono mt-0.5">Order ID: {selectedReviewForModal.orderId}</p>
                 </div>
               </div>
@@ -952,7 +952,7 @@ export default function AdminCustomersCRMPage() {
                   handleToggleReviewStatus(selectedReviewForModal.id, selectedReviewForModal.status);
                   setSelectedReviewForModal(null);
                 }}
-                className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl transition text-xs shadow-md cursor-pointer"
+                className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-2.5 rounded-xl transition text-xs shadow-md cursor-pointer"
               >
                 Toggle Status
               </button>
@@ -1064,7 +1064,7 @@ export default function AdminCustomersCRMPage() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
+                  className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-2.5 rounded-xl text-xs shadow-md"
                 >
                   Create Customer
                 </button>

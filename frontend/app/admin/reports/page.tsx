@@ -14,7 +14,7 @@ export default function AdminReportsPage() {
         <div className="bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs space-y-4">
           <h3 className="font-black text-base text-gray-900">🧾 GST &amp; Tax Audit Report</h3>
           <p className="text-xs text-gray-500">Monthly breakdown of IGST, CGST, and SGST collected on all orders.</p>
-          <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-2.5 rounded-xl transition cursor-pointer">
+          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs py-2.5 rounded-xl transition cursor-pointer">
             Export GST CSV Report
           </button>
         </div>

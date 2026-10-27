@@ -87,7 +87,7 @@ export default function AdminHomepageManagerPage() {
     secondaryButtonHref: "/deals",
     imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600",
     badgeText: "40% OFF",
-    colorTheme: "emerald" // emerald | orange | blue | purple
+    colorTheme: "blue" // emerald | orange | blue | purple
   });
 
   const [newSection, setNewSection] = useState({
@@ -164,7 +164,7 @@ export default function AdminHomepageManagerPage() {
       secondaryButtonHref: "/deals",
       imageUrl: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600",
       badgeText: "50% OFF",
-      colorTheme: "emerald"
+      colorTheme: "blue"
     });
     setShowSlideModal(true);
   };
@@ -190,9 +190,9 @@ export default function AdminHomepageManagerPage() {
   const handleSaveSlide = (e: React.FormEvent) => {
     e.preventDefault();
     let themeConfig = {
-      bgGradient: "from-emerald-50 via-teal-50 to-emerald-100 border-emerald-200/80",
-      tagColor: "bg-emerald-100 text-emerald-800 border-emerald-300",
-      btnColor: "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/20"
+      bgGradient: "from-blue-50 via-teal-50 to-blue-100 border-blue-200/80",
+      tagColor: "bg-blue-100 text-blue-800 border-blue-300",
+      btnColor: "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-600/20"
     };
     if (slideForm.colorTheme === "orange") {
       themeConfig = {
@@ -541,7 +541,7 @@ export default function AdminHomepageManagerPage() {
                   onChange={(e) => setSlideForm({ ...slideForm, colorTheme: e.target.value })}
                   className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none"
                 >
-                  <option value="emerald">🟢 Emerald Green (Summer Theme)</option>
+                  <option value="blue">🔵 Cyber Blue Theme</option>
                   <option value="orange">🟠 Warm Orange (Freedom Sale Theme)</option>
                   <option value="blue">🔵 Cyber Blue (Tech Theme)</option>
                 </select>

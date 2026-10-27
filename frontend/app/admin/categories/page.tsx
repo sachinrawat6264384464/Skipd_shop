@@ -102,7 +102,7 @@ export default function AdminCategoriesPage() {
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full text-gray-900 font-sans">
       
       {notification && (
-        <div className="fixed top-5 right-5 z-50 bg-[#EAF8F2] text-[#059669] border border-emerald-300 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl animate-bounce">
+        <div className="fixed top-5 right-5 z-50 bg-[#EFF6FF] text-[#2563EB] border border-blue-300 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl animate-bounce">
           {notification}
         </div>
       )}
@@ -110,7 +110,7 @@ export default function AdminCategoriesPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div>
           <div className="flex items-center gap-2">
-            <Link href="/admin" className="text-xs text-emerald-700 font-bold hover:underline">&larr; Back to Admin</Link>
+            <Link href="/admin" className="text-xs text-blue-700 font-bold hover:underline">&larr; Back to Admin</Link>
             <span className="text-gray-400">/</span>
             <span className="text-xs text-gray-500 font-bold">Categories Taxonomy</span>
           </div>
@@ -124,7 +124,7 @@ export default function AdminCategoriesPage() {
             setFormState({ name: "", slug: "", icon: "📁", status: "Active" });
             setShowAddModal(true);
           }}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1.5"
+          className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1.5"
         >
           <span>+ Add Category</span>
         </button>
@@ -133,7 +133,7 @@ export default function AdminCategoriesPage() {
       <div className="bg-white border border-gray-200/80 rounded-2xl overflow-hidden shadow-2xs">
         {loading ? (
           <div className="p-12 text-center space-y-3">
-            <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" />
             <p className="text-xs text-gray-500 font-bold">Loading Categories from PostgreSQL Database...</p>
           </div>
         ) : (
@@ -176,14 +176,14 @@ export default function AdminCategoriesPage() {
                               e.currentTarget.src = fallback;
                             }
                           }}
-                          className="w-10 h-10 rounded-xl object-cover border border-emerald-500/30 shadow-2xs"
+                          className="w-10 h-10 rounded-xl object-cover border border-blue-500/30 shadow-2xs"
                         />
                         <span className="font-bold text-gray-900 text-sm">{cat.name}</span>
                       </td>
-                    <td className="px-6 py-4 font-mono text-emerald-700 font-bold">/category/{cat.slug}</td>
+                    <td className="px-6 py-4 font-mono text-blue-700 font-bold">/category/{cat.slug}</td>
                     <td className="px-6 py-4 font-bold text-gray-900">{cat.count || 0} Items</td>
                     <td className="px-6 py-4">
-                      <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-emerald-200">
+                      <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-blue-200">
                         ✓ {cat.status || "Active"}
                       </span>
                     </td>
@@ -251,7 +251,7 @@ export default function AdminCategoriesPage() {
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">Category Image / Icon *</label>
                 {formState.icon && (formState.icon.startsWith("data:") || formState.icon.startsWith("http") || formState.icon.startsWith("/")) ? (
-                  <div className="relative mb-2 w-16 h-16 rounded-xl overflow-hidden border-2 border-emerald-500 shadow-xs">
+                  <div className="relative mb-2 w-16 h-16 rounded-xl overflow-hidden border-2 border-blue-500 shadow-xs">
                     <img src={formState.icon} alt="Preview" className="w-full h-full object-cover" />
                     <button
                       type="button"
@@ -263,11 +263,11 @@ export default function AdminCategoriesPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl bg-emerald-50 p-2 rounded-xl border border-emerald-200">{formState.icon || "📁"}</span>
+                    <span className="text-xl bg-blue-50 p-2 rounded-xl border border-blue-200">{formState.icon || "📁"}</span>
                   </div>
                 )}
                 <div className="space-y-2">
-                  <label className="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 border-dashed rounded-xl px-3.5 py-2 cursor-pointer text-xs font-bold transition">
+                  <label className="flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 border-dashed rounded-xl px-3.5 py-2 cursor-pointer text-xs font-bold transition">
                     <span>📁 Upload Image from Device (Mobile / PC)</span>
                     <input
                       type="file"
@@ -298,7 +298,7 @@ export default function AdminCategoriesPage() {
               </div>
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowAddModal(false)} className="flex-1 bg-gray-100 font-bold py-2.5 rounded-xl">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 text-white font-black py-2.5 rounded-xl shadow-md">Create in DB</button>
+                <button type="submit" className="flex-1 bg-blue-600 text-white font-black py-2.5 rounded-xl shadow-md">Create in DB</button>
               </div>
             </form>
           </div>
@@ -337,7 +337,7 @@ export default function AdminCategoriesPage() {
               <div>
                 <label className="block text-xs font-bold text-gray-700 mb-1">Category Image / Icon *</label>
                 {formState.icon && (formState.icon.startsWith("data:") || formState.icon.startsWith("http") || formState.icon.startsWith("/")) ? (
-                  <div className="relative mb-2 w-16 h-16 rounded-xl overflow-hidden border-2 border-emerald-500 shadow-xs">
+                  <div className="relative mb-2 w-16 h-16 rounded-xl overflow-hidden border-2 border-blue-500 shadow-xs">
                     <img src={formState.icon} alt="Preview" className="w-full h-full object-cover" />
                     <button
                       type="button"
@@ -349,11 +349,11 @@ export default function AdminCategoriesPage() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xl bg-emerald-50 p-2 rounded-xl border border-emerald-200">{formState.icon || "📁"}</span>
+                    <span className="text-xl bg-blue-50 p-2 rounded-xl border border-blue-200">{formState.icon || "📁"}</span>
                   </div>
                 )}
                 <div className="space-y-2">
-                  <label className="flex items-center justify-center gap-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 border-dashed rounded-xl px-3.5 py-2 cursor-pointer text-xs font-bold transition">
+                  <label className="flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-300 border-dashed rounded-xl px-3.5 py-2 cursor-pointer text-xs font-bold transition">
                     <span>📁 Upload Image from Device (Mobile / PC)</span>
                     <input
                       type="file"
@@ -395,7 +395,7 @@ export default function AdminCategoriesPage() {
               </div>
               <div className="flex gap-3 pt-3 border-t">
                 <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 bg-gray-100 font-bold py-2.5 rounded-xl">Cancel</button>
-                <button type="submit" className="flex-1 bg-emerald-600 text-white font-black py-2.5 rounded-xl shadow-md">✓ Save Changes</button>
+                <button type="submit" className="flex-1 bg-blue-600 text-white font-black py-2.5 rounded-xl shadow-md">✓ Save Changes</button>
               </div>
             </form>
           </div>

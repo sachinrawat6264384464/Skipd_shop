@@ -6,7 +6,7 @@ import { fetchAdminOrders, fetchAdminCategories, fetchProducts, updateOrderStatu
 
 const COLOR_PALETTES = [
   { bg: "bg-blue-50/90 text-blue-900 border-blue-200 hover:border-blue-400" },
-  { bg: "bg-emerald-50/90 text-emerald-900 border-emerald-200 hover:border-emerald-400" },
+  { bg: "bg-blue-50/90 text-blue-900 border-blue-200 hover:border-blue-400" },
   { bg: "bg-purple-50/90 text-purple-900 border-purple-200 hover:border-purple-400" },
   { bg: "bg-pink-50/90 text-pink-900 border-pink-200 hover:border-pink-400" },
   { bg: "bg-amber-50/90 text-amber-900 border-amber-200 hover:border-amber-400" },
@@ -439,7 +439,7 @@ export default function AdminOrdersPage() {
       
       {/* Toast Notification */}
       {notificationMsg && (
-        <div className="fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl bg-[#EAF8F2] text-[#059669] border border-emerald-300 flex items-center gap-2 animate-bounce">
+        <div className="fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl bg-[#EFF6FF] text-[#2563EB] border border-blue-300 flex items-center gap-2 animate-bounce">
           <span>{notificationMsg}</span>
         </div>
       )}
@@ -447,7 +447,7 @@ export default function AdminOrdersPage() {
       {/* 🛒 Top Header Banner Bar */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-6 rounded-2xl shadow-2xs">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center text-2xl shadow-2xs">
+          <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-2xl shadow-2xs">
             🛒
           </div>
           <div>
@@ -479,18 +479,18 @@ export default function AdminOrdersPage() {
           {/* 📥 Working CSV Export Button */}
           <button
             onClick={handleExportOrders}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition cursor-pointer shadow-md flex items-center gap-1.5"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition cursor-pointer shadow-md flex items-center gap-1.5"
             title="Download CSV Orders Report"
           >
             <span>📥</span>
             <span>Export Orders</span>
           </button>
 
-          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl p-2.5 px-4 flex items-center gap-2 shadow-2xs">
+          <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-2xl p-2.5 px-4 flex items-center gap-2 shadow-2xs">
             <span className="text-lg">🛒</span>
             <div className="text-left leading-tight">
-              <p className="text-[9px] text-emerald-600 font-bold uppercase">Total Orders</p>
-              <p className="font-black text-sm text-emerald-900">{dateFilteredOrders.length}</p>
+              <p className="text-[9px] text-blue-600 font-bold uppercase">Total Orders</p>
+              <p className="font-black text-sm text-blue-900">{dateFilteredOrders.length}</p>
             </div>
           </div>
         </div>
@@ -513,13 +513,13 @@ export default function AdminOrdersPage() {
               }}
               className={`px-4 py-2 rounded-xl text-xs font-black transition cursor-pointer whitespace-nowrap flex items-center gap-2 ${
                 active 
-                  ? "bg-[#059669] text-white shadow-xs" 
+                  ? "bg-[#2563EB] text-white shadow-xs" 
                   : "text-gray-600 hover:bg-gray-100"
               }`}
             >
               <span>{tab}</span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full font-black ${
-                active ? "bg-white text-[#059669]" : "bg-gray-100 text-gray-600"
+                active ? "bg-white text-[#2563EB]" : "bg-gray-100 text-gray-600"
               }`}>
                 {count}
               </span>
@@ -533,13 +533,13 @@ export default function AdminOrdersPage() {
         
         {/* Total Revenue */}
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs flex items-center gap-3">
-          <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-black text-xl shrink-0">
+          <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-black text-xl shrink-0">
             ₹
           </div>
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Total Revenue</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">₹{totalRev.toLocaleString("en-IN")}</h3>
-            <p className={`text-[10px] font-bold ${revStat.isUp ? "text-emerald-600" : "text-amber-600"}`}>
+            <p className={`text-[10px] font-bold ${revStat.isUp ? "text-blue-600" : "text-amber-600"}`}>
               {revStat.text}
             </p>
           </div>
@@ -553,7 +553,7 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Orders Completed</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">{completedCount}</h3>
-            <p className={`text-[10px] font-bold ${compStat.isUp ? "text-emerald-600" : "text-amber-600"}`}>
+            <p className={`text-[10px] font-bold ${compStat.isUp ? "text-blue-600" : "text-amber-600"}`}>
               {compStat.text}
             </p>
           </div>
@@ -567,7 +567,7 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Orders Pending</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">{pendingCount}</h3>
-            <p className={`text-[10px] font-bold ${pendStat.isUp ? "text-amber-600" : "text-emerald-600"}`}>
+            <p className={`text-[10px] font-bold ${pendStat.isUp ? "text-amber-600" : "text-blue-600"}`}>
               {pendStat.text}
             </p>
           </div>
@@ -581,7 +581,7 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Return Requests</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">{returnCount}</h3>
-            <p className={`text-[10px] font-bold ${retStat.isUp ? "text-rose-600" : "text-emerald-600"}`}>
+            <p className={`text-[10px] font-bold ${retStat.isUp ? "text-rose-600" : "text-blue-600"}`}>
               {retStat.text}
             </p>
           </div>
@@ -595,7 +595,7 @@ export default function AdminOrdersPage() {
           <div>
             <p className="text-[11px] text-gray-500 font-medium">Refunds Issued</p>
             <h3 className="text-lg font-black text-gray-900 mt-0.5">{refundCount}</h3>
-            <p className={`text-[10px] font-bold ${refStat.isUp ? "text-rose-600" : "text-emerald-600"}`}>
+            <p className={`text-[10px] font-bold ${refStat.isUp ? "text-rose-600" : "text-blue-600"}`}>
               {refStat.text}
             </p>
           </div>
@@ -610,7 +610,7 @@ export default function AdminOrdersPage() {
             <p className="text-[10px] text-gray-400 font-medium mt-0.5">Real-time demand calculation &amp; live catalog product counts</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] font-extrabold bg-emerald-50 text-[#059669] border border-emerald-200 px-2.5 py-0.5 rounded-full">
+            <span className="text-[10px] font-extrabold bg-blue-50 text-[#2563EB] border border-blue-200 px-2.5 py-0.5 rounded-full">
               {dbCategories.length} DB Categories • {dbProducts.length} Live DB Products
             </span>
           </div>
@@ -648,7 +648,7 @@ export default function AdminOrdersPage() {
                     {cat.order_count} Orders
                   </span>
                   {cat.order_volume > 0 && (
-                    <span className="text-[10px] font-black text-emerald-700 block">
+                    <span className="text-[10px] font-black text-blue-700 block">
                       ₹{cat.order_volume.toLocaleString("en-IN")} Vol
                     </span>
                   )}
@@ -671,7 +671,7 @@ export default function AdminOrdersPage() {
               setSearchQuery(e.target.value);
               setCurrentPage(1);
             }}
-            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-emerald-500 focus:outline-none transition"
+            className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2 text-xs text-gray-900 font-medium focus:border-blue-500 focus:outline-none transition"
           />
         </div>
 
@@ -682,7 +682,7 @@ export default function AdminOrdersPage() {
               setPaymentFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">Payment Method ▾</option>
             <option value="UPI">UPI</option>
@@ -696,7 +696,7 @@ export default function AdminOrdersPage() {
               setStatusFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">Fulfillment Status ▾</option>
             <option value="pending">Pending</option>
@@ -714,7 +714,7 @@ export default function AdminOrdersPage() {
               setAwbFilter(e.target.value);
               setCurrentPage(1);
             }}
-            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-emerald-500 focus:outline-none"
+            className="bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2 text-xs font-bold text-gray-800 focus:border-blue-500 focus:outline-none"
           >
             <option value="ALL">AWB Status ▾</option>
             <option value="ASSIGNED">Assigned AWB</option>
@@ -751,7 +751,7 @@ export default function AdminOrdersPage() {
               <p className="text-xs text-gray-400">Try resetting search query or status filter.</p>
               <button
                 onClick={handleResetFilters}
-                className="bg-[#059669] text-white text-xs font-bold px-4 py-2 rounded-xl"
+                className="bg-[#2563EB] text-white text-xs font-bold px-4 py-2 rounded-xl"
               >
                 Reset All Filters
               </button>
@@ -830,7 +830,7 @@ export default function AdminOrdersPage() {
                       {/* Payment */}
                       <td className="px-5 py-4">
                         {ord.payment === "UPI" ? (
-                          <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 font-black px-2.5 py-0.5 rounded text-[10px]">
+                          <span className="bg-blue-50 text-blue-700 border border-blue-200 font-black px-2.5 py-0.5 rounded text-[10px]">
                             UPI
                           </span>
                         ) : ord.payment === "VISA" ? (
@@ -852,7 +852,7 @@ export default function AdminOrdersPage() {
                       {/* Fulfillment Status Badges */}
                       <td className="px-5 py-4">
                         {isDelivered ? (
-                          <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-emerald-200">
+                          <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-3 py-1 rounded-full inline-flex items-center gap-1.5 border border-blue-200">
                             <span>✓</span> Delivered
                           </span>
                         ) : isShipped ? (
@@ -888,7 +888,7 @@ export default function AdminOrdersPage() {
                           {!isDelivered && (
                             <button
                               onClick={() => handleStatusChange(ord.id, "DELIVERED")}
-                              className="bg-[#059669] hover:bg-[#047857] text-white text-[10px] font-black px-3 py-1.5 rounded-xl transition shadow-xs flex items-center gap-1 cursor-pointer shrink-0"
+                              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[10px] font-black px-3 py-1.5 rounded-xl transition shadow-xs flex items-center gap-1 cursor-pointer shrink-0"
                               title="Mark as Delivered"
                             >
                               <span>✓</span>
@@ -945,7 +945,7 @@ export default function AdminOrdersPage() {
                   onClick={() => setCurrentPage(pageNum)}
                   className={`w-8 h-8 rounded-xl text-xs font-black transition cursor-pointer flex items-center justify-center ${
                     currentPage === pageNum
-                      ? "bg-[#059669] text-white shadow-xs"
+                      ? "bg-[#2563EB] text-white shadow-xs"
                       : "border border-gray-300 bg-white hover:bg-gray-100 text-gray-700"
                   }`}
                 >
@@ -987,7 +987,7 @@ export default function AdminOrdersPage() {
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
               <div>
                 <h3 className="text-xl font-black text-gray-900">Order Information</h3>
-                <p className="text-xs font-mono font-bold text-emerald-700">{selectedOrderDetails.id}</p>
+                <p className="text-xs font-mono font-bold text-blue-700">{selectedOrderDetails.id}</p>
               </div>
               <button
                 onClick={() => setSelectedOrderDetails(null)}
@@ -1012,7 +1012,7 @@ export default function AdminOrdersPage() {
                 </div>
                 <div className="bg-gray-50 border border-gray-200 p-3 rounded-2xl space-y-0.5">
                   <p className="text-[10px] text-gray-400 font-bold uppercase">AWB Tracking Code</p>
-                  <p className="font-mono font-bold text-emerald-700">{selectedOrderDetails.awb}</p>
+                  <p className="font-mono font-bold text-blue-700">{selectedOrderDetails.awb}</p>
                 </div>
               </div>
 
@@ -1022,7 +1022,7 @@ export default function AdminOrdersPage() {
                   <img src={selectedOrderDetails.img} alt={selectedOrderDetails.items} className="w-12 h-12 rounded-xl object-contain bg-white p-1 border border-gray-200 shrink-0" />
                   <div>
                     <h4 className="font-black text-gray-900 text-xs">{selectedOrderDetails.items}</h4>
-                    <p className="text-emerald-700 font-black text-sm">Total Paid: ₹{typeof selectedOrderDetails.amount === 'number' ? selectedOrderDetails.amount.toLocaleString("en-IN") : selectedOrderDetails.amount}</p>
+                    <p className="text-blue-700 font-black text-sm">Total Paid: ₹{typeof selectedOrderDetails.amount === 'number' ? selectedOrderDetails.amount.toLocaleString("en-IN") : selectedOrderDetails.amount}</p>
                   </div>
                 </div>
               </div>
@@ -1039,7 +1039,7 @@ export default function AdminOrdersPage() {
               </button>
               <button
                 onClick={() => setSelectedOrderDetails(null)}
-                className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-3 rounded-xl transition text-xs cursor-pointer shadow-xs"
+                className="flex-1 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-3 rounded-xl transition text-xs cursor-pointer shadow-xs"
               >
                 Close Window
               </button>
@@ -1064,7 +1064,7 @@ export default function AdminOrdersPage() {
                 <button
                   key={st}
                   onClick={() => handleStatusChange(updatingOrderId, st)}
-                  className="w-full text-left px-4 py-2.5 rounded-xl border border-gray-200 hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-800 transition cursor-pointer flex items-center justify-between"
+                  className="w-full text-left px-4 py-2.5 rounded-xl border border-gray-200 hover:bg-blue-50 hover:border-blue-300 hover:text-blue-800 transition cursor-pointer flex items-center justify-between"
                 >
                   <span>{st}</span>
                   <span className="text-gray-400">&rarr;</span>

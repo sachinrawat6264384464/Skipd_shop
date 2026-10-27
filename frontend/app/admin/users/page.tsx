@@ -282,7 +282,7 @@ export default function AdminUsersRolesPage() {
       {toastMessage && (
         <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl border flex items-center gap-2 animate-bounce ${
           toastMessage.type === "success" 
-            ? "bg-[#EAF8F2] text-[#059669] border-emerald-300" 
+            ? "bg-[#EFF6FF] text-[#2563EB] border-blue-300" 
             : "bg-red-50 text-red-700 border-red-200"
         }`}>
           <span>{toastMessage.text}</span>
@@ -309,7 +309,7 @@ export default function AdminUsersRolesPage() {
           </button>
           <button
             onClick={openCreateModal}
-            className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-2 shrink-0"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-3 rounded-xl transition shadow-xs cursor-pointer flex items-center gap-2 shrink-0"
           >
             <span>+</span>
             <span>Add Staff Account</span>
@@ -322,11 +322,11 @@ export default function AdminUsersRolesPage() {
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
           <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">TOTAL STAFF ACCOUNTS</span>
           <p className="text-2xl font-black text-gray-900">{staffList.length}</p>
-          <p className="text-[11px] text-emerald-600 font-bold">100% Live DB Accounts</p>
+          <p className="text-[11px] text-blue-600 font-bold">100% Live DB Accounts</p>
         </div>
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
           <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">SYSTEM ROLES</span>
-          <p className="text-2xl font-black text-emerald-700">{rolesList.length}</p>
+          <p className="text-2xl font-black text-blue-700">{rolesList.length}</p>
           <p className="text-[11px] text-gray-500 font-medium">Configured in DB</p>
         </div>
         <div className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-1">
@@ -346,7 +346,7 @@ export default function AdminUsersRolesPage() {
         <button
           onClick={() => setActiveTab("staff")}
           className={`px-5 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
-            activeTab === "staff" ? "bg-emerald-600 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "staff" ? "bg-blue-600 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           👥 Active Staff Accounts ({staffList.length})
@@ -354,7 +354,7 @@ export default function AdminUsersRolesPage() {
         <button
           onClick={() => setActiveTab("roles")}
           className={`px-5 py-2 rounded-xl text-xs font-black transition cursor-pointer ${
-            activeTab === "roles" ? "bg-emerald-600 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
+            activeTab === "roles" ? "bg-blue-600 text-white shadow-xs" : "text-gray-600 hover:bg-gray-100"
           }`}
         >
           🛡️ Role &amp; Permission Matrix ({rolesList.length})
@@ -363,7 +363,7 @@ export default function AdminUsersRolesPage() {
 
       {loading ? (
         <div className="bg-white border border-gray-200 p-12 rounded-2xl text-center space-y-3">
-          <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
           <p className="text-xs font-bold text-gray-500">Loading staff accounts &amp; roles from PostgreSQL DB...</p>
         </div>
       ) : (
@@ -399,7 +399,7 @@ export default function AdminUsersRolesPage() {
                               <img
                                 src={staff.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${staff.name}`}
                                 alt={staff.name}
-                                className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 shadow-2xs bg-emerald-50"
+                                className="w-10 h-10 rounded-full object-cover border-2 border-blue-500 shadow-2xs bg-blue-50"
                               />
                               <div>
                                 <p className="font-bold text-gray-900 text-sm">{staff.name}</p>
@@ -427,7 +427,7 @@ export default function AdminUsersRolesPage() {
                           <td className="px-6 py-4">
                             <div className="flex flex-wrap gap-1 max-w-md">
                               {(staff.permissions || []).length === SIDEBAR_MODULES.length ? (
-                                <span className="bg-emerald-100 text-emerald-800 font-black text-[10px] px-2.5 py-0.5 rounded-md border border-emerald-200">
+                                <span className="bg-blue-100 text-blue-800 font-black text-[10px] px-2.5 py-0.5 rounded-md border border-blue-200">
                                   ⚡ FULL UNRESTRICTED ACCESS (All {SIDEBAR_MODULES.length} Sidebar Modules)
                                 </span>
                               ) : (
@@ -449,7 +449,7 @@ export default function AdminUsersRolesPage() {
                               onClick={() => handleToggleStatus(staff)}
                               className={`px-3 py-1 rounded-full text-[10px] font-black border transition cursor-pointer ${
                                 staff.status === "Active"
-                                  ? "bg-emerald-100 text-emerald-800 border-emerald-300"
+                                  ? "bg-blue-100 text-blue-800 border-blue-300"
                                   : "bg-red-100 text-red-800 border-red-300"
                               }`}
                             >
@@ -496,7 +496,7 @@ export default function AdminUsersRolesPage() {
                 </div>
                 <button
                   onClick={() => setIsRoleModalOpen(true)}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs cursor-pointer"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs cursor-pointer"
                 >
                   + Add Custom Role
                 </button>
@@ -517,7 +517,7 @@ export default function AdminUsersRolesPage() {
                         </h3>
                         <p className="text-[11px] text-gray-500 font-medium mt-0.5">{role.description}</p>
                       </div>
-                      <span className="text-emerald-700 font-bold text-[11px] bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                      <span className="text-blue-700 font-bold text-[11px] bg-blue-50 border border-blue-200 px-3 py-1 rounded-full">
                         {staffList.filter(s => s.role === role.name).length} staff members assigned
                       </span>
                     </div>
@@ -529,7 +529,7 @@ export default function AdminUsersRolesPage() {
                           <span
                             key={mod.id}
                             className={`px-2.5 py-1 rounded-xl text-[10px] font-extrabold border transition ${
-                              isAllowed ? "bg-emerald-100 text-emerald-900 border-emerald-300 shadow-2xs" : "bg-gray-200/50 text-gray-400 border-gray-200 opacity-40"
+                              isAllowed ? "bg-blue-100 text-blue-900 border-blue-300 shadow-2xs" : "bg-gray-200/50 text-gray-400 border-gray-200 opacity-40"
                             }`}
                           >
                             {isAllowed ? "✓" : "✕"} {mod.icon} {mod.name}
@@ -577,7 +577,7 @@ export default function AdminUsersRolesPage() {
                     placeholder="e.g. Vikram Malhotra"
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -588,7 +588,7 @@ export default function AdminUsersRolesPage() {
                     placeholder="e.g. vikram@e-com.com"
                     value={formEmail}
                     onChange={(e) => setFormEmail(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -600,7 +600,7 @@ export default function AdminUsersRolesPage() {
                     type="password"
                     value={formPassword}
                     onChange={(e) => setFormPassword(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-mono focus:border-blue-500 focus:outline-none"
                   />
                 </div>
                 <div>
@@ -608,7 +608,7 @@ export default function AdminUsersRolesPage() {
                   <select
                     value={formRole}
                     onChange={(e) => handleRolePresetChange(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none cursor-pointer"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none cursor-pointer"
                   >
                     {rolesList.map((r) => (
                       <option key={r.id} value={r.name}>
@@ -625,7 +625,7 @@ export default function AdminUsersRolesPage() {
                   <div>
                     <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
                       <span>📋 Sidebar Services &amp; Module Permissions</span>
-                      <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                      <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded-full">
                         {formPermissions.length} of {SIDEBAR_MODULES.length} Selected
                       </span>
                     </h3>
@@ -635,7 +635,7 @@ export default function AdminUsersRolesPage() {
                     <button
                       type="button"
                       onClick={handleSelectAllPermissions}
-                      className="text-[10px] font-bold text-emerald-700 hover:underline cursor-pointer"
+                      className="text-[10px] font-bold text-blue-700 hover:underline cursor-pointer"
                     >
                       Select All ({SIDEBAR_MODULES.length})
                     </button>
@@ -658,7 +658,7 @@ export default function AdminUsersRolesPage() {
                         key={mod.id}
                         className={`flex items-center gap-2.5 p-3 rounded-2xl border transition cursor-pointer select-none ${
                           isChecked 
-                            ? "bg-emerald-50 border-emerald-300 text-emerald-950 font-extrabold shadow-2xs" 
+                            ? "bg-blue-50 border-blue-300 text-blue-950 font-extrabold shadow-2xs" 
                             : "bg-gray-50 border-gray-200 text-gray-600 font-medium hover:bg-gray-100"
                         }`}
                       >
@@ -666,7 +666,7 @@ export default function AdminUsersRolesPage() {
                           type="checkbox"
                           checked={isChecked}
                           onChange={() => handleTogglePermission(mod.id)}
-                          className="w-4 h-4 accent-emerald-600 rounded cursor-pointer shrink-0"
+                          className="w-4 h-4 accent-blue-600 rounded cursor-pointer shrink-0"
                         />
                         <span className="text-base">{mod.icon}</span>
                         <div className="leading-tight min-w-0">
@@ -690,7 +690,7 @@ export default function AdminUsersRolesPage() {
                 </button>
                 <button
                   type="submit"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
                 >
                   {editingStaffId !== null ? "Save Permission Changes" : "Create Staff Account"}
                 </button>
@@ -728,7 +728,7 @@ export default function AdminUsersRolesPage() {
                   placeholder="e.g. Catalog Specialist"
                   value={roleName}
                   onChange={(e) => setRoleName(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -739,7 +739,7 @@ export default function AdminUsersRolesPage() {
                   placeholder="Briefly describe the responsibilities of this role..."
                   value={roleDesc}
                   onChange={(e) => setRoleDesc(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-medium focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-medium focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -752,7 +752,7 @@ export default function AdminUsersRolesPage() {
                       <label
                         key={mod.id}
                         className={`flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer select-none text-[11px] ${
-                          isChecked ? "bg-emerald-50 border-emerald-300 font-bold text-emerald-900" : "bg-gray-50 border-gray-200 text-gray-600"
+                          isChecked ? "bg-blue-50 border-blue-300 font-bold text-blue-900" : "bg-gray-50 border-gray-200 text-gray-600"
                         }`}
                       >
                         <input
@@ -762,7 +762,7 @@ export default function AdminUsersRolesPage() {
                             if (isChecked) setRolePerms(rolePerms.filter(id => id !== mod.id));
                             else setRolePerms([...rolePerms, mod.id]);
                           }}
-                          className="accent-emerald-600 rounded"
+                          className="accent-blue-600 rounded"
                         />
                         <span>{mod.icon} {mod.name}</span>
                       </label>
@@ -781,7 +781,7 @@ export default function AdminUsersRolesPage() {
                 </button>
                 <button
                   type="submit"
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-2.5 rounded-xl transition shadow-xs cursor-pointer"
                 >
                   Save Role to Database
                 </button>
