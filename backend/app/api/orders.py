@@ -585,7 +585,13 @@ async def track_order_timeline(
     raw_str = order_identifier.strip()
     clean_id = raw_str.replace("#", "").replace("SR-AWB-", "").replace("AWB-", "").strip()
 
-    all_res = await db.execute(select(Order).options(selectinload(Order.status_history), selectinload(Order.items).selectinload(OrderItem.product)))
+    all_res = await db.execute(
+        select(Order).options(
+            selectinload(Order.status_history),
+            selectinload(Order.items).selectinload(OrderItem.product),
+            selectinload(Order.shipment)
+        )
+    )
     all_orders = all_res.scalars().all()
 
     order = None
@@ -779,7 +785,11 @@ async def track_order_timeline(
                 "product_image": (item.product.images[0] if (item.product and item.product.images and len(item.product.images) > 0) else None)
             } for item in order.items
         ],
-        "timeline": timeline
+        "timeline": timeline,
+        "awb_code": order.shipment.awb_code if order.shipment else None,
+        "courier_name": order.shipment.courier_name if order.shipment else None,
+        "tracking_url": order.shipment.tracking_url if order.shipment else None,
+        "label_url": order.shipment.label_url if order.shipment else None
     }
 
 

@@ -100,19 +100,10 @@ export default function CheckoutPage() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discountPercent?: number; flatDiscount?: number } | null>(null);
   const [couponError, setCouponError] = useState("");
 
-  // Payment Method & Modal State
-  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const [selectedMethod, setSelectedMethod] = useState<"upi" | "card" | "netbanking" | "cod">("upi");
-  const [upiId, setUpiId] = useState("");
-  const [cardData, setCardData] = useState({ number: "", holder: "", exp: "", cvv: "" });
-  const [selectedBank, setSelectedBank] = useState("HDFC");
-  const [codOtp, setCodOtp] = useState("");
-  const [codOtpSent, setCodOtpSent] = useState(false);
+  // Payment Method State
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"online" | "cod">("online");
   const [processingPayment, setProcessingPayment] = useState(false);
   const [createdOrderNumber, setCreatedOrderNumber] = useState<string>("");
-
-  // Countdown timer for UPI QR Code
-  const [qrTimer, setQrTimer] = useState(300);
 
   useEffect(() => {
     requireAuth();
@@ -193,14 +184,7 @@ export default function CheckoutPage() {
     }
   };
 
-  // UPI Timer interval
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (paymentModalOpen && selectedMethod === "upi" && qrTimer > 0) {
-      interval = setInterval(() => setQrTimer(prev => prev - 1), 1000);
-    }
-    return () => clearInterval(interval);
-  }, [paymentModalOpen, selectedMethod, qrTimer]);
+
 
   // Delivery Speed & Gift Wrap Addons State
   const [deliverySpeed, setDeliverySpeed] = useState<"standard" | "express">("standard");
@@ -290,8 +274,12 @@ export default function CheckoutPage() {
     }
     const orderNum = `BotCom-${Math.floor(100000 + Math.random() * 900000)}`;
     setCreatedOrderNumber(orderNum);
-    setQrTimer(300);
-    setPaymentModalOpen(true);
+
+    if (selectedPaymentMethod === "online") {
+      handleLaunchRazorpayGateway(orderNum);
+    } else {
+      handleFinalOrderSubmit(orderNum, "Cash on Delivery (COD)");
+    }
   };
 
 
@@ -314,9 +302,11 @@ export default function CheckoutPage() {
     });
   };
 
-  // Launch Official Razorpay SDK Popup (Connects directly to Razorpay Dashboard)
-  const handleLaunchRazorpayGateway = async () => {
+  // Launch Official Razorpay SDK Popup (Connects directly to Razorpay Gateway)
+  const handleLaunchRazorpayGateway = async (orderNumParam?: string) => {
     setProcessingPayment(true);
+    const orderNumToUse = orderNumParam || createdOrderNumber || `BotCom-${Math.floor(100000 + Math.random() * 900000)}`;
+    setCreatedOrderNumber(orderNumToUse);
     const loaded = await loadRazorpayScript();
 
     if (!loaded) {
@@ -341,15 +331,15 @@ export default function CheckoutPage() {
       amount: Math.round(finalPayable * 100), // Amount in paise
       currency: "INR",
       name: "BotCom Commerce",
-      description: `Payment for Order #${createdOrderNumber}`,
+      description: `Payment for Order #${orderNumToUse}`,
       image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200",
       handler: function (response: any) {
         setProcessingPayment(false);
-        setPaymentModalOpen(false);
+        
 
         // Create Order Record
         const newOrder = {
-          order_number: createdOrderNumber,
+          order_number: orderNumToUse,
           created_at: new Date().toISOString(),
           items: cartItems,
           total_amount: finalPayable,
@@ -381,7 +371,7 @@ export default function CheckoutPage() {
               "Authorization": `Bearer ${localStorage.getItem("ecom_token") || ""}`
             },
             body: JSON.stringify({
-              order_number: createdOrderNumber,
+              order_number: orderNumToUse,
               total_amount: finalPayable,
               payment_method: "Razorpay Online (" + (response.razorpay_payment_id || "PAID") + ")",
               status: "PAID",
@@ -414,7 +404,7 @@ export default function CheckoutPage() {
         try {
           const newPaymentTxn = {
             id: response.razorpay_payment_id ? `PAY-${response.razorpay_payment_id.slice(-6)}` : `PAY-${Math.floor(100000 + Math.random() * 900000)}`,
-            orderId: createdOrderNumber,
+            orderId: orderNumToUse,
             customerName: selectedAddressObj.name || user?.user_name || "Customer",
             customerEmail: (selectedAddressObj as any)?.email || user?.email || "customer@e-com.in",
             amount: finalPayable,
@@ -475,7 +465,7 @@ export default function CheckoutPage() {
         contact: (selectedAddressObj.phone || user?.phone || "9876543210").replace(/^\+91/, "").replace(/\D/g, "")
       },
       notes: {
-        order_ref: createdOrderNumber
+        order_ref: orderNumToUse
       },
       theme: {
         color: "#10B981"
@@ -497,8 +487,11 @@ export default function CheckoutPage() {
   };
 
   // Confirm Final Payment / Order Placement (Local Fallback & COD)
-  const handleFinalOrderSubmit = () => {
+  const handleFinalOrderSubmit = (orderNumParam?: string, methodParam?: string) => {
     setProcessingPayment(true);
+    const orderNumToUse = orderNumParam || createdOrderNumber || `BotCom-${Math.floor(100000 + Math.random() * 900000)}`;
+    setCreatedOrderNumber(orderNumToUse);
+    const paymentMethodToUse = methodParam || (selectedPaymentMethod === "online" ? "Razorpay Online" : "Cash on Delivery (COD)");
     const defaultFallbackAddr = {
       name: "Sachin Rawat",
       phone: "9876543210",
@@ -511,15 +504,15 @@ export default function CheckoutPage() {
 
     setTimeout(() => {
       setProcessingPayment(false);
-      setPaymentModalOpen(false);
+      
 
       // Create Order Object
       const newOrder = {
-        order_number: createdOrderNumber,
+        order_number: orderNumToUse,
         created_at: new Date().toISOString(),
         items: cartItems,
         total_amount: finalPayable,
-        payment_method: selectedMethod === "upi" ? "Razorpay Online UPI" : selectedMethod === "card" ? "Debit / Credit Card" : selectedMethod.toUpperCase(),
+        payment_method: paymentMethodToUse,
         status: "PACKED",
         shipping_address: selectedAddressObj,
         tracking: {
@@ -545,9 +538,9 @@ export default function CheckoutPage() {
             "Authorization": `Bearer ${localStorage.getItem("ecom_token") || ""}`
           },
           body: JSON.stringify({
-            order_number: createdOrderNumber,
+            order_number: orderNumToUse,
             total_amount: finalPayable,
-            payment_method: selectedMethod === "upi" ? "Razorpay Online UPI" : selectedMethod === "card" ? "Debit / Credit Card" : selectedMethod.toUpperCase(),
+            payment_method: paymentMethodToUse,
             status: "PACKED",
             customer_name: selectedAddressObj.name || parsedUser?.user_name || "Customer",
             customer_email: parsedUser?.email || (selectedAddressObj as any)?.email || "customer@e-com.in",
@@ -912,12 +905,117 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* 5. Proceed to Payment Action Button */}
+            {/* 5. Choose Payment Method Section */}
+            <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-black text-gray-900 flex items-center gap-2">
+                  <span>💳 5. Choose Payment Method</span>
+                </h2>
+                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <span>🔒</span> 256-Bit SSL Encrypted
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                {/* Option 1: Razorpay Online */}
+                <div
+                  onClick={() => setSelectedPaymentMethod("online")}
+                  className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative ${
+                    selectedPaymentMethod === "online"
+                      ? "border-emerald-500 bg-emerald-50/50 shadow-sm"
+                      : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        checked={selectedPaymentMethod === "online"}
+                        onChange={() => setSelectedPaymentMethod("online")}
+                        className="w-4 h-4 accent-emerald-600 cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-black text-gray-900 text-sm block">Razorpay Secure Checkout</span>
+                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-md mt-0.5 inline-block">
+                          ⚡ Instant Confirmation
+                        </span>
+                      </div>
+                    </div>
+                    <span className="text-xs font-black text-blue-600 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">
+                      Razorpay
+                    </span>
+                  </div>
+
+                  <p className="text-[11px] text-gray-600 font-medium mt-2.5 pl-6">
+                    Pay securely with <strong>UPI (GPay, PhonePe, Paytm, QR)</strong>, <strong>Cards</strong>, <strong>Net Banking</strong>, or <strong>Wallets</strong>.
+                  </p>
+
+                  <div className="flex items-center gap-1.5 mt-3 pl-6 flex-wrap">
+                    <span className="text-[9px] font-extrabold uppercase bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-700">UPI</span>
+                    <span className="text-[9px] font-extrabold uppercase bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-700">GPay</span>
+                    <span className="text-[9px] font-extrabold uppercase bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-700">PhonePe</span>
+                    <span className="text-[9px] font-extrabold uppercase bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-700">Cards</span>
+                    <span className="text-[9px] font-extrabold uppercase bg-white border border-gray-200 px-2 py-0.5 rounded text-gray-700">NetBanking</span>
+                  </div>
+                </div>
+
+                {/* Option 2: Cash on Delivery */}
+                <div
+                  onClick={() => setSelectedPaymentMethod("cod")}
+                  className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative ${
+                    selectedPaymentMethod === "cod"
+                      ? "border-emerald-500 bg-emerald-50/50 shadow-sm"
+                      : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <input
+                        type="radio"
+                        name="payment_method"
+                        checked={selectedPaymentMethod === "cod"}
+                        onChange={() => setSelectedPaymentMethod("cod")}
+                        className="w-4 h-4 accent-emerald-600 cursor-pointer"
+                      />
+                      <div>
+                        <span className="font-black text-gray-900 text-sm block">Cash on Delivery (COD)</span>
+                        <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-md mt-0.5 inline-block">
+                          💵 Pay at Doorstep
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-[11px] text-gray-600 font-medium mt-2.5 pl-6">
+                    Pay in cash or UPI directly to the delivery courier partner when your package arrives.
+                  </p>
+
+                  <div className="flex items-center gap-1.5 mt-3 pl-6">
+                    <span className="text-[9px] font-extrabold uppercase bg-amber-50 border border-amber-200 px-2 py-0.5 rounded text-amber-800">
+                      Standard Delivery Verified
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 6. Proceed to Payment Action Button */}
             <button
               onClick={handleProceedToPayment}
-              className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-base py-4 rounded-3xl transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
+              disabled={processingPayment}
+              className="w-full bg-[#10B981] hover:bg-[#059669] text-white font-black text-base py-4 rounded-3xl transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
             >
-              🔒 Proceed to Secure Payment (₹{finalPayable.toLocaleString("en-IN")})
+              {processingPayment ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin text-lg">⏳</span>
+                  {selectedPaymentMethod === "online" ? "Opening Razorpay Gateway..." : "Placing Order..."}
+                </span>
+              ) : selectedPaymentMethod === "online" ? (
+                <span>🔒 Pay ₹{finalPayable.toLocaleString("en-IN")} via Razorpay</span>
+              ) : (
+                <span>📦 Place Order via Cash on Delivery (₹{finalPayable.toLocaleString("en-IN")})</span>
+              )}
             </button>
 
           </div>
@@ -1198,222 +1296,6 @@ export default function CheckoutPage() {
                 Save &amp; Select Address
               </button>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* 💳 INTERACTIVE PAYMENT GATEWAY MODAL */}
-      {paymentModalOpen && (
-        <div className="fixed inset-0 bg-black/75 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl space-y-6 overflow-hidden">
-            
-            {/* Modal Header */}
-            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
-              <div>
-                <h3 className="text-base font-black text-gray-900">BotCom Gateway — Pay ₹{finalPayable.toLocaleString("en-IN")}</h3>
-                <p className="text-[11px] text-gray-500">Order Ref: <span className="font-extrabold text-emerald-700">{createdOrderNumber}</span></p>
-              </div>
-              <button
-                onClick={() => setPaymentModalOpen(false)}
-                className="text-gray-400 hover:text-gray-700 font-bold text-xl cursor-pointer"
-              >
-                &times;
-              </button>
-            </div>
-
-            {/* Payment Method Selector Tabs */}
-            <div className="flex bg-gray-100 p-1 rounded-2xl text-xs font-bold text-gray-700">
-              <button
-                onClick={() => setSelectedMethod("upi")}
-                className={`flex-1 py-2.5 rounded-xl transition ${selectedMethod === "upi" ? "bg-white text-emerald-700 shadow-sm" : "hover:text-gray-900"}`}
-              >
-                📱 UPI / QR
-              </button>
-              <button
-                onClick={() => setSelectedMethod("card")}
-                className={`flex-1 py-2.5 rounded-xl transition ${selectedMethod === "card" ? "bg-white text-emerald-700 shadow-sm" : "hover:text-gray-900"}`}
-              >
-                💳 Card
-              </button>
-              <button
-                onClick={() => setSelectedMethod("netbanking")}
-                className={`flex-1 py-2.5 rounded-xl transition ${selectedMethod === "netbanking" ? "bg-white text-emerald-700 shadow-sm" : "hover:text-gray-900"}`}
-              >
-                🏦 Net Banking
-              </button>
-              <button
-                onClick={() => setSelectedMethod("cod")}
-                className={`flex-1 py-2.5 rounded-xl transition ${selectedMethod === "cod" ? "bg-white text-emerald-700 shadow-sm" : "hover:text-gray-900"}`}
-              >
-                💵 COD
-              </button>
-            </div>
-
-            {/* TAB 1: REAL SCANNABLE UPI QR CODE & DIRECT INTENT */}
-            {selectedMethod === "upi" && (() => {
-              const upiPayUrl = `upi://pay?pa=6264384464@ybl&pn=BotCom%20Commerce&am=${finalPayable.toFixed(2)}&cu=INR&tn=Order%20${createdOrderNumber}`;
-              const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiPayUrl)}`;
-
-              return (
-                <div className="space-y-4 text-center">
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-3xl p-5 flex flex-col items-center justify-center space-y-3">
-                    <p className="text-xs font-black text-emerald-950">Scan QR with GPay, PhonePe, Paytm, BHIM or Cred</p>
-                    
-                    {/* 100% Real Scannable UPI QR Code Image */}
-                    <div className="w-52 h-52 bg-white p-2.5 rounded-2xl border-4 border-emerald-500 shadow-lg flex items-center justify-center relative group">
-                      <img
-                        src={qrImageUrl}
-                        alt="Scannable UPI QR Code"
-                        className="w-full h-full object-contain rounded-lg"
-                      />
-                      <div className="absolute -bottom-2 bg-emerald-600 text-white font-black text-[10px] px-3 py-0.5 rounded-full shadow-md">
-                        ₹{finalPayable.toLocaleString("en-IN")}
-                      </div>
-                    </div>
-
-                    <p className="text-[11px] font-extrabold text-emerald-700 pt-1">
-                      ⏱️ QR Code Expires in {Math.floor(qrTimer / 60)}:{String(qrTimer % 60).padStart(2, '0')}
-                    </p>
-
-                    {/* Direct UPI App Launchers for Mobile Users */}
-                    <div className="pt-1 flex items-center justify-center gap-2 flex-wrap">
-                      <a
-                        href={upiPayUrl}
-                        className="bg-white hover:bg-emerald-100 text-emerald-900 border border-emerald-300 font-extrabold text-[11px] px-3 py-1.5 rounded-xl transition shadow-2xs flex items-center gap-1.5"
-                      >
-                        <span>📲 Open in GPay / PhonePe / Paytm</span>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              );
-            })()}
-
-            {/* TAB 2: CREDIT / DEBIT CARD */}
-            {selectedMethod === "card" && (
-              <div className="space-y-4 text-xs">
-                {/* 3D Card Preview */}
-                <div className="bg-gradient-to-r from-gray-900 via-slate-800 to-gray-900 text-white rounded-3xl p-5 shadow-xl space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="font-extrabold text-sm tracking-wider">BotCom CARD</span>
-                    <span className="text-xs font-bold text-amber-400">VISA / MasterCard</span>
-                  </div>
-                  <p className="font-mono text-base tracking-widest py-2">
-                    {cardData.number || "•••• •••• •••• ••••"}
-                  </p>
-                  <div className="flex justify-between text-[10px] uppercase">
-                    <div>
-                      <p className="text-gray-400">Card Holder</p>
-                      <p className="font-bold">{cardData.holder || "YOUR NAME"}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Expires</p>
-                      <p className="font-bold">{cardData.exp || "MM/YY"}</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <input
-                    type="text"
-                    maxLength={19}
-                    placeholder="Card Number (16 Digits)"
-                    value={cardData.number}
-                    onChange={(e) => setCardData({ ...cardData, number: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    <input
-                      type="text"
-                      maxLength={5}
-                      placeholder="MM/YY"
-                      value={cardData.exp}
-                      onChange={(e) => setCardData({ ...cardData, exp: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
-                    />
-                    <input
-                      type="password"
-                      maxLength={3}
-                      placeholder="CVV"
-                      value={cardData.cvv}
-                      onChange={(e) => setCardData({ ...cardData, cvv: e.target.value })}
-                      className="bg-gray-50 border border-gray-300 rounded-2xl px-4 py-2.5 font-mono focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* TAB 3: NET BANKING */}
-            {selectedMethod === "netbanking" && (
-              <div className="space-y-4 text-xs">
-                <p className="font-bold text-gray-700">Select Your Bank:</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {["HDFC", "SBI", "ICICI", "Axis", "Kotak", "PNB"].map((bank) => (
-                    <button
-                      key={bank}
-                      onClick={() => setSelectedBank(bank)}
-                      className={`p-3 rounded-2xl border font-extrabold transition text-center cursor-pointer ${
-                        selectedBank === bank ? "bg-emerald-50 border-emerald-500 text-emerald-900 shadow-xs" : "bg-gray-50 border-gray-200 text-gray-700 hover:border-gray-300"
-                      }`}
-                    >
-                      🏦 {bank}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* TAB 4: CASH ON DELIVERY */}
-            {selectedMethod === "cod" && (
-              <div className="bg-amber-50 border border-amber-200 rounded-3xl p-5 text-xs space-y-3">
-                <p className="font-bold text-amber-900 text-sm">💵 Cash on Delivery (COD) Selected</p>
-                <p className="text-amber-800">Pay ₹{finalPayable.toLocaleString("en-IN")} in cash to the delivery agent upon receiving your package.</p>
-                
-                {!codOtpSent ? (
-                  <button
-                    onClick={() => setCodOtpSent(true)}
-                    className="w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold py-2.5 rounded-2xl transition cursor-pointer"
-                  >
-                    📲 Send 4-Digit Security OTP to Phone
-                  </button>
-                ) : (
-                  <div className="space-y-2">
-                    <p className="text-emerald-700 font-bold">✓ OTP Sent to your registered mobile number!</p>
-                    <input
-                      type="text"
-                      maxLength={4}
-                      placeholder="Enter OTP (e.g. 8942)"
-                      value={codOtp}
-                      onChange={(e) => setCodOtp(e.target.value)}
-                      className="w-full bg-white border border-amber-300 rounded-2xl px-4 py-2 font-mono text-center text-sm font-bold focus:outline-none"
-                    />
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Final Action Button inside Modal */}
-            <button
-              onClick={() => {
-                if (selectedMethod === "cod") {
-                  handleFinalOrderSubmit();
-                } else {
-                  handleLaunchRazorpayGateway();
-                }
-              }}
-              disabled={processingPayment}
-              className="w-full bg-[#10B981] hover:bg-[#059669] text-white font-black text-sm py-3.5 rounded-2xl transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              {processingPayment ? (
-                <span className="flex items-center gap-2">
-                  <span className="animate-spin text-lg">⏳</span> Opening Razorpay Gateway...
-                </span>
-              ) : (
-                <span>Confirm Order &amp; Pay ₹{finalPayable.toLocaleString("en-IN")}</span>
-              )}
-            </button>
-
           </div>
         </div>
       )}

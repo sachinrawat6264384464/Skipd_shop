@@ -31,6 +31,10 @@ interface OrderTrackingDetail {
   shipping_address?: any;
   items: { product_id: number; product_name: string; quantity: number; unit_price: number }[];
   timeline: TimelineItem[];
+  awb_code?: string;
+  courier_name?: string;
+  tracking_url?: string;
+  label_url?: string;
 }
 
 function TrackOrderContent() {
@@ -217,8 +221,18 @@ function TrackOrderContent() {
                     <span className="bg-emerald-500 text-white font-extrabold text-[9px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                       Fulfillment &amp; Express Delivery
                     </span>
-                    <h4 className="text-sm font-black mt-0.5">Delhivery / BlueDart Express</h4>
-                    <p className="text-xs text-emerald-200 font-medium">Tracking Code: {trackingData.order_number}</p>
+                    <h4 className="text-sm font-black mt-0.5">{trackingData.courier_name || "Delhivery / BlueDart Express"}</h4>
+                    <p className="text-xs text-emerald-200 font-medium">Tracking Code: {trackingData.awb_code || trackingData.order_number}</p>
+                    {trackingData.tracking_url && (
+                      <a
+                        href={trackingData.tracking_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-emerald-300 underline font-bold mt-1 inline-block hover:text-emerald-100"
+                      >
+                        Track on Courier Partner Site &rarr;
+                      </a>
+                    )}
                   </div>
                 </div>
 

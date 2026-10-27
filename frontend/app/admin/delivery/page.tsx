@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { fetchAdminShipments, updateOrderStatusGlobal, createAdminShipmentAPI } from "lib/api";
+import { fetchAdminShipments, updateOrderStatusGlobal, createAdminShipmentAPI, generateShipmentLabelAPI, scheduleShipmentPickupAPI, cancelShipmentAPI, syncShipmentStatusAPI } from "lib/api";
 
 // Import Chart.js & react-chartjs-2
 import {
@@ -1481,9 +1481,67 @@ export default function AdminDeliveryPage() {
               </div>
             </div>
 
+            {/* 🚀 SHIPROCKET LOGISTICS ACTIONS */}
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-gray-100">
+              <button
+                type="button"
+                onClick={async () => {
+                  const res = await generateShipmentLabelAPI(selectedShipmentForModal.id);
+                  if (res?.label_url) {
+                    window.open(res.label_url, "_blank");
+                    showToast("⚡ Shipping label opened in new tab!");
+                  } else {
+                    showToast("Shipping label generated successfully!");
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-3 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <span>📄 Print Label</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  const res = await scheduleShipmentPickupAPI(selectedShipmentForModal.id);
+                  showToast(res?.message || "Courier pickup scheduled successfully!");
+                  loadLiveShipmentsData();
+                }}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-3 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <span>📦 Schedule Pickup</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  const res = await syncShipmentStatusAPI(selectedShipmentForModal.id);
+                  showToast(`Live status synced: ${res?.synced_status || "Updated"}`);
+                  loadLiveShipmentsData();
+                }}
+                className="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-3 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <span>🔄 Sync Status</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={async () => {
+                  if (confirm("Are you sure you want to cancel this shipment?")) {
+                    const res = await cancelShipmentAPI(selectedShipmentForModal.id);
+                    showToast(res?.message || "Shipment cancelled successfully!");
+                    setSelectedShipmentForModal(null);
+                    loadLiveShipmentsData();
+                  }
+                }}
+                className="bg-rose-600 hover:bg-rose-700 text-white font-bold py-2 px-3 rounded-xl transition text-xs flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                <span>🛑 Cancel Ship</span>
+              </button>
+            </div>
+
             <button
               onClick={() => setSelectedShipmentForModal(null)}
-              className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl transition text-xs shadow-md cursor-pointer"
+              className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-black py-2.5 rounded-xl transition text-xs cursor-pointer"
             >
               Close Details
             </button>

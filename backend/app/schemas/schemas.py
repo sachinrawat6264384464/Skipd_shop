@@ -216,6 +216,9 @@ class TrackingResponse(BaseModel):
     current_status: str
     estimated_delivery: str
     timeline: List[TrackingTimelineItem]
+    label_url: Optional[str] = None
+    pickup_status: Optional[str] = None
+    pickup_scheduled_date: Optional[str] = None
 
 # Wallet Schemas
 class WalletTransactionResponse(BaseModel):

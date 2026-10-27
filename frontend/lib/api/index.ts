@@ -1694,6 +1694,80 @@ export async function createAdminShipmentAPI(payload: any) {
   return null;
 }
 
+export async function generateShipmentLabelAPI(shipmentId: number) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/shipping/admin/${shipmentId}/label`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK] generateShipmentLabelAPI failed:", e);
+  }
+  return null;
+}
+
+export async function scheduleShipmentPickupAPI(shipmentId: number) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/shipping/admin/${shipmentId}/pickup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK] scheduleShipmentPickupAPI failed:", e);
+  }
+  return null;
+}
+
+export async function cancelShipmentAPI(shipmentId: number) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/shipping/admin/${shipmentId}/cancel`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK] cancelShipmentAPI failed:", e);
+  }
+  return null;
+}
+
+export async function syncShipmentStatusAPI(shipmentId: number) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/shipping/admin/${shipmentId}/sync`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK] syncShipmentStatusAPI failed:", e);
+  }
+  return null;
+}
+
+export async function fetchAdminShipmentDetailAPI(shipmentId: number) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/shipping/admin/${shipmentId}`, {
+      cache: "no-store"
+    });
+    if (res.ok) {
+      return await res.json();
+    }
+  } catch (e) {
+    console.warn("[API SDK] fetchAdminShipmentDetailAPI failed:", e);
+  }
+  return null;
+}
+
 export async function fetchSimilarProductsAPI(productId: number, limit: number = 6) {
   try {
     const res = await fetch(`${API_BASE_URL}/recommendations/products/${productId}/similar?limit=${limit}`, {

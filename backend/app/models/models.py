@@ -218,13 +218,56 @@ class Shipment(Base):
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     shiprocket_order_id = Column(String(100), nullable=True)
     shiprocket_shipment_id = Column(String(100), nullable=True)
-    awb_code = Column(String(100), nullable=True)
+    awb_code = Column(String(100), nullable=True, index=True)
+    courier_id = Column(Integer, nullable=True)
     courier_name = Column(String(100), nullable=True)
-    status = Column(String(50), default="MANIFEST_GENERATED")
-    tracking_url = Column(String(255), nullable=True)
+    status = Column(String(50), default="MANIFEST_GENERATED", index=True)
+    destination = Column(String(255), nullable=True)
+    pin_code = Column(String(20), nullable=True)
+    est_delivery_date = Column(String(100), nullable=True)
+    current_location = Column(String(255), nullable=True)
+    pickup_status = Column(String(50), nullable=True, default="PENDING")
+    pickup_scheduled_date = Column(String(100), nullable=True)
+    tracking_url = Column(String(500), nullable=True)
+    label_url = Column(String(500), nullable=True)
+    manifest_url = Column(String(500), nullable=True)
+    weight = Column(Float, default=0.5)
+    dimensions = Column(String(50), default="10x10x10")
+    cod_amount = Column(Float, default=0.0)
+    last_synced_at = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     order = relationship("Order", back_populates="shipment")
+    tracking_events = relationship("ShipmentTrackingEvent", back_populates="shipment", cascade="all, delete-orphan", order_by="ShipmentTrackingEvent.event_time.desc()")
+
+class ShipmentTrackingEvent(Base):
+    __tablename__ = "shipment_tracking_events"
+
+    id = Column(Integer, primary_key=True, index=True)
+    shipment_id = Column(Integer, ForeignKey("shipments.id"), nullable=False, index=True)
+    awb_code = Column(String(100), nullable=True)
+    status = Column(String(100), nullable=False)
+    activity = Column(String(500), nullable=True)
+    description = Column(Text, nullable=True)
+    location = Column(String(255), nullable=True)
+    event_time = Column(DateTime, default=datetime.utcnow)
+    raw_payload = Column(JSON, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    shipment = relationship("Shipment", back_populates="tracking_events")
+
+class ShippingWebhookLog(Base):
+    __tablename__ = "shipping_webhook_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    event_type = Column(String(100), nullable=True)
+    awb_code = Column(String(100), nullable=True, index=True)
+    shipment_id = Column(String(100), nullable=True)
+    payload = Column(JSON, nullable=False)
+    processed = Column(Boolean, default=False)
+    error_message = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class SaleEvent(Base):
     __tablename__ = "sale_events"
