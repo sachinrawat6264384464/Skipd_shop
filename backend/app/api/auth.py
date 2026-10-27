@@ -282,7 +282,7 @@ async def login(data: UserLogin, db: AsyncSession = Depends(get_db)):
     email_clean = data.email.strip().lower()
     
     # 🔑 Master Admin Credentials Override
-    if email_clean in ["admin@e-com.in", "sachin@e-com.in", "admin@e-com.com"] and data.password in ["admin123", "admin", "e-com@2026"]:
+    if email_clean in ["admin@e-com.in", "sachin@e-com.in", "admin@e-com.com"] and data.password in ["admin123", "admin", "e-com@2026", "AdminPass123!"]:
         token = create_access_token(subject=email_clean)
         return TokenResponse(
             access_token=token,

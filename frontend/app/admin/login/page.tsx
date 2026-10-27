@@ -47,8 +47,8 @@ export default function AdminLoginPage() {
     <div className="min-h-screen lg:h-screen lg:max-h-screen overflow-y-auto lg:overflow-hidden bg-[#F8FAFC] text-gray-900 flex flex-col justify-between p-4 md:px-8 py-4 font-sans relative">
       
       {/* 🌊 Background Ambient Glow Accents */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-emerald-100/50 rounded-full blur-3xl -z-10 pointer-events-none" />
-      <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-teal-100/30 rounded-full blur-3xl -z-10 pointer-events-none" />
+      <div className="absolute top-0 left-0 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl -z-10 pointer-events-none" />
+      <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-indigo-100/30 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       {/* Main 2-Column Responsive Layout Grid (Mobile Login Box First) */}
       <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center my-auto py-2">
@@ -60,8 +60,8 @@ export default function AdminLoginPage() {
             {/* Top Shield Padlock Header Icon Graphic */}
             <div className="flex flex-col items-center text-center space-y-1.5">
               <div className="relative w-14 h-14 sm:w-16 sm:h-16 flex items-center justify-center">
-                <div className="absolute inset-0 border border-emerald-200 rounded-full opacity-60" />
-                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#059669] text-white flex items-center justify-center shadow-lg shadow-emerald-600/30">
+                <div className="absolute inset-0 border border-blue-200 rounded-full opacity-60" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#2563EB] text-white flex items-center justify-center shadow-lg shadow-blue-600/30">
                   <svg className="w-6 h-6 sm:w-7 sm:h-7" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.66 0 3 1.34 3 3v2h1c.55 0 1 .45 1 1v5c0 .55-.45 1-1 1H8c-.55 0-1-.45-1-1v-5c0-.55.45-1 1-1h1v-2c0-1.66 1.34-3 3-3zm0 2c-.55 0-1 .45-1 1v2h2v-2c0-.55-.45-1-1-1z" />
                   </svg>
@@ -69,13 +69,13 @@ export default function AdminLoginPage() {
               </div>
 
               {/* Badge */}
-              <span className="bg-[#EAF8F2] text-[#059669] font-black text-[9px] uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-emerald-200/60">
+              <span className="bg-[#EFF6FF] text-[#2563EB] font-black text-[9px] uppercase tracking-widest px-2.5 py-0.5 rounded-full border border-blue-200/60">
                 🔒 RESTRICTED ACCESS
               </span>
 
               {/* Title & Subtitle */}
               <h2 className="text-2xl font-black text-gray-900 tracking-tight leading-none">
-                Admin <span className="text-[#059669]">Login</span>
+                Admin <span className="text-[#2563EB]">Login</span>
               </h2>
               <p className="text-[11px] text-gray-500 font-medium max-w-xs leading-tight">
                 Please sign in to access the BotCom Store admin panel and manage your business efficiently.
@@ -98,7 +98,7 @@ export default function AdminLoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter admin email address..."
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 text-xs text-gray-900 font-bold focus:border-[#059669] focus:outline-none transition"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-3 py-2.5 text-xs text-gray-900 font-bold focus:border-[#2563EB] focus:outline-none transition"
                   />
                 </div>
               </div>
@@ -116,7 +116,7 @@ export default function AdminLoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter password..."
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-9 py-2.5 text-xs text-gray-900 font-bold focus:border-[#059669] focus:outline-none transition"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl pl-9 pr-9 py-2.5 text-xs text-gray-900 font-bold focus:border-[#2563EB] focus:outline-none transition"
                   />
                   <button
                     type="button"
@@ -135,30 +135,24 @@ export default function AdminLoginPage() {
               </div>
 
               {/* Remember Me & Forgot Password */}
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex items-center text-[11px]">
                 <label className="flex items-center gap-1.5 cursor-pointer font-bold text-gray-700 select-none">
                   <input
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-3.5 h-3.5 rounded text-[#059669] focus:ring-[#059669] border-gray-300 accent-[#059669] cursor-pointer"
+                    className="w-3.5 h-3.5 rounded text-[#2563EB] focus:ring-[#2563EB] border-gray-300 accent-[#2563EB] cursor-pointer"
                   />
                   <span>Remember me</span>
                 </label>
-                <button
-                  type="button"
-                  onClick={() => alert("Admin password reset request sent to system administrator.")}
-                  className="font-bold text-[#059669] hover:underline cursor-pointer"
-                >
-                  Forgot password?
-                </button>
+
               </div>
 
               {/* Primary Action Button */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-[#059669] hover:bg-[#047857] text-white font-black py-3 rounded-xl transition shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 text-xs cursor-pointer mt-1"
+                className="w-full bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black py-3 rounded-xl transition shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 text-xs cursor-pointer mt-1"
               >
                 <span>{loading ? "Authenticating Admin..." : "Sign In to Admin Panel"}</span>
                 <span className="text-sm">→</span>
@@ -212,7 +206,7 @@ export default function AdminLoginPage() {
           
           {/* Top Brand Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#059669] text-white flex items-center justify-center font-black text-xl shadow-md shadow-emerald-600/20">
+            <div className="w-10 h-10 rounded-xl bg-[#2563EB] text-white flex items-center justify-center font-black text-xl shadow-md shadow-blue-600/20">
               S
             </div>
             <div>
@@ -223,8 +217,8 @@ export default function AdminLoginPage() {
 
           {/* Pill Badge */}
           <div>
-            <span className="bg-[#EAF8F2] text-[#059669] border border-emerald-200/80 font-black text-[11px] px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-2xs">
-              <svg className="w-3.5 h-3.5 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <span className="bg-[#EFF6FF] text-[#2563EB] border border-blue-200/80 font-black text-[11px] px-3 py-1 rounded-full inline-flex items-center gap-1.5 shadow-2xs">
+              <svg className="w-3.5 h-3.5 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
               <span>Powerful. Secure. Smart.</span>
@@ -235,7 +229,7 @@ export default function AdminLoginPage() {
           <div className="space-y-1.5">
             <h1 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight">
               Welcome to <br />
-              <span className="text-[#059669]">BotCom Admin Portal</span>
+              <span className="text-[#2563EB]">BotCom Admin Portal</span>
             </h1>
             <p className="text-gray-500 text-xs md:text-sm font-medium max-w-md leading-relaxed">
               Manage products, orders, customers and delivery operations seamlessly in one place.
@@ -247,8 +241,8 @@ export default function AdminLoginPage() {
             
             {/* Feature 1 */}
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#EAF8F2] text-[#059669] flex items-center justify-center shrink-0 border border-emerald-200/60 shadow-2xs">
-                <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center shrink-0 border border-blue-200/60 shadow-2xs">
+                <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
@@ -260,8 +254,8 @@ export default function AdminLoginPage() {
 
             {/* Feature 2 */}
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#EAF8F2] text-[#059669] flex items-center justify-center shrink-0 border border-emerald-200/60 shadow-2xs">
-                <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center shrink-0 border border-blue-200/60 shadow-2xs">
+                <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                 </svg>
               </div>
@@ -273,8 +267,8 @@ export default function AdminLoginPage() {
 
             {/* Feature 3 */}
             <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#EAF8F2] text-[#059669] flex items-center justify-center shrink-0 border border-emerald-200/60 shadow-2xs">
-                <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-9 h-9 rounded-xl bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center shrink-0 border border-blue-200/60 shadow-2xs">
+                <svg className="w-4 h-4 text-[#2563EB]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
               </div>
@@ -290,7 +284,7 @@ export default function AdminLoginPage() {
           <div className="bg-white border border-gray-200/80 rounded-2xl p-4 shadow-lg max-w-lg space-y-3">
             <div className="flex items-center justify-between border-b border-gray-100 pb-2">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 rounded-md bg-[#059669] text-white font-black text-[10px] flex items-center justify-center">S</div>
+                <div className="w-5 h-5 rounded-md bg-[#2563EB] text-white font-black text-[10px] flex items-center justify-center">S</div>
                 <span className="font-black text-gray-900 text-xs">BotCom</span>
               </div>
               <span className="text-[10px] font-bold text-gray-400">Overview</span>
@@ -301,17 +295,17 @@ export default function AdminLoginPage() {
               <div className="bg-gray-50 border border-gray-100 p-2 rounded-xl space-y-0.5">
                 <p className="text-[9px] text-gray-400 font-bold">Total Revenue</p>
                 <p className="font-black text-gray-900 text-xs">₹24,85,890</p>
-                <p className="text-[8px] text-emerald-600 font-bold">↑ 10.6% vs last week</p>
+                <p className="text-[8px] text-blue-600 font-bold">↑ 10.6% vs last week</p>
               </div>
               <div className="bg-gray-50 border border-gray-100 p-2 rounded-xl space-y-0.5">
                 <p className="text-[9px] text-gray-400 font-bold">Total Orders</p>
                 <p className="font-black text-gray-900 text-xs">1,245</p>
-                <p className="text-[8px] text-emerald-600 font-bold">↑ 12.4% vs last week</p>
+                <p className="text-[8px] text-blue-600 font-bold">↑ 12.4% vs last week</p>
               </div>
               <div className="bg-gray-50 border border-gray-100 p-2 rounded-xl space-y-0.5">
                 <p className="text-[9px] text-gray-400 font-bold">Total Customers</p>
                 <p className="font-black text-gray-900 text-xs">8,542</p>
-                <p className="text-[8px] text-emerald-600 font-bold">↑ 8.7% vs last week</p>
+                <p className="text-[8px] text-blue-600 font-bold">↑ 8.7% vs last week</p>
               </div>
             </div>
 
@@ -321,15 +315,15 @@ export default function AdminLoginPage() {
                 <span className="font-bold text-gray-800">Sales Overview</span>
                 <span className="text-gray-400 font-medium">This Week ▾</span>
               </div>
-              <svg className="w-full h-10 text-[#059669]" viewBox="0 0 300 40" fill="none">
+              <svg className="w-full h-10 text-[#2563EB]" viewBox="0 0 300 40" fill="none">
                 <path d="M0 32 L40 24 L80 12 L120 22 L160 8 L200 16 L240 6 L280 14 L300 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                <circle cx="40" cy="24" r="2.5" fill="#059669" />
-                <circle cx="80" cy="12" r="2.5" fill="#059669" />
-                <circle cx="120" cy="22" r="2.5" fill="#059669" />
-                <circle cx="160" cy="8" r="2.5" fill="#059669" />
-                <circle cx="200" cy="16" r="2.5" fill="#059669" />
-                <circle cx="240" cy="6" r="2.5" fill="#059669" />
-                <circle cx="280" cy="14" r="2.5" fill="#059669" />
+                <circle cx="40" cy="24" r="2.5" fill="#2563EB" />
+                <circle cx="80" cy="12" r="2.5" fill="#2563EB" />
+                <circle cx="120" cy="22" r="2.5" fill="#2563EB" />
+                <circle cx="160" cy="8" r="2.5" fill="#2563EB" />
+                <circle cx="200" cy="16" r="2.5" fill="#2563EB" />
+                <circle cx="240" cy="6" r="2.5" fill="#2563EB" />
+                <circle cx="280" cy="14" r="2.5" fill="#2563EB" />
               </svg>
             </div>
           </div>
