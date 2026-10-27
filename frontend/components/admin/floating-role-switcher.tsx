@@ -97,9 +97,9 @@ export default function FloatingAdminRoleSwitcher() {
             name: r.name,
             badge: r.is_system ? "SYSTEM ROLE" : "ADMIN CREATED",
             icon: r.name.toLowerCase().includes("store") ? "🏪" : r.name.toLowerCase().includes("logistics") ? "📦" : r.name.toLowerCase().includes("stock") ? "🏭" : r.name.toLowerCase().includes("support") ? "🎧" : r.name.toLowerCase().includes("marketing") ? "🎯" : "🛡️",
-            color: "text-emerald-400",
-            bgColor: "bg-emerald-950/80",
-            borderColor: "border-emerald-500/40",
+            color: "text-blue-400",
+            bgColor: "bg-blue-950/80",
+            borderColor: "border-blue-500/40",
             description: r.description || `Configured role with ${r.permissions?.length || 0} active sidebar modules`,
             primaryRoute: getPrimaryRouteForPermissions(r.permissions || []),
             permissionsCount: r.permissions?.length || 0,
@@ -259,7 +259,7 @@ export default function FloatingAdminRoleSwitcher() {
     <>
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-[#0F172A] text-emerald-400 border border-emerald-500/50 px-6 py-3 rounded-2xl shadow-2xl text-xs font-black flex items-center gap-3 animate-bounce backdrop-blur-md">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 bg-[#0F172A] text-blue-400 border border-blue-500/50 px-6 py-3 rounded-2xl shadow-2xl text-xs font-black flex items-center gap-3 animate-bounce backdrop-blur-md">
           <span className="text-lg">🛡️</span>
           <span>{toastMessage}</span>
         </div>
@@ -293,12 +293,12 @@ export default function FloatingAdminRoleSwitcher() {
             <span className="w-9 h-9 rounded-full bg-gradient-to-br from-slate-800 to-purple-950 border border-purple-500/50 flex items-center justify-center text-sm shadow-lg">
               {currentRoleObj.icon}
             </span>
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 border border-[#0F172A] absolute -top-0.5 -right-0.5 animate-pulse"></span>
+            <span className="w-2.5 h-2.5 rounded-full bg-blue-400 border border-[#0F172A] absolute -top-0.5 -right-0.5 animate-pulse"></span>
           </div>
 
           <div className="text-left">
             <div className="flex items-center gap-1.5">
-              <span className="text-[9px] font-black tracking-widest text-emerald-400 uppercase">ROLE SWITCHER</span>
+              <span className="text-[9px] font-black tracking-widest text-blue-400 uppercase">ROLE SWITCHER</span>
               <span className="text-[8px] bg-slate-800 text-slate-400 px-1.5 py-0.2 rounded font-mono">DRAGGABLE ✋</span>
             </div>
             <p className="text-xs font-extrabold text-white truncate max-w-[130px] flex items-center gap-1">
@@ -320,7 +320,7 @@ export default function FloatingAdminRoleSwitcher() {
                 <div className="flex items-center gap-2">
                   <span className="text-2xl">🛡️</span>
                   <h2 className="text-xl font-black tracking-tight text-white">Admin Role Quick Switcher &amp; Panel Access</h2>
-                  <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">
+                  <span className="bg-blue-600/20 text-blue-400 border border-blue-500/30 text-[10px] font-black px-2.5 py-0.5 rounded-full uppercase">
                     Active Roles ({availableRoles.length})
                   </span>
                 </div>
@@ -337,16 +337,16 @@ export default function FloatingAdminRoleSwitcher() {
             </div>
 
             {/* Current Active Role Highlight */}
-            <div className="bg-slate-900/90 border border-emerald-500/40 p-4 rounded-2xl flex items-center justify-between">
+            <div className="bg-slate-900/90 border border-blue-500/40 p-4 rounded-2xl flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-3xl">{currentRoleObj.icon}</span>
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">CURRENT ACTIVE ROLE SESSION</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-400">CURRENT ACTIVE ROLE SESSION</span>
                   <h3 className="text-base font-black text-white">{activeRoleName}</h3>
                   <p className="text-xs text-slate-400">{currentRoleObj.description}</p>
                 </div>
               </div>
-              <span className="bg-emerald-500 text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl shadow-lg shrink-0">
+              <span className="bg-blue-600 text-slate-950 font-black text-xs px-3 py-1.5 rounded-xl shadow-lg shrink-0">
                 ACTIVE NOW ✓
               </span>
             </div>
@@ -364,7 +364,7 @@ export default function FloatingAdminRoleSwitcher() {
                       onClick={() => handleRoleSwitch(role)}
                       className={`text-left p-4 rounded-2xl border transition duration-150 cursor-pointer flex flex-col justify-between space-y-2 group ${
                         isCurrent
-                          ? "bg-emerald-950/40 border-emerald-500 text-white ring-1 ring-emerald-500"
+                          ? "bg-blue-950/40 border-blue-500 text-white ring-1 ring-blue-500"
                           : "bg-slate-900/60 hover:bg-slate-800/90 border-slate-800 text-slate-300 hover:border-slate-700"
                       }`}
                     >
@@ -374,14 +374,14 @@ export default function FloatingAdminRoleSwitcher() {
                           <div>
                             <p className="font-extrabold text-sm text-white flex items-center gap-1.5">
                               <span>{role.name}</span>
-                              {isCurrent && <span className="text-emerald-400 text-xs">● Active</span>}
+                              {isCurrent && <span className="text-blue-400 text-xs">● Active</span>}
                             </p>
                             <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-md border ${role.bgColor} ${role.color} ${role.borderColor}`}>
                               {role.badge}
                             </span>
                           </div>
                         </div>
-                        <span className="text-xs text-slate-500 group-hover:text-emerald-400 transition font-bold">
+                        <span className="text-xs text-slate-500 group-hover:text-blue-400 transition font-bold">
                           Open Panel &rarr;
                         </span>
                       </div>
@@ -392,7 +392,7 @@ export default function FloatingAdminRoleSwitcher() {
 
                       <div className="flex items-center justify-between pt-1 text-[10px] font-mono text-slate-500 border-t border-slate-800/60">
                         <span>Route: {role.primaryRoute}</span>
-                        <span className="text-emerald-400 font-bold">{role.permissionsCount} Services Allowed</span>
+                        <span className="text-blue-400 font-bold">{role.permissionsCount} Services Allowed</span>
                       </div>
                     </button>
                   );
@@ -406,7 +406,7 @@ export default function FloatingAdminRoleSwitcher() {
                     💡 No custom admin roles created yet!
                   </p>
                   <p className="text-[11px] text-slate-400">
-                    To activate additional roles, go to <span className="text-white font-bold">Users &amp; Roles</span> panel and click <span className="text-emerald-400 font-bold">"+ Create Custom Role"</span>. Created roles will automatically appear here!
+                    To activate additional roles, go to <span className="text-white font-bold">Users &amp; Roles</span> panel and click <span className="text-blue-400 font-bold">"+ Create Custom Role"</span>. Created roles will automatically appear here!
                   </p>
                 </div>
               )}

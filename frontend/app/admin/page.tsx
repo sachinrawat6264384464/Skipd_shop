@@ -241,7 +241,7 @@ export default function AdminDashboardPage() {
       
       {/* Action Notification Toast */}
       {restockMsg && (
-        <div className="fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl bg-[#EAF8F2] text-[#059669] border border-emerald-300 flex items-center gap-2 animate-bounce">
+        <div className="fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl text-xs font-black shadow-2xl bg-[#EFF6FF] text-[#2563EB] border border-blue-300 flex items-center gap-2 animate-bounce">
           <span>{restockMsg}</span>
         </div>
       )}
@@ -251,7 +251,7 @@ export default function AdminDashboardPage() {
         <div>
           <h1 className="text-2xl font-black text-gray-900">⚡ Store Control Center</h1>
           <p className="text-xs text-gray-500 font-medium mt-0.5">
-            Real-time analytics and management for BotCom Commerce • <span className="text-emerald-700 font-bold">{dbProducts.length} PostgreSQL Products Sync</span>
+            Real-time analytics and management for BotCom Commerce • <span className="text-blue-700 font-bold">{dbProducts.length} PostgreSQL Products Sync</span>
           </p>
         </div>
 
@@ -280,7 +280,7 @@ export default function AdminDashboardPage() {
 
           <button
             onClick={handleTriggerWeeklyReport}
-            className="bg-emerald-50 text-emerald-800 border border-emerald-300 font-bold text-xs px-3.5 py-2 rounded-xl hover:bg-emerald-100 transition cursor-pointer shadow-2xs"
+            className="bg-blue-50 text-blue-800 border border-blue-300 font-bold text-xs px-3.5 py-2 rounded-xl hover:bg-blue-100 transition cursor-pointer shadow-2xs"
           >
             📧 Send 7-Day Weekly Report
           </button>
@@ -307,14 +307,14 @@ export default function AdminDashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           <Link
             href="/admin/products"
-            className="bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 p-3 rounded-xl flex items-center gap-2 text-emerald-800 transition cursor-pointer group"
+            className="bg-blue-50 hover:bg-blue-100 border border-blue-200/80 p-3 rounded-xl flex items-center gap-2 text-blue-800 transition cursor-pointer group"
           >
-            <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
+            <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 group-hover:scale-110 transition">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" /></svg>
             </div>
             <div className="text-left leading-tight">
               <p className="font-black text-xs">Products Manager</p>
-              <p className="text-[9px] text-emerald-600 font-bold">100% CRUD Controls</p>
+              <p className="text-[9px] text-blue-600 font-bold">100% CRUD Controls</p>
             </div>
           </Link>
 
@@ -376,18 +376,18 @@ export default function AdminDashboardPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         
         {/* Stat 1: Total Revenue */}
-        <Link href="/admin/analytics" className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-3 hover:shadow-md hover:border-emerald-300 transition group">
+        <Link href="/admin/analytics" className="bg-white border border-gray-200/80 p-5 rounded-2xl shadow-2xs space-y-3 hover:shadow-md hover:border-blue-300 transition group">
           <div className="flex justify-between items-center">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 font-bold flex items-center justify-center text-lg shadow-2xs group-hover:scale-110 transition">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 font-bold flex items-center justify-center text-lg shadow-2xs group-hover:scale-110 transition">
               ₹
             </div>
-            <span className="text-[10px] font-bold text-gray-400 group-hover:text-emerald-700">Details &rarr;</span>
+            <span className="text-[10px] font-bold text-gray-400 group-hover:text-blue-700">Details &rarr;</span>
           </div>
           <div>
             <p className="text-xs text-gray-500 font-medium">Total Revenue ({timeframe})</p>
             <h3 className="text-xl font-black text-gray-900 mt-0.5">₹{metrics.total_revenue.toLocaleString("en-IN")}</h3>
           </div>
-          <div className="flex items-center gap-1 text-[11px] font-bold text-emerald-600">
+          <div className="flex items-center gap-1 text-[11px] font-bold text-blue-600">
             <span>↑ {metrics.revenue_growth}</span>
           </div>
         </Link>
@@ -469,12 +469,12 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-5 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4 flex flex-col justify-between">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-black text-base text-gray-900">Sales &amp; Revenue Overview</h3>
-            <span className="text-xs font-extrabold text-emerald-700 capitalize">Mode: {timeframe}</span>
+            <span className="text-xs font-extrabold text-blue-700 capitalize">Mode: {timeframe}</span>
           </div>
 
           <div className="flex items-center gap-6 text-xs font-bold text-gray-600">
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-emerald-500"></span>
+              <span className="w-3 h-3 rounded-full bg-blue-500"></span>
               <span>Revenue (₹)</span>
             </div>
             <div className="flex items-center gap-2">
@@ -499,7 +499,7 @@ export default function AdminDashboardPage() {
               <path
                 d={metrics.total_revenue > 0 ? "M 20 120 L 90 80 L 160 100 L 230 60 L 300 85 L 370 50 L 440 80 L 490 60" : "M 0 150 L 500 150"}
                 fill="none"
-                stroke="#10b981"
+                stroke="#2563eb"
                 strokeWidth="3"
                 strokeLinecap="round"
               />
@@ -516,7 +516,7 @@ export default function AdminDashboardPage() {
               {metrics.total_revenue > 0 && (
                 <>
                   <line x1="230" y1="20" x2="230" y2="160" stroke="#cbd5e1" strokeWidth="1.5" strokeDasharray="3 3" />
-                  <circle cx="230" cy="60" r="5" fill="#10b981" />
+                  <circle cx="230" cy="60" r="5" fill="#2563eb" />
                   <circle cx="230" cy="90" r="5" fill="#8b5cf6" />
                 </>
               )}
@@ -524,7 +524,7 @@ export default function AdminDashboardPage() {
 
             <div className="absolute top-12 left-[40%] bg-white border border-gray-200 rounded-2xl p-3 shadow-xl text-[11px] space-y-1 font-bold z-10 pointer-events-none">
               <p className="text-gray-400 font-medium">{metrics.total_orders > 0 ? "Peak Performance" : "Live Real-Time Data"}</p>
-              <p className="text-emerald-600">● Revenue: ₹{metrics.total_revenue.toLocaleString("en-IN")}</p>
+              <p className="text-blue-600">● Revenue: ₹{metrics.total_revenue.toLocaleString("en-IN")}</p>
               <p className="text-purple-600">● Orders: {metrics.total_orders}</p>
             </div>
           </div>
@@ -544,7 +544,7 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4 flex flex-col justify-between">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-black text-base text-gray-900">Order Status Distribution</h3>
-            <span className="text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">Live DB</span>
+            <span className="text-[9px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">Live DB</span>
           </div>
           
           <div className="relative flex items-center justify-center h-48">
@@ -553,7 +553,7 @@ export default function AdminDashboardPage() {
               {metrics.total_orders > 0 && (
                 <>
                   {dashDelivered > 0 && (
-                    <circle cx="50" cy="50" r="38" stroke="#10b981" strokeWidth="14" fill="none" strokeDasharray={`${dashDelivered} 238`} strokeDashoffset="0" />
+                    <circle cx="50" cy="50" r="38" stroke="#2563eb" strokeWidth="14" fill="none" strokeDasharray={`${dashDelivered} 238`} strokeDashoffset="0" />
                   )}
                   {dashProcessing > 0 && (
                     <circle cx="50" cy="50" r="38" stroke="#3b82f6" strokeWidth="14" fill="none" strokeDasharray={`${dashProcessing} 238`} strokeDashoffset={`-${dashDelivered}`} />
@@ -576,7 +576,7 @@ export default function AdminDashboardPage() {
           <div className="space-y-2 text-xs font-semibold pt-2 border-t border-gray-100">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                 <span className="text-gray-700">Delivered</span>
               </div>
               <span className="font-bold text-gray-900">{statusPct.delivered}% ({statusCounts.delivered})</span>
@@ -612,7 +612,7 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-4 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-black text-base text-gray-900">Top Selling Products</h3>
-            <Link href="/admin/products" className="text-xs font-bold text-emerald-700 hover:underline">Manage All &rarr;</Link>
+            <Link href="/admin/products" className="text-xs font-bold text-blue-700 hover:underline">Manage All &rarr;</Link>
           </div>
 
           <div className="space-y-3">
@@ -624,13 +624,13 @@ export default function AdminDashboardPage() {
                 className="flex items-center justify-between p-2 rounded-xl hover:bg-gray-50 transition group cursor-pointer border border-gray-100/60"
               >
                 <div className="flex items-center gap-3">
-                  <span className="w-5 h-5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black flex items-center justify-center shrink-0">
+                  <span className="w-5 h-5 rounded-full bg-blue-100 text-blue-800 text-[10px] font-black flex items-center justify-center shrink-0">
                     {p.rank}
                   </span>
                   <img src={p.img} alt={p.title} className="w-10 h-10 rounded-xl object-contain bg-gray-50 p-1 border border-gray-200 shrink-0 group-hover:scale-105 transition" />
                   <div>
-                    <h4 className="font-bold text-gray-900 text-xs truncate max-w-[140px] group-hover:text-emerald-700 transition">{p.title}</h4>
-                    <p className="text-[10px] text-emerald-700 font-bold">{p.sold}</p>
+                    <h4 className="font-bold text-gray-900 text-xs truncate max-w-[140px] group-hover:text-blue-700 transition">{p.title}</h4>
+                    <p className="text-[10px] text-blue-700 font-bold">{p.sold}</p>
                   </div>
                 </div>
                 <span className="font-black text-gray-900 text-xs">₹{Number(p.price || 0).toLocaleString("en-IN")}</span>
@@ -648,7 +648,7 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-6 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-black text-base text-gray-900">Recent Customer Orders</h3>
-            <Link href="/admin/orders" className="text-xs font-bold text-emerald-700 hover:underline">View All Orders &rarr;</Link>
+            <Link href="/admin/orders" className="text-xs font-bold text-blue-700 hover:underline">View All Orders &rarr;</Link>
           </div>
 
           <div className="overflow-x-auto">
@@ -672,7 +672,7 @@ export default function AdminDashboardPage() {
                     <td className="px-3 py-3 font-black text-gray-900">{ord.amount}</td>
                     <td className="px-3 py-3">
                       <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase ${
-                        ord.status === "Delivered" ? "bg-emerald-100 text-emerald-800" :
+                        ord.status === "Delivered" ? "bg-blue-100 text-blue-800" :
                         ord.status === "Processing" ? "bg-blue-100 text-blue-800" :
                         ord.status === "Shipped" ? "bg-amber-100 text-amber-800" : "bg-red-100 text-red-800"
                       }`}>
@@ -698,7 +698,7 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-4">
           <div className="flex justify-between items-center border-b border-gray-100 pb-3">
             <h3 className="font-black text-base text-gray-900">⚠️ Low Stock Alert</h3>
-            <Link href="/admin/products" className="text-xs font-bold text-emerald-700 hover:underline">All Products</Link>
+            <Link href="/admin/products" className="text-xs font-bold text-blue-700 hover:underline">All Products</Link>
           </div>
 
           <div className="space-y-3">
@@ -722,7 +722,7 @@ export default function AdminDashboardPage() {
                   {/* Restock Button */}
                   <button
                     onClick={() => handleRestockProduct(item)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg transition shadow-2xs cursor-pointer whitespace-nowrap"
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black px-2.5 py-1.5 rounded-lg transition shadow-2xs cursor-pointer whitespace-nowrap"
                   >
                     + Restock (+50)
                   </button>
@@ -736,7 +736,7 @@ export default function AdminDashboardPage() {
         <div className="lg:col-span-3 bg-white border border-gray-200/80 rounded-2xl p-6 shadow-2xs space-y-3 text-xs">
           <div className="flex justify-between items-center border-b border-gray-100 pb-2">
             <h3 className="font-black text-base text-gray-900">Store Overview</h3>
-            <span className="text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full">Live DB</span>
+            <span className="text-[9px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full">Live DB</span>
           </div>
           
           <div className="flex justify-between items-center py-1.5 border-b border-gray-50">
@@ -759,7 +759,7 @@ export default function AdminDashboardPage() {
 
           <div className="flex justify-between items-center py-1.5 border-b border-gray-50">
             <span className="text-gray-600 flex items-center gap-2 font-medium">
-              <span className="w-6 h-6 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs">📦</span> Database Products
+              <span className="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">📦</span> Database Products
             </span>
             <span className="font-black text-gray-900 text-sm">{dbProducts.length}</span>
           </div>
@@ -788,7 +788,7 @@ export default function AdminDashboardPage() {
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div>
                 <h3 className="text-lg font-black text-gray-900">Order Details</h3>
-                <p className="text-xs text-emerald-700 font-mono font-bold">{selectedOrderDetails.id}</p>
+                <p className="text-xs text-blue-700 font-mono font-bold">{selectedOrderDetails.id}</p>
               </div>
               <button
                 onClick={() => setSelectedOrderDetails(null)}
@@ -811,14 +811,14 @@ export default function AdminDashboardPage() {
                 </div>
                 <div className="bg-gray-50 border border-gray-200 p-3 rounded-2xl space-y-0.5">
                   <p className="text-[10px] text-gray-400 font-bold uppercase">Tracking Code</p>
-                  <p className="font-mono font-bold text-emerald-700">{selectedOrderDetails.trackId}</p>
+                  <p className="font-mono font-bold text-blue-700">{selectedOrderDetails.trackId}</p>
                 </div>
               </div>
 
               <div className="bg-gray-50 border border-gray-200 p-3 rounded-2xl space-y-1">
                 <p className="text-[10px] text-gray-400 font-bold uppercase">Items Purchased</p>
                 <p className="font-bold text-gray-900">{selectedOrderDetails.items}</p>
-                <p className="font-black text-emerald-700 text-sm pt-1 border-t border-gray-200 mt-1">Total: {selectedOrderDetails.amount}</p>
+                <p className="font-black text-blue-700 text-sm pt-1 border-t border-gray-200 mt-1">Total: {selectedOrderDetails.amount}</p>
               </div>
             </div>
 

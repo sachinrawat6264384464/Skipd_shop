@@ -86,7 +86,7 @@ export function AIStoreCopilotWidget() {
       {/* Floating Action Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-6 z-50 p-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 text-white rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center border-2 border-emerald-400/40 group cursor-pointer"
+        className="fixed bottom-6 left-6 z-50 p-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center border-2 border-blue-400/40 group cursor-pointer"
         title="Open AI Store Copilot"
       >
         <span className="flex items-center gap-2 font-black text-xs uppercase tracking-wider">
@@ -100,15 +100,15 @@ export function AIStoreCopilotWidget() {
         <div className="fixed bottom-24 left-6 w-[420px] max-w-[calc(100vw-2rem)] h-[580px] z-50 bg-slate-950/95 backdrop-blur-2xl border border-slate-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300 font-sans text-white">
           
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 border-b border-slate-800 flex items-center justify-between">
+          <div className="p-4 bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-xl">
+              <div className="w-10 h-10 rounded-2xl bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-xl">
                 📊
               </div>
               <div>
                 <h3 className="font-extrabold text-sm text-white">AI Store Copilot</h3>
-                <p className="text-[10px] text-emerald-400 font-semibold flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <p className="text-[10px] text-blue-400 font-semibold flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                   Live Merchant Intelligence
                 </p>
               </div>
@@ -126,7 +126,7 @@ export function AIStoreCopilotWidget() {
             
             {/* Copilot Response Card */}
             <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-black text-[11px] uppercase tracking-wider">
+              <div className="flex items-center gap-2 text-blue-400 font-black text-[11px] uppercase tracking-wider">
                 <span>🤖 Copilot Diagnostic</span>
               </div>
               <p className="text-slate-200 leading-relaxed whitespace-pre-wrap font-medium">
@@ -147,7 +147,7 @@ export function AIStoreCopilotWidget() {
                       className={`p-3 rounded-xl border text-xs ${
                         ins.type === "critical" ? "bg-red-950/40 border-red-800/60 text-red-200" :
                         ins.type === "warning" ? "bg-amber-950/40 border-amber-800/60 text-amber-200" :
-                        ins.type === "success" ? "bg-emerald-950/40 border-emerald-800/60 text-emerald-200" :
+                        ins.type === "success" ? "bg-blue-950/40 border-blue-800/60 text-blue-200" :
                         "bg-slate-900/80 border-slate-800 text-slate-300"
                       }`}
                     >
@@ -170,7 +170,7 @@ export function AIStoreCopilotWidget() {
                     <button
                       key={aIdx}
                       onClick={() => handleActionClick(act)}
-                      className="bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs flex items-center gap-1"
+                      className="bg-blue-600/20 hover:bg-blue-600/30 text-blue-300 border border-blue-500/40 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer text-xs flex items-center gap-1"
                     >
                       {act.label}
                     </button>
@@ -180,7 +180,7 @@ export function AIStoreCopilotWidget() {
             )}
 
             {loading && (
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs p-2">
+              <div className="flex items-center gap-2 text-blue-400 font-bold text-xs p-2">
                 <span className="animate-spin text-base">⚙️</span>
                 Analyzing store metrics &amp; generating AI growth diagnostic...
               </div>
@@ -195,12 +195,12 @@ export function AIStoreCopilotWidget() {
               onChange={(e) => setQueryInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleQuery()}
               placeholder="Ask e.g. 'What should I do?' or 'How is my store doing?'..."
-              className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+              className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
             />
             <button
               onClick={() => handleQuery()}
               disabled={loading || !queryInput.trim()}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-4 py-2 rounded-xl text-xs uppercase tracking-wider disabled:opacity-50 transition"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-black px-4 py-2 rounded-xl text-xs uppercase tracking-wider disabled:opacity-50 transition"
             >
               Ask
             </button>
