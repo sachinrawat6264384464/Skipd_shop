@@ -868,7 +868,7 @@ function AccountContent() {
           {/* User Header Profile Card */}
           <div className="bg-white border border-gray-200/80 rounded-2xl p-4 flex items-center justify-between gap-3.5 shadow-2xs">
             <div className="flex items-center gap-3.5 min-w-0">
-              <div className="w-12 h-12 rounded-full bg-[#10B981] text-white font-black text-xl flex items-center justify-center shadow-xs shrink-0">
+              <div className="w-12 h-12 rounded-full bg-blue-600 text-white font-black text-xl flex items-center justify-center shadow-xs shrink-0">
                 {currentUser.user_name[0] || "S"}
               </div>
               <div className="min-w-0">
@@ -894,14 +894,9 @@ function AccountContent() {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="w-full flex items-center justify-between bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-xl p-3 text-xs font-black text-gray-900 cursor-pointer shadow-2xs transition"
             >
-              <div className="flex items-center gap-2.5">
-                <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-                <span>Account Services Menu</span>
-              </div>
+              <span>Account Services Menu</span>
               <div className="flex items-center gap-2">
-                <span className="bg-[#059669] text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-full capitalize">
+                <span className="bg-blue-600 text-white font-extrabold text-[10px] px-2.5 py-0.5 rounded-full capitalize">
                   {activeTab === "track-order" ? "Live Track" : activeTab === "returns" ? "24h Returns" : activeTab}
                 </span>
                 <span className="text-gray-400 text-xs font-bold">{isMobileMenuOpen ? "▲" : "▼"}</span>
@@ -925,12 +920,7 @@ function AccountContent() {
                       activeTab === "orders" ? "bg-gray-900 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
-                      </svg>
-                      <span>My Orders</span>
-                    </div>
+                    <span>My Orders</span>
                     <span className="text-xs">&rsaquo;</span>
                   </button>
 
@@ -938,33 +928,22 @@ function AccountContent() {
                     type="button"
                     onClick={() => { setActiveTab("track-order"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "track-order" ? "bg-[#059669] text-white font-black shadow-2xs" : "bg-emerald-50 text-[#059669] border border-emerald-200/60"
+                      activeTab === "track-order" ? "bg-blue-600 text-white font-black shadow-2xs" : "bg-blue-50 text-blue-600 border border-blue-200/60"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span>Track Shipment Live</span>
-                    </div>
-                    <span className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full">Live</span>
+                    <span>Track Shipment Live</span>
+                    <span className="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full">Live</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => { setActiveTab("returns"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "returns" ? "bg-[#059669] text-white font-black shadow-2xs" : "bg-emerald-50 text-[#059669] border border-emerald-200/60"
+                      activeTab === "returns" ? "bg-blue-600 text-white font-black shadow-2xs" : "bg-blue-50 text-blue-600 border border-blue-200/60"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                      <span>Return Products Policy</span>
-                    </div>
-                    <span className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full">24h Policy</span>
+                    <span>Return Products Policy</span>
+                    <span className="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full">24h Policy</span>
                   </button>
                 </div>
 
@@ -978,15 +957,10 @@ function AccountContent() {
                     type="button"
                     onClick={() => { setActiveTab("profile"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "profile" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                      activeTab === "profile" ? "bg-blue-600 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      <span>Profile Information</span>
-                    </div>
+                    <span>Profile Information</span>
                     <span className="text-xs">&rsaquo;</span>
                   </button>
 
@@ -994,16 +968,10 @@ function AccountContent() {
                     type="button"
                     onClick={() => { setActiveTab("addresses"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "addresses" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                      activeTab === "addresses" ? "bg-blue-600 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 opacity-80 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <span>Manage Addresses</span>
-                    </div>
+                    <span>Manage Addresses</span>
                     <span className="text-xs">&rsaquo;</span>
                   </button>
                 </div>
@@ -1018,31 +986,21 @@ function AccountContent() {
                     type="button"
                     onClick={() => { setActiveTab("gift-cards"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "gift-cards" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                      activeTab === "gift-cards" ? "bg-blue-600 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      <span>Gift Cards</span>
-                    </div>
-                    <span className="text-[#059669] font-black">₹0</span>
+                    <span>Gift Cards</span>
+                    <span className="text-blue-600 font-black">₹0</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => { setActiveTab("wallet"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "wallet" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                      activeTab === "wallet" ? "bg-blue-600 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                      </svg>
-                      <span>Saved Cards &amp; Wallet</span>
-                    </div>
+                    <span>Saved Cards &amp; Wallet</span>
                     <span className="text-xs">&rsaquo;</span>
                   </button>
                 </div>
@@ -1057,15 +1015,10 @@ function AccountContent() {
                     type="button"
                     onClick={() => { setActiveTab("coupons"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "coupons" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                      activeTab === "coupons" ? "bg-blue-600 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 11h.01M7 15h.01M13 7h.01M13 11h.01M13 15h.01M17 7h.01M17 11h.01M17 15h.01" />
-                      </svg>
-                      <span>My Coupons (2 Active)</span>
-                    </div>
+                    <span>My Coupons (2 Active)</span>
                     <span className="text-xs">&rsaquo;</span>
                   </button>
 
@@ -1073,15 +1026,10 @@ function AccountContent() {
                     type="button"
                     onClick={() => { setActiveTab("supercoin"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "supercoin" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                      activeTab === "supercoin" ? "bg-blue-600 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                      <span>Supercoins &amp; Plus Zone</span>
-                    </div>
+                    <span>Supercoins &amp; Plus Zone</span>
                     <span className="text-xs">&rsaquo;</span>
                   </button>
 
@@ -1089,15 +1037,10 @@ function AccountContent() {
                     type="button"
                     onClick={() => { setActiveTab("wishlist"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "wishlist" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                      activeTab === "wishlist" ? "bg-blue-600 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                      </svg>
-                      <span>My Wishlist ({wishlist.length})</span>
-                    </div>
+                    <span>My Wishlist ({wishlist.length})</span>
                     <span className="text-xs">&rsaquo;</span>
                   </button>
 
@@ -1105,15 +1048,10 @@ function AccountContent() {
                     type="button"
                     onClick={() => { setActiveTab("notifications"); setIsMobileMenuOpen(false); }}
                     className={`w-full flex items-center justify-between py-2 px-3 rounded-xl transition cursor-pointer ${
-                      activeTab === "notifications" ? "bg-[#059669] text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
+                      activeTab === "notifications" ? "bg-blue-600 text-white font-black shadow-2xs" : "hover:bg-gray-50 text-gray-800"
                     }`}
                   >
-                    <div className="flex items-center gap-2.5">
-                      <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                      </svg>
-                      <span>All Notifications</span>
-                    </div>
+                    <span>All Notifications</span>
                     <span className="text-xs">&rsaquo;</span>
                   </button>
                 </div>
@@ -1133,12 +1071,7 @@ function AccountContent() {
                   activeTab === "orders" ? "bg-gray-900 text-white shadow-xs" : "text-gray-800 hover:bg-gray-50"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
-                  </svg>
-                  <span className="tracking-wide">MY ORDERS</span>
-                </div>
+                <span className="tracking-wide">MY ORDERS</span>
                 <span className="text-sm font-black">&rsaquo;</span>
               </button>
 
@@ -1147,18 +1080,12 @@ function AccountContent() {
                 onClick={() => setActiveTab("track-order")}
                 className={`w-full flex items-center justify-between font-bold text-xs py-2.5 px-3.5 rounded-xl transition cursor-pointer ${
                   activeTab === "track-order"
-                    ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black"
+                    ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black"
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <span>Track Shipment Live</span>
-                </div>
-                <span className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full">Live</span>
+                <span>Track Shipment Live</span>
+                <span className="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full">Live</span>
               </button>
 
               {/* ↺ 24h Return Products Policy Single Sidebar Link */}
@@ -1166,17 +1093,12 @@ function AccountContent() {
                 onClick={() => setActiveTab("returns")}
                 className={`w-full flex items-center justify-between font-bold text-xs py-2.5 px-3.5 rounded-xl transition cursor-pointer ${
                   activeTab === "returns"
-                    ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black"
+                    ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black"
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                  <span>Return Products Policy</span>
-                </div>
-                <span className="text-[9px] font-black bg-emerald-600 text-white px-2 py-0.5 rounded-full">24h Policy</span>
+                <span>Return Products Policy</span>
+                <span className="text-[9px] font-black bg-blue-600 text-white px-2 py-0.5 rounded-full">24h Policy</span>
               </button>
             </div>
 
@@ -1188,30 +1110,23 @@ function AccountContent() {
               
               <button
                 onClick={() => setActiveTab("profile")}
-                className={`w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
+                className={`w-full block text-left py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
                   activeTab === "profile" 
-                    ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black" 
+                    ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black" 
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
                 <span>Profile Information</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("addresses")}
-                className={`w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl transition cursor-pointer text-xs ${
+                className={`w-full block text-left py-2.5 px-3.5 rounded-xl transition cursor-pointer text-xs ${
                   activeTab === "addresses" 
-                    ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black" 
+                    ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black" 
                     : "text-gray-700 hover:text-gray-900 hover:bg-gray-50 font-bold"
                 }`}
               >
-                <svg className="w-4 h-4 opacity-80 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
                 <span>Manage Addresses</span>
               </button>
             </div>
@@ -1225,27 +1140,19 @@ function AccountContent() {
               <button
                 onClick={() => setActiveTab("gift-cards")}
                 className={`w-full flex justify-between items-center py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
-                  activeTab === "gift-cards" ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                  activeTab === "gift-cards" ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span>Gift Cards</span>
-                </div>
-                <span className="text-[#059669] font-black">₹0</span>
+                <span>Gift Cards</span>
+                <span className="text-blue-600 font-black">₹0</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("wallet")}
-                className={`w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
-                  activeTab === "wallet" ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                className={`w-full block text-left py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
+                  activeTab === "wallet" ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
                 <span>Saved Cards &amp; Wallet</span>
               </button>
             </div>
@@ -1258,49 +1165,37 @@ function AccountContent() {
               
               <button
                 onClick={() => setActiveTab("coupons")}
-                className={`w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
-                  activeTab === "coupons" ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                className={`w-full block text-left py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
+                  activeTab === "coupons" ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 11h.01M7 15h.01M13 7h.01M13 11h.01M13 15h.01M17 7h.01M17 11h.01M17 15h.01" />
-                </svg>
                 <span>My Coupons (2 Active)</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("supercoin")}
-                className={`w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
-                  activeTab === "supercoin" ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                className={`w-full block text-left py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
+                  activeTab === "supercoin" ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
                 <span>Supercoins &amp; Plus Zone</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("wishlist")}
-                className={`w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
-                  activeTab === "wishlist" ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                className={`w-full block text-left py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
+                  activeTab === "wishlist" ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
                 <span>My Wishlist ({wishlist.length})</span>
               </button>
 
               <button
                 onClick={() => setActiveTab("notifications")}
-                className={`w-full flex items-center gap-3 py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
-                  activeTab === "notifications" ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                className={`w-full block text-left py-2.5 px-3.5 rounded-xl font-bold transition cursor-pointer text-xs ${
+                  activeTab === "notifications" ? "bg-blue-50 text-blue-600 border border-blue-200/60 font-black" : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <svg className="w-4 h-4 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
                 <span>All Notifications</span>
               </button>
             </div>
@@ -1309,11 +1204,8 @@ function AccountContent() {
             <div className="pt-3">
               <button
                 onClick={handleLogout}
-                className="w-full text-left py-2.5 px-3.5 rounded-xl font-black text-red-600 hover:bg-red-50 transition flex items-center gap-2.5 cursor-pointer text-xs"
+                className="w-full text-left py-2.5 px-3.5 rounded-xl font-black text-red-600 hover:bg-red-50 transition cursor-pointer text-xs"
               >
-                <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
                 <span>Logout Account</span>
               </button>
             </div>
@@ -1331,7 +1223,7 @@ function AccountContent() {
               {/* Header Bar */}
               <div className="bg-white border border-gray-200/80 p-5 md:p-6 rounded-2xl shadow-2xs flex flex-wrap justify-between items-center gap-4">
                 <div>
-                  <span className="bg-emerald-100 text-emerald-800 border border-emerald-300 font-extrabold text-[10px] uppercase px-3 py-1 rounded-full tracking-wider">
+                  <span className="bg-blue-100 text-blue-800 border border-blue-300 font-extrabold text-[10px] uppercase px-3 py-1 rounded-full tracking-wider">
                     🚀 LIVE SHIPMENT &amp; LOGISTICS TRACKER
                   </span>
                   <h1 className="text-xl md:text-2xl font-black text-gray-900 mt-2">Track Your Orders Live</h1>
@@ -1340,7 +1232,7 @@ function AccountContent() {
 
                 <button
                   onClick={() => setActiveTab("orders")}
-                  className="text-xs font-bold text-[#059669] hover:underline"
+                  className="text-xs font-bold text-blue-600 hover:underline"
                 >
                   View All Order History &rsaquo;
                 </button>
@@ -1352,7 +1244,7 @@ function AccountContent() {
                 </div>
               ) : trackableOrders.length === 0 ? (
                 <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center space-y-4 shadow-2xs">
-                  <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-2xs">
+                  <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-blue-100 shadow-2xs">
                     🚚
                   </div>
                   <div className="space-y-1">
@@ -1381,8 +1273,8 @@ function AccountContent() {
                           onClick={() => setSelectedTrackOrderId(ord.order_number)}
                           className={`p-4 rounded-2xl border transition cursor-pointer flex gap-3 items-center ${
                             isSelected
-                              ? "bg-[#EAF8F2] border-[#059669] ring-2 ring-emerald-500/20 shadow-xs"
-                              : "bg-white border-gray-200 hover:border-emerald-300 shadow-2xs"
+                              ? "bg-blue-50 border-blue-600 ring-2 ring-blue-500/20 shadow-xs"
+                              : "bg-white border-gray-200 hover:border-blue-300 shadow-2xs"
                           }`}
                         >
                           <img
@@ -1396,7 +1288,7 @@ function AccountContent() {
                               <span className="font-black text-gray-900 text-xs">{ord.order_number}</span>
                               <span className={`text-[9px] font-black px-2 py-0.5 rounded uppercase ${
                                 ord.status === "DELIVERED"
-                                  ? "bg-emerald-100 text-emerald-800"
+                                  ? "bg-blue-100 text-blue-800"
                                   : "bg-amber-100 text-amber-900"
                               }`}>
                                 {ord.status}
@@ -1432,11 +1324,11 @@ function AccountContent() {
                         placeholder="e.g. BotCom-984201"
                         value={trackingInput}
                         onChange={(e) => setTrackingInput(e.target.value)}
-                        className="flex-1 min-w-0 bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-emerald-600 focus:outline-none uppercase tracking-wider font-mono"
+                        className="flex-1 min-w-0 bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-xs text-gray-900 focus:border-blue-600 focus:outline-none uppercase tracking-wider font-mono"
                       />
                       <button
                         type="submit"
-                        className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-5 py-2.5 rounded-xl transition shadow-xs whitespace-nowrap cursor-pointer shrink-0 text-center"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-5 py-2.5 rounded-xl transition shadow-xs whitespace-nowrap cursor-pointer shrink-0 text-center"
                       >
                         Track Live &rarr;
                       </button>
@@ -1456,44 +1348,44 @@ function AccountContent() {
                         </div>
                         <div>
                           <span className="text-gray-400 font-bold block text-[10px] uppercase tracking-wider">PAYMENT METHOD</span>
-                          <span className="font-bold text-emerald-700 uppercase">{currentTrackOrder.payment_method || "RAZORPAY ONLINE"}</span>
+                          <span className="font-bold text-blue-700 uppercase">{currentTrackOrder.payment_method || "RAZORPAY ONLINE"}</span>
                         </div>
                         <div>
                           <span className="text-gray-400 font-bold block text-[10px] uppercase tracking-wider">ESTIMATED DELIVERY</span>
                           <span className="font-bold text-gray-900">Saturday, Aug 15</span>
                         </div>
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-3.5 py-1.5 text-right">
+                        <div className="bg-blue-50 border border-blue-200 rounded-xl px-3.5 py-1.5 text-right">
                           <span className="text-[10px] text-gray-500 font-bold block">DELIVERY SECURITY OTP</span>
-                          <span className="text-sm font-black text-emerald-700 font-mono tracking-widest">8942</span>
+                          <span className="text-sm font-black text-blue-700 font-mono tracking-widest">8942</span>
                         </div>
                       </div>
 
                       {/* 🛵 Delivery Executive Info Card */}
-                      <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-2xl p-5 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                      <div className="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-5 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                         <div className="flex items-center gap-3.5">
                           <div className="w-12 h-12 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-white shrink-0">
-                            <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                             </svg>
                           </div>
                           <div>
-                            <span className="bg-emerald-500 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full uppercase">
+                            <span className="bg-blue-500 text-white font-extrabold text-[9px] px-2 py-0.5 rounded-full uppercase">
                               Assigned Delivery Executive
                             </span>
                             <h4 className="text-sm font-black mt-0.5">Vikram Sharma</h4>
-                            <p className="text-xs text-emerald-200 font-medium">Vehicle: MP-07-EV-4210 • Express Courier</p>
+                            <p className="text-xs text-blue-200 font-medium">Vehicle: MP-07-EV-4210 • Express Courier</p>
                           </div>
                         </div>
 
                         <div className="flex items-center gap-3 w-full md:w-auto justify-between">
                           <div className="text-right hidden md:block">
                             <p className="text-[10px] text-gray-300">Live Status</p>
-                            <p className="text-xs font-bold text-emerald-300">1.4 km away • Arriving in 18 mins</p>
+                            <p className="text-xs font-bold text-blue-300">1.4 km away • Arriving in 18 mins</p>
                           </div>
 
                           <a
                             href="tel:+919826012345"
-                            className="bg-emerald-500 hover:bg-emerald-400 text-gray-900 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                            className="bg-blue-500 hover:bg-blue-500 text-gray-900 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
                           >
                             📞 Call Executive
                           </a>
@@ -1504,13 +1396,13 @@ function AccountContent() {
                       <div className="space-y-4">
                         <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">Live Status Progress</h3>
 
-                        <div className="space-y-6 relative pl-6 border-l-2 border-emerald-500 my-4 text-xs">
+                        <div className="space-y-6 relative pl-6 border-l-2 border-blue-500 my-4 text-xs">
                           {getTimelineForStatus(currentTrackOrder?.status || "IN_TRANSIT", currentTrackOrder?.created_at, currentTrackOrder?.delivered_at).map((step, idx) => (
                             <div key={idx} className="relative pl-4">
                               <div
                                 className={`absolute -left-[31px] top-0 w-6 h-6 rounded-full border-2 border-white flex items-center justify-center text-[10px] font-black ${
                                   step.completed
-                                    ? "bg-[#059669] text-white ring-4 ring-emerald-100 shadow-2xs"
+                                    ? "bg-blue-600 text-white ring-4 ring-blue-100 shadow-2xs"
                                     : step.active
                                     ? "bg-amber-500 text-white ring-4 ring-amber-100 animate-pulse"
                                     : "bg-gray-200 text-gray-400"
@@ -1572,8 +1464,8 @@ function AccountContent() {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-[#EAF8F2] text-[#059669] flex items-center justify-center shrink-0 border border-emerald-200/60">
-                      <svg className="w-6 h-6 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-200/60">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
                     </div>
@@ -1586,9 +1478,9 @@ function AccountContent() {
                   </div>
                 </div>
 
-                <div className="bg-[#EAF8F2] border border-emerald-200/80 p-3.5 rounded-2xl text-center shrink-0 w-full md:w-auto space-y-0.5">
-                  <p className="text-xs font-black text-[#059669] flex items-center justify-center gap-1.5">
-                    <svg className="w-4 h-4 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="bg-blue-50 border border-blue-200/80 p-3.5 rounded-2xl text-center shrink-0 w-full md:w-auto space-y-0.5">
+                  <p className="text-xs font-black text-blue-600 flex items-center justify-center gap-1.5">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                     <span>Strict 24h Policy Guarantee</span>
@@ -1606,7 +1498,7 @@ function AccountContent() {
                     <h3 className="font-black text-base text-gray-900">Your Recent Purchases &amp; Eligibility</h3>
                     <button
                       onClick={handleSimulateReturnOrder}
-                      className="bg-emerald-50 hover:bg-emerald-100 text-[#059669] border border-emerald-200 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5"
+                      className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 text-xs font-bold px-3 py-1.5 rounded-xl transition cursor-pointer flex items-center gap-1.5"
                       title="Simulate placing a new order to test live 24h return window"
                     >
                       <span>+</span>
@@ -1629,7 +1521,7 @@ function AccountContent() {
                             key={item.label}
                             onClick={() => setReturnSubTab(item.tabKey)}
                             className={`px-3 py-1.5 rounded-xl transition cursor-pointer whitespace-nowrap text-xs ${
-                              isSelected ? "bg-[#EAF8F2] text-[#059669] border border-emerald-200/80 font-black" : "text-gray-600 hover:bg-gray-50"
+                              isSelected ? "bg-blue-50 text-blue-600 border border-blue-200/80 font-black" : "text-gray-600 hover:bg-gray-50"
                             }`}
                           >
                             {item.label}
@@ -1668,8 +1560,8 @@ function AccountContent() {
                   <div className="space-y-4">
                     {returnOrders.length === 0 ? (
                       <div className="bg-white border border-gray-200/80 p-10 rounded-2xl text-center space-y-4 text-gray-500 text-xs">
-                        <div className="w-16 h-16 rounded-full bg-emerald-50 text-[#059669] flex items-center justify-center mx-auto border border-emerald-100">
-                          <svg className="w-8 h-8 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mx-auto border border-blue-100">
+                          <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
                           </svg>
                         </div>
@@ -1682,13 +1574,13 @@ function AccountContent() {
                         <div className="pt-2 flex flex-col sm:flex-row justify-center gap-3">
                           <Link
                             href="/"
-                            className="bg-[#059669] hover:bg-[#047857] text-white font-black px-5 py-2.5 rounded-xl transition shadow-2xs inline-block"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-black px-5 py-2.5 rounded-xl transition shadow-2xs inline-block"
                           >
                             Browse Products &amp; Shop Now
                           </Link>
                           <button
                             onClick={handleSimulateReturnOrder}
-                            className="bg-emerald-50 hover:bg-emerald-100 text-[#059669] border border-emerald-200 font-bold px-4 py-2.5 rounded-xl transition cursor-pointer"
+                            className="bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 font-bold px-4 py-2.5 rounded-xl transition cursor-pointer"
                           >
                             + Simulate Test Order
                           </button>
@@ -1723,7 +1615,7 @@ function AccountContent() {
                               <div className="space-y-1">
                                 <div className="flex items-center gap-2">
                                   <span className="text-[10px] font-bold font-mono text-gray-500">Order ID: {item.id}</span>
-                                  <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.2 rounded uppercase">
+                                  <span className="bg-blue-100 text-blue-800 text-[9px] font-black px-2 py-0.2 rounded uppercase">
                                     {item.status}
                                   </span>
                                 </div>
@@ -1732,7 +1624,7 @@ function AccountContent() {
                                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-gray-500 font-bold pt-0.5">
                                   <span className="text-gray-600">📅 {item.purchasedDate || `Purchased on ${new Date(item.orderTimestamp).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}`}</span>
                                   <span>•</span>
-                                  <span className="text-emerald-700">📦 {item.deliveredDate}</span>
+                                  <span className="text-blue-700">📦 {item.deliveredDate}</span>
                                 </div>
                               </div>
                             </div>
@@ -1744,8 +1636,8 @@ function AccountContent() {
                               <div className="text-center sm:text-right w-full sm:w-auto">
                                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">24H RETURN WINDOW</p>
                                 {isEligible ? (
-                                  <div className="bg-[#EAF8F2] border border-emerald-200/80 px-3 py-1.5 rounded-xl mt-0.5 space-y-0.5">
-                                    <p className="text-xs font-black text-[#059669] font-mono flex items-center justify-center sm:justify-end gap-1.5">
+                                  <div className="bg-blue-50 border border-blue-200/80 px-3 py-1.5 rounded-xl mt-0.5 space-y-0.5">
+                                    <p className="text-xs font-black text-blue-600 font-mono flex items-center justify-center sm:justify-end gap-1.5">
                                       <span>⏳</span>
                                       <span>{timerData.label || "Calculating..."}</span>
                                     </p>
@@ -1764,7 +1656,7 @@ function AccountContent() {
                               {/* Action Buttons (Sleek Compact Size) */}
                               <div className="space-y-1.5 text-center w-full sm:w-auto shrink-0">
                                 {isCompleted ? (
-                                  <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-4 py-2 rounded-xl block border border-emerald-200">
+                                  <span className="bg-blue-100 text-blue-800 text-xs font-black px-4 py-2 rounded-xl block border border-blue-200">
                                     ✓ Return Completed
                                   </span>
                                 ) : isRequested ? (
@@ -1774,7 +1666,7 @@ function AccountContent() {
                                 ) : isEligible ? (
                                   <button
                                     onClick={() => setSelectedReturnProduct(item)}
-                                    className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-4 py-2 rounded-xl transition shadow-2xs cursor-pointer w-full text-center leading-snug"
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-4 py-2 rounded-xl transition shadow-2xs cursor-pointer w-full text-center leading-snug"
                                   >
                                     Return Product Now
                                   </button>
@@ -1788,7 +1680,7 @@ function AccountContent() {
                                 )}
                                 <button
                                   onClick={() => setViewingOrderDetail(item)}
-                                  className="text-[11px] font-bold text-emerald-700 hover:underline block w-full text-center cursor-pointer"
+                                  className="text-[11px] font-bold text-blue-700 hover:underline block w-full text-center cursor-pointer"
                                 >
                                   View Order Details &rsaquo;
                                 </button>
@@ -1864,7 +1756,7 @@ function AccountContent() {
 
                     <button
                       onClick={() => setShowReturnPolicyModal(true)}
-                      className="w-full border border-[#059669] text-[#059669] hover:bg-[#EAF8F2] font-bold text-xs py-2.5 rounded-xl transition cursor-pointer"
+                      className="w-full border border-blue-600 text-blue-600 hover:bg-blue-50 font-bold text-xs py-2.5 rounded-xl transition cursor-pointer"
                     >
                       Read Full Return Policy &rsaquo;
                     </button>
@@ -1881,8 +1773,8 @@ function AccountContent() {
                   
                   {/* Step 1 */}
                   <div className="flex flex-col items-center space-y-2 flex-1">
-                    <div className="w-14 h-14 rounded-full bg-[#EAF8F2] text-[#059669] flex items-center justify-center border border-emerald-200/60 shadow-2xs">
-                      <svg className="w-6 h-6 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m-8-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
                     </div>
@@ -1898,8 +1790,8 @@ function AccountContent() {
 
                   {/* Step 2 */}
                   <div className="flex flex-col items-center space-y-2 flex-1">
-                    <div className="w-14 h-14 rounded-full bg-[#EAF8F2] text-[#059669] flex items-center justify-center border border-emerald-200/60 shadow-2xs">
-                      <svg className="w-6 h-6 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                       </svg>
@@ -1916,8 +1808,8 @@ function AccountContent() {
 
                   {/* Step 3 */}
                   <div className="flex flex-col items-center space-y-2 flex-1">
-                    <div className="w-14 h-14 rounded-full bg-[#EAF8F2] text-[#059669] flex items-center justify-center border border-emerald-200/60 shadow-2xs">
-                      <svg className="w-6 h-6 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                       </svg>
                     </div>
@@ -1933,8 +1825,8 @@ function AccountContent() {
 
                   {/* Step 4 */}
                   <div className="flex flex-col items-center space-y-2 flex-1">
-                    <div className="w-14 h-14 rounded-full bg-[#EAF8F2] text-[#059669] flex items-center justify-center border border-emerald-200/60 shadow-2xs">
-                      <svg className="w-6 h-6 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8" />
                       </svg>
                     </div>
@@ -1950,8 +1842,8 @@ function AccountContent() {
 
                   {/* Step 5 */}
                   <div className="flex flex-col items-center space-y-2 flex-1">
-                    <div className="w-14 h-14 rounded-full bg-[#EAF8F2] text-[#059669] flex items-center justify-center border border-emerald-200/60 shadow-2xs">
-                      <svg className="w-6 h-6 text-[#059669]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-14 h-14 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-200/60 shadow-2xs">
+                      <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                     </div>
@@ -1989,7 +1881,7 @@ function AccountContent() {
               {/* Address Cards List */}
               {addresses.length === 0 ? (
                 <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center space-y-4 shadow-2xs">
-                  <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-2xs">
+                  <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-blue-100 shadow-2xs">
                     📍
                   </div>
                   <div className="space-y-1">
@@ -2012,7 +1904,7 @@ function AccountContent() {
                 <div className="space-y-5">
                   {addresses.map((addr) => {
                     const isDefault = addr.isDefault;
-                    let iconBg = "bg-[#EAF8F2] text-[#059669]";
+                    let iconBg = "bg-blue-50 text-blue-600";
                     let badgeBg = "bg-gray-100 text-gray-600 border-gray-200";
                     let iconSvg = (
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2044,13 +1936,13 @@ function AccountContent() {
                         key={addr.id}
                         className={`bg-white rounded-3xl p-6 relative transition-all duration-200 shadow-2xs ${
                           isDefault 
-                            ? "border-2 border-[#10B981] shadow-xs" 
+                            ? "border-2 border-blue-600 shadow-xs" 
                             : "border border-gray-200 hover:border-gray-300"
                         }`}
                       >
                         {isDefault && (
                           <div className="mb-4">
-                            <span className="border border-[#10B981] text-[#059669] bg-[#EAF8F2] font-extrabold text-[11px] px-3.5 py-1 rounded-md inline-block">
+                            <span className="border border-blue-600 text-blue-600 bg-blue-50 font-extrabold text-[11px] px-3.5 py-1 rounded-md inline-block">
                               Default Address
                             </span>
                           </div>
@@ -2058,7 +1950,7 @@ function AccountContent() {
 
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex items-start gap-4">
-                            <div className={`w-12 h-12 rounded-full ${iconBg} flex items-center justify-center shrink-0 border border-emerald-200/40 shadow-2xs`}>
+                            <div className={`w-12 h-12 rounded-full ${iconBg} flex items-center justify-center shrink-0 border border-blue-200/40 shadow-2xs`}>
                               {iconSvg}
                             </div>
 
@@ -2089,7 +1981,7 @@ function AccountContent() {
                           <div className="flex items-center gap-2 shrink-0">
                             <button
                               onClick={() => handleEditAddress(addr)}
-                              className="p-2 text-gray-600 hover:text-[#059669] bg-gray-100 hover:bg-[#EAF8F2] rounded-xl transition cursor-pointer"
+                              className="p-2 text-gray-600 hover:text-blue-600 bg-gray-100 hover:bg-blue-50 rounded-xl transition cursor-pointer"
                               title="Edit Address"
                             >
                               ✏️
@@ -2116,9 +2008,9 @@ function AccountContent() {
             <div className="space-y-6 font-sans">
               
               {/* 🌟 VIP Customer Hero Banner Card */}
-              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0B132B] via-emerald-950 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-emerald-500/20">
+              <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#0B132B] via-[#0F1E36] to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-blue-500/20">
                 {/* Background Ambient Glow Circles */}
-                <div className="absolute -top-10 -right-10 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl" />
+                <div className="absolute -top-10 -right-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl" />
                 <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl" />
 
                 <div className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start justify-between gap-6 text-center sm:text-left">
@@ -2126,10 +2018,10 @@ function AccountContent() {
                   {/* Left: Avatar & Name */}
                   <div className="flex flex-col sm:flex-row items-center gap-5">
                     <div className="relative">
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-white font-black text-2xl sm:text-3xl flex items-center justify-center shadow-lg border-2 border-white/20 uppercase tracking-widest">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-black text-2xl sm:text-3xl flex items-center justify-center shadow-lg border-2 border-white/20 uppercase tracking-widest">
                         {(firstName?.[0] || "S") + (lastName?.[0] || "W")}
                       </div>
-                      <span className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[10px] p-1.5 rounded-xl shadow-md border border-white/40">
+                      <span className="absolute -bottom-1 -right-1 bg-blue-500 text-white text-[10px] p-1.5 rounded-xl shadow-md border border-white/40">
                         ✓
                       </span>
                     </div>
@@ -2140,23 +2032,21 @@ function AccountContent() {
                           {firstName || lastName ? `${firstName} ${lastName}`.trim() : (user?.user_name || "Soham Www")}
                         </h2>
                         <span className="bg-amber-400/20 text-amber-300 border border-amber-400/40 text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-md">
-                          ✨ VIP Club Member
+                          VIP Club Member
                         </span>
                       </div>
                       
                       <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs text-gray-300 font-medium pt-0.5">
                         <span className="flex items-center gap-1.5">
-                          <span>✉️</span>
                           <span>{user?.email || "soham@example.com"}</span>
                         </span>
                         <span>•</span>
                         <span className="flex items-center gap-1.5">
-                          <span>📱</span>
                           <span>{user?.phone || "+91 9876543210"}</span>
                         </span>
                       </div>
 
-                      <p className="text-[11px] text-emerald-400 font-bold">
+                      <p className="text-[11px] text-blue-400 font-bold">
                         Member since August 2026 • Verified Customer Account
                       </p>
                     </div>
@@ -2167,7 +2057,7 @@ function AccountContent() {
                     onClick={() => setIsEditingName(!isEditingName)}
                     className="bg-white/10 hover:bg-white/20 text-white font-extrabold text-xs px-5 py-3 rounded-2xl backdrop-blur-md border border-white/20 transition cursor-pointer shrink-0 shadow-sm"
                   >
-                    {isEditingName ? "✕ Cancel Editing" : "✏️ Edit Profile Info"}
+                    {isEditingName ? "Cancel Editing" : "Edit Profile Info"}
                   </button>
 
                 </div>
@@ -2179,13 +2069,10 @@ function AccountContent() {
                 {/* Orders Card */}
                 <button
                   onClick={() => setActiveTab("orders")}
-                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-emerald-300 transition text-left space-y-2 group cursor-pointer"
+                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-blue-300 transition text-left space-y-2 group cursor-pointer"
                 >
-                  <div className="flex justify-between items-center">
-                    <span className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-lg group-hover:scale-110 transition">
-                      📦
-                    </span>
-                    <span className="text-xs text-emerald-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
+                  <div className="flex justify-end items-center">
+                    <span className="text-xs text-blue-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
                   </div>
                   <div>
                     <p className="text-2xl font-black text-gray-900">{userOrders.length}</p>
@@ -2196,12 +2083,9 @@ function AccountContent() {
                 {/* Wallet Balance Card */}
                 <button
                   onClick={() => setActiveTab("wallet")}
-                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-emerald-300 transition text-left space-y-2 group cursor-pointer"
+                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-blue-300 transition text-left space-y-2 group cursor-pointer"
                 >
-                  <div className="flex justify-between items-center">
-                    <span className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-black text-lg group-hover:scale-110 transition">
-                      💳
-                    </span>
+                  <div className="flex justify-end items-center">
                     <span className="text-xs text-blue-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
                   </div>
                   <div>
@@ -2213,12 +2097,9 @@ function AccountContent() {
                 {/* Saved Addresses Card */}
                 <button
                   onClick={() => setActiveTab("addresses")}
-                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-emerald-300 transition text-left space-y-2 group cursor-pointer"
+                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-blue-300 transition text-left space-y-2 group cursor-pointer"
                 >
-                  <div className="flex justify-between items-center">
-                    <span className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-black text-lg group-hover:scale-110 transition">
-                      📍
-                    </span>
+                  <div className="flex justify-end items-center">
                     <span className="text-xs text-purple-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
                   </div>
                   <div>
@@ -2230,12 +2111,9 @@ function AccountContent() {
                 {/* Wishlist Link Card */}
                 <Link
                   href="/account/wishlist"
-                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-emerald-300 transition text-left space-y-2 group cursor-pointer"
+                  className="bg-white border border-gray-200/80 p-5 rounded-3xl shadow-2xs hover:shadow-md hover:border-blue-300 transition text-left space-y-2 group cursor-pointer"
                 >
-                  <div className="flex justify-between items-center">
-                    <span className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center font-black text-lg group-hover:scale-110 transition">
-                      ❤️
-                    </span>
+                  <div className="flex justify-end items-center">
                     <span className="text-xs text-rose-700 font-bold group-hover:translate-x-1 transition">&rarr;</span>
                   </div>
                   <div>
@@ -2256,9 +2134,9 @@ function AccountContent() {
                   </div>
                   <button
                     onClick={() => setIsEditingName(!isEditingName)}
-                    className="text-xs font-black text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-1.5 rounded-xl transition cursor-pointer"
+                    className="text-xs font-black text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-1.5 rounded-xl transition cursor-pointer"
                   >
-                    {isEditingName ? "Cancel" : "✏️ Edit Details"}
+                    {isEditingName ? "Cancel" : "Edit Details"}
                   </button>
                 </div>
 
@@ -2273,7 +2151,7 @@ function AccountContent() {
                       value={firstName}
                       onChange={(e) => setFirstName(e.target.value)}
                       placeholder="e.g. Soham"
-                      className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl px-4 py-3 text-xs text-gray-900 font-extrabold focus:outline-none focus:border-emerald-500 focus:bg-white transition disabled:opacity-80 shadow-2xs"
+                      className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl px-4 py-3 text-xs text-gray-900 font-extrabold focus:outline-none focus:border-blue-500 focus:bg-white transition disabled:opacity-80 shadow-2xs"
                     />
                   </div>
 
@@ -2286,7 +2164,7 @@ function AccountContent() {
                       value={lastName}
                       onChange={(e) => setLastName(e.target.value)}
                       placeholder="e.g. Rawat"
-                      className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl px-4 py-3 text-xs text-gray-900 font-extrabold focus:outline-none focus:border-emerald-500 focus:bg-white transition disabled:opacity-80 shadow-2xs"
+                      className="w-full bg-gray-50 border border-gray-200/80 rounded-2xl px-4 py-3 text-xs text-gray-900 font-extrabold focus:outline-none focus:border-blue-500 focus:bg-white transition disabled:opacity-80 shadow-2xs"
                     />
                   </div>
 
@@ -2294,7 +2172,7 @@ function AccountContent() {
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
                       <label className="block text-xs font-extrabold text-gray-700">Email Address</label>
-                      <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">✓ Verified</span>
+                      <span className="text-[10px] font-black text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">Verified</span>
                     </div>
                     <input
                       type="email"
@@ -2308,7 +2186,7 @@ function AccountContent() {
                   <div>
                     <div className="flex justify-between items-center mb-1.5">
                       <label className="block text-xs font-extrabold text-gray-700">Mobile Phone Number</label>
-                      <span className="text-[10px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">✓ OTP Verified</span>
+                      <span className="text-[10px] font-black text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">OTP Verified</span>
                     </div>
                     <input
                       type="tel"
@@ -2335,7 +2213,7 @@ function AccountContent() {
                         setIsEditingName(false);
                         showToast("✓ Profile Information Updated & Saved to Account!");
                       }}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-6 py-3 rounded-2xl shadow-md cursor-pointer transition"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-6 py-3 rounded-2xl shadow-md cursor-pointer transition"
                     >
                       Save Profile Changes
                     </button>
@@ -2363,15 +2241,13 @@ function AccountContent() {
 
                 <div className="bg-gray-50 border border-gray-200/80 p-4 rounded-2xl flex items-center justify-between text-xs">
                   <div className="flex items-center gap-3">
-                    <span className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-lg">
-                      💻
-                    </span>
+
                     <div>
                       <p className="font-extrabold text-gray-900">Current Active Session</p>
                       <p className="text-gray-500 text-[11px] font-medium">Chrome Browser on Windows • Online Now</p>
                     </div>
                   </div>
-                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-emerald-200">
+                  <span className="bg-blue-100 text-blue-800 text-[10px] font-black px-2.5 py-1 rounded-full uppercase border border-blue-200">
                     Active
                   </span>
                 </div>
@@ -2385,7 +2261,7 @@ function AccountContent() {
                   
                   <div className="bg-slate-50 border border-gray-200/80 p-4 rounded-2xl space-y-1">
                     <p className="font-extrabold text-gray-900 flex items-center gap-2">
-                      <span className="text-emerald-600">❓</span> What happens when I update my email address?
+                      What happens when I update my email address?
                     </p>
                     <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
                       Your login email ID changes automatically. All future order update notifications and invoices will be sent to your new email.
@@ -2394,7 +2270,7 @@ function AccountContent() {
 
                   <div className="bg-slate-50 border border-gray-200/80 p-4 rounded-2xl space-y-1">
                     <p className="font-extrabold text-gray-900 flex items-center gap-2">
-                      <span className="text-emerald-600">⚡</span> How does 24-Hour Easy Return work?
+                      How does 24-Hour Easy Return work?
                     </p>
                     <p className="text-gray-600 leading-relaxed font-medium text-[11px]">
                       Raise a return request within 24 hours of delivery from your Orders tab. Instant doorstep pickup will be arranged.
@@ -2414,7 +2290,7 @@ function AccountContent() {
               <div className="space-y-4">
                 {userOrders.length === 0 ? (
                   <div className="bg-white border border-gray-200 rounded-3xl p-10 text-center space-y-4 shadow-2xs">
-                    <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100 shadow-2xs">
+                    <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-blue-100 shadow-2xs">
                       📦
                     </div>
                     <div className="space-y-1">
@@ -2426,7 +2302,7 @@ function AccountContent() {
                     <div className="pt-2">
                       <Link
                         href="/deals"
-                        className="bg-[#059669] hover:bg-[#047857] text-white font-extrabold text-xs px-6 py-3 rounded-xl transition shadow-md inline-flex items-center gap-2 cursor-pointer"
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-6 py-3 rounded-xl transition shadow-md inline-flex items-center gap-2 cursor-pointer"
                       >
                         <span>🛍️ Start Shopping Now &rarr;</span>
                       </Link>
@@ -2436,14 +2312,14 @@ function AccountContent() {
                   userOrders.map((ord: any) => (
                     <div key={ord.id || ord.order_number} className="bg-white border border-gray-200/80 rounded-3xl p-6 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md">
+                        <span className="text-[10px] font-mono font-bold text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-md">
                           {ord.order_number || ord.id || "BotCom-ORDER"} • {ord.date || "Today"}
                         </span>
                         <h4 className="font-black text-gray-900 text-sm">{ord.title || "Purchased Product"}</h4>
                         <p className="text-xs text-gray-500 font-bold">Total: ₹{(ord.total || ord.total_amount || 0).toLocaleString("en-IN")}</p>
                       </div>
                       <div className="flex items-center gap-3">
-                        <span className="bg-emerald-100 text-emerald-800 text-xs font-black px-3 py-1 rounded-full">
+                        <span className="bg-blue-100 text-blue-800 text-xs font-black px-3 py-1 rounded-full">
                           {ord.status || "CONFIRMED"}
                         </span>
                         <button
@@ -2466,7 +2342,7 @@ function AccountContent() {
           {/* TAB: GIFT CARDS */}
           {activeTab === "gift-cards" && (
             <div className="space-y-6">
-              <div className="bg-gradient-to-r from-emerald-800 via-teal-900 to-gray-900 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden space-y-4">
+              <div className="bg-gradient-to-r from-blue-900 via-indigo-950 to-gray-900 text-white rounded-3xl p-6 md:p-8 shadow-xl relative overflow-hidden space-y-4">
                 <div className="flex flex-wrap justify-between items-center gap-4 relative z-10">
                   <div>
                     <span className="bg-amber-400 text-gray-900 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
@@ -2493,7 +2369,7 @@ function AccountContent() {
                     value={giftCardCode}
                     onChange={(e) => setGiftCardCode(e.target.value)}
                     required
-                    className="bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-mono font-bold focus:border-emerald-600 focus:outline-none uppercase"
+                    className="bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-mono font-bold focus:border-blue-600 focus:outline-none uppercase"
                   />
                   <input
                     type="password"
@@ -2502,11 +2378,11 @@ function AccountContent() {
                     value={giftCardPin}
                     onChange={(e) => setGiftCardPin(e.target.value)}
                     required
-                    className="bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-mono font-bold focus:border-emerald-600 focus:outline-none text-center"
+                    className="bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-mono font-bold focus:border-blue-600 focus:outline-none text-center"
                   />
                   <button
                     type="submit"
-                    className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-2.5 px-5 rounded-xl transition shadow-xs cursor-pointer"
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-2.5 px-5 rounded-xl transition shadow-xs cursor-pointer"
                   >
                     Apply &amp; Add Balance &rarr;
                   </button>
@@ -2518,7 +2394,7 @@ function AccountContent() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
                     { amount: 500, label: "Starter Card", color: "from-blue-600 to-indigo-700" },
-                    { amount: 1000, label: "Popular Choice", color: "from-emerald-600 to-teal-700" },
+                    { amount: 1000, label: "Popular Choice", color: "from-blue-600 to-indigo-700" },
                     { amount: 2500, label: "VIP Premium", color: "from-amber-500 to-orange-600" },
                   ].map((card) => (
                     <div key={card.amount} className={`bg-gradient-to-br ${card.color} text-white p-5 rounded-2xl shadow-md flex flex-col justify-between space-y-4 relative`}>
@@ -2546,18 +2422,18 @@ function AccountContent() {
           {/* TAB: WALLET & SAVED CARDS */}
           {activeTab === "wallet" && (
             <div className="space-y-6">
-              <div className="bg-gradient-to-r from-emerald-700 via-emerald-800 to-teal-900 text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-wrap justify-between items-center gap-4">
+              <div className="bg-gradient-to-r from-blue-700 via-blue-800 to-indigo-900 text-white rounded-3xl p-6 md:p-8 shadow-xl flex flex-wrap justify-between items-center gap-4">
                 <div>
                   <span className="bg-white/20 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
                     💳 BotCom PAY WALLET
                   </span>
                   <h2 className="text-2xl md:text-3xl font-black mt-2">Saved Cards &amp; Wallet Balance</h2>
-                  <p className="text-xs text-emerald-100 max-w-md mt-1">
+                  <p className="text-xs text-blue-100 max-w-md mt-1">
                     1-Click Razorpay instant checkout with zero OTP delays.
                   </p>
                 </div>
                 <div className="bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl text-right flex flex-col items-end">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-200 block">Wallet Balance</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-200 block">Wallet Balance</span>
                   <span className="text-2xl md:text-3xl font-black text-amber-300">₹{walletBalance.toLocaleString("en-IN")}</span>
                   <button
                     onClick={() => setShowAddWalletModal(true)}
@@ -2573,7 +2449,7 @@ function AccountContent() {
                   <h3 className="font-black text-base text-gray-900">Saved Credit &amp; Debit Cards ({savedCards.length})</h3>
                   <button
                     onClick={() => setShowAddCardModal(true)}
-                    className="text-xs font-black text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3.5 py-2 rounded-xl transition cursor-pointer flex items-center gap-1"
+                    className="text-xs font-black text-blue-800 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-3.5 py-2 rounded-xl transition cursor-pointer flex items-center gap-1"
                   >
                     <span>+ Add New Card</span>
                   </button>
@@ -2591,7 +2467,7 @@ function AccountContent() {
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <span className="font-black text-gray-900 text-xs">{c.bank}</span>
-                            {c.default && <span className="bg-emerald-100 text-emerald-800 text-[9px] font-black px-2 py-0.5 rounded">DEFAULT</span>}
+                            {c.default && <span className="bg-blue-100 text-blue-800 text-[9px] font-black px-2 py-0.5 rounded">DEFAULT</span>}
                           </div>
                           <p className="text-xs font-mono font-bold text-gray-700">•••• •••• •••• {c.last4}</p>
                           <p className="text-[10px] text-gray-400">Expires {c.exp} • {c.type}</p>
@@ -2645,7 +2521,7 @@ function AccountContent() {
                         navigator.clipboard?.writeText(c.code);
                         showToast(`🎉 Coupon "${c.code}" copied to clipboard! Apply at checkout.`);
                       }}
-                      className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer shrink-0"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs px-4 py-2.5 rounded-xl transition shadow-2xs cursor-pointer shrink-0"
                     >
                       Copy Code
                     </button>
@@ -2724,14 +2600,14 @@ function AccountContent() {
                   <div className="text-5xl">❤️</div>
                   <h3 className="text-xl font-black text-gray-900">Your Wishlist is Empty</h3>
                   <p className="text-xs text-gray-500">Explore our catalog and click the heart icon on items you love.</p>
-                  <Link href="/search" className="inline-block bg-[#059669] text-white font-bold text-xs px-6 py-3 rounded-xl hover:bg-[#047857] transition shadow-md">
+                  <Link href="/search" className="inline-block bg-blue-600 text-white font-bold text-xs px-6 py-3 rounded-xl hover:bg-blue-700 transition shadow-md">
                     Explore Catalog &rarr;
                   </Link>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {wishlist.map((item: any) => (
-                    <div key={item.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-2xs space-y-3 flex flex-col justify-between group hover:border-emerald-300 transition duration-200 relative">
+                    <div key={item.id} className="bg-white border border-gray-200 rounded-2xl p-4 shadow-2xs space-y-3 flex flex-col justify-between group hover:border-blue-300 transition duration-200 relative">
                       <div className="space-y-2">
                         {/* Image preview with floating remove trash button */}
                         <div className="relative w-full h-40 bg-gray-50 rounded-xl p-2 flex items-center justify-center overflow-hidden border border-gray-100">
@@ -2749,7 +2625,7 @@ function AccountContent() {
                           </button>
                         </div>
 
-                        <span className="text-[10px] font-bold text-emerald-700 uppercase tracking-wider block">
+                        <span className="text-[10px] font-bold text-blue-700 uppercase tracking-wider block">
                           {item.category || "Saved Product"}
                         </span>
                         <h4 className="font-bold text-xs text-gray-900 line-clamp-2 leading-tight">
@@ -2767,7 +2643,7 @@ function AccountContent() {
                       <div className="space-y-2 pt-2 border-t border-gray-100">
                         <button
                           onClick={() => handleMoveToCartFromWishlist(item)}
-                          className="w-full bg-white hover:bg-emerald-50 text-emerald-800 border-2 border-emerald-600 font-extrabold text-xs py-2 rounded-xl text-center cursor-pointer shadow-2xs transition flex items-center justify-center gap-1.5"
+                          className="w-full bg-white hover:bg-blue-50 text-blue-800 border-2 border-blue-600 font-extrabold text-xs py-2 rounded-xl text-center cursor-pointer shadow-2xs transition flex items-center justify-center gap-1.5"
                         >
                           🛒 Move to Cart
                         </button>
@@ -2786,7 +2662,7 @@ function AccountContent() {
                               sessionStorage.setItem("ecom_buy_now_item", JSON.stringify(buyNowItem));
                               router.push("/checkout?buyNow=true");
                             }}
-                            className="col-span-2 bg-[#059669] hover:bg-[#047857] text-white font-black text-xs py-2 rounded-xl text-center cursor-pointer shadow-xs transition"
+                            className="col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-2 rounded-xl text-center cursor-pointer shadow-xs transition"
                           >
                             ⚡ Buy Now
                           </button>
@@ -2868,7 +2744,7 @@ function AccountContent() {
                 <select
                   value={returnReason}
                   onChange={(e) => setReturnReason(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 font-bold focus:border-blue-500 focus:outline-none"
                 >
                   <option value="Damaged Item Received">Damaged or Defective Item Received</option>
                   <option value="Wrong Size or Color">Wrong Size, Color or Variant Delivered</option>
@@ -2880,7 +2756,7 @@ function AccountContent() {
 
               <div>
                 <label className="block text-gray-700 font-bold mb-1">Upload Product Photos / Evidence *</label>
-                <label className="border-2 border-dashed border-gray-300 hover:border-emerald-500 bg-gray-50 hover:bg-emerald-50/40 rounded-2xl p-4 text-center cursor-pointer transition block space-y-1">
+                <label className="border-2 border-dashed border-gray-300 hover:border-blue-500 bg-gray-50 hover:bg-blue-50/40 rounded-2xl p-4 text-center cursor-pointer transition block space-y-1">
                   <input
                     type="file"
                     multiple
@@ -2895,7 +2771,7 @@ function AccountContent() {
 
                 {returnPhotos.length > 0 && (
                   <div className="mt-3 space-y-2">
-                    <p className="text-[11px] font-bold text-emerald-700">
+                    <p className="text-[11px] font-bold text-blue-700">
                       ✓ {returnPhotos.length} Photo(s) Attached ({returnPhotoNames.join(", ")})
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -2924,7 +2800,7 @@ function AccountContent() {
                   value={returnDescription}
                   onChange={(e) => setReturnDescription(e.target.value)}
                   placeholder="Describe what went wrong with the item..."
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none"
                 />
               </div>
 
@@ -2935,7 +2811,7 @@ function AccountContent() {
                   required
                   value={returnContactPhone}
                   onChange={(e) => setReturnContactPhone(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-emerald-500 focus:outline-none font-mono"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-gray-900 focus:border-blue-500 focus:outline-none font-mono"
                 />
               </div>
 
@@ -2949,7 +2825,7 @@ function AccountContent() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white font-black py-2.5 rounded-xl shadow-md cursor-pointer"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl shadow-md cursor-pointer"
                 >
                   Submit Return Request
                 </button>
@@ -2995,7 +2871,7 @@ function AccountContent() {
                     value={formName}
                     onChange={(e) => setFormName(e.target.value)}
                     placeholder="e.g. Sachin Rawat"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none transition"
                   />
                 </div>
 
@@ -3009,7 +2885,7 @@ function AccountContent() {
                     value={formPhone}
                     onChange={(e) => setFormPhone(e.target.value)}
                     placeholder="10-digit mobile number"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none transition"
                   />
                 </div>
               </div>
@@ -3025,7 +2901,7 @@ function AccountContent() {
                     value={formPincode}
                     onChange={(e) => setFormPincode(e.target.value)}
                     placeholder="e.g. 560103"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none transition"
                   />
                 </div>
 
@@ -3038,7 +2914,7 @@ function AccountContent() {
                     value={formLandmark}
                     onChange={(e) => setFormLandmark(e.target.value)}
                     placeholder="e.g. Near Metro Station"
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-bold text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none transition"
                   />
                 </div>
               </div>
@@ -3053,7 +2929,7 @@ function AccountContent() {
                   value={formAddress}
                   onChange={(e) => setFormAddress(e.target.value)}
                   placeholder="Complete street address details..."
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-900 focus:border-emerald-500 focus:bg-white focus:outline-none transition"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm font-medium text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none transition"
                 />
               </div>
 
@@ -3069,7 +2945,7 @@ function AccountContent() {
                       onClick={() => setFormType(type)}
                       className={`px-4 py-2 rounded-xl text-xs font-extrabold transition cursor-pointer border ${
                         formType === type
-                          ? "bg-[#059669] text-white border-[#059669] shadow-xs"
+                          ? "bg-blue-600 text-white border-blue-600 shadow-xs"
                           : "bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200"
                       }`}
                     >
@@ -3085,7 +2961,7 @@ function AccountContent() {
                   id="defaultAddressCheck"
                   checked={formIsDefault}
                   onChange={(e) => setFormIsDefault(e.target.checked)}
-                  className="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 border-gray-300 cursor-pointer"
+                  className="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 border-gray-300 cursor-pointer"
                 />
                 <label htmlFor="defaultAddressCheck" className="text-xs font-bold text-gray-700 cursor-pointer">
                   Make this my default delivery address
@@ -3105,7 +2981,7 @@ function AccountContent() {
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 bg-[#059669] hover:bg-[#047857] text-white text-xs font-black py-3 rounded-xl transition shadow-md cursor-pointer"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-black py-3 rounded-xl transition shadow-md cursor-pointer"
                 >
                   {editingAddress ? "Update Address" : "Save Address"}
                 </button>
@@ -3119,7 +2995,7 @@ function AccountContent() {
       <div className="fixed bottom-6 right-6 z-40">
         <button
           onClick={() => showToast("💬 Live Customer Support Chat Active 24/7!", "info")}
-          className="w-14 h-14 bg-[#10B981] hover:bg-[#059669] text-white rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-105 cursor-pointer"
+          className="w-14 h-14 bg-blue-600 hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow-xl transition-transform hover:scale-105 cursor-pointer"
           title="Customer Support Chat"
         >
           <svg className="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
@@ -3131,7 +3007,7 @@ function AccountContent() {
       {/* 🔔 In-Page Custom Toast Notification Banner */}
       {toastMessage && (
         <div className="fixed top-6 right-6 z-[9999] max-w-md bg-gray-900 text-white p-4 rounded-2xl shadow-2xl border border-gray-700 flex items-center gap-3 animate-in slide-in-from-top duration-200">
-          <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white font-black flex items-center justify-center text-sm shrink-0">
+          <div className="w-8 h-8 rounded-xl bg-blue-500 text-white font-black flex items-center justify-center text-sm shrink-0">
             ✓
           </div>
           <div className="flex-1 min-w-0">
@@ -3158,14 +3034,14 @@ function AccountContent() {
               <div className="flex-1 min-w-0">
                 <p className="font-bold text-gray-900 text-sm line-clamp-1">{viewingOrderDetail.productName}</p>
                 <p className="text-gray-500 text-[11px]">{viewingOrderDetail.specs || "Standard Package"}</p>
-                <p className="font-black text-emerald-700 text-sm mt-0.5">₹{viewingOrderDetail.price.toLocaleString("en-IN")}</p>
+                <p className="font-black text-blue-700 text-sm mt-0.5">₹{viewingOrderDetail.price.toLocaleString("en-IN")}</p>
               </div>
             </div>
 
             <div className="space-y-2 bg-gray-50 p-3 rounded-2xl border border-gray-100 text-[11px]">
               <div className="flex justify-between">
                 <span className="text-gray-500 font-medium">Payment Status:</span>
-                <span className="font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded text-[10px] uppercase">{viewingOrderDetail.status}</span>
+                <span className="font-bold text-blue-700 bg-blue-100 px-2 py-0.5 rounded text-[10px] uppercase">{viewingOrderDetail.status}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 font-medium">Delivered Date:</span>
@@ -3173,13 +3049,13 @@ function AccountContent() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-500 font-medium">Return Window:</span>
-                <span className="font-bold text-emerald-700">24-Hour Policy Active</span>
+                <span className="font-bold text-blue-700">24-Hour Policy Active</span>
               </div>
             </div>
 
             <button
               onClick={() => setViewingOrderDetail(null)}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl cursor-pointer text-center"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl cursor-pointer text-center"
             >
               Close Details
             </button>
@@ -3200,7 +3076,7 @@ function AccountContent() {
             </div>
 
             <div className="space-y-3 leading-relaxed text-gray-700">
-              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-emerald-900">
+              <div className="bg-blue-50 border border-blue-200 p-3 rounded-2xl text-blue-900">
                 <p className="font-bold text-xs">1. 24-Hour Window Timer</p>
                 <p className="text-[11px] mt-0.5">Return requests must be submitted within 24 hours of successful product delivery.</p>
               </div>
@@ -3216,7 +3092,7 @@ function AccountContent() {
 
             <button
               onClick={() => setShowReturnPolicyModal(false)}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-2.5 rounded-xl cursor-pointer text-center"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-2.5 rounded-xl cursor-pointer text-center"
             >
               Got it, Close Policy
             </button>
@@ -3247,7 +3123,7 @@ function AccountContent() {
                       onClick={() => setAddWalletAmount(amt)}
                       className={`py-2 text-xs font-bold rounded-xl border transition cursor-pointer ${
                         addWalletAmount === amt
-                          ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
+                          ? "bg-blue-600 text-white border-blue-600 shadow-2xs"
                           : "bg-gray-50 border-gray-200 text-gray-800 hover:bg-gray-100"
                       }`}
                     >
@@ -3265,18 +3141,18 @@ function AccountContent() {
                   max="50000"
                   value={addWalletAmount}
                   onChange={(e) => setAddWalletAmount(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-bold focus:border-emerald-600 focus:outline-none"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 font-bold focus:border-blue-600 focus:outline-none"
                   placeholder="Enter amount (e.g. 1500)"
                 />
               </div>
 
-              <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-[11px] text-emerald-900 font-medium">
-                💡 Current Wallet Balance: <span className="font-black text-emerald-700">₹{walletBalance.toLocaleString("en-IN")}</span> &rarr; New Balance after top-up: <span className="font-black text-emerald-700">₹{(walletBalance + (Number(addWalletAmount) || 0)).toLocaleString("en-IN")}</span>
+              <div className="bg-blue-50 border border-blue-200 p-3 rounded-2xl text-[11px] text-blue-900 font-medium">
+                💡 Current Wallet Balance: <span className="font-black text-blue-700">₹{walletBalance.toLocaleString("en-IN")}</span> &rarr; New Balance after top-up: <span className="font-black text-blue-700">₹{(walletBalance + (Number(addWalletAmount) || 0)).toLocaleString("en-IN")}</span>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 rounded-xl transition shadow-md cursor-pointer"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 rounded-xl transition shadow-md cursor-pointer"
               >
                 Proceed &amp; Add ₹{Number(addWalletAmount || 0).toLocaleString("en-IN")} &rarr;
               </button>
@@ -3381,7 +3257,7 @@ function AccountContent() {
 
               <button
                 type="submit"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3 rounded-xl transition shadow-md cursor-pointer mt-2"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3 rounded-xl transition shadow-md cursor-pointer mt-2"
               >
                 Save &amp; Vault Card &rarr;
               </button>

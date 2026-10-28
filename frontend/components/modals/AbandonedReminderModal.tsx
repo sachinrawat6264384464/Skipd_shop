@@ -42,20 +42,26 @@ export function AbandonedReminderModal() {
 
     try {
       const apiBase = getApiBaseUrl().replace(/\/+$/, "");
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 4000);
+
       const res = await fetch(`${apiBase}/abandoned-reminders/active`, {
         headers: {
           Authorization: `Bearer ${token}`
-        }
-      });
-      if (!res.ok) return;
+        },
+        signal: controller.signal
+      }).catch(() => null);
+      clearTimeout(timer);
 
-      const data = await res.json();
-      if (data.has_abandoned_item && data.product) {
+      if (!res || !res.ok) return;
+
+      const data = await res.json().catch(() => null);
+      if (data && data.has_abandoned_item && data.product) {
         setReminderData(data);
         setIsOpen(true);
       }
-    } catch (e) {
-      console.error("Error checking abandoned reminders:", e);
+    } catch {
+      // Quietly ignore network failures or offline state to prevent console errors
     }
   };
 

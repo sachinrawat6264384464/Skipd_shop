@@ -14,7 +14,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-6 text-center font-sans bg-[#FAF7F2]">
+    <div className="min-h-[60vh] flex items-center justify-center p-6 text-center font-sans bg-white">
       <div className="max-w-md w-full bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-8 shadow-xl space-y-4">
         <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-blue-100 shadow-xs">
           🛍️

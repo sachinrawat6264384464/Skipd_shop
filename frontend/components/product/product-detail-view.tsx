@@ -583,24 +583,9 @@ const SUB_NAV_ITEMS = [
           
           {/* LEFT 5-COL: Image Gallery & Main Photo + Ratings Breakdown */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="flex gap-4">
-              {/* Thumbnail Strip */}
-              <div className="flex flex-col gap-3 shrink-0">
-                {imagesList.map((img, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedImage(img)}
-                    className={`w-12 h-12 rounded-xl border-2 overflow-hidden bg-gray-50 transition cursor-pointer ${
-                      selectedImage === img ? "border-amber-500 ring-2 ring-amber-300" : "border-gray-200 hover:border-gray-400"
-                    }`}
-                  >
-                    <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
-                  </button>
-                ))}
-              </div>
-
+            <div className="flex flex-col gap-3">
               {/* Main Preview Image with Amazon-Style Interactive Magnifier */}
-              <div className="flex-1 relative">
+              <div className="w-full relative">
                 <ProductZoomMagnifier imageSrc={selectedImage} altText={product.title} />
                 {(product.stock_quantity === 0) && (
                   <div className="absolute inset-0 bg-black/40 backdrop-blur-[1px] rounded-3xl z-20 flex items-center justify-center pointer-events-none">
@@ -610,122 +595,22 @@ const SUB_NAV_ITEMS = [
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Key Product Highlights & Delivery Pincode Checker Card under Image Gallery */}
-            <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-5 shadow-sm space-y-4 text-xs">
-              <div className="flex items-center justify-between border-b border-[#F0ECE1] pb-3">
-                <h3 className="font-black text-[#2C221E] text-sm">Product Highlights &amp; Specs</h3>
-                <span className="bg-[#F4EFE6] text-[#5C4033] border border-[#E8E1D1] text-[10px] font-extrabold px-2 py-0.5 rounded-full">
-                  VERIFIED ITEM
-                </span>
-              </div>
-
-              {/* Highlights List */}
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-2.5 text-[#3B2F2F]">
-                  <span className="w-2 h-2 rounded-full bg-[#B8860B] shrink-0" />
-                  <span className="font-semibold text-[11px]">Express 2-Day Doorstep Delivery</span>
-                </div>
-                <div className="flex items-center gap-2.5 text-[#3B2F2F]">
-                  <span className="w-2 h-2 rounded-full bg-[#B8860B] shrink-0" />
-                  <span className="font-semibold text-[11px]">100% Original Sourced from Official Brand</span>
-                </div>
-                <div className="flex items-center gap-2.5 text-[#3B2F2F]">
-                  <span className="w-2 h-2 rounded-full bg-[#B8860B] shrink-0" />
-                  <span className="font-semibold text-[11px]">7 Days Easy Doorstep Replacement</span>
-                </div>
-                <div className="flex items-center gap-2.5 text-[#3B2F2F]">
-                  <span className="w-2 h-2 rounded-full bg-[#B8860B] shrink-0" />
-                  <span className="font-semibold text-[11px]">Guaranteed Lowest Price &amp; Extra Coupons</span>
-                </div>
-              </div>
-
-              {/* Delivery Pincode Quick Checker */}
-              <div className="pt-2 border-t border-[#F0ECE1] space-y-2">
-                <label className="font-extrabold text-[11px] text-[#2C221E]">
-                  Check Delivery Availability
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    defaultValue="474001"
-                    placeholder="Enter 6-digit Pincode"
-                    className="flex-1 bg-[#F9F7F2] border border-[#E8E1D1] rounded-xl px-3 py-1.5 text-xs font-bold text-[#2C221E] focus:outline-none focus:border-[#B8860B]"
-                  />
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-3.5 py-1.5 rounded-xl transition cursor-pointer shadow-xs">
-                    Check
+              {/* Thumbnail Strip (Bottom) */}
+              <div className="flex items-center justify-center flex-wrap gap-2.5 pt-1">
+                {imagesList.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedImage(img)}
+                    className={`w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 overflow-hidden bg-gray-50 transition-all duration-200 cursor-pointer hover:scale-105 shadow-2xs ${
+                      selectedImage === img ? "border-amber-500 ring-2 ring-amber-300 shadow-md" : "border-gray-200 hover:border-gray-400"
+                    }`}
+                  >
+                    <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
                   </button>
-                </div>
-                <p className="text-[10px] text-blue-700 font-bold flex items-center gap-1 pt-0.5">
-                  <span>✓</span> Free Express Shipping Available for 474001
-                </p>
+                ))}
               </div>
             </div>
-
-            {/* Store Guarantee & Highlights Card */}
-            <div className="bg-[#FFFDF9] border border-[#E8E1D1] rounded-3xl p-5 shadow-sm space-y-4 text-xs">
-              
-              {/* Header Badge */}
-              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-3">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-xl bg-blue-600 text-white font-black text-xs flex items-center justify-center shadow-xs">
-                    ✓
-                  </span>
-                  <div>
-                    <h4 className="font-extrabold text-[#2C221E] text-xs tracking-tight">BotCom Assured Promise</h4>
-                    <p className="text-[10px] text-blue-700 font-bold">100% Genuine • Fast Delivery</p>
-                  </div>
-                </div>
-                <span className="bg-[#F4EFE6] text-[#5C4033] border border-[#E8E1D1] text-[10px] font-black px-2.5 py-1 rounded-full">
-                  VERIFIED
-                </span>
-              </div>
-
-              {/* Trust Highlights Grid */}
-              <div className="space-y-2.5 pt-0.5">
-                <div className="flex items-start gap-2.5 bg-[#F9F7F2] border border-[#E8E1D1] p-2.5 rounded-2xl">
-                  <div>
-                    <h5 className="font-bold text-[#2C221E] text-[11px]">Same-Day Dispatch &amp; Express Shipping</h5>
-                    <p className="text-[10px] text-stone-500 leading-snug">Shipped directly from verified hub with live SMS tracking.</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2.5 bg-[#F9F7F2] border border-[#E8E1D1] p-2.5 rounded-2xl">
-                  <div>
-                    <h5 className="font-bold text-[#2C221E] text-[11px]">1-Year Brand Warranty</h5>
-                    <p className="text-[10px] text-stone-500 leading-snug">Guaranteed authentic product with manufacturer warranty.</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2.5 bg-[#F9F7F2] border border-[#E8E1D1] p-2.5 rounded-2xl">
-                  <div>
-                    <h5 className="font-bold text-[#2C221E] text-[11px]">7 Days Easy Return &amp; Exchange</h5>
-                    <p className="text-[10px] text-stone-500 leading-snug">No questions asked instant replacement or doorstep refund.</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-2.5 bg-[#F9F7F2] border border-[#E8E1D1] p-2.5 rounded-2xl">
-                  <div>
-                    <h5 className="font-bold text-[#2C221E] text-[11px]">Pay on Delivery (COD Available)</h5>
-                    <p className="text-[10px] text-stone-500 leading-snug">Pay conveniently at your door via Cash, UPI QR or Cards.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Satisfaction Meter */}
-              <div className="bg-blue-600 text-white rounded-2xl p-3 flex items-center justify-between text-[11px] shadow-sm">
-                <div>
-                  <p className="font-black text-xs">99.4% Customer Satisfaction</p>
-                  <p className="text-[10px] text-blue-100 font-medium">Based on 12,450+ verified orders</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-amber-300 font-black text-sm">4.9 ★</span>
-                </div>
-              </div>
-
-            </div>
-
           </div>
 
           {/* MIDDLE 4-COL: Title, Rating, Offers */}
@@ -737,11 +622,7 @@ const SUB_NAV_ITEMS = [
               </h1>
               <p className="text-xs text-[#B8860B] font-bold mt-1">Visit the BotCom Official Store</p>
 
-              {/* Rating */}
-              <div className="flex items-center gap-2 mt-2 text-xs">
-                <span className="text-amber-600 font-bold">4.3 ★★★★☆</span>
-                <span className="text-stone-500 font-medium">(1,732 ratings)</span>
-              </div>
+
             </div>
 
             <div className="border-t border-b border-[#F0ECE1] py-3 space-y-2">
@@ -995,123 +876,6 @@ const SUB_NAV_ITEMS = [
                 </div>
               </div>
             )}
-
-            {/* 📋 Complete Technical Specifications & Enterprise Attributes Breakdown Card */}
-            <div className="bg-white border border-gray-200 rounded-3xl p-5 shadow-2xs space-y-3 text-xs">
-              <div className="flex items-center justify-between border-b border-gray-100 pb-2.5">
-                <h4 className="text-xs font-black text-gray-900 uppercase tracking-wider flex items-center gap-1.5">
-                  <span>⚙️</span> Technical Specifications &amp; Attributes
-                </h4>
-                <span className="bg-blue-50 text-blue-700 font-extrabold text-[10px] px-2 py-0.5 rounded-full border border-blue-200">
-                  Full 32-Field Specs
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-[11px]">
-                {(product as any).brand && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Brand</span>
-                    <span className="font-black text-gray-900">{(product as any).brand}</span>
-                  </div>
-                )}
-                {(product as any).sub_category && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Sub Category</span>
-                    <span className="font-bold text-gray-800">{(product as any).sub_category}</span>
-                  </div>
-                )}
-                {(product as any).sku && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">SKU</span>
-                    <span className="font-mono font-bold text-gray-900">{(product as any).sku}</span>
-                  </div>
-                )}
-                {(product as any).barcode && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Barcode / EAN</span>
-                    <span className="font-mono font-bold text-gray-800">{(product as any).barcode}</span>
-                  </div>
-                )}
-                {(product as any).color && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Color Variant</span>
-                    <span className="font-extrabold text-gray-900">{(product as any).color}</span>
-                  </div>
-                )}
-                {(product as any).size && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Size Variant</span>
-                    <span className="font-extrabold text-gray-900">{(product as any).size}</span>
-                  </div>
-                )}
-                {(product as any).material && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Material &amp; Fabric</span>
-                    <span className="font-bold text-gray-800">{(product as any).material}</span>
-                  </div>
-                )}
-                {(product as any).weight != null && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Weight (kg)</span>
-                    <span className="font-bold text-gray-900">{(product as any).weight} kg</span>
-                  </div>
-                )}
-                {(product as any).dimensions && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Dimensions (L x W x H)</span>
-                    <span className="font-bold text-gray-800">{(product as any).dimensions} cm</span>
-                  </div>
-                )}
-                {(product as any).gst_rate != null && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">GST Rate %</span>
-                    <span className="font-black text-blue-700">{(product as any).gst_rate}% GST</span>
-                  </div>
-                )}
-                {(product as any).hsn_code && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">HSN Code</span>
-                    <span className="font-mono font-bold text-gray-800">{(product as any).hsn_code}</span>
-                  </div>
-                )}
-                {(product as any).country_of_origin && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Country of Origin</span>
-                    <span className="font-bold text-gray-900">{(product as any).country_of_origin}</span>
-                  </div>
-                )}
-                {(product as any).warehouse && (
-                  <div className="bg-gray-50 p-2 rounded-xl border border-gray-100 col-span-2">
-                    <span className="text-gray-400 font-bold block text-[9px] uppercase">Fulfillment Warehouse</span>
-                    <span className="font-extrabold text-gray-900">{(product as any).warehouse}</span>
-                  </div>
-                )}
-              </div>
-
-              {(product as any).video_url && (
-                <div className="pt-2 border-t border-gray-100 flex items-center justify-between">
-                  <span className="font-bold text-gray-700">Product Video Demo</span>
-                  <a
-                    href={(product as any).video_url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="bg-red-50 hover:bg-red-100 text-red-700 font-extrabold px-3 py-1 rounded-xl border border-red-200 transition text-[10px] flex items-center gap-1"
-                  >
-                    <span>▶ Watch Video</span>
-                  </a>
-                </div>
-              )}
-            </div>
-
-            {/* 🏆 Brand Trust Card */}
-            <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-3 space-y-1 text-xs">
-              <div className="flex items-center justify-between">
-                <span className="font-black text-gray-900 text-sm">{(product as any).brand || "Skipd"} Official Retail</span>
-                <span className="bg-blue-600 text-white font-extrabold text-[9px] px-2 py-0.5 rounded">Verified</span>
-              </div>
-              <p className="text-[11px] text-gray-700 font-medium">⭐ 85% Positive Ratings (from 100K+ customers)</p>
-              <p className="text-[10px] text-gray-500">100K+ orders from this brand recently | 11+ years experience</p>
-            </div>
 
           </div>
 

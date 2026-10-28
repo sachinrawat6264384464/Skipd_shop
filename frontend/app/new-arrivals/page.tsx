@@ -65,130 +65,7 @@ export default function NewArrivalsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-dot-pattern pb-16 font-sans">
-      
-      {/* 🌟 PREMIUM NEW ARRIVALS HERO HEADER (EXACT REDESIGN FROM DESIGN SPEC) */}
-      <div className="relative overflow-hidden bg-[#030e1a] text-white py-12 lg:py-16 px-4 sm:px-6 lg:px-8 border-b border-blue-500/20 shadow-2xl">
-        
-        {/* Ambient Glow Effects */}
-        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-blue-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="max-w-[1440px] mx-auto relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
-            {/* LEFT 7-COL: Hero Title, Capsule Badge, Description, Features & CTA */}
-            <div className="lg:col-span-7 space-y-6 text-center sm:text-left">
-              
-              {/* Capsule Badge */}
-              <div className="inline-flex items-center gap-2 bg-blue-950/90 border border-blue-500/40 text-sky-300 px-4 py-1.5 rounded-full text-xs font-extrabold tracking-wide shadow-inner backdrop-blur-md">
-                <span>✨</span>
-                <span>JUST LANDED • SHOP THE LATEST</span>
-              </div>
-
-              {/* Main Headline */}
-              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-white leading-tight">
-                New Arrivals &amp;{" "}
-                <span className="text-sky-400 drop-shadow-[0_0_25px_rgba(56,189,248,0.4)]">
-                  Fresh Drops
-                </span>
-              </h1>
-
-              {/* Description */}
-              <p className="text-gray-300 text-sm sm:text-base font-medium max-w-xl leading-relaxed">
-                Discover the latest styles, top picks &amp; exclusive collections handpicked for you. Directly updated live from our catalog.
-              </p>
-
-              {/* 3 Feature Pillars */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 max-w-xl">
-                <div className="flex items-center gap-2.5 bg-white/5 border border-blue-500/20 p-3 rounded-2xl backdrop-blur-xs">
-                  <span className="text-xl">🛡️</span>
-                  <div>
-                    <p className="text-xs font-black text-white">100% Original</p>
-                    <p className="text-[10px] text-gray-400 font-semibold">Authentic Products</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5 bg-white/5 border border-blue-500/20 p-3 rounded-2xl backdrop-blur-xs">
-                  <span className="text-xl">💼</span>
-                  <div>
-                    <p className="text-xs font-black text-white">Easy Returns</p>
-                    <p className="text-[10px] text-gray-400 font-semibold">Hassle Free Returns</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2.5 bg-white/5 border border-blue-500/20 p-3 rounded-2xl backdrop-blur-xs">
-                  <span className="text-xl">🚚</span>
-                  <div>
-                    <p className="text-xs font-black text-white">Fast Delivery</p>
-                    <p className="text-[10px] text-gray-400 font-semibold">Express Shipping</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* CTA Button */}
-              <div className="pt-2">
-                <a
-                  href="#products-grid"
-                  className="bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-500 hover:to-sky-400 text-white font-black text-sm px-8 py-3.5 rounded-2xl transition duration-200 shadow-xl shadow-blue-600/30 inline-flex items-center gap-2 cursor-pointer border-none"
-                >
-                  <span>SHOP NOW</span>
-                  <span className="text-base font-black">&rarr;</span>
-                </a>
-              </div>
-
-            </div>
-
-            {/* RIGHT 5-COL: Product Showcase Card */}
-            <div className="lg:col-span-5 relative flex justify-center">
-              <div className="relative w-full max-w-md bg-gradient-to-b from-[#0e2a47] to-[#051224] border border-blue-500/30 rounded-3xl p-3 shadow-2xl overflow-hidden group">
-                
-                {/* Top-Right Pill Badge */}
-                <div className="absolute top-6 right-6 z-20 bg-blue-900/90 border border-sky-400/40 text-sky-300 text-[11px] font-black px-3 py-1 rounded-full backdrop-blur-md uppercase tracking-wider shadow-lg">
-                  ✨ NEW COLLECTION
-                </div>
-
-                {/* Showcase Image */}
-                <div className="relative h-72 sm:h-80 w-full rounded-2xl overflow-hidden bg-blue-950/40 border border-blue-500/10">
-                  <img
-                    src="/new_arrivals_showcase.png"
-                    alt="New Collection Showcase"
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#030e1a] via-transparent to-transparent opacity-80" />
-                </div>
-
-                {/* Bottom Left Floating Glassmorphism Overlay */}
-                <div className="absolute bottom-6 left-6 z-20 bg-black/60 backdrop-blur-md border border-white/15 p-3 rounded-2xl text-xs space-y-1.5 shadow-xl">
-                  <div className="flex items-center gap-2 text-white font-extrabold">
-                    <span>🛍️</span>
-                    <span>{products.length} NEW DROPS</span>
-                  </div>
-                  <div className="h-px bg-white/20 w-full" />
-                  <div className="flex items-center gap-2 text-sky-400 text-[11px] font-bold">
-                    <span>🏷️</span>
-                    <span>100% QUALITY ASSURED</span>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-
-      {/* 🎟️ TICKER RIBBON BAR */}
-      <div className="bg-[#020b18] border-b border-blue-500/30 py-2.5 px-4 text-center overflow-hidden">
-        <div className="inline-flex items-center justify-center gap-4 text-xs font-black tracking-wider text-sky-400 uppercase">
-          <span>🏷️ LIMITED STOCK</span>
-          <span className="text-blue-500">•</span>
-          <span>⏰ SHOP BEFORE IT'S GONE!</span>
-          <span className="text-blue-500">•</span>
-          <span>🚚 FREE SHIPPING ON ORDERS ABOVE ₹499</span>
-        </div>
-      </div>
+    <div className="min-h-screen bg-white pb-16 font-sans">
 
       {/* 📍 MAIN CONTENT CONTAINER */}
       <div id="products-grid" className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-6">
@@ -197,7 +74,7 @@ export default function NewArrivalsPage() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-3xl border border-gray-200/80 shadow-2xs">
           
           {/* Category Filter Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-none">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <button
               onClick={() => setSelectedCategory("all")}
               className={`px-4 py-2 rounded-2xl text-xs font-black whitespace-nowrap transition cursor-pointer ${
@@ -206,7 +83,7 @@ export default function NewArrivalsPage() {
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              🔥 All New Drops ({products.length})
+              All New Drops ({products.length})
             </button>
 
             {categories.map((cat) => {
@@ -240,11 +117,11 @@ export default function NewArrivalsPage() {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 text-xs font-extrabold text-gray-900 focus:outline-none focus:border-emerald-500 cursor-pointer"
+              className="bg-gray-100 border border-gray-200 rounded-xl px-3 py-2 text-xs font-extrabold text-gray-900 focus:outline-none focus:border-blue-500 cursor-pointer"
             >
-              <option value="newest">✨ Newest First (Latest Added)</option>
-              <option value="price-low">💰 Price: Low to High</option>
-              <option value="price-high">💎 Price: High to Low</option>
+              <option value="newest">Newest First (Latest Added)</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
             </select>
           </div>
 
@@ -264,9 +141,7 @@ export default function NewArrivalsPage() {
           </div>
         ) : sortedProducts.length === 0 ? (
           <div className="bg-white rounded-3xl p-12 text-center border border-gray-200/80 shadow-2xs space-y-4 max-w-md mx-auto my-8">
-            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center font-black text-3xl mx-auto">
-              📦
-            </div>
+
             <div>
               <h3 className="text-lg font-black text-gray-900">No New Products Found</h3>
               <p className="text-xs text-gray-500 mt-1 font-medium">
@@ -275,7 +150,7 @@ export default function NewArrivalsPage() {
             </div>
             <button
               onClick={() => setSelectedCategory("all")}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-6 py-2.5 rounded-xl transition cursor-pointer"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs px-6 py-2.5 rounded-xl transition cursor-pointer"
             >
               View All New Drops
             </button>
@@ -291,11 +166,11 @@ export default function NewArrivalsPage() {
               return (
                 <div
                   key={product.id}
-                  className="group bg-white rounded-3xl border border-gray-200/90 p-4 shadow-2xs hover:shadow-xl hover:border-emerald-300 transition duration-300 flex flex-col justify-between relative overflow-hidden"
+                  className="group bg-white rounded-3xl border border-gray-200/90 p-4 shadow-2xs hover:shadow-xl hover:border-blue-300 transition duration-300 flex flex-col justify-between relative overflow-hidden"
                 >
                   {/* Glowing JUST IN Badge */}
-                  <div className="absolute top-6 left-6 z-10 flex items-center gap-1 bg-gradient-to-r from-emerald-600 to-teal-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-md uppercase tracking-wider">
-                    <span>✨ JUST IN</span>
+                  <div className="absolute top-6 left-6 z-10 flex items-center gap-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-md uppercase tracking-wider">
+                    <span>JUST IN</span>
                   </div>
 
                   {/* Discount Badge if available */}
@@ -308,7 +183,7 @@ export default function NewArrivalsPage() {
                   {/* Product Image Link */}
                   <Link
                     href={`/product/${product.handle || product.id}`}
-                    className="relative block w-full h-56 rounded-2xl bg-gray-50 overflow-hidden mb-4 border border-gray-100 group-hover:border-emerald-100 transition"
+                    className="relative block w-full h-56 rounded-2xl bg-gray-50 overflow-hidden mb-4 border border-gray-100 group-hover:border-blue-100 transition"
                   >
                     <img
                       src={image}
@@ -320,12 +195,12 @@ export default function NewArrivalsPage() {
                   {/* Product Info */}
                   <div className="space-y-2 flex-1 flex flex-col justify-between">
                     <div>
-                      <div className="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider mb-1">
+                      <div className="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider mb-1">
                         {product.category?.name || "New Arrival"}
                       </div>
                       <Link
                         href={`/product/${product.handle || product.id}`}
-                        className="font-extrabold text-sm text-gray-900 group-hover:text-emerald-700 transition line-clamp-2 leading-snug"
+                        className="font-extrabold text-sm text-gray-900 group-hover:text-blue-700 transition line-clamp-2 leading-snug"
                       >
                         {product.title}
                       </Link>

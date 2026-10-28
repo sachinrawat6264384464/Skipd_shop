@@ -93,6 +93,33 @@ export const FALLBACK_PRODUCTS: Product[] = [];
 let cachedProductsMemory: Product[] | null = null;
 let lastFetchTimestamp = 0;
 
+
+export async function fetchWithFallback(endpoint: string, options: RequestInit = {}, timeoutMs = 2500): Promise<Response | null> {
+  const primaryUrl = getApiBaseUrl().replace(/\/+$/, "");
+  const candidates = Array.from(new Set([
+    primaryUrl,
+    "http://127.0.0.1:8080/api/v1",
+    "http://127.0.0.1:8000/api/v1",
+    "https://skipd-ecom.onrender.com/api/v1"
+  ]));
+
+  for (const base of candidates) {
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), timeoutMs);
+      const url = `${base}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`;
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      clearTimeout(timer);
+      if (res && res.ok) {
+        return res;
+      }
+    } catch {
+      // try next
+    }
+  }
+  return null;
+}
+
 export async function fetchProducts(query?: { category?: string; search?: string; featured?: boolean }): Promise<Product[]> {
   // 1. Instant Client-side Memory / SessionStorage retrieval (<5ms)
   if (typeof window !== "undefined" && !query?.search) {
@@ -134,17 +161,11 @@ export async function fetchProducts(query?: { category?: string; search?: string
     if (query?.search) params.append("search", query.search);
     if (query?.featured !== undefined) params.append("featured", String(query.featured));
 
-    // Fast 2.5s Timeout on API connection so sleeping Render instance doesn't freeze the page
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2500);
-
-    const res = await fetch(`${API_BASE_URL}/products?${params.toString()}`, {
-      next: { revalidate: 60 },
-      signal: controller.signal
+    const res = await fetchWithFallback(`/products?${params.toString()}`, {
+      next: { revalidate: 60 }
     });
-    clearTimeout(timer);
 
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       if (Array.isArray(data) && data.length > 0) {
         backendProducts = data;
@@ -191,7 +212,7 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
     });
     clearTimeout(timer);
 
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       if (data && data.id) return data;
     }
@@ -239,16 +260,9 @@ export async function fetchProductByHandle(handle: string): Promise<Product | nu
 
 export async function fetchCategories(): Promise<Category[]> {
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 2500);
+    const dbRes = await fetchWithFallback('/categories', { cache: 'no-store' });
 
-    const dbRes = await fetch(`${API_BASE_URL}/categories`, {
-      cache: "no-store",
-      signal: controller.signal
-    });
-    clearTimeout(timer);
-
-    if (dbRes.ok) {
+    if (dbRes && dbRes.ok) {
       const dbCats = await dbRes.json();
       if (Array.isArray(dbCats)) return dbCats;
     }
@@ -268,7 +282,7 @@ export async function createCheckoutSession(checkoutData: any) {
       },
       body: JSON.stringify(checkoutData)
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (err) {
@@ -293,7 +307,7 @@ export async function fetchWalletBalance(): Promise<{ balance: number }> {
       },
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (err) {
@@ -308,7 +322,7 @@ export async function fetchTrackOrder(orderIdentifier: string) {
     const res = await fetch(`${API_BASE_URL}/orders/track/${encodeURIComponent(cleanId)}`, {
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -320,7 +334,7 @@ export async function fetchTrackOrder(orderIdentifier: string) {
 export async function fetchLiveTracking(awbOrOrder: string): Promise<TrackingData> {
   try {
     const res = await fetch(`${API_BASE_URL}/shipping/track?tracking_number=${awbOrOrder}`);
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -384,7 +398,7 @@ export async function fetchUserOrders(): Promise<UserOrder[]> {
       },
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       if (Array.isArray(data)) {
         return data.map((o: any) => {
@@ -443,7 +457,7 @@ export async function updateOrderStatusGlobal(orderId: string, newStatus: string
       },
       body: JSON.stringify({ status: newStatus })
     });
-    if (res.ok) {
+    if (res && res.ok) {
       if (typeof window !== "undefined") {
         window.dispatchEvent(new Event("ecom_orders_changed"));
       }
@@ -467,7 +481,7 @@ export async function fetchUserAddressesAPI() {
       headers: { "Authorization": `Bearer ${token}` },
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       return data.addresses || [];
     }
@@ -513,7 +527,7 @@ export async function fetchUserCartAPI() {
       headers: { "Authorization": `Bearer ${token}` },
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       return data.cart_items || [];
     }
@@ -562,7 +576,7 @@ export async function requestReturn(orderId: string, reason: string) {
 export async function fetchAdminStats() {
   try {
     const res = await fetch(`${API_BASE_URL}/admin/stats`, { cache: "no-store" });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -836,7 +850,7 @@ export async function requestOTP(emailOrPhone: string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email_or_phone: emailOrPhone })
     });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       if (emailOrPhone.includes("@")) {
         try {
@@ -938,7 +952,7 @@ export async function checkEmailRegistered(email: string) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email: targetEmail })
     });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       if (data && data.exists) return data;
     }
@@ -1013,7 +1027,7 @@ export async function syncFirebaseUser(payload: {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1042,7 +1056,7 @@ export async function createAdminProduct(payload: any) {
       body: JSON.stringify(payload)
     });
 
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       return data;
     }
@@ -1071,7 +1085,7 @@ export async function bulkCreateAdminProducts(products: any[]) {
     });
     clearTimeout(timer);
 
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       return data;
     }
@@ -1111,22 +1125,25 @@ export async function toggleProductNewArrival(id: number | string, isNewArrival:
 
 export async function fetchNewArrivalsDB(): Promise<Product[]> {
   try {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 8000);
-
-    const baseUrl = getApiBaseUrl();
-    const res = await fetch(`${baseUrl}/new-arrivals`, {
-      cache: "no-store",
-      signal: controller.signal
-    });
-    clearTimeout(timer);
-
-    if (res.ok) {
-      return await res.json();
+    const res = await fetchWithFallback('/new-arrivals', { cache: "no-store" }, 2500);
+    if (res && res.ok) {
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
     }
   } catch (e) {
     console.warn("[API SDK] Fetch new arrivals from DB timed out or failed:", e);
   }
+
+  // Graceful fallback to products if new-arrivals endpoint has no items or fails
+  try {
+    const allProds = await fetchProducts();
+    if (Array.isArray(allProds) && allProds.length > 0) {
+      return allProds.slice(0, 12);
+    }
+  } catch {}
+
   return [];
 }
 
@@ -1134,7 +1151,7 @@ export async function fetchNewArrivalIdsDB(): Promise<number[]> {
   try {
     const baseUrl = getApiBaseUrl();
     const res = await fetch(`${baseUrl}/new-arrivals/ids`, { cache: "no-store" });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1221,7 +1238,7 @@ export async function fetchAdminCustomers() {
 export async function fetchAdminQueries() {
   try {
     const res = await fetch(`${API_BASE_URL}/queries`, { cache: "no-store" });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       return Array.isArray(data) ? data : (data.queries || []);
     }
@@ -1256,7 +1273,7 @@ export async function updateQueryStatus(id: number | string, status: string) {
 export async function deleteAdminUser(id: number | string, email?: string) {
   try {
     const res = await fetch(`${API_BASE_URL}/users/admin/${id}`, { method: "DELETE" });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       purgeLocalCustomerData(email || String(id));
       return data;
@@ -1398,7 +1415,7 @@ export async function createCoupon(data: any) {
 export async function fetchAdminCategories() {
   try {
     const res = await fetch(`${API_BASE_URL}/categories/admin/all`, { cache: "no-store" });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       return Array.isArray(data) ? data : [];
     }
@@ -1577,7 +1594,7 @@ export interface StaffUserData {
 export async function fetchAdminRoles(): Promise<RoleData[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/roles`, { cache: "no-store" });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       if (Array.isArray(data)) return data;
     }
@@ -1604,7 +1621,7 @@ export async function createAdminRole(payload: Partial<RoleData>): Promise<RoleD
 export async function fetchAdminStaff(): Promise<StaffUserData[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/staff`, { cache: "no-store" });
-    if (res.ok) {
+    if (res && res.ok) {
       const data = await res.json();
       if (Array.isArray(data)) return data;
     }
@@ -1659,7 +1676,7 @@ export async function checkPincodeServiceabilityAPI(pincode: string) {
     const res = await fetch(`${API_BASE_URL}/shipping/serviceability?pincode=${pincode}`, {
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1685,7 +1702,7 @@ export async function createAdminShipmentAPI(payload: any) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1700,7 +1717,7 @@ export async function generateShipmentLabelAPI(shipmentId: number) {
       method: "POST",
       headers: { "Content-Type": "application/json" }
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1715,7 +1732,7 @@ export async function scheduleShipmentPickupAPI(shipmentId: number) {
       method: "POST",
       headers: { "Content-Type": "application/json" }
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1730,7 +1747,7 @@ export async function cancelShipmentAPI(shipmentId: number) {
       method: "POST",
       headers: { "Content-Type": "application/json" }
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1745,7 +1762,7 @@ export async function syncShipmentStatusAPI(shipmentId: number) {
       method: "POST",
       headers: { "Content-Type": "application/json" }
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1759,7 +1776,7 @@ export async function fetchAdminShipmentDetailAPI(shipmentId: number) {
     const res = await fetch(`${API_BASE_URL}/shipping/admin/${shipmentId}`, {
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1773,7 +1790,7 @@ export async function fetchSimilarProductsAPI(productId: number, limit: number =
     const res = await fetch(`${API_BASE_URL}/recommendations/products/${productId}/similar?limit=${limit}`, {
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {
@@ -1787,7 +1804,7 @@ export async function fetchFrequentlyBoughtTogetherAPI(productId: number) {
     const res = await fetch(`${API_BASE_URL}/recommendations/products/${productId}/frequently-bought-together`, {
       cache: "no-store"
     });
-    if (res.ok) {
+    if (res && res.ok) {
       return await res.json();
     }
   } catch (e) {

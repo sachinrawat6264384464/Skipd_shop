@@ -109,9 +109,9 @@ export default function GiftCardsPage() {
       rating: 4.5
     });
     if (wasLiked) {
-      showToast(`🖤 Removed "${p.title}" from Wishlist`);
+      showToast(`Removed "${p.title}" from Wishlist`);
     } else {
-      showToast(`❤️ Added "${p.title}" to Wishlist!`);
+      showToast(`Added "${p.title}" to Wishlist!`);
     }
   };
 
@@ -130,7 +130,7 @@ export default function GiftCardsPage() {
 
       sessionStorage.setItem("ecom_buy_now_item", JSON.stringify([voucherItem]));
 
-      showToast(`🎉 ${brandName} Voucher ₹${amount} selected! Redirecting to Checkout...`);
+      showToast(`${brandName} Voucher ₹${amount} selected! Redirecting to Checkout...`);
       setTimeout(() => {
         router.push("/checkout?buyNow=true");
       }, 600);
@@ -142,7 +142,7 @@ export default function GiftCardsPage() {
       
       {/* In-Page Toast Notification */}
       {toastMessage && (
-        <div className="fixed top-20 right-5 z-50 bg-gray-900 text-white font-bold text-xs px-5 py-3 rounded-2xl shadow-2xl border border-emerald-500/40 animate-bounce">
+        <div className="fixed top-20 right-5 z-50 bg-gray-900 text-white font-bold text-xs px-5 py-3 rounded-2xl shadow-2xl border border-blue-500/40 animate-bounce">
           {toastMessage}
         </div>
       )}
@@ -150,24 +150,23 @@ export default function GiftCardsPage() {
       <div className="max-w-7xl mx-auto px-4 py-8 space-y-8 w-full">
         
         {/* 🎁 STUNNING HERO SECTION BANNER */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-emerald-950 to-teal-900 text-white p-8 md:p-12 shadow-2xl border border-emerald-500/20">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-blue-950 to-indigo-950 text-white p-8 md:p-12 shadow-2xl border border-blue-500/20">
           
           {/* Ambient Background Glow Orbs */}
-          <div className="absolute -top-24 -left-24 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-teal-500/20 rounded-full blur-3xl pointer-events-none"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
           <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-5 text-center lg:text-left">
-              <div className="inline-flex items-center gap-2 bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] md:text-xs font-black uppercase px-3.5 py-1.5 rounded-full tracking-wider shadow-inner">
-                <span>🎁</span>
+              <div className="inline-flex items-center gap-2 bg-blue-500/15 border border-blue-500/30 text-blue-300 text-[10px] md:text-xs font-black uppercase px-3.5 py-1.5 rounded-full tracking-wider shadow-inner">
                 <span>INSTANT DIGITAL GIFT CARDS &amp; STORE CREDIT</span>
               </div>
 
               <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white leading-tight">
-                Give the Gift of <span className="bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-300 bg-clip-text text-transparent">Endless Choice</span> &amp; Joy
+                Give the Gift of <span className="bg-gradient-to-r from-blue-300 via-sky-200 to-indigo-200 bg-clip-text text-transparent">Endless Choice</span> &amp; Joy
               </h1>
 
               <p className="text-xs md:text-sm text-gray-300 font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
@@ -179,11 +178,10 @@ export default function GiftCardsPage() {
                 <button
                   onClick={() => {
                     setSelectedCategory("Electronics");
-                    showToast("🎁 Selected E-Gift Voucher options below!");
+                    showToast("Selected E-Gift Voucher options below!");
                   }}
-                  className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs md:text-sm px-6 py-3.5 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-emerald-500/25 cursor-pointer flex items-center gap-2"
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-black text-xs md:text-sm px-6 py-3.5 rounded-2xl transition-all duration-200 shadow-lg hover:shadow-blue-500/25 cursor-pointer flex items-center gap-2"
                 >
-                  <span>✨</span>
                   <span>Send a Gift Voucher Now</span>
                 </button>
 
@@ -191,23 +189,19 @@ export default function GiftCardsPage() {
                   onClick={() => router.push("/account?tab=gift-cards")}
                   className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-black text-xs md:text-sm px-6 py-3.5 rounded-2xl transition-all duration-200 backdrop-blur-md cursor-pointer flex items-center gap-2"
                 >
-                  <span>💳</span>
                   <span>Redeem / Check Balance</span>
                 </button>
               </div>
 
               {/* Trust Badge Indicators */}
               <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-[11px] font-bold text-gray-300 border-t border-white/10">
-                <div className="flex items-center gap-1.5 text-emerald-400">
-                  <span>⚡</span>
+                <div className="flex items-center gap-1.5 text-blue-400">
                   <span className="text-gray-200">100% Instant Delivery</span>
                 </div>
                 <div className="flex items-center gap-1.5 text-amber-400">
-                  <span>🛡️</span>
                   <span className="text-gray-200">Zero Expiry Fees</span>
                 </div>
-                <div className="flex items-center gap-1.5 text-teal-400">
-                  <span>🌟</span>
+                <div className="flex items-center gap-1.5 text-indigo-400">
                   <span className="text-gray-200">50,000+ Happy Gifters</span>
                 </div>
               </div>
@@ -215,14 +209,14 @@ export default function GiftCardsPage() {
 
             {/* Right Card Graphic Showcase */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-sm aspect-[1.58/1] bg-gradient-to-tr from-slate-900 via-emerald-950 to-teal-900 rounded-3xl p-6 border border-emerald-400/30 shadow-2xl flex flex-col justify-between overflow-hidden group hover:scale-105 transition-all duration-500 cursor-pointer">
+              <div className="relative w-full max-w-sm aspect-[1.58/1] bg-gradient-to-tr from-slate-900 via-blue-950 to-indigo-950 rounded-3xl p-6 border border-blue-400/30 shadow-2xl flex flex-col justify-between overflow-hidden group hover:scale-105 transition-all duration-500 cursor-pointer">
                 
                 {/* Metallic Shine Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -rotate-45 translate-x-[-150%] group-hover:translate-x-[150%] transition-transform duration-1000"></div>
 
                 <div className="flex justify-between items-start relative z-10">
                   <div>
-                    <span className="text-[10px] font-black tracking-widest text-emerald-400 uppercase">BotCom VIP GIFT VAULT</span>
+                    <span className="text-[10px] font-black tracking-widest text-blue-400 uppercase">BotCom VIP GIFT VAULT</span>
                     <h3 className="text-lg font-black text-white tracking-wider font-mono">₹5,000 STORE VOUCHER</h3>
                   </div>
                   <div className="w-10 h-8 rounded-lg bg-amber-400/20 border border-amber-400/40 flex items-center justify-center font-bold text-amber-300 text-xs shadow-inner">
@@ -236,7 +230,7 @@ export default function GiftCardsPage() {
                 <div className="flex justify-between items-end relative z-10 font-mono">
                   <div>
                     <p className="text-[9px] text-gray-400 uppercase tracking-widest">GIFT CODE</p>
-                    <p className="text-xs font-black text-emerald-300 tracking-wider">BotCom-GIFT-8942-2026</p>
+                    <p className="text-xs font-black text-blue-300 tracking-wider">BotCom-GIFT-8942-2026</p>
                   </div>
                   <div className="text-right">
                     <p className="text-[9px] text-gray-400 uppercase tracking-widest">VALID FOR</p>
@@ -258,20 +252,15 @@ export default function GiftCardsPage() {
           <div
             onClick={() => {
               setSelectedCategory("Electronics");
-              showToast("📱 Showing Electronics E-Gift Cards!");
+              showToast("Showing Electronics E-Gift Cards!");
             }}
-            className="bg-emerald-50/60 border border-emerald-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
+            className="bg-blue-50/60 border border-blue-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white border border-emerald-200 flex items-center justify-center text-xl shadow-xs group-hover:scale-110 transition">
-                📱
-              </div>
-              <div>
-                <h3 className="font-bold text-xs text-gray-900">E-Gift Card</h3>
-                <p className="text-[10px] text-gray-500">Instant delivery on email or SMS</p>
-              </div>
+            <div>
+              <h3 className="font-bold text-xs text-gray-900">E-Gift Card</h3>
+              <p className="text-[10px] text-gray-500">Instant delivery on email or SMS</p>
             </div>
-            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-emerald-600 group-hover:bg-emerald-600 group-hover:text-white transition">
+            <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition">
               &rarr;
             </span>
           </div>
@@ -280,18 +269,13 @@ export default function GiftCardsPage() {
           <div
             onClick={() => {
               setSelectedCategory("Fashion & Apparel");
-              showToast("💳 Showing Fashion Physical Gift Cards!");
+              showToast("Showing Fashion Physical Gift Cards!");
             }}
             className="bg-indigo-50/60 border border-indigo-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-xs group-hover:scale-110 transition">
-                💳
-              </div>
-              <div>
-                <h3 className="font-bold text-xs text-gray-900">Physical Gift Card</h3>
-                <p className="text-[10px] text-gray-500">Beautifully packed &amp; delivered</p>
-              </div>
+            <div>
+              <h3 className="font-bold text-xs text-gray-900">Physical Gift Card</h3>
+              <p className="text-[10px] text-gray-500">Beautifully packed &amp; delivered</p>
             </div>
             <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition">
               &rarr;
@@ -302,18 +286,13 @@ export default function GiftCardsPage() {
           <div
             onClick={() => {
               setSelectedCategory("Lifestyle");
-              showToast("🛍️ Showing Lifestyle Brand Gift Cards!");
+              showToast("Showing Lifestyle Brand Gift Cards!");
             }}
             className="bg-amber-50/60 border border-amber-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white border border-amber-200 flex items-center justify-center text-xl shadow-xs group-hover:scale-110 transition">
-                🛍️
-              </div>
-              <div>
-                <h3 className="font-bold text-xs text-gray-900">Brand Gift Card</h3>
-                <p className="text-[10px] text-gray-500">Top brands, endless choices</p>
-              </div>
+            <div>
+              <h3 className="font-bold text-xs text-gray-900">Brand Gift Card</h3>
+              <p className="text-[10px] text-gray-500">Top brands, endless choices</p>
             </div>
             <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-amber-600 group-hover:bg-amber-600 group-hover:text-white transition">
               &rarr;
@@ -324,18 +303,13 @@ export default function GiftCardsPage() {
           <div
             onClick={() => {
               setSelectedCategory("All Categories");
-              showToast("💼 Showing All Corporate Bulk Gifting Options!");
+              showToast("Showing All Corporate Bulk Gifting Options!");
             }}
             className="bg-purple-50/60 border border-purple-100 rounded-2xl p-4 flex items-center justify-between shadow-2xs hover:shadow-md transition cursor-pointer group"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-700 text-white flex items-center justify-center text-xl shadow-xs group-hover:scale-110 transition">
-                💼
-              </div>
-              <div>
-                <h3 className="font-bold text-xs text-gray-900">Corporate / Bulk</h3>
-                <p className="text-[10px] text-gray-500">Bulk gifting for employees</p>
-              </div>
+            <div>
+              <h3 className="font-bold text-xs text-gray-900">Corporate / Bulk</h3>
+              <p className="text-[10px] text-gray-500">Bulk gifting for employees</p>
             </div>
             <span className="w-7 h-7 rounded-full bg-white border border-gray-200 flex items-center justify-center text-xs font-black text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition">
               &rarr;
@@ -344,35 +318,23 @@ export default function GiftCardsPage() {
 
         </div>
 
-        {/* 💊 4 Value Prop Pill Icons Bar */}
+        {/* 4 Value Prop Bar */}
         <div className="bg-white border border-gray-200/80 rounded-2xl p-3 shadow-2xs grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-medium text-gray-700">
-          <div className="flex items-center gap-2.5 px-2">
-            <span className="text-xl">💳</span>
-            <div>
-              <span className="font-bold text-gray-900 block text-[11px]">Add to Account</span>
-              <span className="text-[10px] text-gray-500">Store &amp; use anytime</span>
-            </div>
+          <div className="px-2">
+            <span className="font-bold text-gray-900 block text-[11px]">Add to Account</span>
+            <span className="text-[10px] text-gray-500">Store &amp; use anytime</span>
           </div>
-          <div className="flex items-center gap-2.5 px-2 border-l border-gray-100">
-            <span className="text-xl">📅</span>
-            <div>
-              <span className="font-bold text-gray-900 block text-[11px]">Schedule Delivery</span>
-              <span className="text-[10px] text-gray-500">Pick a date that matters</span>
-            </div>
+          <div className="px-2 border-l border-gray-100">
+            <span className="font-bold text-gray-900 block text-[11px]">Schedule Delivery</span>
+            <span className="text-[10px] text-gray-500">Pick a date that matters</span>
           </div>
-          <div className="flex items-center gap-2.5 px-2 border-l border-gray-100">
-            <span className="text-xl">✏️</span>
-            <div>
-              <span className="font-bold text-gray-900 block text-[11px]">Personalize</span>
-              <span className="text-[10px] text-gray-500">Add message &amp; make special</span>
-            </div>
+          <div className="px-2 border-l border-gray-100">
+            <span className="font-bold text-gray-900 block text-[11px]">Personalize</span>
+            <span className="text-[10px] text-gray-500">Add message &amp; make special</span>
           </div>
-          <div className="flex items-center gap-2.5 px-2 border-l border-gray-100">
-            <span className="text-xl">🛡️</span>
-            <div>
-              <span className="font-bold text-gray-900 block text-[11px]">Secure &amp; Reliable</span>
-              <span className="text-[10px] text-gray-500">100% safe transactions</span>
-            </div>
+          <div className="px-2 border-l border-gray-100">
+            <span className="font-bold text-gray-900 block text-[11px]">Secure &amp; Reliable</span>
+            <span className="text-[10px] text-gray-500">100% safe transactions</span>
           </div>
         </div>
 
@@ -380,14 +342,14 @@ export default function GiftCardsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* Banner 1: Contest Points */}
-          <div className="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-4 space-y-3 flex flex-col justify-between shadow-2xs">
+          <div className="bg-blue-50/70 border border-blue-200/80 rounded-2xl p-4 space-y-3 flex flex-col justify-between shadow-2xs">
             <div>
               <p className="text-[10px] font-bold text-gray-600 uppercase">Send a Gift Card &amp; Get</p>
-              <h3 className="text-base font-black text-gray-900">₹3,000 Gift Points 🎁</h3>
+              <h3 className="text-base font-black text-gray-900">₹3,000 Gift Points</h3>
             </div>
             <button
               onClick={() => router.push("/account?tab=gift-cards")}
-              className="bg-emerald-600 text-white font-bold text-[11px] px-4 py-1.5 rounded-xl hover:bg-emerald-700 transition w-fit cursor-pointer shadow-xs"
+              className="bg-blue-600 text-white font-bold text-[11px] px-4 py-1.5 rounded-xl hover:bg-blue-700 transition w-fit cursor-pointer shadow-xs"
             >
               Explore Now &rsaquo;
             </button>
@@ -403,7 +365,7 @@ export default function GiftCardsPage() {
             <button
               onClick={() => {
                 setSelectedCategory("Fashion & Apparel");
-                showToast("🛍️ Filtered 50% OFF Brand Gift Cards!");
+                showToast("Filtered 50% OFF Brand Gift Cards!");
               }}
               className="bg-white border border-teal-300 text-teal-800 font-bold text-[11px] px-4 py-1.5 rounded-xl hover:bg-teal-100 transition w-fit cursor-pointer shadow-xs"
             >
@@ -491,7 +453,7 @@ export default function GiftCardsPage() {
                       onClick={() => setSelectedCategory(cat)}
                       className={`w-full text-left px-3 py-2 rounded-xl transition cursor-pointer ${
                         selectedCategory === cat
-                          ? "bg-emerald-50 text-emerald-800 font-bold border border-emerald-200"
+                          ? "bg-blue-50 text-blue-800 font-bold border border-blue-200"
                           : "hover:bg-gray-50 text-gray-700"
                       }`}
                     >
@@ -510,7 +472,7 @@ export default function GiftCardsPage() {
                   step="1000"
                   value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
-                  className="w-full accent-emerald-600 cursor-pointer"
+                  className="w-full accent-blue-600 cursor-pointer"
                 />
                 <div className="flex justify-between text-[11px] font-bold text-gray-500">
                   <span>₹2,000</span>
@@ -523,14 +485,14 @@ export default function GiftCardsPage() {
             <div className="lg:col-span-9">
               {processedProducts.length === 0 ? (
                 <div className="bg-white border border-gray-200 rounded-2xl p-10 text-center text-xs text-gray-500 font-bold space-y-2">
-                  <p className="text-3xl">🛍️</p>
+                  
                   <p>No products found under ₹{maxPrice.toLocaleString("en-IN")} in "{selectedCategory}".</p>
                   <button
                     onClick={() => {
                       setSelectedCategory("All Categories");
                       setMaxPrice(50000);
                     }}
-                    className="mt-2 text-emerald-700 hover:underline"
+                    className="mt-2 text-blue-700 hover:underline"
                   >
                     Reset Filters
                   </button>
@@ -562,9 +524,8 @@ export default function GiftCardsPage() {
 
                         <div className="space-y-1">
                           <h4 className="font-bold text-xs text-gray-900 line-clamp-2 leading-snug">
-                            <Link href={`/product/${p.handle}`} className="hover:text-emerald-700 transition">{p.title}</Link>
+                            <Link href={`/product/${p.handle}`} className="hover:text-blue-700 transition">{p.title}</Link>
                           </h4>
-                          <p className="text-[10px] text-amber-500 font-bold">★ {p.rating}</p>
                           <div className="flex items-baseline gap-1.5">
                             <span className="text-sm font-black text-gray-900">₹{p.price.toLocaleString("en-IN")}</span>
                             <span className="text-[10px] text-gray-400 line-through">₹{p.compare_at_price.toLocaleString("en-IN")}</span>
@@ -589,7 +550,7 @@ export default function GiftCardsPage() {
                             }}
                             className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold text-[10px] py-2 rounded-xl text-center cursor-pointer transition"
                           >
-                            🛒 Add to Cart
+                            Add to Cart
                           </BuyNowButton>
 
                           <BuyNowButton
@@ -608,9 +569,9 @@ export default function GiftCardsPage() {
                               delivery: "Delivery in 2 days | Free Delivery",
                               selected: true
                             }}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] py-2 rounded-xl text-center cursor-pointer shadow-2xs transition"
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] py-2 rounded-xl text-center cursor-pointer shadow-2xs transition"
                           >
-                            ⚡ Buy Now
+                            Buy Now
                           </BuyNowButton>
                         </div>
 

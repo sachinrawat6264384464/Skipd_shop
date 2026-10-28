@@ -65,7 +65,7 @@ export default function DealsPage() {
   }, []);
 
   return (
-    <div className="bg-dot-pattern text-[#2C221E] min-h-screen flex flex-col justify-between">
+    <div className="bg-white text-[#2C221E] min-h-screen flex flex-col justify-between">
       <div className="w-full space-y-8 pb-12">
 
         {/* 🟠 Hero Sale Banner */}
@@ -73,7 +73,7 @@ export default function DealsPage() {
           <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="space-y-4 max-w-2xl z-10">
               <div className="inline-flex items-center gap-2 bg-white text-orange-600 text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-xs">
-                <span>✦</span> {sale?.title || "Great Freedom Sale"}
+                {sale?.title || "Great Freedom Sale"}
                 <span className="bg-orange-600 text-white text-[10px] px-2 py-0.5 rounded-full">{sale?.badge_text || "LIVE NOW"}</span>
               </div>
               <h1 className="text-3xl md:text-5xl font-black leading-tight text-white drop-shadow-sm">
@@ -100,28 +100,6 @@ export default function DealsPage() {
           </div>
         </div>
 
-        {/* 📦 Feature Cards */}
-        <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl font-black text-center text-gray-900 mb-6">Get Great Freedom Sale Ready</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-amber-50/60 border border-orange-200 rounded-3xl p-6 shadow-xs text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-orange-500/20">📍</div>
-              <h3 className="font-black text-base text-gray-900">Reach Every Corner of India</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">Get your products in front of customers across 100% of India&apos;s serviceable pin codes with Shiprocket logistics.</p>
-            </div>
-            <div className="bg-amber-50/60 border border-orange-200 rounded-3xl p-6 shadow-xs text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-orange-500/20">🧮</div>
-              <h3 className="font-black text-base text-gray-900">Know Your Profit Upfront</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">Fee explainer &amp; revenue calculator gives complete visibility into your fees, discounts, and net margins.</p>
-            </div>
-            <div className="bg-amber-50/60 border border-orange-200 rounded-3xl p-6 shadow-xs text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-orange-500 text-white font-black text-xl flex items-center justify-center mx-auto shadow-md shadow-orange-500/20">⚙️</div>
-              <h3 className="font-black text-base text-gray-900">AI Tools That Grow Your Business</h3>
-              <p className="text-xs text-gray-600 leading-relaxed">Create listings, generate A+ content, and get growth insights with BotCom Assistant AI listing creator.</p>
-            </div>
-          </div>
-        </div>
-
         {/* 🛍️ Featured Freedom Sale Deals - Clickable Cards */}
         <div className="max-w-6xl mx-auto px-4 pt-4">
           <div className="flex justify-between items-center mb-6">
@@ -134,7 +112,6 @@ export default function DealsPage() {
 
           {productsToDisplay.length === 0 ? (
             <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center text-gray-500 shadow-xs">
-              <div className="text-5xl mb-4">🏷️</div>
               <p className="text-lg font-bold text-gray-900">No active sale products added yet</p>
               <p className="text-xs mt-1 text-gray-500">Products added to the database will automatically appear here.</p>
             </div>
@@ -162,7 +139,7 @@ export default function DealsPage() {
                           ₹{item.price}
                         </div>
 
-                        {/* 🚫 OUT OF STOCK STAMP IN CENTER */}
+                        {/* OUT OF STOCK STAMP IN CENTER */}
                         {isOutOfStock && (
                           <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] flex items-center justify-center p-2">
                             <div className="border-4 border-red-600 text-red-600 font-black text-sm px-3 py-1.5 rounded-xl transform -rotate-12 uppercase tracking-widest bg-white/95 shadow-xl text-center">
@@ -180,12 +157,12 @@ export default function DealsPage() {
                         <div className="flex items-center gap-1.5 text-[10px]">
                           {isOutOfStock ? (
                             <span className="bg-red-100 text-red-700 border border-red-300 font-black px-2 py-0.5 rounded-md uppercase">
-                              🚫 Out of Stock
+                              Out of Stock
                             </span>
                           ) : (
                             <>
                               <span className="bg-orange-100 text-orange-800 border border-orange-200 font-bold px-2 py-0.5 rounded-md">
-                                {item.easyShip ? "🚚 Easy Ship" : "🏬 FC"}
+                                {item.easyShip ? "Easy Ship" : "FC"}
                               </span>
                               <span className="bg-gray-100 text-gray-700 border border-gray-200 font-semibold px-2 py-0.5 rounded-md">
                                 {item.weight}
@@ -207,7 +184,7 @@ export default function DealsPage() {
                           disabled
                           className="w-full bg-red-50 border border-red-300 text-red-600 text-xs font-black py-2.5 rounded-2xl text-center cursor-not-allowed opacity-90 uppercase tracking-wider"
                         >
-                          🚫 Out of Stock
+                          Out of Stock
                         </button>
                       ) : (
                         <BuyNowButton
@@ -222,7 +199,7 @@ export default function DealsPage() {
                           productTitle={item.title}
                           className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-black py-2.5 rounded-2xl text-center transition flex items-center justify-center gap-1.5 shadow-xs cursor-pointer"
                         >
-                          <span>🪙</span> Save ₹{item.save} / unit
+                          Save ₹{item.save} / unit
                         </BuyNowButton>
                       )}
                     </div>

@@ -4,23 +4,81 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchCategories, fetchProducts } from "lib/api";
 
-const CATEGORY_IMAGE_MAP: Record<string, string> = {
-  mobiles: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
-  electronics: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
-  watches: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
-  fashion: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
-  footwear: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
-  laptops: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
-  home: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
-  "home-living": "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
-  sports: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
-  artisan: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
-  crafts: "https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=800",
-  beauty: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800",
-  "personal-care": "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=800",
-  books: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=800",
-  toys: "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=800"
+const CATEGORY_META_MAP: Record<string, { image: string; tag: string }> = {
+  jewelry: {
+    image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
+    tag: "Fine Crafts & Luxury"
+  },
+  jewellery: {
+    image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800",
+    tag: "Fine Crafts & Luxury"
+  },
+  apparel: {
+    image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
+    tag: "Trending Styles"
+  },
+  fashion: {
+    image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
+    tag: "Wardrobe Essentials"
+  },
+  "apparel-wear": {
+    image: "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800",
+    tag: "Trending Styles"
+  },
+  tech: {
+    image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800",
+    tag: "Audio & Smart Tech"
+  },
+  "tech-essentials": {
+    image: "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=800",
+    tag: "Audio & Smart Tech"
+  },
+  watches: {
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
+    tag: "Premium Chrono"
+  },
+  accessories: {
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
+    tag: "Everyday Luxury"
+  },
+  "lifestyle-accessories": {
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800",
+    tag: "Daily Luxury"
+  },
+  electronics: {
+    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
+    tag: "PC & Smart Devices"
+  },
+  laptops: {
+    image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
+    tag: "Laptops & Computing"
+  },
+  mobiles: {
+    image: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=800",
+    tag: "5G Flagships"
+  },
+  footwear: {
+    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800",
+    tag: "Sneakers & Kicks"
+  },
+  home: {
+    image: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
+    tag: "Decor & Living"
+  },
+  "home-living": {
+    image: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=800",
+    tag: "Decor & Living"
+  }
 };
+
+const DEFAULT_CATEGORIES = [
+  { id: "c1", name: "Jewelry", slug: "jewelry", tag: "Fine Crafts & Luxury" },
+  { id: "c2", name: "Apparel & Wear", slug: "fashion", tag: "Trending Styles" },
+  { id: "c3", name: "Tech Essentials", slug: "electronics", tag: "Audio & Smart Tech" },
+  { id: "c4", name: "Lifestyle Accessories", slug: "watches", tag: "Premium Chrono" },
+  { id: "c5", name: "Electronics", slug: "laptops", tag: "PC & Smart Devices" },
+  { id: "c6", name: "Mobiles", slug: "mobiles", tag: "5G Flagships" }
+];
 
 export function BrowseCategoriesGrid() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -46,7 +104,6 @@ export function BrowseCategoriesGrid() {
         if (Array.isArray(cats) && cats.length > 0) {
           activeCats = cats.filter((c: any) => {
             if (c.status === "Inactive" || c.status === "Disabled") return false;
-            // Only include categories that actually have active products in store (if products exist)
             if (activeSlugsFromProducts.size > 0) {
               const cSlug = (c.slug || c.name || "").toLowerCase();
               return activeSlugsFromProducts.has(cSlug);
@@ -54,7 +111,6 @@ export function BrowseCategoriesGrid() {
             return true;
           });
         } else if (Array.isArray(prods) && prods.length > 0) {
-          // Extract unique categories directly from products DB
           const activeMap = new Map<string, any>();
           prods.forEach((p: any) => {
             const catObj = typeof p.category === "object" ? p.category : null;
@@ -72,9 +128,9 @@ export function BrowseCategoriesGrid() {
           activeCats = Array.from(activeMap.values());
         }
 
-        setCategories(activeCats);
+        setCategories(activeCats.length > 0 ? activeCats : DEFAULT_CATEGORIES);
       } catch (e) {
-        setCategories([]);
+        setCategories(DEFAULT_CATEGORIES);
       } finally {
         setLoading(false);
       }
@@ -86,16 +142,17 @@ export function BrowseCategoriesGrid() {
     return () => window.removeEventListener("ecom_auth_changed", loadActiveCategoriesWithProducts);
   }, []);
 
+  const displayList = categories.length > 0 ? categories : DEFAULT_CATEGORIES;
+
   if (loading) {
     return (
-      <section className="w-full bg-transparent py-12 px-4 sm:px-6 lg:px-8 border-t border-[#E8E1D1]/60 font-sans">
+      <section className="w-full bg-white py-12 px-4 sm:px-6 lg:px-8 border-t border-gray-100 font-sans">
         <div className="max-w-[1440px] mx-auto space-y-6">
-          <h2 className="text-2xl sm:text-3xl font-black text-[#2C221E] text-center tracking-tight">
-            Browse Categories
-          </h2>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+          <div className="h-6 w-48 bg-gray-100 animate-pulse rounded-full mx-auto" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="h-72 sm:h-80 w-full sm:col-span-2 bg-gray-100 animate-pulse rounded-3xl" />
             {[1, 2].map((i) => (
-              <div key={i} className="h-64 sm:h-72 lg:h-80 w-full sm:w-60 md:w-64 bg-[#EBE4D5]/60 animate-pulse rounded-3xl border border-[#E8E1D1]" />
+              <div key={i} className="h-72 sm:h-80 w-full bg-gray-100 animate-pulse rounded-3xl" />
             ))}
           </div>
         </div>
@@ -103,94 +160,121 @@ export function BrowseCategoriesGrid() {
     );
   }
 
-  // Purely dynamic: if NO active categories exist in DB, render NOTHING
-  if (!categories || categories.length === 0) return null;
-
-
   return (
-    <section className="w-full bg-transparent py-10 sm:py-14 px-4 sm:px-6 lg:px-8 border-t border-[#E8E1D1]/60 font-sans">
-      <div className="max-w-[1440px] mx-auto space-y-6 sm:space-y-8">
+    <section className="w-full bg-white py-12 sm:py-16 px-4 sm:px-6 lg:px-8 border-t border-gray-100 font-sans">
+      <div className="max-w-[1440px] mx-auto space-y-8 sm:space-y-10">
         
-        {/* Section Title */}
-        <div className="text-center space-y-1.5">
-          <span className="inline-block bg-[#132B4F] text-cyan-300 border border-cyan-400/40 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-xs">
-            COLLECTIONS &amp; DEALS
+        {/* Section Header */}
+        <div className="text-center space-y-2">
+          <span className="inline-block bg-blue-50 text-blue-700 border border-blue-200/80 text-[11px] font-extrabold uppercase tracking-widest px-3.5 py-1 rounded-full shadow-2xs">
+            CURATED COLLECTIONS &amp; OFFERS
           </span>
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#2C221E] tracking-tight">
-            Browse Categories
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">
+            Explore Categories
           </h2>
-          <p className="text-xs sm:text-sm text-stone-600 font-bold">
-            Explore active collections from across our catalog ({categories.length} Categories)
+          <p className="text-xs sm:text-sm text-gray-500 font-medium max-w-md mx-auto">
+            Shop top trending collections curated for quality, style, and unmatched everyday value
           </p>
         </div>
 
-        {/* 🖼️ Centered & Fully Responsive Grid of Category Tiles */}
-        <div className="flex flex-wrap items-stretch justify-center gap-4 sm:gap-6 max-w-[1440px] mx-auto">
-          {categories.map((cat: any, idx) => {
+        {/* 🖼️ Modern Bento Category Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6 max-w-[1440px] mx-auto">
+          
+          {/* ⚡ Promotional Mega Offer Hero Tile (Spans 2 columns on Desktop Bento Layout) */}
+          <Link
+            href="/deals"
+            className="group relative h-72 sm:h-80 w-full sm:col-span-2 lg:col-span-2 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between p-6 sm:p-8 bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-900 text-white border border-blue-400/30 cursor-pointer"
+          >
+            <div className="absolute -top-12 -right-12 w-48 h-48 bg-cyan-400/20 rounded-full blur-2xl group-hover:scale-125 transition duration-700 pointer-events-none" />
+            <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-amber-400/15 rounded-full blur-2xl group-hover:scale-125 transition duration-700 pointer-events-none" />
+
+            <div className="relative z-10 flex items-center justify-between">
+              <span className="bg-amber-400 text-gray-950 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider shadow-xs">
+                LIMITED TIME OFFER
+              </span>
+              <span className="bg-white/15 backdrop-blur-md text-white text-[10px] font-extrabold px-3 py-1 rounded-full border border-white/20">
+                Coupon: MEGA80
+              </span>
+            </div>
+
+            <div className="relative z-10 space-y-3">
+              <div className="space-y-1">
+                <span className="text-xs sm:text-sm font-bold text-blue-200 uppercase tracking-widest block">
+                  Exclusive Mega Drop
+                </span>
+                <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-none text-white drop-shadow-md">
+                  UP TO 80% OFF
+                </h3>
+                <p className="text-xs sm:text-sm text-blue-100/90 font-medium max-w-sm pt-1 line-clamp-2">
+                  Massive price drops across electronics, fashion, lifestyle &amp; daily essentials.
+                </p>
+              </div>
+
+              <div className="pt-1">
+                <span className="inline-flex items-center gap-2 bg-white text-blue-700 font-black text-xs sm:text-sm px-5 py-2.5 rounded-xl shadow-md group-hover:bg-blue-50 transition transform group-hover:-translate-y-0.5">
+                  <span>Shop Mega Deals</span>
+                  <span className="group-hover:translate-x-1 transition">&rarr;</span>
+                </span>
+              </div>
+            </div>
+          </Link>
+
+          {/* Dynamic Curated Category Cards */}
+          {displayList.map((cat: any, idx: number) => {
+            const slugKey = (cat.slug || cat.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+            const meta = CATEGORY_META_MAP[slugKey] || CATEGORY_META_MAP[slugKey.split("-")[0]];
+            
             const rawUrl = cat.image_url || (cat.icon && (cat.icon.startsWith("http") || cat.icon.startsWith("data:") || cat.icon.startsWith("/")) ? cat.icon : "");
             const isPlaceholder = !rawUrl || rawUrl.includes("via.placeholder") || rawUrl.includes("open-shop") || rawUrl.includes("OPEN");
-            
-            const slugKey = (cat.slug || cat.name || "").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-            const bgImage = !isPlaceholder && !rawUrl.includes("photo-1517649763962-0c623266010b") && (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("/") || rawUrl.startsWith("data:"))
+
+            const bgImage = !isPlaceholder && !rawUrl.includes("photo-1517649763962-0c623266010b") && (rawUrl.startsWith("http://") || rawUrl.startsWith("https://") || rawUrl.startsWith("/"))
               ? rawUrl
-              : CATEGORY_IMAGE_MAP[slugKey] || CATEGORY_IMAGE_MAP[slugKey.split("-")[0]] || "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800";
+              : meta?.image || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800";
+
+            const tagText = cat.tag || meta?.tag || "Trending Collection";
 
             return (
               <Link
                 key={cat.id || cat.slug || idx}
                 href={`/search/${cat.slug || slugKey}`}
-                className="group relative h-64 sm:h-72 lg:h-80 w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] max-w-[320px] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex items-end p-5 sm:p-6 bg-slate-950 border-2 border-white/90 cursor-pointer"
+                className="group relative h-72 sm:h-80 w-full rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 border border-gray-200/80 hover:border-blue-500 flex flex-col justify-between p-5 sm:p-6 bg-slate-900 cursor-pointer"
               >
-                {/* Background Image */}
+                {/* Background Image with Zoom */}
                 <img
                   src={bgImage}
                   alt={cat.name}
                   onError={(e) => {
-                    const fallback = "https://images.unsplash.com/photo-1517649763962-0c623266010b?w=800";
+                    const fallback = "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800";
                     if (e.currentTarget.src !== fallback) {
                       e.currentTarget.src = fallback;
                     }
                   }}
-                  className="absolute inset-0 h-full w-full object-cover group-hover:scale-108 transition duration-500 ease-out"
+                  className="absolute inset-0 h-full w-full object-cover group-hover:scale-106 transition-transform duration-500 ease-out"
                 />
 
-                {/* Dark Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent group-hover:from-black/90 transition duration-300" />
+                {/* Dark Vignette Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-950/90 via-gray-950/35 to-transparent group-hover:from-gray-950/95 transition duration-300" />
 
-                {/* Category Title Overlay */}
+                {/* Top Badge */}
+                <div className="relative z-10 flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 bg-black/40 backdrop-blur-md text-white/95 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full border border-white/20 tracking-wider">
+                    {tagText}
+                  </span>
+                </div>
+
+                {/* Bottom Title & CTA */}
                 <div className="relative z-10 space-y-1">
-                  <span className="inline-block text-white font-black text-sm sm:text-base tracking-wider uppercase drop-shadow-md">
+                  <h3 className="text-lg sm:text-xl font-black text-white tracking-wide uppercase drop-shadow-md">
                     {cat.name}
-                  </span>
-                  <span className="block text-[10px] sm:text-xs text-cyan-300 font-bold group-hover:translate-x-1 transition duration-200">
-                    Explore Store &rsaquo;
-                  </span>
+                  </h3>
+                  <div className="flex items-center gap-1.5 text-xs font-bold text-blue-300 group-hover:text-blue-200 transition">
+                    <span>Explore Store</span>
+                    <span className="transform group-hover:translate-x-1 transition duration-200">&rarr;</span>
+                  </div>
                 </div>
               </Link>
             );
           })}
-
-          {/* ⚡ Promotional Mega Offer Tile */}
-          <Link
-            href="/deals"
-            className="group relative h-64 sm:h-72 lg:h-80 w-full sm:w-[calc(50%-12px)] md:w-[calc(33.333%-16px)] lg:w-[calc(25%-18px)] max-w-[320px] rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col justify-between p-6 sm:p-8 bg-gradient-to-tr from-amber-600 via-orange-500 to-yellow-400 text-white border-2 border-white/90 cursor-pointer"
-          >
-            <div className="space-y-1">
-              <span className="bg-black/30 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full backdrop-blur-xs tracking-wider inline-block">
-                Limited Time Offer
-              </span>
-            </div>
-
-            <div className="space-y-2">
-              <h3 className="text-3xl sm:text-4xl font-black tracking-tight leading-none text-white drop-shadow-md uppercase">
-                UP TO<br />80% OFF
-              </h3>
-              <p className="text-xs sm:text-sm font-black text-amber-100 flex items-center gap-1 group-hover:translate-x-1 transition duration-200">
-                <span>Shop Mega Deals</span>
-                <span>&rsaquo;</span>
-              </p>
-            </div>
-          </Link>
 
         </div>
 
@@ -198,4 +282,3 @@ export function BrowseCategoriesGrid() {
     </section>
   );
 }
-

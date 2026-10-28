@@ -103,54 +103,48 @@ export function UserAccountDropdown() {
               <Link
                 href="/account?tab=profile"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 transition"
+                className="block px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 transition"
               >
-                <span>👤</span>
                 <span className="font-semibold">My Profile &amp; Account</span>
               </Link>
 
               <Link
                 href="/orders"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-blue-50 text-blue-800 font-bold transition"
+                className="block px-3 py-2.5 rounded-xl hover:bg-blue-50 text-blue-800 font-bold transition"
               >
-                <span>📦</span>
                 <span>My Orders &amp; Tracking</span>
               </Link>
 
               <Link
                 href="/gift-cards"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-amber-50 text-amber-900 font-bold transition"
+                className="block px-3 py-2.5 rounded-xl hover:bg-amber-50 text-amber-900 font-bold transition"
               >
-                <span>🎁</span>
                 <span>My Gift Cards</span>
               </Link>
 
               <Link
                 href="/account?tab=wishlist"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 transition"
+                className="block px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 transition"
               >
-                <span>🖤</span>
                 <span>My Wishlist</span>
               </Link>
 
               <Link
                 href="/account?tab=supercoin"
                 onClick={() => setIsOpen(false)}
-                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 transition"
+                className="block px-3 py-2.5 rounded-xl hover:bg-gray-100 text-gray-800 transition"
               >
-                <span>🪙</span>
                 <span>SuperCoins &amp; Rewards</span>
               </Link>
 
               <div className="border-t border-gray-100 pt-1 mt-1">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 font-bold transition cursor-pointer text-left"
+                  className="w-full block px-3 py-2.5 rounded-xl hover:bg-red-50 text-red-600 font-bold transition cursor-pointer text-left"
                 >
-                  <span>🚪</span>
                   <span>Sign Out / Logout</span>
                 </button>
               </div>

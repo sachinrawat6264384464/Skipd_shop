@@ -4,7 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { BuyNowButton } from "components/auth/buy-now-button";
-import { Product } from "lib/api";
+import { Product, fetchProducts } from "lib/api";
 import { getUserCartKey, getUserOrdersKey } from "lib/utils";
 import { useWishlist } from "components/wishlist/wishlist-context";
 import { toast } from "sonner";
@@ -36,12 +36,22 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
   };
 
   useEffect(() => {
-    setProducts(initialProducts || []);
+    if (initialProducts && initialProducts.length > 0) {
+      setProducts(initialProducts);
+    } else {
+      fetchProducts().then(res => {
+        if (res && res.length > 0) {
+          setProducts(res);
+        }
+      }).catch(() => {});
+    }
+  }, [initialProducts]);
 
+  useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         let userInteracted: any[] = [];
-        const validProducts = (initialProducts || []);
+        const validProducts = (products.length > 0 ? products : (initialProducts || []));
         
         // Helper to check if a item title is a valid live product
         const isValid = (title: string) => {
@@ -98,8 +108,9 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
         }
 
         // Fallback default catalog products if logged in user hasn't added items yet
+        const catalogList = (products.length > 0 ? products : (initialProducts || []));
         if (userInteracted.length < 4) {
-          (initialProducts || []).slice(0, 4).forEach(p => {
+          catalogList.slice(0, 4).forEach(p => {
             if (!userInteracted.some(u => u.label === p.title)) {
               userInteracted.push({
                 img: p.images[0] || "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=300",
@@ -116,7 +127,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
 
       } catch (e) {}
     }
-  }, [initialProducts]);
+  }, [initialProducts, products]);
 
   // Group products dynamically by Category Name / Slug
   const categorizedProducts = useMemo(() => {
@@ -146,172 +157,81 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
   return (
     <div className="space-y-10">
       
-      {/* 📦 Top Dynamic Category Grid with Cozy Warm Coffee/Cream Card Design */}
+      {/* 🌟 Trending & Featured Products - Individual Separate Cards */}
       <section className="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          
-          {/* Card 1: Pick up where you left off */}
-          <div className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#D4AF37]/60 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
-            <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-2.5">
-                <h3 className="text-sm sm:text-base font-black text-[#2C221E] tracking-tight flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#B8860B] animate-pulse" />
-                  <span>Pick up where you left off</span>
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {pickUpItems.map((item, i) => {
-                  const numPrice = parseFloat(String(item.price).replace(/[^0-9.]/g, ""));
-                  const numMrp = item.mrp ? parseFloat(String(item.mrp).replace(/[^0-9.]/g, "")) : 0;
-                  const offPercent = numMrp > numPrice && numPrice > 0 ? Math.round(((numMrp - numPrice) / numMrp) * 100) : 0;
-
-                  return (
-                    <Link key={i} href={item.href || "/orders"} className="bg-white border border-[#EBE4D5] hover:border-[#D4AF37] rounded-2xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
-                        <img src={item.img} alt={item.label} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
-                        {offPercent > 0 && (
-                          <div className="absolute top-1 left-1 bg-gradient-to-r from-[#B8860B] to-[#8B5E3C] text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
-                            {offPercent}% OFF
-                          </div>
-                        )}
-                      </div>
-                      <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#B8860B] transition line-clamp-2 leading-snug min-h-[28px]">{item.label}</p>
-                      <div className="flex flex-wrap items-baseline gap-1 pt-1">
-                        <span className="text-xs font-black text-[#2C221E]">{item.price}</span>
-                        {item.mrp && <span className="text-[9px] text-stone-400 line-through font-medium">{item.mrp}</span>}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-            <Link href="/orders" className="text-xs font-extrabold text-[#B8860B] hover:text-[#8B5E3C] flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
-              <span>See your orders &amp; cart</span>
-              <span>&rarr;</span>
-            </Link>
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Trending &amp; New Arrivals</h2>
+            <p className="text-xs text-gray-500 font-medium mt-0.5">Explore our top handpicked products individually</p>
           </div>
+          <Link href="/search" className="text-xs font-bold text-blue-600 hover:underline">
+            View All &rarr;
+          </Link>
+        </div>
 
-          {/* Card 2: Keep shopping for it */}
-          <div className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#D4AF37]/60 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
-            <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-2.5">
-                <h3 className="text-sm sm:text-base font-black text-[#2C221E] tracking-tight flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#8B5E3C] animate-pulse" />
-                  <span>Keep shopping for it</span>
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {products.slice(0, 4).map((p, i) => {
-                  const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
-                  return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-[#EBE4D5] hover:border-[#8B5E3C] rounded-2xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
-                        <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
-                      </div>
-                      <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#8B5E3C] transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
-                      <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
-                        <span className="text-xs font-black text-[#2C221E]">₹{p.price.toLocaleString("en-IN")}</span>
-                        {stock > 5 ? (
-                          <span className="text-[8px] font-extrabold text-[#5C4033] bg-[#F4EFE6] px-1.5 py-0.5 rounded-md border border-[#E8E1D1]">In Stock</span>
-                        ) : stock > 0 ? (
-                          <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
-                        ) : (
-                          <span className="text-[8px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
-                        )}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-            <Link href="/search" className="text-xs font-extrabold text-[#8B5E3C] hover:text-[#5C4033] flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
-              <span>Explore catalog</span>
-              <span>&rarr;</span>
-            </Link>
-          </div>
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+          {products.slice(0, 8).map((product, idx) => {
+            const offPercent = product.compare_at_price 
+              ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100) 
+              : 0;
+            const stock = typeof product.stock_quantity === "number" ? product.stock_quantity : 12;
+            const isOutOfStock = stock === 0;
 
-          {/* Card 3: Up to 50% off | Select collection */}
-          <div className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#D4AF37]/60 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
-            <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-2.5">
-                <h3 className="text-sm sm:text-base font-black text-[#2C221E] tracking-tight flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#A52A2A] animate-pulse" />
-                  <span>Up to 50% off | Select collection</span>
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {products.slice(4, 8).map((p, i) => {
-                  const offPercent = p.compare_at_price ? Math.round(((p.compare_at_price - p.price) / p.compare_at_price) * 100) : 35;
-                  const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
-                  return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-[#EBE4D5] hover:border-[#A52A2A] rounded-2xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
-                        <img src={p.images[0]} alt={p.title} className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
-                        <div className="absolute top-1 left-1 bg-gradient-to-r from-[#A52A2A] to-[#B8860B] text-white font-black text-[8px] px-1.5 py-0.5 rounded-full shadow-xs tracking-wider">
-                          {offPercent}% OFF
-                        </div>
-                      </div>
-                      <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#A52A2A] transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
-                      <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
-                        <span className="text-xs font-black text-[#2C221E]">₹{p.price.toLocaleString("en-IN")}</span>
-                        {stock > 5 ? (
-                          <span className="text-[8px] font-extrabold text-[#5C4033] bg-[#F4EFE6] px-1.5 py-0.5 rounded-md border border-[#E8E1D1]">In Stock</span>
-                        ) : stock > 0 ? (
-                          <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
-                        ) : (
-                          <span className="text-[8px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
-                        )}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-            <Link href="/search?discount=30" className="text-xs font-extrabold text-[#A52A2A] hover:text-[#8B0000] flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
-              <span>View discounts</span>
-              <span>&rarr;</span>
-            </Link>
-          </div>
+            return (
+              <div
+                key={`${product.handle || product.id}-${idx}`}
+                className="group bg-white border border-gray-200/90 hover:border-blue-500 rounded-3xl p-4 shadow-2xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden"
+              >
+                {offPercent > 0 && !isOutOfStock && (
+                  <span className="absolute top-3 left-3 z-10 bg-red-600 text-white text-[10px] font-black px-2 py-0.5 rounded-md uppercase shadow-xs">
+                    {offPercent}% OFF
+                  </span>
+                )}
 
-          {/* Card 4: Trending & New Arrivals */}
-          <div className="bg-[#FFFDF9] border border-[#E8E1D1] hover:border-[#D4AF37]/60 rounded-3xl p-5 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between space-y-4 group">
-            <div className="space-y-3">
-              <div className="flex justify-between items-center border-b border-[#F0ECE1] pb-2.5">
-                <h3 className="text-sm sm:text-base font-black text-[#2C221E] tracking-tight flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] animate-pulse" />
-                  <span>Trending &amp; New Arrivals</span>
-                </h3>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                {products.slice(8, 12).map((p, i) => {
-                  const stock = typeof p.stock_quantity === "number" ? p.stock_quantity : 12;
-                  return (
-                    <Link key={i} href={`/product/${p.handle}`} className="bg-white border border-[#EBE4D5] hover:border-[#D4AF37] rounded-2xl p-2.5 shadow-2xs hover:shadow-md transition-all duration-300 group/item block cursor-pointer">
-                      <div className="relative w-full aspect-square bg-[#F9F7F2] rounded-xl overflow-hidden border border-[#EBE4D5] mb-2">
-                        <img src={p.images[0]} alt={p.title} loading="lazy" decoding="async" className="w-full h-full object-cover group-hover/item:scale-105 transition duration-500" />
+                <Link href={isOutOfStock ? "#" : `/product/${product.handle || product.id}`} className="block relative aspect-square w-full bg-gray-50 rounded-2xl overflow-hidden border border-gray-100 p-2 mb-3 cursor-pointer">
+                  <img
+                    src={(product.images && product.images[0]) || "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800"}
+                    alt={product.title}
+                    className="w-full h-full object-cover rounded-xl group-hover:scale-105 transition duration-500"
+                  />
+                  {isOutOfStock && (
+                    <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px] flex items-center justify-center p-2">
+                      <div className="border-2 border-red-600 text-red-600 font-black text-xs px-2.5 py-1 rounded-lg uppercase tracking-wider bg-white shadow-md">
+                        Out of Stock
                       </div>
-                      <p className="text-[11px] font-bold text-[#3B2F2F] group-hover/item:text-[#B8860B] transition line-clamp-2 leading-snug min-h-[28px]">{p.title}</p>
-                      <div className="flex items-center justify-between flex-wrap gap-1 pt-1">
-                        <span className="text-xs font-black text-[#2C221E]">₹{p.price.toLocaleString("en-IN")}</span>
-                        {stock > 5 ? (
-                          <span className="text-[8px] font-extrabold text-[#5C4033] bg-[#F4EFE6] px-1.5 py-0.5 rounded-md border border-[#E8E1D1]">In Stock</span>
-                        ) : stock > 0 ? (
-                          <span className="text-[8px] font-black text-amber-900 bg-amber-100 px-1.5 py-0.5 rounded-md animate-pulse">Only {stock} left!</span>
-                        ) : (
-                          <span className="text-[8px] font-black text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md">Out of Stock</span>
-                        )}
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-            <Link href="/search" className="text-xs font-extrabold text-[#B8860B] hover:text-[#8B5E3C] flex items-center gap-1.5 pt-1 group-hover:translate-x-1 transition">
-              <span>See all new arrivals</span>
-              <span>&rarr;</span>
-            </Link>
-          </div>
+                    </div>
+                  )}
+                </Link>
 
+                <div className="space-y-2 flex-1 flex flex-col justify-between">
+                  <div>
+                    <span className="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider">
+                      {typeof product.category === "object" ? product.category?.name : (product.category || "Top Pick")}
+                    </span>
+                    <h3 className="font-extrabold text-xs sm:text-sm text-gray-900 group-hover:text-blue-600 transition line-clamp-2 leading-snug">
+                      <Link href={isOutOfStock ? "#" : `/product/${product.handle || product.id}`}>{product.title}</Link>
+                    </h3>
+                  </div>
+
+                  <div className="pt-2 border-t border-gray-100 flex items-baseline justify-between">
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-sm sm:text-base font-black text-gray-900">
+                        ₹{product.price.toLocaleString("en-IN")}
+                      </span>
+                      {product.compare_at_price && product.compare_at_price > product.price && (
+                        <span className="text-[10px] text-gray-400 line-through">
+                          ₹{product.compare_at_price.toLocaleString("en-IN")}
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[9px] font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
+                      In Stock
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -386,8 +306,8 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                 return (
                   <div
                     key={`${product.handle || product.id}-${idx}`}
-                    className={`group bg-[#a4d8f2] border border-[#84c8ed] rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 w-full max-w-sm mx-auto ${
-                      isOutOfStock ? "border-[#84c8ed] bg-[#a4d8f2]/70 opacity-85" : "border-[#84c8ed] hover:border-blue-500 hover:shadow-xl"
+                    className={`group bg-white border border-gray-200/90 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between relative p-4 space-y-3 w-full max-w-sm mx-auto ${
+                      isOutOfStock ? "border-gray-200/90 bg-white opacity-85" : "border-gray-200/90 hover:border-blue-500 hover:shadow-xl"
                     }`}
                   >
                     {offPercent > 0 && !isOutOfStock && (
@@ -400,15 +320,15 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     <div className="absolute top-2 left-2 z-10">
                       {stock > 5 ? (
                         <span className="bg-[#3B2F2F]/90 backdrop-blur-sm text-[#F4EFE6] font-extrabold text-[9px] px-1.5 py-0.5 rounded-md border border-[#5C4033]">
-                          📦 In Stock ({stock} left)
+                          In Stock ({stock} left)
                         </span>
                       ) : stock > 0 ? (
                         <span className="bg-[#B8860B] text-white font-black text-[9px] px-1.5 py-0.5 rounded-md border border-amber-300 shadow-xs animate-pulse">
-                          ⚡ Only {stock} left!
+                          Only {stock} left!
                         </span>
                       ) : (
                         <span className="bg-[#8B0000] text-white font-black text-[9px] px-1.5 py-0.5 rounded-md uppercase tracking-wider shadow-xs">
-                          ❌ Out of Stock
+                          Out of Stock
                         </span>
                       )}
                     </div>

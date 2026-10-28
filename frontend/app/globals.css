@@ -6,15 +6,13 @@
 @layer base {
   html {
     color-scheme: light !important;
-    background-color: #FAF7F2 !important;
-    background-image: radial-gradient(#E2D9C8 1.5px, transparent 1.5px) !important;
-    background-size: 24px 24px !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
     color: #111827 !important;
   }
   body {
-    background-color: #FAF7F2 !important;
-    background-image: radial-gradient(#E2D9C8 1.5px, transparent 1.5px) !important;
-    background-size: 24px 24px !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
     color: #111827 !important;
   }
   *,
@@ -27,9 +25,8 @@
 }
 
 .bg-dot-pattern {
-  background-color: #FAF7F2 !important;
-  background-image: radial-gradient(#E2D9C8 1.5px, transparent 1.5px) !important;
-  background-size: 24px 24px !important;
+  background-color: #ffffff !important;
+  background-image: none !important;
 }
 
 /* Custom Hide Scrollbar Utility */
