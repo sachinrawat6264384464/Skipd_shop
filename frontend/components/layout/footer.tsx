@@ -10,40 +10,6 @@ export default function Footer() {
       {/* 🖼️ Browse Categories Grid Section (Stays on original page background) */}
       <BrowseCategoriesGrid />
 
-      {/* ✉️ SIMPLE CLEAN VIP NEWSLETTER SECTION (Solid Black Footer starts here) */}
-      <div className="bg-black border-t border-zinc-800 text-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-3.5 py-1 rounded-full text-zinc-400 font-bold text-[11px] uppercase tracking-wider">
-            <span className="w-2 h-2 rounded-full bg-emerald-400" />
-            <span>Be The First To Explore</span>
-          </div>
-          
-          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight leading-tight">
-            JOIN THE <span className="text-white underline decoration-zinc-700 underline-offset-4">BOTCOM VIP</span> CLUB
-          </h2>
-          
-          <p className="text-xs text-zinc-400 max-w-md mx-auto">
-            Subscribe to receive exclusive deals, secret product drops, and a ₹500 welcome voucher directly in your inbox.
-          </p>
-
-          <div className="pt-2">
-            <form onSubmit={(e) => e.preventDefault()} className="flex items-center justify-center max-w-md mx-auto gap-2">
-              <input
-                type="email"
-                placeholder="Enter email for ₹500 voucher..."
-                className="bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 w-full"
-              />
-              <button
-                type="submit"
-                className="bg-white hover:bg-zinc-200 text-black font-black text-xs px-5 py-2.5 rounded-xl transition cursor-pointer shrink-0 uppercase tracking-wider"
-              >
-                Join VIP &rarr;
-              </button>
-            </form>
-          </div>
-        </div>
-      </div>
-
       {/* 🏢 Main Footer Body Container (Solid Sleek Black) */}
       <div className="bg-black border-t border-zinc-900 relative">
         
