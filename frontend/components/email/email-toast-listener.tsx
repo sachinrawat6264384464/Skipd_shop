@@ -27,14 +27,14 @@ export function EmailToastListener() {
   return (
     <>
       {/* 🟢 Live Floating Email Toast Banner */}
-      <div className="fixed top-20 right-4 z-[99999] max-w-md w-full bg-slate-900 text-white rounded-2xl p-4 shadow-2xl border border-emerald-500/80 animate-in slide-in-from-top-5 duration-300 font-sans">
+      <div className="fixed top-20 right-4 z-[99999] max-w-md w-full bg-slate-900 text-white rounded-2xl p-4 shadow-2xl border border-blue-500/80 animate-in slide-in-from-top-5 duration-300 font-sans">
         <div className="flex items-start justify-between gap-3">
-          <div className="w-10 h-10 rounded-xl bg-emerald-500 text-slate-950 font-black text-lg flex items-center justify-center shrink-0 shadow-md">
-            ✉️
+          <div className="w-10 h-10 rounded-xl bg-blue-500 text-slate-950 font-black text-lg flex items-center justify-center shrink-0 shadow-md">
+            
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <span className="bg-emerald-400 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded uppercase tracking-wider">
+              <span className="bg-blue-400 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded uppercase tracking-wider">
                 EMAIL SENT
               </span>
               <span className="text-[10px] text-slate-400 font-semibold truncate">To: {activeEmail.to}</span>
@@ -62,7 +62,7 @@ export function EmailToastListener() {
             <button
               type="button"
               onClick={() => setShowModal(true)}
-              className="text-emerald-400 hover:text-emerald-300 font-extrabold text-[10px] underline cursor-pointer"
+              className="text-blue-400 hover:text-blue-300 font-extrabold text-[10px] underline cursor-pointer"
             >
               View Email
             </button>
@@ -76,7 +76,7 @@ export function EmailToastListener() {
           <div className="bg-white rounded-3xl max-w-xl w-full max-h-[85vh] overflow-y-auto p-6 text-gray-900 shadow-2xl space-y-4 border border-gray-200">
             <div className="flex justify-between items-center border-b border-gray-100 pb-3">
               <div>
-                <span className="bg-emerald-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase">
+                <span className="bg-blue-600 text-white font-black text-[10px] px-2.5 py-0.5 rounded-full uppercase">
                   {activeEmail.type} EMAIL
                 </span>
                 <h3 className="text-base font-black text-gray-900 mt-1">{activeEmail.subject}</h3>
@@ -105,12 +105,12 @@ export function EmailToastListener() {
             </div>
 
             {/* Email Body Content */}
-            <div className="bg-emerald-50/50 border border-emerald-200/80 rounded-2xl p-5 text-xs text-gray-800 space-y-4">
+            <div className="bg-blue-50/50 border border-blue-200/80 rounded-2xl p-5 text-xs text-gray-800 space-y-4">
               {activeEmail.type === "WELCOME" && (
                 <div className="space-y-2">
-                  <h4 className="font-extrabold text-sm text-emerald-950">Welcome to BotCom Commerce, {activeEmail.username}! 🎉</h4>
+                  <h4 className="font-extrabold text-sm text-blue-950">Welcome to BotCom Commerce, {activeEmail.username}! </h4>
                   <p className="leading-relaxed">Your registered account <strong>{activeEmail.to}</strong> has been activated.</p>
-                  <div className="bg-white p-3 rounded-xl border border-emerald-200">
+                  <div className="bg-white p-3 rounded-xl border border-blue-200">
                     <p className="font-bold text-gray-900">Account Details:</p>
                     <p className="text-gray-600 mt-1">Username: <strong>{activeEmail.username}</strong></p>
                     <p className="text-gray-600">Registered Email: <strong>{activeEmail.to}</strong></p>
@@ -120,16 +120,16 @@ export function EmailToastListener() {
 
               {activeEmail.type === "ORDER_CONFIRMATION" && (
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center border-b border-emerald-200 pb-2">
-                    <span className="font-extrabold text-emerald-950 text-sm">Order #{activeEmail.details?.order_number}</span>
-                    <span className="font-black text-emerald-700 text-sm">Total Paid: ₹{activeEmail.details?.total_amount?.toLocaleString("en-IN")}</span>
+                  <div className="flex justify-between items-center border-b border-blue-200 pb-2">
+                    <span className="font-extrabold text-blue-950 text-sm">Order #{activeEmail.details?.order_number}</span>
+                    <span className="font-black text-blue-700 text-sm">Total Paid: ₹{activeEmail.details?.total_amount?.toLocaleString("en-IN")}</span>
                   </div>
 
                   <p className="font-bold text-gray-900">Hi {activeEmail.username}, thank you for your order!</p>
                   <p className="text-gray-600">Payment method: <strong>{activeEmail.details?.payment_method}</strong></p>
 
-                  <div className="bg-white rounded-xl p-3 border border-emerald-200 space-y-2">
-                    <p className="font-bold text-gray-900 text-xs">📦 Items Purchased:</p>
+                  <div className="bg-white rounded-xl p-3 border border-blue-200 space-y-2">
+                    <p className="font-bold text-gray-900 text-xs"> Items Purchased:</p>
                     {(activeEmail.details?.items || []).map((it: any, idx: number) => (
                       <div key={idx} className="flex justify-between items-center text-xs">
                         <span>{it.title} (x{it.quantity})</span>
@@ -139,12 +139,12 @@ export function EmailToastListener() {
                   </div>
 
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs space-y-1">
-                    <p className="font-bold text-amber-900">🚚 Estimated Delivery:</p>
+                    <p className="font-bold text-amber-900"> Estimated Delivery:</p>
                     <p className="text-amber-800">{activeEmail.details?.expected_delivery}</p>
                   </div>
 
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 text-[11px] space-y-1 text-blue-900">
-                    <p className="font-bold">📞 Owner &amp; Support Contact Inquiry:</p>
+                    <p className="font-bold"> Owner &amp; Support Contact Inquiry:</p>
                     <p>Owner: {activeEmail.details?.owner_contact?.owner_name}</p>
                     <p>Phone: {activeEmail.details?.owner_contact?.phone}</p>
                     <p>Email: {activeEmail.details?.owner_contact?.email}</p>
@@ -155,8 +155,8 @@ export function EmailToastListener() {
               {activeEmail.type === "OTP_VERIFICATION" && (
                 <div className="space-y-3 text-center">
                   <h4 className="font-extrabold text-sm text-gray-900">Password Reset Verification OTP</h4>
-                  <div className="bg-white border-2 border-emerald-500 rounded-2xl p-4 inline-block mx-auto">
-                    <span className="text-2xl font-black tracking-widest text-emerald-700">{activeEmail.details?.otp}</span>
+                  <div className="bg-white border-2 border-blue-500 rounded-2xl p-4 inline-block mx-auto">
+                    <span className="text-2xl font-black tracking-widest text-blue-700">{activeEmail.details?.otp}</span>
                   </div>
                   <p className="text-gray-500 text-[11px]">Valid for 1 minute. Enter this 6-digit code in the Forgot Password form.</p>
                 </div>

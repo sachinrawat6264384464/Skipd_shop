@@ -119,7 +119,7 @@ function TrackOrderContent() {
 
           <Link
             href="/account?tab=orders"
-            className="text-[#059669] font-black hover:underline flex items-center gap-1"
+            className="text-[#2563EB] font-black hover:underline flex items-center gap-1"
           >
             <span>&larr;</span>
             <span>View All My Orders</span>
@@ -127,16 +127,16 @@ function TrackOrderContent() {
         </div>
 
         {/* TOP SEARCH BANNER CARD */}
-        <div className="bg-gradient-to-r from-emerald-900 via-teal-950 to-slate-900 text-white rounded-3xl p-6 md:p-10 shadow-xl space-y-6">
+        <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 md:p-10 shadow-xl space-y-6">
           <div className="max-w-2xl space-y-2">
-            <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
-              🚀 REAL-TIME POSTGRESQL ORDER LOGISTICS TRACKER
+            <span className="bg-blue-500/20 text-blue-300 border border-blue-500/30 text-[10px] font-black uppercase px-3 py-1 rounded-full tracking-wider">
+              REAL-TIME POSTGRESQL ORDER LOGISTICS TRACKER
             </span>
             <h1 className="text-2xl md:text-4xl font-black tracking-tight text-white">
               Track Your Order &amp; Delivery Status Live
             </h1>
             <p className="text-xs md:text-sm text-gray-300 font-medium">
-              Enter your Order Number (e.g. <span className="font-mono text-emerald-300 font-bold">#BotCom-280335</span>) to check real-time status history recorded directly in Neon PostgreSQL database.
+              Enter your Order Number (e.g. <span className="font-mono text-blue-300 font-bold">#BotCom-280335</span>) to check real-time status history recorded directly in Neon PostgreSQL database.
             </p>
           </div>
 
@@ -147,11 +147,11 @@ function TrackOrderContent() {
               placeholder="Enter Order ID or Number (#BotCom-280335)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3.5 text-xs md:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-emerald-400 font-mono tracking-wider"
+              className="flex-1 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3.5 text-xs md:text-sm text-white placeholder-gray-400 focus:outline-none focus:border-blue-400 font-mono tracking-wider"
             />
             <button
               type="submit"
-              className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs md:text-sm px-7 py-3.5 rounded-2xl transition shadow-lg cursor-pointer whitespace-nowrap"
+              className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs md:text-sm px-7 py-3.5 rounded-2xl transition shadow-lg cursor-pointer whitespace-nowrap"
             >
               Track Order Live &rarr;
             </button>
@@ -166,12 +166,12 @@ function TrackOrderContent() {
 
         {loading ? (
           <div className="bg-white border border-gray-200 rounded-3xl p-16 text-center text-gray-500 font-bold text-xs animate-pulse space-y-2">
-            <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+            <div className="w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
             <p>Fetching real-time status timeline from Neon PostgreSQL Database...</p>
           </div>
         ) : !trackingData ? (
           <div className="bg-white border border-gray-200 rounded-3xl p-12 text-center text-gray-500 text-xs font-bold space-y-3">
-            <p className="text-3xl">📦</p>
+            <p className="text-3xl"></p>
             <p className="text-sm font-black text-gray-900">No active order selected for tracking</p>
             <p className="text-gray-500 font-medium max-w-md mx-auto">
               Enter your order number above or select one of your placed orders below to inspect live timeline history.
@@ -187,7 +187,7 @@ function TrackOrderContent() {
               <div className="flex flex-wrap justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-6 text-xs">
                 <div>
                   <span className="text-gray-400 font-bold block text-[10px] uppercase tracking-wider">ORDER NUMBER</span>
-                  <span className="text-xl font-mono font-black text-emerald-700">{trackingData.order_number}</span>
+                  <span className="text-xl font-mono font-black text-blue-700">{trackingData.order_number}</span>
                 </div>
 
                 <div>
@@ -205,30 +205,30 @@ function TrackOrderContent() {
                   <span className="text-base font-black text-gray-900">₹{trackingData.total_amount.toLocaleString("en-IN")}.00</span>
                 </div>
 
-                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-2 text-right">
-                  <span className="text-[10px] text-emerald-800 font-bold block uppercase">CURRENT DATABASE STATUS</span>
-                  <span className="text-sm font-black text-emerald-700 font-mono uppercase">{trackingData.status}</span>
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl px-4 py-2 text-right">
+                  <span className="text-[10px] text-blue-800 font-bold block uppercase">CURRENT DATABASE STATUS</span>
+                  <span className="text-sm font-black text-blue-700 font-mono uppercase">{trackingData.status}</span>
                 </div>
               </div>
 
-              {/* 🛵 Courier & Executive Information Card */}
-              <div className="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white rounded-2xl p-5 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+              {/* Courier & Executive Information Card */}
+              <div className="bg-gradient-to-r from-blue-900 via-slate-900 to-indigo-950 text-white rounded-2xl p-5 shadow-md flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
                   <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-black text-white shrink-0 text-xl">
-                    🚚
+                   
                   </div>
                   <div>
-                    <span className="bg-emerald-500 text-white font-extrabold text-[9px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="bg-blue-500 text-white font-extrabold text-[9px] px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                       Fulfillment &amp; Express Delivery
                     </span>
                     <h4 className="text-sm font-black mt-0.5">{trackingData.courier_name || "Delhivery / BlueDart Express"}</h4>
-                    <p className="text-xs text-emerald-200 font-medium">Tracking Code: {trackingData.awb_code || trackingData.order_number}</p>
+                    <p className="text-xs text-blue-200 font-medium">Tracking Code: {trackingData.awb_code || trackingData.order_number}</p>
                     {trackingData.tracking_url && (
                       <a
                         href={trackingData.tracking_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] text-emerald-300 underline font-bold mt-1 inline-block hover:text-emerald-100"
+                        className="text-[11px] text-blue-300 underline font-bold mt-1 inline-block hover:text-blue-100"
                       >
                         Track on Courier Partner Site &rarr;
                       </a>
@@ -243,14 +243,14 @@ function TrackOrderContent() {
                     rel="noopener noreferrer"
                     className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-900 font-extrabold text-xs px-4 py-2.5 rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
                   >
-                    🧾 Download Tax Invoice (GST)
+                    Download Tax Invoice (GST)
                   </a>
 
                   <a
                     href="tel:+919876543210"
-                    className="bg-emerald-500 hover:bg-emerald-400 text-gray-900 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
+                    className="bg-blue-500 hover:bg-blue-400 text-gray-900 font-black text-xs px-4 py-2.5 rounded-xl transition shadow-xs flex items-center gap-1.5 cursor-pointer"
                   >
-                    📞 Support Helpline
+                    Support Helpline
                   </a>
                 </div>
               </div>
@@ -264,12 +264,12 @@ function TrackOrderContent() {
                   <h3 className="text-xs font-black text-gray-900 uppercase tracking-wider">
                     Live Status History Timeline (Recorded in PostgreSQL)
                   </h3>
-                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
-                    ⚡ Auto Synced from Database
+                  <span className="text-[10px] text-blue-700 font-bold bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
+                    Auto Synced from Database
                   </span>
                 </div>
 
-                <div className="space-y-6 relative pl-6 border-l-2 border-emerald-500 my-6 text-xs">
+                <div className="space-y-6 relative pl-6 border-l-2 border-blue-500 my-6 text-xs">
                   {trackingData.timeline.map((step, idx) => {
                     const isDone = step.is_done;
                     const isCurrent = step.is_current;
@@ -282,7 +282,7 @@ function TrackOrderContent() {
                             isCurrent
                               ? "bg-red-600 text-white ring-4 ring-red-200 shadow-md animate-pulse scale-110"
                               : isDone
-                              ? "bg-[#059669] text-white ring-4 ring-emerald-100 shadow-2xs"
+                              ? "bg-[#2563EB] text-white ring-4 ring-blue-100 shadow-2xs"
                               : "bg-gray-200 text-gray-400"
                           }`}
                         >
@@ -301,7 +301,7 @@ function TrackOrderContent() {
                             )}
                           </h4>
                           <span className={`text-xs font-bold ${
-                            isCurrent ? "text-red-600" : isDone ? "text-emerald-700" : "text-gray-400 font-medium"
+                            isCurrent ? "text-red-600" : isDone ? "text-blue-700" : "text-gray-400 font-medium"
                           }`}>
                             {step.date}
                           </span>
@@ -321,7 +321,7 @@ function TrackOrderContent() {
                 
                 {/* Shipping Address */}
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-1">
-                  <p className="font-black text-gray-900 text-xs uppercase tracking-wider">📍 Delivery Address</p>
+                  <p className="font-black text-gray-900 text-xs uppercase tracking-wider">Delivery Address</p>
                   <p className="font-bold text-gray-900">{trackingData.customer_name}</p>
                   {trackingData.shipping_address && (
                     <p className="text-gray-600 text-xs leading-relaxed">
@@ -333,7 +333,7 @@ function TrackOrderContent() {
 
                 {/* Purchased Items List */}
                 <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4 space-y-3">
-                  <p className="font-black text-gray-900 text-xs uppercase tracking-wider">📦 Ordered Items ({trackingData.items.length})</p>
+                  <p className="font-black text-gray-900 text-xs uppercase tracking-wider">Ordered Items ({trackingData.items.length})</p>
                   <div className="space-y-2">
                     {trackingData.items.map((item, i) => {
                       const img = (item as any).product_image || getProductImageByTitle(item.product_name);
@@ -372,7 +372,7 @@ function TrackOrderContent() {
                       }}
                       className={`p-4 rounded-2xl border text-left transition cursor-pointer flex items-center gap-3.5 ${
                         trackingData?.order_number === o.order_number
-                          ? "bg-[#EAF8F2] border-[#059669] ring-2 ring-emerald-500/20 shadow-xs"
+                          ? "bg-[#EFF6FF] border-[#2563EB] ring-2 ring-blue-500/20 shadow-xs"
                           : "bg-gray-50 hover:bg-gray-100 border-gray-200"
                       }`}
                     >
@@ -383,8 +383,8 @@ function TrackOrderContent() {
                       />
                       <div className="space-y-1 flex-1 min-w-0">
                         <div className="flex justify-between items-center text-xs">
-                          <span className="font-mono font-black text-emerald-700">{o.order_number}</span>
-                          <span className="text-[10px] font-black bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded uppercase">{o.status}</span>
+                          <span className="font-mono font-black text-blue-700">{o.order_number}</span>
+                          <span className="text-[10px] font-black bg-blue-100 text-blue-800 px-2 py-0.5 rounded uppercase">{o.status}</span>
                         </div>
                         <p className="font-bold text-gray-900 text-xs truncate">{o.title}</p>
                         <p className="text-[10px] text-gray-500 font-medium">{o.date} • ₹{o.total.toLocaleString("en-IN")}</p>

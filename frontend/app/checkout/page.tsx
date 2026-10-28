@@ -419,7 +419,7 @@ export default function CheckoutPage() {
           localStorage.setItem("ecom_payments", JSON.stringify([newPaymentTxn, ...existingPayments]));
         } catch (e) {}
 
-        // ✉️ Trigger Order Confirmation & Detailed Invoice Email on Razorpay Payment Success!
+        // Trigger Order Confirmation & Detailed Invoice Email on Razorpay Payment Success!
         try {
           const currentUser = localStorage.getItem("ecom_user");
           const parsedUser = currentUser ? JSON.parse(currentUser) : null;
@@ -468,7 +468,7 @@ export default function CheckoutPage() {
         order_ref: orderNumToUse
       },
       theme: {
-        color: "#10B981"
+        color: "#2563EB"
       },
       modal: {
         ondismiss: function () {
@@ -597,8 +597,8 @@ export default function CheckoutPage() {
     return (
       <div className="min-h-screen bg-white text-gray-900 px-4 py-16 flex items-center justify-center font-sans">
         <div className="max-w-md w-full bg-white border border-gray-200 p-8 rounded-3xl text-center space-y-4 shadow-2xs">
-          <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-emerald-100">
-            🛒
+          <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-3xl font-black border border-blue-100">
+           
           </div>
           <h2 className="text-2xl font-black text-gray-900">Your Checkout Cart is Empty</h2>
           <p className="text-xs text-gray-500 font-medium leading-relaxed">
@@ -607,9 +607,9 @@ export default function CheckoutPage() {
           <div className="pt-2">
             <Link
               href="/deals"
-              className="inline-block w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-emerald-600/20 uppercase tracking-wider text-center"
+              className="inline-block w-full bg-blue-600 hover:bg-blue-700 text-white font-black text-xs py-3.5 rounded-2xl transition shadow-md shadow-blue-600/20 uppercase tracking-wider text-center"
             >
-              ⚡ Explore Freedom Sale &amp; Deals
+              Explore Freedom Sale &amp; Deals
             </Link>
           </div>
         </div>
@@ -624,13 +624,13 @@ export default function CheckoutPage() {
         {/* Top 3-Step Checkout Stepper */}
         <div className="bg-white border border-gray-200/80 rounded-3xl p-4 md:p-5 shadow-2xs">
           <div className="flex items-center justify-between max-w-2xl mx-auto text-xs font-black">
-            <Link href="/cart" className="flex items-center gap-2 text-emerald-600 hover:underline">
-              <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-extrabold text-xs">✓</span>
+            <Link href="/cart" className="flex items-center gap-2 text-blue-600 hover:underline">
+              <span className="w-7 h-7 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-extrabold text-xs">✓</span>
               <span>1. Shopping Cart</span>
             </Link>
-            <div className="h-0.5 flex-1 bg-emerald-500 mx-3"></div>
-            <div className="flex items-center gap-2 text-emerald-700">
-              <span className="w-7 h-7 rounded-full bg-emerald-600 text-white flex items-center justify-center font-extrabold text-xs shadow-xs">2</span>
+            <div className="h-0.5 flex-1 bg-blue-500 mx-3"></div>
+            <div className="flex items-center gap-2 text-blue-700">
+              <span className="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-extrabold text-xs shadow-xs">2</span>
               <span>2. Shipping &amp; Delivery</span>
             </div>
             <div className="h-0.5 flex-1 bg-gray-200 mx-3"></div>
@@ -642,24 +642,24 @@ export default function CheckoutPage() {
         </div>
 
         {/* Top Security & Trust Highlights Bar */}
-        <div className="bg-gradient-to-r from-emerald-950 via-teal-900 to-gray-900 text-white rounded-2xl p-3.5 px-6 shadow-md flex items-center justify-between text-[11px] font-bold overflow-x-auto gap-4 no-scrollbar">
+        <div className="bg-gradient-to-r from-blue-950 via-slate-900 to-gray-900 text-white rounded-2xl p-3.5 px-6 shadow-md flex items-center justify-between text-[11px] font-bold overflow-x-auto gap-4 no-scrollbar">
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-emerald-400">🛡️</span>
+            <span className="text-blue-400"></span>
             <span>100% Purchase Guarantee</span>
           </div>
-          <div className="hidden sm:block text-emerald-500/40">•</div>
+          <div className="hidden sm:block text-blue-500/40">•</div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-emerald-400">⚡</span>
+            <span className="text-blue-400"></span>
             <span>Express Delivery via BlueDart</span>
           </div>
-          <div className="hidden sm:block text-emerald-500/40">•</div>
+          <div className="hidden sm:block text-blue-500/40">•</div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-emerald-400">↩️</span>
+            <span className="text-blue-400"></span>
             <span>7-Day Hassle-Free Replacement</span>
           </div>
-          <div className="hidden sm:block text-emerald-500/40">•</div>
+          <div className="hidden sm:block text-blue-500/40">•</div>
           <div className="flex items-center gap-2 shrink-0">
-            <span className="text-emerald-400">🔒</span>
+            <span className="text-blue-400"></span>
             <span>256-Bit SSL Bank Level Security</span>
           </div>
         </div>
@@ -673,11 +673,11 @@ export default function CheckoutPage() {
             <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-4">
               <div className="flex justify-between items-center border-b border-gray-100 pb-3">
                 <h2 className="text-base font-black text-gray-900 flex items-center gap-2">
-                  <span>📍 1. Delivery Address</span>
+                  <span>1. Delivery Address</span>
                 </h2>
                 <button
                   onClick={() => setShowAddAddrModal(true)}
-                  className="text-xs font-bold text-emerald-600 hover:text-emerald-700 transition cursor-pointer"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-700 transition cursor-pointer"
                 >
                   + Add New Address
                 </button>
@@ -685,9 +685,9 @@ export default function CheckoutPage() {
 
               {/* Saved Addresses List (100% Dynamic from User Profile & LocalStorage) */}
               {addresses.length === 0 ? (
-                <div className="bg-emerald-50/50 border-2 border-dashed border-emerald-200 rounded-2xl p-6 md:p-8 text-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-emerald-100 text-[#059669] flex items-center justify-center mx-auto text-xl font-black shadow-xs">
-                    📍
+                <div className="bg-blue-50/50 border-2 border-dashed border-blue-200 rounded-2xl p-6 md:p-8 text-center space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 text-[#2563EB] flex items-center justify-center mx-auto text-xl font-black shadow-xs">
+                   
                   </div>
                   <div>
                     <h3 className="font-black text-gray-900 text-sm">No Delivery Address Found in Your Account</h3>
@@ -698,7 +698,7 @@ export default function CheckoutPage() {
                   <button
                     type="button"
                     onClick={() => setShowAddAddrModal(true)}
-                    className="bg-[#059669] hover:bg-[#047857] text-white font-black text-xs px-6 py-3 rounded-xl transition shadow-xs cursor-pointer inline-flex items-center gap-2"
+                    className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-black text-xs px-6 py-3 rounded-xl transition shadow-xs cursor-pointer inline-flex items-center gap-2"
                   >
                     <span>+ Add Delivery Address Now</span>
                   </button>
@@ -711,7 +711,7 @@ export default function CheckoutPage() {
                       onClick={() => setSelectedAddrId(addr.id)}
                       className={`border-2 rounded-2xl p-4 text-xs space-y-2 cursor-pointer transition relative ${
                         selectedAddrId === addr.id
-                          ? "border-emerald-500 bg-emerald-50/40 shadow-xs"
+                          ? "border-blue-500 bg-blue-50/40 shadow-xs"
                           : "border-gray-200 bg-white hover:border-gray-300"
                       }`}
                     >
@@ -720,12 +720,12 @@ export default function CheckoutPage() {
                           {addr.type}
                         </span>
                         {selectedAddrId === addr.id && (
-                          <span className="text-emerald-600 font-extrabold text-sm">✓ Selected</span>
+                          <span className="text-blue-600 font-extrabold text-sm">✓ Selected</span>
                         )}
                       </div>
                       <p className="font-bold text-gray-900 text-sm">{addr.name}</p>
                       <p className="text-gray-600 line-clamp-2 leading-snug">{addr.street}, {addr.city}, {addr.state} - {addr.pincode}</p>
-                      <p className="text-gray-500 font-semibold">📞 {addr.phone}</p>
+                      <p className="text-gray-500 font-semibold">{addr.phone}</p>
                     </div>
                   ))}
                 </div>
@@ -736,8 +736,8 @@ export default function CheckoutPage() {
             {/* 2. Delivery Options & Speed Selection Card */}
             <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-4">
               <h2 className="text-base font-black text-gray-900 flex items-center justify-between border-b border-gray-100 pb-3">
-                <span className="flex items-center gap-2">🚚 2. Delivery Speed &amp; Preferred Time Slot</span>
-                <span className="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
+                <span className="flex items-center gap-2">2. Delivery Speed &amp; Preferred Time Slot</span>
+                <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full">
                   BlueDart Air Cargo Active
                 </span>
               </h2>
@@ -748,13 +748,13 @@ export default function CheckoutPage() {
                   onClick={() => setDeliverySpeed("standard")}
                   className={`border-2 rounded-2xl p-4 cursor-pointer transition space-y-1.5 ${
                     deliverySpeed === "standard"
-                      ? "border-emerald-500 bg-emerald-50/40 shadow-2xs"
+                      ? "border-blue-500 bg-blue-50/40 shadow-2xs"
                       : "border-gray-200 bg-white hover:border-gray-300"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-black text-gray-900">Standard Delivery</span>
-                    <span className="text-emerald-600 font-extrabold">FREE</span>
+                    <span className="text-blue-600 font-extrabold">FREE</span>
                   </div>
                   <p className="text-gray-500 text-[11px]">Delivered in 2-3 Business Days via BlueDart Surface</p>
                 </div>
@@ -764,15 +764,15 @@ export default function CheckoutPage() {
                   onClick={() => setDeliverySpeed("express")}
                   className={`border-2 rounded-2xl p-4 cursor-pointer transition space-y-1.5 ${
                     deliverySpeed === "express"
-                      ? "border-emerald-500 bg-emerald-50/40 shadow-2xs"
+                      ? "border-blue-500 bg-blue-50/40 shadow-2xs"
                       : "border-gray-200 bg-white hover:border-gray-300"
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span className="font-black text-gray-900 flex items-center gap-1">
-                      <span>⚡ Express Air Cargo</span>
+                      <span>Express Air Cargo</span>
                     </span>
-                    <span className="text-emerald-700 font-black">+₹49</span>
+                    <span className="text-blue-700 font-black">+₹49</span>
                   </div>
                   <p className="text-gray-500 text-[11px]">Guaranteed Tomorrow Delivery by 2 PM via Air Express</p>
                 </div>
@@ -791,7 +791,7 @@ export default function CheckoutPage() {
                         : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
                     }`}
                   >
-                    🌅 Morning (9 AM - 1 PM)
+                    Morning (9 AM - 1 PM)
                   </button>
                   <button
                     type="button"
@@ -802,7 +802,7 @@ export default function CheckoutPage() {
                         : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100"
                     }`}
                   >
-                    🌆 Evening (4 PM - 8 PM)
+                    Evening (4 PM - 8 PM)
                   </button>
                 </div>
               </div>
@@ -813,7 +813,7 @@ export default function CheckoutPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-2xl bg-purple-600 text-white flex items-center justify-center text-lg font-black shadow-xs">
-                    🎁
+                   
                   </div>
                   <div>
                     <h3 className="font-black text-gray-900 text-xs sm:text-sm">Add Luxury Gift Packaging &amp; Greeting Card</h3>
@@ -833,7 +833,7 @@ export default function CheckoutPage() {
                 <div className="pt-2 space-y-2 text-xs">
                   <textarea
                     rows={2}
-                    placeholder="Write custom gift message for recipient (e.g. Happy Birthday Sachin! Wish you all the best 🎉)"
+                    placeholder="Write custom gift message for recipient (e.g. Happy Birthday Sachin! Wish you all the best)"
                     value={giftMessage}
                     onChange={(e) => setGiftMessage(e.target.value)}
                     className="w-full bg-white border border-purple-200 rounded-2xl p-3 text-xs text-gray-900 font-medium focus:outline-none focus:border-purple-500 shadow-2xs"
@@ -846,16 +846,16 @@ export default function CheckoutPage() {
             {/* 4. Promo Coupon Code Section */}
             <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-3">
               <h2 className="text-base font-black text-gray-900 flex items-center gap-2">
-                <span>🏷️ 4. Apply Promo Coupon Code</span>
+                <span>4. Apply Promo Coupon Code</span>
               </h2>
 
               {appliedCoupon ? (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between text-xs">
+                <div className="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-center justify-between text-xs">
                   <div>
-                    <span className="bg-emerald-600 text-white font-black px-2 py-0.5 rounded text-[10px] uppercase">
+                    <span className="bg-blue-600 text-white font-black px-2 py-0.5 rounded text-[10px] uppercase">
                       APPLIED: {appliedCoupon.code}
                     </span>
-                    <p className="text-emerald-900 font-bold mt-1">
+                    <p className="text-blue-900 font-bold mt-1">
                       You saved ₹{couponDiscount.toLocaleString("en-IN")} on this order!
                     </p>
                   </div>
@@ -873,7 +873,7 @@ export default function CheckoutPage() {
                     placeholder="Enter Code (e.g. SKIPD10, SKIPD500)"
                     value={couponInput}
                     onChange={(e) => setCouponInput(e.target.value)}
-                    className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-3 text-xs font-semibold uppercase tracking-wider focus:outline-none focus:border-emerald-500"
+                    className="flex-1 bg-gray-50 border border-gray-300 rounded-2xl px-4 py-3 text-xs font-semibold uppercase tracking-wider focus:outline-none focus:border-blue-500"
                     required
                   />
                   <button
@@ -909,10 +909,10 @@ export default function CheckoutPage() {
             <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-black text-gray-900 flex items-center gap-2">
-                  <span>💳 5. Choose Payment Method</span>
+                  <span>5. Choose Payment Method</span>
                 </h2>
-                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full flex items-center gap-1">
-                  <span>🔒</span> 256-Bit SSL Encrypted
+                <span className="text-[11px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1 rounded-full flex items-center gap-1">
+                   256-Bit SSL Encrypted
                 </span>
               </div>
 
@@ -922,7 +922,7 @@ export default function CheckoutPage() {
                   onClick={() => setSelectedPaymentMethod("online")}
                   className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative ${
                     selectedPaymentMethod === "online"
-                      ? "border-emerald-500 bg-emerald-50/50 shadow-sm"
+                      ? "border-blue-500 bg-blue-50/50 shadow-sm"
                       : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
                   }`}
                 >
@@ -933,12 +933,12 @@ export default function CheckoutPage() {
                         name="payment_method"
                         checked={selectedPaymentMethod === "online"}
                         onChange={() => setSelectedPaymentMethod("online")}
-                        className="w-4 h-4 accent-emerald-600 cursor-pointer"
+                        className="w-4 h-4 accent-blue-600 cursor-pointer"
                       />
                       <div>
                         <span className="font-black text-gray-900 text-sm block">Razorpay Secure Checkout</span>
-                        <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/80 px-2 py-0.5 rounded-md mt-0.5 inline-block">
-                          ⚡ Instant Confirmation
+                        <span className="text-[10px] font-bold text-blue-800 bg-blue-100/80 px-2 py-0.5 rounded-md mt-0.5 inline-block">
+                          Instant Confirmation
                         </span>
                       </div>
                     </div>
@@ -965,7 +965,7 @@ export default function CheckoutPage() {
                   onClick={() => setSelectedPaymentMethod("cod")}
                   className={`p-4 rounded-2xl border-2 transition-all cursor-pointer relative ${
                     selectedPaymentMethod === "cod"
-                      ? "border-emerald-500 bg-emerald-50/50 shadow-sm"
+                      ? "border-blue-500 bg-blue-50/50 shadow-sm"
                       : "border-gray-200 bg-gray-50/50 hover:border-gray-300"
                   }`}
                 >
@@ -976,12 +976,12 @@ export default function CheckoutPage() {
                         name="payment_method"
                         checked={selectedPaymentMethod === "cod"}
                         onChange={() => setSelectedPaymentMethod("cod")}
-                        className="w-4 h-4 accent-emerald-600 cursor-pointer"
+                        className="w-4 h-4 accent-blue-600 cursor-pointer"
                       />
                       <div>
                         <span className="font-black text-gray-900 text-sm block">Cash on Delivery (COD)</span>
                         <span className="text-[10px] font-bold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-md mt-0.5 inline-block">
-                          💵 Pay at Doorstep
+                          Pay at Doorstep
                         </span>
                       </div>
                     </div>
@@ -1004,17 +1004,17 @@ export default function CheckoutPage() {
             <button
               onClick={handleProceedToPayment}
               disabled={processingPayment}
-              className="w-full bg-[#10B981] hover:bg-[#059669] text-white font-black text-base py-4 rounded-3xl transition shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
+              className="w-full bg-[#2563EB] hover:bg-[#2563EB] text-white font-black text-base py-4 rounded-3xl transition shadow-lg shadow-blue-500/25 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60"
             >
               {processingPayment ? (
                 <span className="flex items-center gap-2">
-                  <span className="animate-spin text-lg">⏳</span>
+                  <span className="animate-spin text-lg"></span>
                   {selectedPaymentMethod === "online" ? "Opening Razorpay Gateway..." : "Placing Order..."}
                 </span>
               ) : selectedPaymentMethod === "online" ? (
-                <span>🔒 Pay ₹{finalPayable.toLocaleString("en-IN")} via Razorpay</span>
+                <span>Pay ₹{finalPayable.toLocaleString("en-IN")} via Razorpay</span>
               ) : (
-                <span>📦 Place Order via Cash on Delivery (₹{finalPayable.toLocaleString("en-IN")})</span>
+                <span>Place Order via Cash on Delivery (₹{finalPayable.toLocaleString("en-IN")})</span>
               )}
             </button>
 
@@ -1025,10 +1025,10 @@ export default function CheckoutPage() {
             
             {/* Express Direct Checkout Indicator */}
             {isBuyNowMode && (
-              <div className="bg-emerald-50/80 border border-emerald-200/90 rounded-2xl p-3.5 space-y-1 shadow-2xs">
+              <div className="bg-blue-50/80 border border-blue-200/90 rounded-2xl p-3.5 space-y-1 shadow-2xs">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-extrabold text-emerald-900 flex items-center gap-1.5">
-                    <span>⚡</span> Express Checkout ({cartItems.length} Item Only)
+                  <span className="font-extrabold text-blue-900 flex items-center gap-1.5">
+                     Express Checkout ({cartItems.length} Item Only)
                   </span>
                   {fullCartCount > 0 && (
                     <button
@@ -1039,30 +1039,30 @@ export default function CheckoutPage() {
                         const storedGen = localStorage.getItem(cartKey);
                         if (storedGen) setCartItems(JSON.parse(storedGen));
                       }}
-                      className="text-emerald-700 hover:text-emerald-900 font-extrabold underline cursor-pointer text-[11px]"
+                      className="text-blue-700 hover:text-blue-900 font-extrabold underline cursor-pointer text-[11px]"
                     >
                       Switch to Full Cart ({fullCartCount} items) &rarr;
                     </button>
                   )}
                 </div>
-                <p className="text-[11px] text-emerald-700 font-medium">
+                <p className="text-[11px] text-blue-700 font-medium">
                   Direct purchase for this selected item only. General cart items are saved.
                 </p>
               </div>
             )}
 
             <h2 className="text-base font-black text-gray-900 border-b border-gray-100 pb-3">
-              📦 Order Summary ({cartItems.length} items)
+              Order Summary ({cartItems.length} items)
             </h2>
 
             {/* Cart Items Preview List */}
             <div className="space-y-3 max-h-80 overflow-y-auto pr-1 no-scrollbar">
               {cartItems.length === 0 ? (
                 <div className="p-6 text-center bg-gray-50 border border-dashed border-gray-200 rounded-2xl space-y-3">
-                  <p className="text-3xl">🛒</p>
+                  <p className="text-3xl"></p>
                   <p className="font-bold text-xs text-gray-900">Your Checkout Cart is Empty</p>
                   <p className="text-[11px] text-gray-500">Items removed will remain available in store catalog.</p>
-                  <Link href="/deals" className="inline-block bg-[#059669] hover:bg-[#047857] text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs">
+                  <Link href="/deals" className="inline-block bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-xs px-4 py-2 rounded-xl transition shadow-xs">
                     Explore Store &rarr;
                   </Link>
                 </div>
@@ -1122,7 +1122,7 @@ export default function CheckoutPage() {
               </div>
 
               {appliedCoupon && (
-                <div className="flex justify-between text-emerald-700 font-bold">
+                <div className="flex justify-between text-blue-700 font-bold">
                   <span>Coupon Discount ({appliedCoupon.code})</span>
                   <span>-₹{couponDiscount.toLocaleString("en-IN")}.00</span>
                 </div>
@@ -1136,36 +1136,36 @@ export default function CheckoutPage() {
               <div className="flex justify-between text-gray-600">
                 <span>Delivery Charge</span>
                 {shippingFee === 0 ? (
-                  <span className="text-emerald-600 font-extrabold uppercase">FREE</span>
+                  <span className="text-blue-600 font-extrabold uppercase">FREE</span>
                 ) : (
                   <span className="font-bold text-gray-900">₹{shippingFee}.00</span>
                 )}
               </div>
 
               {deliverySpeed === "express" && (
-                <div className="flex justify-between text-emerald-800 font-bold">
-                  <span>⚡ Express Air Shipping</span>
+                <div className="flex justify-between text-blue-800 font-bold">
+                  <span>Express Air Shipping</span>
                   <span>+₹49.00</span>
                 </div>
               )}
 
               {isGiftWrap && (
                 <div className="flex justify-between text-purple-800 font-bold">
-                  <span>🎁 Luxury Gift Packaging</span>
+                  <span>Luxury Gift Packaging</span>
                   <span>+₹49.00</span>
                 </div>
               )}
             </div>
 
             {/* Total Savings Callout Ribbon */}
-            <div className="bg-emerald-50 border border-emerald-200/80 rounded-2xl p-3 text-center text-xs font-black text-emerald-900 shadow-2xs">
-              🎉 Great Choice! Free BlueDart Express Shipping Included.
+            <div className="bg-blue-50 border border-blue-200/80 rounded-2xl p-3 text-center text-xs font-black text-blue-900 shadow-2xs">
+              Great Choice! Free BlueDart Express Shipping Included.
             </div>
 
             {/* Total Payable */}
             <div className="flex justify-between items-center text-sm font-black text-gray-900 pt-1">
               <span>Total Payable Amount</span>
-              <span className="text-xl text-emerald-700">₹{finalPayable.toLocaleString("en-IN")}.00</span>
+              <span className="text-xl text-blue-700">₹{finalPayable.toLocaleString("en-IN")}.00</span>
             </div>
 
             {/* Logistics & Verified Security Card */}
@@ -1176,7 +1176,7 @@ export default function CheckoutPage() {
               </div>
               <div className="flex items-center justify-between border-b border-gray-200/60 pb-2">
                 <span className="font-bold text-gray-800">Payment Gateway</span>
-                <span className="font-black text-emerald-700">Razorpay SSL Verified</span>
+                <span className="font-black text-blue-700">Razorpay SSL Verified</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="font-bold text-gray-800">Founder Live Support</span>
@@ -1185,7 +1185,7 @@ export default function CheckoutPage() {
             </div>
 
             <p className="text-[10px] text-gray-400 text-center">
-              🛡️ 256-Bit SSL Encrypted &amp; Bank-Grade Secure Payment
+              256-Bit SSL Encrypted &amp; Bank-Grade Secure Payment
             </p>
           </div>
 
@@ -1225,7 +1225,7 @@ export default function CheckoutPage() {
                   placeholder="e.g. Sachin Rawat"
                   value={newAddr.name}
                   onChange={(e) => setNewAddr({ ...newAddr, name: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -1237,7 +1237,7 @@ export default function CheckoutPage() {
                   placeholder="e.g. 9876543210"
                   value={newAddr.phone}
                   onChange={(e) => setNewAddr({ ...newAddr, phone: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -1249,7 +1249,7 @@ export default function CheckoutPage() {
                   placeholder="e.g. House No. 42, Green Avenue"
                   value={newAddr.street}
                   onChange={(e) => setNewAddr({ ...newAddr, street: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500"
+                  className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
                 />
               </div>
 
@@ -1262,7 +1262,7 @@ export default function CheckoutPage() {
                     placeholder="Gwalior"
                     value={newAddr.city}
                     onChange={(e) => setNewAddr({ ...newAddr, city: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -1273,7 +1273,7 @@ export default function CheckoutPage() {
                     placeholder="MP"
                     value={newAddr.state}
                     onChange={(e) => setNewAddr({ ...newAddr, state: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -1284,14 +1284,14 @@ export default function CheckoutPage() {
                     placeholder="474001"
                     value={newAddr.pincode}
                     onChange={(e) => setNewAddr({ ...newAddr, pincode: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-emerald-500"
+                    className="w-full bg-gray-50 border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xs py-3 rounded-2xl transition cursor-pointer mt-2"
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-black text-xs py-3 rounded-2xl transition cursor-pointer mt-2"
               >
                 Save &amp; Select Address
               </button>
@@ -1303,11 +1303,11 @@ export default function CheckoutPage() {
       {/* 🟢 Payment Success Confirmation Modal with Animated Green Card */}
       {showSuccessModal && completedOrderData && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 text-center relative border border-emerald-100 overflow-hidden">
+          <div className="bg-white rounded-3xl p-6 md:p-8 max-w-lg w-full shadow-2xl space-y-6 text-center relative border border-blue-100 overflow-hidden">
             
             {/* Top Confetti & Animated Green Check Icon */}
             <div className="space-y-3">
-              <div className="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-4xl font-black shadow-inner animate-bounce">
+              <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-4xl font-black shadow-inner animate-bounce">
                 ✓
               </div>
               <h3 className="text-2xl font-black text-gray-900 tracking-tight">Payment Confirmed!</h3>
@@ -1315,17 +1315,17 @@ export default function CheckoutPage() {
             </div>
 
             {/* 🟢 Green Confirmation Card */}
-            <div className="bg-[#EAF8F2] border-2 border-emerald-500/80 rounded-3xl p-5 text-left space-y-3 shadow-xs">
-              <div className="flex justify-between items-center border-b border-emerald-200/80 pb-2.5">
-                <span className="font-mono font-black text-sm text-emerald-950">{completedOrderData.order_number}</span>
-                <span className="bg-emerald-600 text-white font-black text-[10px] px-3 py-0.5 rounded-full shadow-xs">
+            <div className="bg-[#EFF6FF] border-2 border-blue-500/80 rounded-3xl p-5 text-left space-y-3 shadow-xs">
+              <div className="flex justify-between items-center border-b border-blue-200/80 pb-2.5">
+                <span className="font-mono font-black text-sm text-blue-950">{completedOrderData.order_number}</span>
+                <span className="bg-blue-600 text-white font-black text-[10px] px-3 py-0.5 rounded-full shadow-xs">
                   ✓ Payment Verified
                 </span>
               </div>
 
               {/* Product Picture & Information */}
               {completedOrderData.items && completedOrderData.items.length > 0 && (
-                <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-emerald-200/60">
+                <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-blue-200/60">
                   <img
                     src={completedOrderData.items[0].image}
                     alt={completedOrderData.items[0].title}
@@ -1341,29 +1341,29 @@ export default function CheckoutPage() {
               {/* Summary Info */}
               <div className="grid grid-cols-2 gap-2 text-xs pt-1">
                 <div>
-                  <p className="text-emerald-800 text-[10px] font-bold uppercase tracking-wider">Total Paid Amount</p>
-                  <p className="font-black text-base text-emerald-950">₹{completedOrderData.total_amount?.toLocaleString("en-IN")}</p>
+                  <p className="text-blue-800 text-[10px] font-bold uppercase tracking-wider">Total Paid Amount</p>
+                  <p className="font-black text-base text-blue-950">₹{completedOrderData.total_amount?.toLocaleString("en-IN")}</p>
                 </div>
                 <div>
-                  <p className="text-emerald-800 text-[10px] font-bold uppercase tracking-wider">Payment Method</p>
-                  <p className="font-bold text-emerald-900 text-xs">{completedOrderData.payment_method}</p>
+                  <p className="text-blue-800 text-[10px] font-bold uppercase tracking-wider">Payment Method</p>
+                  <p className="font-bold text-blue-900 text-xs">{completedOrderData.payment_method}</p>
                 </div>
               </div>
 
               {/* Delivery Address */}
               {completedOrderData.shipping_address && (
-                <div className="text-xs pt-2 border-t border-emerald-200/60">
-                  <p className="text-emerald-800 text-[10px] font-bold uppercase tracking-wider">Deliver To</p>
-                  <p className="font-bold text-emerald-950 mt-0.5">{completedOrderData.shipping_address.name} ({completedOrderData.shipping_address.phone})</p>
-                  <p className="text-emerald-900/80 text-[11px] truncate">{completedOrderData.shipping_address.street}, {completedOrderData.shipping_address.city} - {completedOrderData.shipping_address.pincode}</p>
+                <div className="text-xs pt-2 border-t border-blue-200/60">
+                  <p className="text-blue-800 text-[10px] font-bold uppercase tracking-wider">Deliver To</p>
+                  <p className="font-bold text-blue-950 mt-0.5">{completedOrderData.shipping_address.name} ({completedOrderData.shipping_address.phone})</p>
+                  <p className="text-blue-900/80 text-[11px] truncate">{completedOrderData.shipping_address.street}, {completedOrderData.shipping_address.city} - {completedOrderData.shipping_address.pincode}</p>
                 </div>
               )}
             </div>
 
             {/* Email Notification Alert Badge */}
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-xs text-emerald-800 font-bold flex flex-col sm:flex-row items-center gap-2 justify-center text-center">
-              <span className="text-base">✉️</span>
-              <span>Order confirmation email &amp; invoice sent to <span className="underline font-mono text-emerald-950 font-black">{user?.email || (completedOrderData?.shipping_address as any)?.email || "your email"}</span>!</span>
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-3 text-xs text-blue-800 font-bold flex flex-col sm:flex-row items-center gap-2 justify-center text-center">
+              <span className="text-base"></span>
+              <span>Order confirmation email &amp; invoice sent to <span className="underline font-mono text-blue-950 font-black">{user?.email || (completedOrderData?.shipping_address as any)?.email || "your email"}</span>!</span>
             </div>
 
             {/* Modal Action Buttons */}
@@ -1372,13 +1372,13 @@ export default function CheckoutPage() {
                 href={`/track-order?orderId=${completedOrderData.order_number}`}
                 className="bg-[#0B132B] hover:bg-black text-white font-black text-xs py-3.5 px-4 rounded-2xl transition shadow-md flex items-center justify-center gap-2"
               >
-                <span>📦 Track Live Shipment</span>
+                <span>Track Live Shipment</span>
               </Link>
               <Link
                 href="/"
                 className="bg-gray-100 hover:bg-gray-200 text-gray-900 font-extrabold text-xs py-3.5 px-4 rounded-2xl transition flex items-center justify-center gap-1.5"
               >
-                <span>🏠 Continue Shopping</span>
+                <span>Continue Shopping</span>
               </Link>
             </div>
           </div>

@@ -19,7 +19,7 @@ export function OrderTrackingStepper({ status }: OrderTrackingStepperProps) {
     <div className="bg-white border border-gray-200 rounded-3xl p-6 shadow-xs space-y-6">
       <div className="flex justify-between items-center border-b border-gray-100 pb-3">
         <h3 className="font-black text-gray-900 text-sm flex items-center gap-2">
-          <span>📦 Order Tracking Stepper Timeline</span>
+          <span>Order Tracking Stepper Timeline</span>
         </h3>
         <span className="bg-blue-100 text-blue-800 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider">
           LIVE STATUS: {status}

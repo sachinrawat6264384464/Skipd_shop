@@ -173,7 +173,7 @@ export default function OrdersDashboardPage() {
               placeholder="Find all orders..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none w-full sm:w-64"
+              className="bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none w-full sm:w-64"
             />
             <button
               onClick={() => {}}
@@ -209,7 +209,7 @@ export default function OrdersDashboardPage() {
               <select
                 value={timeframe}
                 onChange={(e) => setTimeframe(e.target.value)}
-                className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:border-emerald-500 focus:outline-none"
+                className="bg-gray-50 border border-gray-300 rounded-xl px-3 py-1.5 text-xs text-gray-900 focus:border-blue-500 focus:outline-none"
               >
                 <option value="last 3 months">last 3 months</option>
                 <option value="2026">2026</option>
@@ -225,10 +225,10 @@ export default function OrdersDashboardPage() {
               <div className="text-center py-12 text-xs text-gray-500 font-medium animate-pulse">Loading your orders from backend...</div>
             ) : filteredOrders.length === 0 ? (
               <div className="text-center py-12 space-y-3">
-                <div className="text-5xl">📦</div>
+                <div className="text-5xl"></div>
                 <h3 className="text-base font-black text-gray-900">No orders found</h3>
                 <p className="text-xs text-gray-500">Try adjusting your search filter or explore our store to place your first order.</p>
-                <Link href="/search" className="inline-block bg-emerald-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition hover:bg-emerald-700">
+                <Link href="/search" className="inline-block bg-blue-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl transition hover:bg-blue-700">
                   Explore Store &rarr;
                 </Link>
               </div>
@@ -249,13 +249,13 @@ export default function OrdersDashboardPage() {
                       </div>
                       <div>
                         <span className="text-gray-500 block text-[10px] uppercase font-bold">SHIP TO</span>
-                        <span className="font-bold text-emerald-700">Your Address</span>
+                        <span className="font-bold text-blue-700">Your Address</span>
                       </div>
                     </div>
 
                     <div className="text-right">
                       <span className="text-gray-500 block text-[10px] uppercase font-bold">ORDER # {ord.order_number}</span>
-                      <Link href={`/track-order?awb=${ord.awb}`} className="text-emerald-700 font-bold hover:underline">
+                      <Link href={`/track-order?awb=${ord.awb}`} className="text-blue-700 font-bold hover:underline">
                         View Order Details &rarr;
                       </Link>
                     </div>
@@ -271,7 +271,7 @@ export default function OrdersDashboardPage() {
 
                       <div className="space-y-1">
                         <span className={`inline-block text-[10px] font-black px-2.5 py-0.5 rounded ${
-                          ord.status === "DELIVERED" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                          ord.status === "DELIVERED" ? "bg-blue-50 text-blue-700 border border-blue-200" :
                           ord.status === "CANCELLED" ? "bg-red-50 text-red-700 border border-red-200" :
                           "bg-blue-50 text-blue-700 border border-blue-200"
                         }`}>
@@ -330,7 +330,7 @@ export default function OrdersDashboardPage() {
                   <div className="flex-1 min-w-0">
                     <h4 className="font-bold text-xs text-gray-900 truncate">{rec.title}</h4>
                     <p className="font-black text-sm text-gray-900 mt-0.5">₹{rec.price.toLocaleString("en-IN")}</p>
-                    <Link href={`/product/${rec.handle}`} className="text-[11px] text-emerald-700 font-bold hover:underline">
+                    <Link href={`/product/${rec.handle}`} className="text-[11px] text-blue-700 font-bold hover:underline">
                       View Product &rarr;
                     </Link>
                   </div>
