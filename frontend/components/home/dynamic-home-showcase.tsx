@@ -203,7 +203,7 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                   )}
                 </Link>
 
-                <div className="space-y-2 flex-1 flex flex-col justify-between">
+                <div className="space-y-3 flex-1 flex flex-col justify-between">
                   <div>
                     <span className="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider">
                       {typeof product.category === "object" ? product.category?.name : (product.category || "Top Pick")}
@@ -227,6 +227,36 @@ export function DynamicHomeShowcase({ initialProducts }: { initialProducts: Prod
                     <span className="text-[9px] font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">
                       In Stock
                     </span>
+                  </div>
+
+                  {/* Dual Action Buttons: Add to Cart & Buy Now */}
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <BuyNowButton
+                      mode="cart"
+                      productObj={product}
+                      productHandle={product.handle || String(product.id)}
+                      disabled={isOutOfStock}
+                      className={`font-extrabold text-xs py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-2xs ${
+                        isOutOfStock
+                          ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200 opacity-60"
+                          : "bg-white border border-gray-300 hover:bg-gray-50 text-gray-800 hover:border-gray-400 cursor-pointer"
+                      }`}
+                    >
+                      {isOutOfStock ? "Out of Stock" : "Add to Cart"}
+                    </BuyNowButton>
+                    <BuyNowButton
+                      mode="buy"
+                      productHandle={product.handle || String(product.id)}
+                      productObj={product}
+                      disabled={isOutOfStock}
+                      className={`font-black text-xs py-2 px-2 rounded-xl transition text-center flex items-center justify-center gap-1 shadow-xs ${
+                        isOutOfStock
+                          ? "bg-gray-200 text-gray-400 cursor-not-allowed opacity-60"
+                          : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-md shadow-blue-500/20"
+                      }`}
+                    >
+                      {isOutOfStock ? "Unavailable" : "Buy Now"}
+                    </BuyNowButton>
                   </div>
                 </div>
               </div>
