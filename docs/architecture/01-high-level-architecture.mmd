@@ -1,0 +1,117 @@
+flowchart TB
+    %% =========================================================================
+    %% HIGH-LEVEL SYSTEM ARCHITECTURE (HLD) - BOTCOM / SKIPD COMMERCE
+    %% =========================================================================
+
+    subgraph CLIENTS["1. Client Layer (Users & Devices)"]
+        direction LR
+        MobileBrowser["Mobile Web Browsers<br/>(iOS Safari / Android Chrome)"]
+        DesktopBrowser["Desktop Browsers<br/>(Chrome / Firefox / Edge / Safari)"]
+        AdminClient["Store Admin / Merchant Console<br/>(Desktop Secure Portal)"]
+    end
+
+    subgraph EDGE["2. Edge Delivery & DNS Routing"]
+        direction LR
+        DNS["DNS Resolver (Cloudflare / Route 53)"]
+        CDN_Frontend["Vercel Global Edge Network<br/>(CDN Caching, Static Assets, Brotli)"]
+        CloudinaryCDN["Cloudinary Media CDN<br/>(Dynamic WebP/AVIF Image Optimization)"]
+    end
+
+    subgraph FRONTEND["3. Storefront & Admin Portal (Next.js 15)"]
+        direction TB
+        AppRouter["Next.js App Router (React 19 / Server & Client Components)"]
+        StorePages["B2C Storefront Views<br/>(/, /product, /cart, /checkout, /deals)"]
+        AdminPages["Admin Operations Portal<br/>(/admin/products, /admin/orders, /admin/analytics)"]
+        ClientState["Client State & Auth Providers<br/>(LocalStorage Cart, Context API, Sonner Toasts)"]
+        FirebaseAuthClient["Firebase Web SDK Client<br/>(Google OAuth / Email Auth)"]
+    end
+
+    subgraph API_INGRESS["4. API Gateway & Ingress Layer"]
+        direction LR
+        ReverseProxy["Render Ingress / Cloud Application Load Balancer<br/>(HTTPS Termination, TLS 1.3, SSL Offloading)"]
+        RateLimiter["Redis Sliding-Window Rate Limiter<br/>(Max 5 req/min on sensitive routes, IP based)"]
+        CORSMiddleware["FastAPI CORS Security Middleware<br/>(Origin Whitelist Validation)"]
+    end
+
+    subgraph BACKEND["5. Core Application Services (FastAPI ASGI)"]
+        direction TB
+        FastAPIServer["FastAPI ASGI Core Engine (Python 3.11 / Uvicorn Server)"]
+        
+        subgraph ROUTERS["API Endpoint Controllers (/api/v1)"]
+            AuthRoutes["/auth & /users<br/>(JWT, Register, Profile, RBAC)"]
+            CatalogRoutes["/products & /categories<br/>(Dynamic Inventory, Trie Autocomplete)"]
+            OrderRoutes["/orders & /cart<br/>(Checkout Flow, Tax, Invoices)"]
+            PaymentRoutes["/payments<br/>(Razorpay SDK & Webhooks)"]
+            ShipmentRoutes["/shipping & /track-order<br/>(Shiprocket API & Live Tracking)"]
+            AIRoutes["/chatbot & /admin/copilot<br/>(TF-IDF ML Recommender & Analytics)"]
+            CustomerRoutes["/wallet, /gift-cards, /coupons<br/>(Loyalty & Discounts)"]
+        end
+
+        subgraph ENGINES["Internal Processing Engines"]
+            MLRecommender["scikit-learn ML Engine<br/>(TF-IDF + Cosine Similarity)"]
+            TrieSearchEngine["In-Memory Prefix Trie<br/>(O(K) Instant Search Autocomplete)"]
+            DijkstraRouterEngine["Dijkstra Logistics Router<br/>(Shortest Path Warehouse Fulfillment)"]
+        end
+    end
+
+    subgraph QUEUE_WORKERS["6. Asynchronous Background Tasks (Celery & Redis)"]
+        direction TB
+        CeleryWorkers["Celery Background Worker Pool<br/>(Python 3.11 Multi-threaded)"]
+        EmailWorkerTask["Email Dispatcher<br/>(Order Confirmations, Welcome, OTP)"]
+        ShiprocketWorkerTask["Logistics Sync Worker<br/>(Automated AWB Generation & Booking)"]
+        WhatsAppWorkerTask["WhatsApp Receipt Worker<br/>(Template Notifications)"]
+        AbandonedCartTask["Abandoned Cart Cron Task<br/>(Recovery Coupon Automations)"]
+    end
+
+    subgraph DATA_TIER["7. Data & Caching Tier"]
+        direction LR
+        NeonPostgres[("Neon Serverless PostgreSQL<br/>(PostgreSQL 16 / asyncpg Pool / PgBouncer)")]
+        UpstashRedis[("Upstash Managed Cloud Redis<br/>(Rate Limits, Product Cache, Celery Broker)")]
+    end
+
+    subgraph EXTERNAL_SERVICES["8. Third-Party Integrations & Services"]
+        direction TB
+        RazorpayGateway["Razorpay Payment Gateway<br/>(UPI, Cards, NetBanking, Auto-Webhook)"]
+        ShiprocketLogistics["Shiprocket Shipping Aggregator<br/>(BlueDart, Delhivery, Shadowfax)"]
+        CloudinaryAPI["Cloudinary REST Media API<br/>(Asset Storage & Upload Stream)"]
+        FirebaseAdmin["Google Firebase Admin SDK<br/>(OAuth Token Verification)"]
+        SMTPGateway["Gmail SMTP Relay Service<br/>(SSL 465 / TLS 587 Transports)"]
+    end
+
+    %% Network & Request Flows
+    CLIENTS -->|"HTTPS (Port 443)"| DNS
+    DNS --> CDN_Frontend
+    CLIENTS -->|"Static Assets & Images"| CloudinaryCDN
+
+    CDN_Frontend --> AppRouter
+    AppRouter --> StorePages
+    AppRouter --> AdminPages
+    AppRouter --> ClientState
+
+    StorePages -->|"Client Fetch / Server Actions"| ReverseProxy
+    AdminPages -->|"Secured Bearer JWT API Calls"| ReverseProxy
+
+    ReverseProxy --> RateLimiter
+    RateLimiter --> CORSMiddleware
+    CORSMiddleware --> FastAPIServer
+
+    FastAPIServer --> ROUTERS
+    CatalogRoutes --> TrieSearchEngine
+    AIRoutes --> MLRecommender
+    ShipmentRoutes --> DijkstraRouterEngine
+
+    ROUTERS -->|"Async SQL via asyncpg Pool"| NeonPostgres
+    ROUTERS -->|"Cache Get / Set (TTL 300s)"| UpstashRedis
+    ROUTERS -->|"Enqueue Background Jobs"| UpstashRedis
+
+    UpstashRedis -->|"Task Queue (Broker)"| CeleryWorkers
+    CeleryWorkers --> EmailWorkerTask
+    CeleryWorkers --> ShiprocketWorkerTask
+    CeleryWorkers --> WhatsAppWorkerTask
+    CeleryWorkers --> AbandonedCartTask
+
+    PaymentRoutes <-->|"Create Order & Verify Signature"| RazorpayGateway
+    ShipmentRoutes <-->|"Courier Booking & Webhooks"| ShiprocketLogistics
+    CatalogRoutes -->|"Image Upload Pipeline"| CloudinaryAPI
+    AuthRoutes <-->|"ID Token Verification"| FirebaseAdmin
+    EmailWorkerTask -->|"Transactional Mail Delivery"| SMTPGateway

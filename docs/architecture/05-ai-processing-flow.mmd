@@ -1,0 +1,85 @@
+sequenceDiagram
+    autonumber
+    %% =========================================================================
+    %% AI & MACHINE LEARNING PROCESSING WORKFLOW - BOTCOM COMMERCE
+    %% =========================================================================
+
+    actor Shopper as Customer / Visitor
+    actor Merchant as Store Merchant / Admin
+    participant ChatUI as Frontend Chatbot / Copilot UI
+    participant APIChatbot as /api/v1/chatbot/recommend
+    participant APICopilot as /api/v1/admin/copilot/query
+    participant RecSvc as RecommendationService (recommendation_svc.py)
+    participant RedisCache as Upstash Redis (rec:* Cache TTL: 24h)
+    participant NeonDB as Neon PostgreSQL (Products, Orders, UserViews)
+    participant Sklearn as scikit-learn ML Engine (TF-IDF + Cosine)
+
+    %% -------------------------------------------------------------------------
+    %% SCENARIO A: Natural Language Customer AI Shopping Assistant
+    %% -------------------------------------------------------------------------
+    rect rgb(240, 248, 255)
+    note over Shopper, Sklearn: Scenario A: Customer AI Recommendation & NLP Chatbot Flow
+    Shopper->>ChatUI: Types: "Show me Bluetooth headphones under ₹3000"
+    ChatUI->>APIChatbot: POST /api/v1/chatbot/recommend { message, history }
+    
+    APIChatbot->>APIChatbot: Check Security Guardrails (SQLi, Admin, Password keywords)
+    alt Guardrail Triggered
+        APIChatbot-->>ChatUI: "I am your shopping assistant! How can I help you find products?"
+    else Clean Query
+        APIChatbot->>APIChatbot: extract_price_range() -> min_price=None, max_price=3000.0
+        APIChatbot->>APIChatbot: extract_topic_from_history() -> "bluetooth headphones"
+        
+        APIChatbot->>NeonDB: SELECT active products with category & tags
+        NeonDB-->>APIChatbot: List of candidate product rows
+        
+        APIChatbot->>Sklearn: Compute TF-IDF on (Title + Description + Category)
+        Sklearn->>Sklearn: Calculate Cosine Similarity with user query tokens
+        Sklearn-->>APIChatbot: Ranked list of matched products (filtered by price <= 3000)
+        
+        APIChatbot-->>ChatUI: Return structured response: { reply, products: [...], intent: "product_search" }
+        ChatUI-->>Shopper: Renders interactive product recommendation cards with Add to Cart / Buy Now
+    end
+    end
+
+    %% -------------------------------------------------------------------------
+    %% SCENARIO B: Product Detail Page Similar Products ML Flow
+    %% -------------------------------------------------------------------------
+    rect rgb(245, 250, 245)
+    note over Shopper, Sklearn: Scenario B: Real-Time Machine Learning Content-Based Similarity
+    Shopper->>ChatUI: Opens Product Details Page (/product/hp-pavilion-laptop-15)
+    ChatUI->>RecSvc: get_similar_products(product_id=101, limit=6)
+    RecSvc->>RedisCache: GET rec:similar:101:6
+    alt Cache Hit
+        RedisCache-->>RecSvc: JSON cached similar products list
+        RecSvc-->>ChatUI: Return cached 6 products
+    else Cache Miss
+        RecSvc->>NeonDB: Fetch Target Product (ID 101) & All Active Products
+        NeonDB-->>RecSvc: Product catalog metadata
+        RecSvc->>Sklearn: TfidfVectorizer.fit_transform(corpus)
+        Sklearn->>Sklearn: cosine_similarity(target_vector, all_vectors)
+        Sklearn-->>RecSvc: Ranked indices sorted by highest similarity score
+        RecSvc->>RedisCache: SETEX rec:similar:101:6 (TTL = 86400s)
+        RecSvc-->>ChatUI: Return top 6 similar products
+        ChatUI-->>Shopper: Render "You May Also Like" carousel
+    end
+    end
+
+    %% -------------------------------------------------------------------------
+    %% SCENARIO C: Merchant Admin AI Store Copilot
+    %% -------------------------------------------------------------------------
+    rect rgb(255, 250, 240)
+    note over Merchant, NeonDB: Scenario C: Merchant AI Copilot Diagnostic Intelligence
+    Merchant->>ChatUI: Asks: "How is my inventory and sales performance today?"
+    ChatUI->>APICopilot: POST /api/v1/admin/copilot/query { query: "..." }
+    
+    APICopilot->>NeonDB: Aggregate Total Revenue: SUM(Order.total_amount) WHERE status != CANCELLED
+    APICopilot->>NeonDB: Aggregate Total Orders: COUNT(Order.id)
+    APICopilot->>NeonDB: Identify Low-Stock Alert Items: stock_quantity <= 5
+    APICopilot->>NeonDB: Query High Views vs Low Sales Items (UserView vs OrderItem)
+    NeonDB-->>APICopilot: Metrics summary (Revenue: ₹70,788, Low Stock: 3 items, AOV: ₹14,157)
+    
+    APICopilot->>APICopilot: Intent Analysis: Stock Alert + Revenue Diagnostic
+    APICopilot->>APICopilot: Generate actionable merchant suggestions & restock warnings
+    APICopilot-->>ChatUI: Return { insights: [...], recommendations: [...], stats: {...} }
+    ChatUI-->>Merchant: Display real-time KPI diagnostic dashboard with Restock Quick-Action
+    end

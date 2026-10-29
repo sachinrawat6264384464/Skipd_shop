@@ -1,0 +1,95 @@
+flowchart TB
+    %% =========================================================================
+    %% DEPLOYMENT ARCHITECTURE - CURRENT VS PROPOSED ENTERPRISE AWS
+    %% =========================================================================
+
+    subgraph CURRENT_ARCH["CURRENT MULTI-CLOUD HYBRID TOPOLOGY"]
+        direction TB
+
+        subgraph VERCEL_ENV["Frontend Cloud: Vercel Global Edge"]
+            VercelDNS["Custom Domain / SSL (e-com.vercel.app)"]
+            VercelCDN["Vercel Global CDN (Anycast Edge Caching)"]
+            NextServerless["Next.js 15 Serverless SSR & Static Generation"]
+        end
+
+        subgraph RENDER_ENV["Backend Cloud: Render.com PaaS"]
+            RenderALB["Render Managed Reverse Proxy & Ingress"]
+            FastAPIDocker["FastAPI Container Service (Python 3.11 / Uvicorn)<br/>Port: $PORT (0.0.0.0 Binding)"]
+        end
+
+        subgraph MANAGED_DATA_SERVICES["Managed Database & Cloud Services"]
+            NeonCloud["Neon Serverless PostgreSQL (AWS us-east-2)<br/>PgBouncer Pooled: 5432 / Direct: 5432"]
+            UpstashRedisCloud["Upstash Serverless Redis (TLS Port 6379)<br/>Caching & Celery Broker"]
+            CloudinaryMedia["Cloudinary Media Cloud<br/>Direct Stream Asset Uploads & CDN Delivery"]
+        end
+
+        VercelDNS --> VercelCDN
+        VercelCDN --> NextServerless
+        NextServerless -->|"HTTPS REST API (/api/v1)"| RenderALB
+        RenderALB --> FastAPIDocker
+        FastAPIDocker -->|"Encrypted TLS (sslmode=require)"| NeonCloud
+        FastAPIDocker -->|"rediss:// TLS"| UpstashRedisCloud
+        FastAPIDocker -->|"REST API SDK"| CloudinaryMedia
+    end
+
+    subgraph PROPOSED_AWS["PROPOSED AWS ENTERPRISE PRODUCTION ARCHITECTURE (Single-Cloud Blueprint)"]
+        direction TB
+
+        subgraph AWS_EDGE["Edge Network & Security (AWS Public Zone)"]
+            R53["Amazon Route 53<br/>(DNS Routing & Latency Records)"]
+            ACM["AWS Certificate Manager<br/>(Automated Public SSL/TLS Certs)"]
+            CF["Amazon CloudFront CDN<br/>(Global Edge Caching & Compression)"]
+            WAF["AWS WAF v2<br/>(OWASP Top 10, IP Throttling, SQLi/XSS Shields)"]
+            S3_Assets["Amazon S3 Bucket<br/>(Static Next.js Build Assets & Media)"]
+        end
+
+        subgraph AWS_VPC["Amazon VPC (Virtual Private Cloud - 10.0.0.0/16)"]
+            direction TB
+
+            subgraph PUBLIC_SUBNETS["Public Subnets (Multi-AZ: us-east-1a, 1b)"]
+                ALB_AWS["Application Load Balancer (ALB)<br/>(Path-based Routing: /api/* -> ECS)"]
+                NAT_GW["NAT Gateways (Multi-AZ)<br/>(Outbound Internet Access for Private Subnets)"]
+                Bastion["Optional SSM Bastion<br/>(Zero-Port Secure Tunneling)"]
+            end
+
+            subgraph PRIVATE_APP_SUBNETS["Private Application Subnets (Multi-AZ)"]
+                ECS_Fargate["Amazon ECS Fargate Cluster<br/>(Auto-scaling 2 to 10 Tasks)"]
+                ECS_Task1["FastAPI ASGI Task A (AZ-1)"]
+                ECS_Task2["FastAPI ASGI Task B (AZ-2)"]
+                Celery_Fargate["Celery Worker Tasks<br/>(Async Order Sync & Email Queue)"]
+            end
+
+            subgraph PRIVATE_DATA_SUBNETS["Isolated Private Database Subnets (No Internet Inbound)"]
+                RDS_Aurora["Amazon RDS PostgreSQL (Multi-AZ)<br/>(Automated Failover, Read Replicas, Encryption)"]
+                ElastiCache["Amazon ElastiCache for Redis Cluster<br/>(In-Memory Caching & Distributed Locks)"]
+            end
+        end
+
+        subgraph AWS_MANAGEMENT["Management, Observability & Security"]
+            CW["Amazon CloudWatch<br/>(Container Insights, Metrics, Alarms & Logs)"]
+            SecretsMgr["AWS Secrets Manager<br/>(Dynamic Secret Rotation: JWT, DB URLs, API Keys)"]
+            IAM_Roles["IAM Task Execution Roles<br/>(Least Privilege Access Boundaries)"]
+            ECR["Amazon Elastic Container Registry (ECR)<br/>(Docker Image Scanning & Vulnerability Checks)"]
+        end
+
+        R53 --> CF
+        WAF -.-> CF
+        ACM -.-> CF
+        CF --> S3_Assets
+        CF -->|"Dynamic API Traffic (/api/*)"| ALB_AWS
+
+        ALB_AWS --> ECS_Fargate
+        ECS_Fargate --> ECS_Task1
+        ECS_Fargate --> ECS_Task2
+        ECS_Fargate --> Celery_Fargate
+
+        ECS_Fargate -->|"Private Subnet SQL"| RDS_Aurora
+        ECS_Fargate -->|"In-VPC Redis Protocol"| ElastiCache
+        Celery_Fargate -->|"Queue Polling"| ElastiCache
+
+        ECS_Fargate -->|"Outbound to External APIs (Razorpay/Shiprocket)"| NAT_GW
+        ECS_Fargate -.-> CW
+        ECS_Fargate -.-> SecretsMgr
+        ECS_Fargate -.-> IAM_Roles
+        ECR -.->|"Pull Image"| ECS_Fargate
+    end

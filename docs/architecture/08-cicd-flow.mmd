@@ -1,0 +1,56 @@
+flowchart LR
+    %% =========================================================================
+    %% CI/CD & RELEASE PIPELINE WORKFLOW - BOTCOM COMMERCE
+    %% =========================================================================
+
+    subgraph DEVELOPER_WORKSPACE["1. Developer & Git Layer"]
+        Dev["Developer Workspace<br/>(Git Commits & Pull Requests)"]
+        GitHubRepo["GitHub Repository<br/>(Branch: main / feature-branches)"]
+    end
+
+    subgraph CI_VALIDATION["2. Automated Continuous Integration (CI)"]
+        direction TB
+        LintTest["Code Quality & Static Analysis<br/>• Prettier Formatter Check<br/>• TypeScript Typecheck (npx tsc --noEmit)<br/>• Python Pytest Test Suite"]
+        E2ETest["End-to-End Test Suite<br/>• Playwright E2E Tests (14 scenarios)<br/>• Cart, Checkout, Razorpay Mock Flows"]
+        LicenseCheck["Commercial License Guard<br/>• License Signature & Domain Binding Check"]
+    end
+
+    subgraph FRONTEND_CD["3. Frontend Continuous Delivery (Vercel)"]
+        direction TB
+        VercelWebhook["Vercel GitHub Webhook Trigger"]
+        NextBuild["Next.js Turbopack Build Step<br/>(Static Pages Pre-rendering & Bundle Shrink)"]
+        EdgeDeploy["Vercel Global Edge Deployment<br/>(Instant Zero-Downtime Atomic Switch)"]
+        VercelLive["Production Frontend Live<br/>(https://e-com.vercel.app)"]
+    end
+
+    subgraph BACKEND_CD["4. Backend Continuous Delivery (Docker / Render / AWS)"]
+        direction TB
+        DockerBuild["Docker Multi-Stage Build<br/>(Python 3.11-slim Base Image)"]
+        ContainerTest["Container Healthcheck & Startup Dry-Run"]
+        ContainerRegistry["Container Registry (ECR / Render Registry)"]
+        RollingDeploy["Rolling Deployment / Zero-Downtime Container Swap<br/>(Healthcheck: /api/v1/products on Port 8000)"]
+        BackendLive["Production Backend Live<br/>(https://skipd-ecom.onrender.com)"]
+    end
+
+    subgraph DB_MIGRATION_STEP["5. Automated Database Schema Migration"]
+        direction TB
+        InitTables["init_db_tables.py / Lifespan Event<br/>• Executes CREATE TABLE IF NOT EXISTS<br/>• Runs Auto-Column Migrations<br/>• Seeds Default Categories & Products"]
+    end
+
+    %% Flow Connections
+    Dev -->|"git push origin main"| GitHubRepo
+    GitHubRepo -->|"Trigger CI Actions"| LintTest
+    LintTest --> E2ETest
+    E2ETest --> LicenseCheck
+
+    LicenseCheck -->|"Trigger Frontend CD"| VercelWebhook
+    VercelWebhook --> NextBuild
+    NextBuild --> EdgeDeploy
+    EdgeDeploy --> VercelLive
+
+    LicenseCheck -->|"Trigger Backend CD"| DockerBuild
+    DockerBuild --> ContainerTest
+    ContainerTest --> ContainerRegistry
+    ContainerRegistry --> RollingDeploy
+    RollingDeploy --> InitTables
+    InitTables --> BackendLive

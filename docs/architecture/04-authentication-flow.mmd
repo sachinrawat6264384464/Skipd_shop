@@ -1,0 +1,92 @@
+sequenceDiagram
+    autonumber
+    %% =========================================================================
+    %% AUTHENTICATION & AUTHORIZATION FLOW - BOTCOM COMMERCE
+    %% =========================================================================
+
+    actor User as Customer / Merchant
+    participant FE as Next.js Client (Store / Admin)
+    participant FB as Google Firebase Auth Service
+    participant API as FastAPI Ingress (/api/v1/auth)
+    participant RateLimit as Redis Rate Limiter
+    participant Sec as Security Module (bcrypt / jose)
+    participant DB as Neon PostgreSQL (User Table)
+    participant Redis as Redis Cache (Session Store)
+
+    %% Flow 1: Traditional Email & Password Login
+    rect rgb(240, 248, 255)
+    note over User, DB: Flow 1: Standard Email & Password Authentication
+    User->>FE: Enters Email and Password
+    FE->>API: POST /api/v1/auth/login (username/email, password)
+    API->>RateLimit: check_rate_limit(request, max_requests=5, window=60s)
+    alt Rate Limit Exceeded
+        RateLimit-->>FE: HTTP 429 Too Many Requests
+    else Allowed
+        API->>DB: Query User by email/user_name (active=True)
+        DB-->>API: User Record with hashed_password & role
+        API->>Sec: verify_password(plain_password, hashed_password)
+        alt Password Invalid
+            Sec-->>API: False
+            API-->>FE: HTTP 401 Unauthorized (Invalid credentials)
+        else Password Valid
+            Sec-->>API: True
+            API->>Sec: create_access_token(subject=user.id, expires=30_days)
+            Sec-->>API: Signed JWT Token (HS256)
+            API-->>FE: HTTP 200 OK: { access_token, token_type: "bearer", user: {...} }
+            FE->>FE: Store token in localStorage ('ecom_token') & trigger 'ecom_auth_changed'
+            FE-->>User: Redirect to Account / Checkout Dashboard
+        end
+    end
+    end
+
+    %% Flow 2: Social OAuth / Firebase Login
+    rect rgb(245, 250, 245)
+    note over User, DB: Flow 2: Firebase Google OAuth / Social Login
+    User->>FE: Clicks "Continue with Google"
+    FE->>FB: signInWithPopup(GoogleAuthProvider)
+    FB-->>FE: Firebase UserCredential with ID Token (RS256 JWT)
+    FE->>API: POST /api/v1/auth/firebase-login { id_token }
+    API->>Sec: verify_firebase_id_token(id_token) via Firebase Admin SDK
+    alt Token Invalid / Expired
+        Sec-->>API: None
+        API-->>FE: HTTP 401 Unauthorized (Invalid Firebase Token)
+    else Token Verified
+        Sec-->>API: Decoded claims: { uid, email, name, picture }
+        API->>DB: SELECT * FROM users WHERE firebase_uid == uid OR email == email
+        alt User Exists
+            DB-->>API: Existing User Object
+        else New User
+            API->>DB: INSERT INTO users (email, name, firebase_uid, role='customer', is_active=True)
+            DB-->>API: Created User Record
+        end
+        API->>Sec: create_access_token(subject=user.id)
+        Sec-->>API: Signed BotCom Platform JWT
+        API-->>FE: HTTP 200 OK: { access_token, user: {...} }
+        FE->>FE: Save JWT & Update UI
+    end
+    end
+
+    %% Flow 3: Authenticated Request Execution & RBAC
+    rect rgb(255, 250, 240)
+    note over User, DB: Flow 3: Protected Route Execution & Role-Based Access (RBAC)
+    User->>FE: Performs Admin Action (e.g., Update Inventory / View Orders)
+    FE->>API: GET /api/v1/admin/orders (Header: Authorization: Bearer <jwt_token>)
+    API->>Sec: decode_access_token(jwt_token)
+    alt JWT Corrupted or Expired
+        Sec-->>API: None (JWTError)
+        API-->>FE: HTTP 401 Unauthorized (Could not validate credentials)
+    else JWT Valid
+        Sec-->>API: User ID (subject)
+        API->>DB: SELECT * FROM users WHERE id = user_id
+        DB-->>API: User Record with role ('admin' / 'customer' / 'staff')
+        API->>API: deps.require_admin(user)
+        alt Role is 'customer' (Unauthorized)
+            API-->>FE: HTTP 403 Forbidden (Admin privileges required)
+        else Role is 'admin' or 'superadmin'
+            API->>DB: Execute Protected Admin Query
+            DB-->>API: Query Results
+            API-->>FE: HTTP 200 OK: JSON Payload
+            FE-->>User: Render Admin Dashboard Table
+        end
+    end
+    end

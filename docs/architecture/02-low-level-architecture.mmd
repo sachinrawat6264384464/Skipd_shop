@@ -1,0 +1,102 @@
+flowchart TB
+    %% =========================================================================
+    %% LOW-LEVEL ARCHITECTURE (LLD) - BACKEND & FRONTEND MODULES
+    %% =========================================================================
+
+    subgraph FRONTEND_MODULES["Frontend Architecture (Next.js 15 / React 19)"]
+        direction TB
+        
+        subgraph FE_CORE["Core Providers & Utilities"]
+            AuthProvider["AuthProvider (components/auth/auth-provider.tsx)<br/>JWT & Firebase Session Management"]
+            WishlistCtx["WishlistContext (components/wishlist/wishlist-context.tsx)<br/>Client State & Storage Sync"]
+            ApiSdk["API Client SDK (lib/api/index.ts)<br/>fetchWithFallback & Resilience Layer"]
+            StorageUtils["Storage Utilities (lib/utils.ts)<br/>getUserCartKey, getUserOrdersKey"]
+        end
+
+        subgraph FE_COMPONENTS["Interactive Component Units"]
+            ProductCard["Product Card with BuyNowButton<br/>(DynamicHomeShowcase)"]
+            CheckoutView["Checkout Form & Stepper<br/>(app/checkout/page.tsx)"]
+            OrderTracker["Live Tracking Stepper<br/>(components/order/order-tracking-stepper.tsx)"]
+            EmailToast["EmailToastListener<br/>(components/email/email-toast-listener.tsx)"]
+            AdminCopilotUI["Admin Copilot Chat UI<br/>(components/admin/admin-copilot.tsx)"]
+        end
+    end
+
+    subgraph FASTAPI_CORE["FastAPI Core Architecture (backend/app/core)"]
+        direction TB
+        MainApp["main.py (FastAPI App & Lifespan Event)<br/>Routes Registration & License Guard Verification"]
+        ConfigModule["config.py (Pydantic BaseSettings)<br/>Environment & Secret Assembly"]
+        DatabaseModule["database.py (AsyncSessionLocal)<br/>create_async_engine & Connection Pool"]
+        SecurityModule["security.py<br/>Passlib bcrypt, JWT create/decode"]
+        RateLimitModule["rate_limiter.py<br/>check_rate_limit (Redis ZSET Sliding Window)"]
+        CacheModule["redis_cache.py<br/>get_cached_json, set_cached_json, invalidate_cache"]
+        FirebaseModule["firebase.py<br/>verify_firebase_id_token (Firebase Admin SDK)"]
+    end
+
+    subgraph API_ROUTERS["API Routers (backend/app/api)"]
+        direction TB
+        DepsInjection["deps.py (get_db, get_current_user, require_admin)<br/>FastAPI Dependency Injection"]
+        
+        r_auth["auth.py & users.py<br/>Login, Signup, JWT Tokens, User Profile"]
+        r_products["products.py & categories.py<br/>Catalog CRUD, Stock Validation, Trie Search"]
+        r_orders["orders.py & cart.py<br/>Order Placement, Cart Sync, Invoicing"]
+        r_payments["payments.py<br/>Razorpay Order Creation, HMAC Verification"]
+        r_shipping["shipping.py & returns.py<br/>Dijkstra Route, Shiprocket API, Webhooks"]
+        r_chatbot["chatbot.py<br/>Natural Language Chatbot, Price Extraction"]
+        r_admin_copilot["admin_copilot.py<br/>Live Metric Diagnostics & Merchant Advice"]
+        r_wallet["wallet.py & gift_cards.py & rewards.py<br/>SuperCoins, Gift Balance, Wallet Ledger"]
+    end
+
+    subgraph SERVICE_LAYER["Service Implementations (backend/app/services)"]
+        direction TB
+        SvcRazorpay["RazorpayService (razorpay_svc.py)<br/>create_order, verify_payment_signature"]
+        SvcShiprocket["ShiprocketService (shiprocket_svc.py)<br/>Token Caching, AWB Generation, Webhook Verification"]
+        SvcEmail["EmailService (email_service.py)<br/>SMTP TLS 587 / SSL 465, HTML Templates"]
+        SvcCloudinary["CloudinaryService (cloudinary_svc.py)<br/>Asset Stream & CDN Transformation"]
+        SvcRecommendation["RecommendationService (recommendation_svc.py)<br/>scikit-learn TF-IDF + Cosine Similarity"]
+        SvcTrie["ProductTrie (trie_search.py)<br/>In-Memory Prefix Tree Autocomplete"]
+        SvcDijkstra["DijkstraLogisticsRouter (logistics_routing.py)<br/>Priority Queue Shortest Path"]
+    end
+
+    subgraph ASYNC_TASKS["Background Worker Tasks (backend/app/tasks)"]
+        direction TB
+        TaskOrderSync["order_tasks.py: sync_shiprocket_order_task"]
+        TaskWhatsApp["order_tasks.py: send_whatsapp_receipt_task"]
+        TaskAbandonedCart["order_tasks.py: abandoned_cart_reminder_task"]
+        TaskEmailSingle["email_tasks.py: send_single_email_task (Retry Backoff)"]
+        TaskEmailOrder["email_tasks.py: send_order_confirmation_task"]
+    end
+
+    subgraph DATA_ACCESS["Data Models & Schemas (backend/app/models & schemas)"]
+        direction TB
+        PydanticSchemas["Pydantic Schemas (schemas/schemas.py)<br/>UserCreate, ProductResponse, OrderCreate, PaymentVerification"]
+        SqlAlchemyModels["SQLAlchemy Declarative Models (models/models.py)<br/>User, Product, Order, OrderItem, Shipment, Wallet, Review, etc."]
+    end
+
+    %% Wiring & Call Links
+    FE_COMPONENTS --> ApiSdk
+    ApiSdk -->|"REST / JSON"| MainApp
+    MainApp --> RateLimitModule
+    MainApp --> API_ROUTERS
+
+    API_ROUTERS --> DepsInjection
+    DepsInjection --> SecurityModule
+    DepsInjection --> FirebaseModule
+    DepsInjection --> DatabaseModule
+
+    r_payments --> SvcRazorpay
+    r_shipping --> SvcShiprocket
+    r_shipping --> SvcDijkstra
+    r_products --> SvcCloudinary
+    r_products --> SvcTrie
+    r_chatbot --> SvcRecommendation
+    r_admin_copilot --> SvcRecommendation
+
+    API_ROUTERS --> PydanticSchemas
+    API_ROUTERS --> SqlAlchemyModels
+    SqlAlchemyModels --> DatabaseModule
+
+    API_ROUTERS --> CacheModule
+    r_orders --> ASYNC_TASKS
+    r_auth --> ASYNC_TASKS
+    ASYNC_TASKS --> SvcEmail

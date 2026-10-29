@@ -1,0 +1,275 @@
+erDiagram
+    %% =========================================================================
+    %% DATABASE ENTITY RELATIONSHIP DIAGRAM (ERD) - NEON POSTGRESQL SCHEMA
+    %% =========================================================================
+
+    USERS ||--o{ ORDERS : "places"
+    USERS ||--o{ ADDRESSES : "owns"
+    USERS ||--o{ CART_ITEMS : "has"
+    USERS ||--o{ WISHLIST_ITEMS : "saves"
+    USERS ||--o{ REVIEWS : "authors"
+    USERS ||--o| WALLETS : "holds"
+    USERS ||--o{ USER_VIEWS : "tracks"
+    USERS ||--o{ STAFF_USERS : "assigned"
+
+    CATEGORIES ||--o{ PRODUCTS : "groups"
+    PRODUCTS ||--o{ PRODUCT_VARIANTS : "has"
+    PRODUCTS ||--o{ ORDER_ITEMS : "included_in"
+    PRODUCTS ||--o{ CART_ITEMS : "referenced_in"
+    PRODUCTS ||--o{ WISHLIST_ITEMS : "favorited_in"
+    PRODUCTS ||--o{ REVIEWS : "receives"
+    PRODUCTS ||--o{ INVENTORY_LOGS : "logs"
+
+    ORDERS ||--o{ ORDER_ITEMS : "contains"
+    ORDERS ||--o| PAYMENT_TRANSACTIONS : "settled_by"
+    ORDERS ||--o| SHIPMENTS : "fulfilled_by"
+    ORDERS ||--o{ ORDER_STATUS_HISTORY : "tracks_status"
+    ORDERS ||--o| RETURN_REQUESTS : "originates"
+
+    SHIPMENTS ||--o{ SHIPMENT_TRACKING_EVENTS : "records"
+    WALLETS ||--o{ WALLET_TRANSACTIONS : "logs"
+    ROLES ||--o{ STAFF_USERS : "defines_permissions"
+
+    USERS {
+        int id PK
+        string email UK
+        string user_name UK
+        string hashed_password
+        string role "customer, staff, admin, superadmin"
+        string firebase_uid UK
+        string phone
+        float supercoins_balance
+        boolean is_active
+        datetime created_at
+        datetime updated_at
+    }
+
+    CATEGORIES {
+        int id PK
+        string name
+        string slug UK
+        string description
+        string image_url
+        string icon
+        string status "Active, Inactive"
+        datetime created_at
+    }
+
+    PRODUCTS {
+        int id PK
+        string title
+        string handle UK
+        string description
+        float price
+        float compare_at_price
+        int category_id FK
+        int stock_quantity
+        boolean is_active
+        boolean featured
+        json images "list of CDN URLs"
+        json tags "list of keyword tags"
+        string sku UK
+        string barcode
+        float weight_kg
+        string dimensions_cm
+        datetime created_at
+        datetime updated_at
+    }
+
+    PRODUCT_VARIANTS {
+        int id PK
+        int product_id FK
+        string title
+        string sku UK
+        float price
+        float compare_at_price
+        int stock_quantity
+        json attributes "color, size, etc."
+        boolean is_active
+    }
+
+    ORDERS {
+        int id PK
+        string order_number UK
+        int user_id FK
+        string status "PENDING, PAID, PROCESSING, SHIPPED, DELIVERED, CANCELLED"
+        float total_amount
+        float subtotal
+        float tax_amount
+        float shipping_fee
+        float discount_amount
+        string payment_method "Online, COD, Wallet"
+        json shipping_address "name, street, city, pin, phone"
+        string customer_name
+        string customer_email
+        string customer_phone
+        string awb_code
+        string courier_name
+        string tracking_url
+        datetime created_at
+        datetime updated_at
+    }
+
+    ORDER_ITEMS {
+        int id PK
+        int order_id FK
+        int product_id FK
+        string title
+        float price
+        int quantity
+        float total
+    }
+
+    PAYMENT_TRANSACTIONS {
+        int id PK
+        int order_id FK
+        string transaction_id UK "razorpay_payment_id"
+        string provider "Razorpay, COD, Wallet"
+        float amount
+        string currency "INR"
+        string status "SUCCESS, FAILED, REFUNDED"
+        json payment_details "method, bank, vpa, card"
+        datetime created_at
+    }
+
+    SHIPMENTS {
+        int id PK
+        int order_id FK
+        string awb_code UK "BlueDart / Delhivery AWB"
+        string courier_partner "BlueDart Express, Delhivery"
+        string status "MANIFESTED, IN_TRANSIT, OUT_FOR_DELIVERY, DELIVERED"
+        json pickup_address "Warehouse Hub Location"
+        json delivery_address "Customer Address"
+        string estimated_delivery
+        datetime created_at
+    }
+
+    SHIPMENT_TRACKING_EVENTS {
+        int id PK
+        int shipment_id FK
+        string status
+        string description
+        string location
+        datetime timestamp
+    }
+
+    ADDRESSES {
+        int id PK
+        int user_id FK
+        string type "Home, Office, Other"
+        string name
+        string phone
+        string address
+        string city
+        string state
+        string pincode
+        boolean is_default
+        datetime created_at
+    }
+
+    CART_ITEMS {
+        int id PK
+        int user_id FK
+        int product_id FK
+        int quantity
+        datetime created_at
+    }
+
+    WISHLIST_ITEMS {
+        int id PK
+        int user_id FK
+        int product_id FK
+        datetime created_at
+    }
+
+    COUPONS {
+        int id PK
+        string code UK
+        float discount_percent
+        float flat_discount
+        float min_order_amount
+        float max_discount
+        boolean is_active
+        datetime expires_at
+    }
+
+    REVIEWS {
+        int id PK
+        int product_id FK
+        int user_id FK
+        string user_name
+        int rating "1 to 5"
+        string comment
+        boolean is_verified
+        datetime created_at
+    }
+
+    WALLETS {
+        int id PK
+        int user_id FK
+        float balance
+        string currency "INR"
+        datetime updated_at
+    }
+
+    WALLET_TRANSACTIONS {
+        int id PK
+        int wallet_id FK
+        float amount
+        string transaction_type "CREDIT, DEBIT, REFUND"
+        string reference_id
+        string description
+        datetime created_at
+    }
+
+    GIFT_CARDS {
+        int id PK
+        string code UK
+        float balance
+        float initial_balance
+        boolean is_active
+        datetime expires_at
+        int created_by_user_id FK
+    }
+
+    RETURN_REQUESTS {
+        int id PK
+        int order_id FK
+        int user_id FK
+        string reason
+        string status "PENDING, APPROVED, REJECTED, REFUNDED"
+        float refund_amount
+        datetime created_at
+    }
+
+    ROLES {
+        int id PK
+        string name UK "admin, staff, logistics_manager"
+        string description
+        json permissions "catalog_write, orders_read, etc."
+    }
+
+    STAFF_USERS {
+        int id PK
+        int user_id FK
+        int role_id FK
+        string department
+        boolean is_active
+    }
+
+    INVENTORY_LOGS {
+        int id PK
+        int product_id FK
+        int change_amount
+        string reason "Order Placement, Restock, Admin Edit"
+        int previous_stock
+        int new_stock
+        datetime logged_at
+    }
+
+    USER_VIEWS {
+        int id PK
+        int user_id FK
+        int product_id FK
+        datetime viewed_at
+    }

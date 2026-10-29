@@ -1,0 +1,84 @@
+flowchart TB
+    %% =========================================================================
+    %% SECURITY & NETWORK BOUNDARIES ARCHITECTURE - BOTCOM COMMERCE
+    %% =========================================================================
+
+    subgraph UNTRUSTED_ZONE["ZONE 0: Untrusted Public Network (Internet)"]
+        direction LR
+        PublicUser["Public Web Users & Mobile Clients"]
+        MaliciousActor["Potential Attackers (DDoS, Bots, SQLi, Scrapers)"]
+    end
+
+    subgraph EDGE_SECURITY_ZONE["ZONE 1: Edge Security & Ingress Boundary"]
+        direction TB
+        TLS_Edge["TLS 1.3 / HTTPS Termination (Port 443)<br/>Automated SSL Certificates (ACM / Let's Encrypt)"]
+        WAF_Shield["Edge Web Application Firewall (WAF)<br/>• Rate Throttling • Bad Bot Blocking • OWASP Top 10"]
+        CORS_Policy["CORS Whitelist Gate<br/>Allowed Origins: localhost:3000, *.vercel.app"]
+    end
+
+    subgraph APP_CONTAINER_ZONE["ZONE 2: Application Trust Boundary (FastAPI Backend)"]
+        direction TB
+        
+        subgraph INGRESS_CONTROLS["Ingress & Perimeter Controls"]
+            RedisRateLimiter["Redis Sliding-Window Rate Limiter<br/>• Window: 60s • Threshold: 5 req/min/IP • Redis ZSET Pipeline"]
+            PydanticSanitizer["Pydantic v2 Schema Validation<br/>• Strict Type Coercion • Payload Stripping • XSS Protection"]
+        end
+
+        subgraph AUTH_CONTROLS["Identity & Access Management (IAM / RBAC)"]
+            JWTValidator["JWT Signature & Expiry Verifier<br/>• Algorithm: HS256 • 30-Day TTL • jose Decoder"]
+            FirebaseTokenVerifier["Firebase Admin SDK Auth Guard<br/>• RS256 Google Public Keys Verification"]
+            RBACGate["Role-Based Access Control (RBAC)<br/>• Roles: customer, staff, admin, superadmin"]
+        end
+
+        subgraph INTEGRATION_SECURITY["Third-Party Webhook Authenticity Guards"]
+            RazorpayHMAC["Razorpay Webhook HMAC-SHA256 Verifier<br/>• Compares X-Razorpay-Signature with Secret"]
+            ShiprocketWebhookAuth["Shiprocket Webhook Secret Checker<br/>• Header Token Authentication"]
+        end
+    end
+
+    subgraph ISOLATED_DATA_ZONE["ZONE 3: Isolated Data Tier (Private Subnets)"]
+        direction TB
+        DB_Access["Neon PostgreSQL (Private / Pooled Port 5432)<br/>• SSL Required (sslmode=require)<br/>• SQLAlchemy ORM Parameterized Queries (Zero Raw SQL Injection)<br/>• Least Privilege Role ('neondb_owner')"]
+        Redis_Access["Upstash Redis (rediss:// Port 6379)<br/>• Native TLS Encryption in Transit<br/>• Secret Token Authentication"]
+    end
+
+    subgraph EXTERNAL_INTEGRATIONS_ZONE["ZONE 4: External Third-Party Security Boundary"]
+        direction TB
+        ExtRazorpay["Razorpay API (HTTPS / Basic Auth)"]
+        ExtShiprocket["Shiprocket API (HTTPS / Bearer Auth)"]
+        ExtCloudinary["Cloudinary API (HTTPS / Signed Uploads)"]
+        ExtGmailSMTP["Gmail SMTP (Port 587 STARTTLS / Port 465 SSL)"]
+    end
+
+    %% Flow through Boundaries
+    UNTRUSTED_ZONE -->|"Cleartext or HTTPS"| TLS_Edge
+    TLS_Edge --> WAF_Shield
+    WAF_Shield --> CORS_Policy
+    CORS_Policy --> RedisRateLimiter
+
+    RedisRateLimiter --> PydanticSanitizer
+    PydanticSanitizer --> JWTValidator
+    PydanticSanitizer --> FirebaseTokenVerifier
+    JWTValidator --> RBACGate
+
+    RBACGate -->|"Safe Parameterized SQL (asyncpg)"| DB_Access
+    RBACGate -->|"Encrypted Redis Commands"| Redis_Access
+
+    APP_CONTAINER_ZONE <-->|"Outbound Egress (TLS 1.3 / Secrets Protected)"| EXTERNAL_INTEGRATIONS_ZONE
+    ExtRazorpay -->|"Inbound Webhook Call"| RazorpayHMAC
+    ExtShiprocket -->|"Inbound Delivery Event"| ShiprocketWebhookAuth
+    RazorpayHMAC --> DB_Access
+    ShiprocketWebhookAuth --> DB_Access
+
+    %% Boundary Styling
+    classDef untrusted fill:#ffebee,stroke:#c62828,stroke-width:2px;
+    classDef edge fill:#e8eaf6,stroke:#283593,stroke-width:2px;
+    classDef app fill:#e3f2fd,stroke:#1565c0,stroke-width:2px;
+    classDef data fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
+    classDef ext fill:#fff3e0,stroke:#ef6c00,stroke-width:2px;
+
+    class UNTRUSTED_ZONE untrusted;
+    class EDGE_SECURITY_ZONE edge;
+    class APP_CONTAINER_ZONE app;
+    class ISOLATED_DATA_ZONE data;
+    class EXTERNAL_INTEGRATIONS_ZONE ext;
